@@ -15,17 +15,20 @@ file(GLOB include_files "${PROJECT_SOURCE_DIR}/include/*.h")
 # add_library(${PROJECT_NAME} SHARED ${source_files})
 add_library(${PROJECT_NAME} SHARED ${source_files} ${include_files})
 
+add_subdirectory(external/spdlog)
+
 target_include_directories(${PROJECT_NAME}
 	PUBLIC
 	$<INSTALL_INTERFACE:include>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 
 	PRIVATE
+	external/spdlog/include/spdlog
 )
 
 target_link_libraries(${PROJECT_NAME}
 	PUBLIC
-
+	spdlog
 	PRIVATE
 
 )
