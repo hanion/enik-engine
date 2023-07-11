@@ -16,6 +16,7 @@ file(GLOB include_files "${PROJECT_SOURCE_DIR}/include/*.h")
 add_library(${PROJECT_NAME} SHARED ${source_files} ${include_files})
 
 add_subdirectory(external/spdlog)
+add_subdirectory(external/glfw)
 
 target_include_directories(${PROJECT_NAME}
 	PUBLIC
@@ -24,11 +25,13 @@ target_include_directories(${PROJECT_NAME}
 
 	PRIVATE
 	external/spdlog/include/spdlog
+	external/glfw/include/GLFW
 )
 
 target_link_libraries(${PROJECT_NAME}
 	PUBLIC
 	spdlog
+	glfw
 	PRIVATE
 
 )

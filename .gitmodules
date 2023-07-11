@@ -1,3 +1,6 @@
 [submodule "engine/external/spdlog"]
 	path = engine/external/spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "engine/external/glfw"]
+	path = engine/external/glfw
+	url = https://github.com/glfw/glfw.git
