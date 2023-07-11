@@ -6,9 +6,9 @@ class Application {
 
 public:
     Application();
-    ~Application();
+    virtual ~Application();
 
-	void Run();
+	virtual void Run();
 
 };
 

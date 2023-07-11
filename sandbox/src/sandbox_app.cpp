@@ -11,6 +11,9 @@ public:
 		Print("Sandbox Deleted");
 	}
 
+	void Run() override {
+		Print("Sandbox Run");
+	}
 };
 
 
