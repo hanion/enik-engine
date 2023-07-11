@@ -4,15 +4,15 @@
 class Sandbox : public Enik::Application {
 public:
 	Sandbox(){
-		Print("Sandbox Created");
+		EN_TRACE("Sandbox Created");
 	}
 
 	~Sandbox(){
-		Print("Sandbox Deleted");
+		EN_TRACE("Sandbox Deleted");
 	}
 
 	void Run() override {
-		Print("Sandbox Run");
+		EN_TRACE("Sandbox Run");
 	}
 };
 
