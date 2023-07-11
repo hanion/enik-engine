@@ -1,5 +1,8 @@
 #pragma once
 
+#include "event.h"
+#include <log.h>
+
 namespace Enik {
 
 class Application {

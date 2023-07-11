@@ -1,9 +1,8 @@
 #pragma once
 
-#include <application.h>
-#include <printer.h>
+#include "../src/application.h"
 #include <log.h>
 
 // ----- Entry Point -----
-#include <entry_point.h>
+#include "../src/entry_point.h"
 // -----------------------
