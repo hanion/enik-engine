@@ -20,6 +20,13 @@ void Application::Run() {
 }
 
 
+void Application::OnEvent(Event& e) {
+	EN_CORE_INFO("{0}",e);
+
+	EventDispatcher dispatcher(e);
+	dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
+}
+
  bool Application::OnWindowClose(WindowCloseEvent& e){
 	EN_CORE_TRACE("closing it {0}",e);
 	m_Running = false;
