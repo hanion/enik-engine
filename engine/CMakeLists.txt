@@ -35,7 +35,7 @@ target_include_directories(${PROJECT_NAME}
 	PRIVATE
 	external/spdlog/include/spdlog
 	external/glfw/include/GLFW
-	external/glfw/include/glad
+	external/glad/include/glad
 )
 
 target_link_libraries(${PROJECT_NAME}
