@@ -4,7 +4,15 @@ namespace Enik {
 
 #define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
 
+
+// make application static
+Application* Application::s_Instance = nullptr;
+
+
 Application::Application() {
+	EN_CORE_ASSERT(!s_Instance, "Application already exists!");
+	s_Instance = this;
+
     m_Window = new Window(WindowProperties());
 	m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 }
