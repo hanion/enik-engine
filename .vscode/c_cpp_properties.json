@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/engine/include",
-                "${workspaceFolder}/engine/external/spdlog/include"
+                "${workspaceFolder}/engine/external/spdlog/include",
+                "${workspaceFolder}/engine/external/glad/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
@@ -16,6 +17,7 @@
                 "path": [
                     "${workspaceFolder}/engine/include",
                     "${workspaceFolder}/engine/external/spdlog/include",
+                    "${workspaceFolder}/engine/external/glad/include",
                     "${workspaceFolder}"
                 ],
                 "limitSymbolsToIncludedHeaders": true
