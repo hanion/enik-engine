@@ -12,6 +12,15 @@ set(source_dir "${PROJECT_SOURCE_DIR}/src/")
 file(GLOB source_files "${source_dir}/*.cpp")
 file(GLOB include_files "${PROJECT_SOURCE_DIR}/include/*.h")
 
+
+# these fix the undefined reference problem
+# turns out, we need to add every subdirectory we create to compile them
+file(GLOB additional_files "${source_dir}/layers/*.cpp")
+list(APPEND source_files ${additional_files})
+
+file(GLOB additional_include_files "${source_dir}/events/*.h")
+list(APPEND include_files ${additional_include_files})
+
 add_library(${PROJECT_NAME} SHARED ${source_files} ${include_files})
 
 add_subdirectory(external/spdlog)
