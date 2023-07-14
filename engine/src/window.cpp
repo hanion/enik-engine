@@ -47,6 +47,9 @@ void Window::Init(const WindowProperties& properties){
 	m_Window = glfwCreateWindow((int)properties.Width, (int)properties.Height, m_Data.Title.c_str(), nullptr, nullptr);
 
 	glfwMakeContextCurrent(m_Window);
+	int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+	EN_CORE_ASSERT(status, "Failed to initialize glad!");
+	
 	glfwSetWindowUserPointer(m_Window, &m_Data);
 	SetVsync(true);
 
