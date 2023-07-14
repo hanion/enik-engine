@@ -1,5 +1,6 @@
 #pragma once
 
+#include <base.h>
 #include "window.h"
 #include "events/event.h"
 #include "events/key_event.h"

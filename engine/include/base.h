@@ -24,3 +24,4 @@
 #define EN_EXPAND_MACRO(x) x
 #define EN_STRINGIFY_MACRO(x) #x
 
+#define EN_BIND_EVENT_FN(fn) std::bind(&Enik::fn, this, std::placeholders::_1)

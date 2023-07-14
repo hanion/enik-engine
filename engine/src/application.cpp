@@ -2,9 +2,6 @@
 
 namespace Enik {
 
-#define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
-
-
 // make application static
 Application* Application::s_Instance = nullptr;
 
@@ -14,7 +11,7 @@ Application::Application() {
 	s_Instance = this;
 
     m_Window = new Window(WindowProperties());
-	m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+	m_Window->SetEventCallback(EN_BIND_EVENT_FN(Application::OnEvent));
 }
 
 Application::~Application() {
@@ -46,7 +43,7 @@ void Application::Run() {
 
 void Application::OnEvent(Event& e) {
 	EventDispatcher dispatcher(e);
-	dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
+	dispatcher.Dispatch<WindowCloseEvent>(EN_BIND_EVENT_FN(Application::OnWindowClose));
 
 	for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); ) {
 		(*--it)->OnEvent(e);
