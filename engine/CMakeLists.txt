@@ -12,7 +12,6 @@ set(source_dir "${PROJECT_SOURCE_DIR}/src/")
 file(GLOB source_files "${source_dir}/*.cpp")
 file(GLOB include_files "${PROJECT_SOURCE_DIR}/include/*.h")
 
-# add_library(${PROJECT_NAME} SHARED ${source_files})
 add_library(${PROJECT_NAME} SHARED ${source_files} ${include_files})
 
 add_subdirectory(external/spdlog)
