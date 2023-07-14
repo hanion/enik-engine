@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/engine/include",
                 "${workspaceFolder}/engine/external/spdlog/include",
-                "${workspaceFolder}/engine/external/glad/include"
+                "${workspaceFolder}/engine/external/glad/include",
+                "${workspaceFolder}/engine/external/imgui"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
@@ -18,6 +19,7 @@
                     "${workspaceFolder}/engine/include",
                     "${workspaceFolder}/engine/external/spdlog/include",
                     "${workspaceFolder}/engine/external/glad/include",
+                    "${workspaceFolder}/engine/external/imgui",
                     "${workspaceFolder}"
                 ],
                 "limitSymbolsToIncludedHeaders": true
