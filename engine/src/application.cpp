@@ -1,4 +1,5 @@
 #include "application.h"
+#include "input.h"
 
 namespace Enik {
 
