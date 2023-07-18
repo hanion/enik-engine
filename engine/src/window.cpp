@@ -171,5 +171,10 @@ bool Window::IsVSync() const {
 }
 
 
+GLFWwindow* Window::GetNativeWindow() {
+	return m_Window;
+}
+
+
 
 }  // namespace Enik

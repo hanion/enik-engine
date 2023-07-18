@@ -40,6 +40,8 @@ class Window {
 	void SetVsync(bool enabled);
 	bool IsVSync() const;
 
+	GLFWwindow* GetNativeWindow();
+
 	//static Window* Create(const WindowProperties& properties = WindowProperties());
 
 private:
