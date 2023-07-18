@@ -37,6 +37,7 @@ add_subdirectory(external/spdlog)
 add_subdirectory(external/glfw)
 add_subdirectory(external/glad)
 add_subdirectory(external/imgui)
+add_subdirectory(external/glm)
 
 target_include_directories(${PROJECT_NAME}
 	PUBLIC
@@ -48,6 +49,7 @@ target_include_directories(${PROJECT_NAME}
 	external/glfw/include/GLFW
 	external/glad/include/glad
 	external/imgui
+	external/glm/glm
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -56,6 +58,7 @@ target_link_libraries(${PROJECT_NAME}
 	glfw
 	glad
 	imgui
+	glm
 	PRIVATE
 
 )
