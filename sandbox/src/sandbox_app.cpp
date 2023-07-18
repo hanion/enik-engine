@@ -45,6 +45,16 @@ public:
 
 	}
 
+	virtual void OnImGuiRender() override {
+		ImGui::Begin("text");
+		glClearColor(0,1,0.5f,1);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		ImGui::Text("hahahaha");
+		ImGui::End();
+
+	}
+
 
 };
 
