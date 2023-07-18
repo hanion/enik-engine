@@ -56,7 +56,6 @@ public:
 	Sandbox(){
 		EN_TRACE("Sandbox Created");
 		PushLayer(new ExampleLayer());
-		PushOverlay(new ImGuiLayer());
 	}
 
 	~Sandbox(){

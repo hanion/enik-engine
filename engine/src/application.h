@@ -8,6 +8,7 @@
 #include "events/application_event.h"
 #include <log.h>
 #include "layers/layer_stack.h"
+#include "layers/imgui_layer/imgui_layer.h"
 
 namespace Enik {
 
@@ -30,6 +31,7 @@ private:
     bool OnWindowClose(WindowCloseEvent& e);
 
     Window* m_Window;
+    ImGuiLayer* m_ImGuiLayer;
     bool m_Running = true;
     LayerStack m_LayerStack;
 
