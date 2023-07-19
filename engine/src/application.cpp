@@ -65,7 +65,6 @@ void Application::OnEvent(Event& e) {
 }
 
 bool Application::OnWindowClose(WindowCloseEvent& e){
-	EN_CORE_TRACE("closing it {0}",e);
 	m_Running = false;
 	return true;
 }
