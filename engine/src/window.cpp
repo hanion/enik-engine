@@ -4,6 +4,8 @@
 #include "events/key_event.h"
 #include "events/mouse_event.h"
 #include "events/application_event.h"
+#include "renderer/opengl/opengl_context.h"
+
 
 namespace Enik {
 
@@ -46,10 +48,9 @@ void Window::Init(const WindowProperties& properties){
 
 	m_Window = glfwCreateWindow((int)properties.Width, (int)properties.Height, m_Data.Title.c_str(), nullptr, nullptr);
 
-	glfwMakeContextCurrent(m_Window);
-	int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-	EN_CORE_ASSERT(status, "Failed to initialize glad!");
-	
+	m_Context = new OpenGLContext(m_Window);
+	m_Context->Init();
+
 	glfwSetWindowUserPointer(m_Window, &m_Data);
 	SetVsync(true);
 
@@ -159,7 +160,7 @@ void Window::Shutdown() {
 
 void Window::OnUpdate() {
 	glfwPollEvents();
-	glfwSwapBuffers(m_Window);
+	m_Context->SwapBuffers();
 }
 
 
