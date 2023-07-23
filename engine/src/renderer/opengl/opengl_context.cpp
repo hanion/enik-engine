@@ -17,6 +17,9 @@ void OpenGLContext::Init() {
 	glfwMakeContextCurrent(m_WindowHandle);
 	int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 	EN_CORE_ASSERT(status, "Failed to initialize glad!");
+
+	EN_CORE_INFO("OpenGL Renderer: {0}",(const char*)glGetString(GL_RENDERER));
+	EN_CORE_INFO("OpenGL Version: {0}",(const char*)glGetString(GL_VERSION));
 }
 void OpenGLContext::SwapBuffers() {
 	/*
