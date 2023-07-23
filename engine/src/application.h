@@ -9,6 +9,7 @@
 #include <log.h>
 #include "layers/layer_stack.h"
 #include "layers/imgui_layer/imgui_layer.h"
+#include "renderer/opengl/shader.h"
 
 namespace Enik {
 
@@ -36,6 +37,8 @@ private:
     LayerStack m_LayerStack;
 
     unsigned int m_VertexArray, m_VertexBuffer, m_IndexBuffer;
+    std::unique_ptr<Shader> m_Shader;
+
 private:
     static Application* s_Instance;
 };
