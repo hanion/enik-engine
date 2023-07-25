@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <asserter.h>
+#include <log.h>
 
 #define EN_PLATFORM_LINUX
 #define EN_DEBUG
