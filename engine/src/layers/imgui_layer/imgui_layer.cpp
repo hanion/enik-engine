@@ -2,6 +2,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "../../application.h"
+#include "imgui_themes.h"
 
 namespace Enik {
 
@@ -26,6 +27,7 @@ void ImGuiLayer::OnAttach() {
 
 
 	ImGui::StyleColorsDark();
+	ImGuiTheme::Gray();
 	
 	Application& app = Application::Get();
 	GLFWwindow* window = app.GetWindow().GetNativeWindow();
