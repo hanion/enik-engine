@@ -88,8 +88,6 @@ void ImGuiLayer::ShowTestingWindow() {
 	window_flags |= ImGuiWindowFlags_NoDecoration;
 	window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
 
-	const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-	ImGui::SetNextWindowPos(ImVec2(main_viewport->WorkPos.x + 20, main_viewport->WorkPos.y + 20), ImGuiCond_Appearing);
 	ImGui::SetNextWindowSize(ImVec2(300,42));
 	if (ImGui::Begin("testing window", NULL, window_flags)) {
 		ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
