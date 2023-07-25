@@ -11,7 +11,7 @@ Application::Application() {
 	EN_CORE_ASSERT(!s_Instance, "Application already exists!");
 	s_Instance = this;
 
-    m_Window = new Window(WindowProperties("eengine",1280,600));
+	m_Window = new Window(WindowProperties("eengine",1280,600));
 	m_Window->SetEventCallback(EN_BIND_EVENT_FN(Application::OnEvent));
 
 	m_ImGuiLayer = new ImGuiLayer();
@@ -87,7 +87,7 @@ void Application::PushOverlay(Layer* overlay) {
 
 
 void Application::Run() {
-    while (m_Running) {
+	while (m_Running) {
 
 		glClearColor(0.1f, 0.1f, 0.1f, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -107,8 +107,8 @@ void Application::Run() {
 		}
 		m_ImGuiLayer->End();
 
-        m_Window->OnUpdate();
-    }
+		m_Window->OnUpdate();
+	}
 }
 
 
