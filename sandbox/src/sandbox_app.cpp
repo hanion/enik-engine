@@ -20,10 +20,12 @@ public:
 	void OnEvent(Event& event) override {
 		//EN_TRACE("exl {0}", event);
 
+		/*
 		if (event.IsInCategory(EventCategory::EventCategoryKeyboard) and event.GetEventType() == EventType::KeyPressed) {
+			int key_code = ((KeyPressedEvent&)event).GetKeyCode();
 
 			if (Input::IsKeyPressed(m_DebugKeyCode)) {
-				EN_WARN("exl     pressed {0}", m_DebugKeyCode);
+				EN_WARN("exl     pressed {0} ({1})", m_DebugKeyCode, (char)key_code);
 				m_DebugKeyCode++;
 			}
 			else {
@@ -31,7 +33,7 @@ public:
 					m_DebugKeyCode++;
 				}
 				else {
-					EN_ERROR("exl not pressed {0}, instead pressed {1}", m_DebugKeyCode, ((KeyPressedEvent&)event).GetKeyCode());
+					EN_ERROR("exl not pressed {0}, instead pressed {1} ({2})", m_DebugKeyCode, key_code, (char)key_code);
 				}
 			}
 
@@ -41,14 +43,12 @@ public:
 			MouseCode mc = ((MouseButtonPressedEvent&)event).GetMouseButton();
 			EN_TRACE("exl mb {0}", (mc==0) ? "left" : "right" );
 		}
-		
+		*/
 
 	}
 
 	virtual void OnImGuiRender() override {
 		ImGui::Begin("text");
-		glClearColor(0,1,0.5f,1);
-		glClear(GL_COLOR_BUFFER_BIT);
 
 		ImGui::Text("hahahaha");
 		ImGui::End();
