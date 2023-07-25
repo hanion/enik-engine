@@ -12,7 +12,7 @@ public:
 	void Unbind() const;
 
 private:
-	uint m_RendererID;
+	uint32_t m_RendererID;
 };
 
 }
