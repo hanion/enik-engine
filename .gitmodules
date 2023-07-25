@@ -1,9 +1,9 @@
 [submodule "engine/external/spdlog"]
 	path = engine/external/spdlog
-	url = https://github.com/gabime/spdlog.git
+	url = https://github.com/hanion/spdlog.git
 [submodule "engine/external/glfw"]
 	path = engine/external/glfw
-	url = https://github.com/glfw/glfw.git
+	url = https://github.com/hanion/glfw.git
 [submodule "engine/external/imgui"]
 	path = engine/external/imgui
 	url = https://github.com/ocornut/imgui
