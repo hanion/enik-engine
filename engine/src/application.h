@@ -11,6 +11,7 @@
 #include "layers/imgui_layer/imgui_layer.h"
 #include "renderer/opengl/shader.h"
 #include "renderer/buffer.h"
+#include "renderer/vertex_array.h"
 
 namespace Enik {
 
@@ -37,10 +38,8 @@ private:
 	bool m_Running = true;
 	LayerStack m_LayerStack;
 
-	unsigned int m_VertexArray;
-	std::unique_ptr<Shader> m_Shader;
-	std::unique_ptr<VertexBuffer> m_VertexBuffer;
-	std::unique_ptr<IndexBuffer> m_IndexBuffer;
+	std::shared_ptr<Shader> m_Shader;
+	std::shared_ptr<VertexArray> m_VertexArray;
 
 private:
 	static Application* s_Instance;
