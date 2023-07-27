@@ -1,6 +1,8 @@
 #include "application.h"
 #include "input.h"
 
+#include "renderer/renderer.h"
+
 namespace Enik {
 
 // make application static
@@ -104,14 +106,22 @@ void Application::PushOverlay(Layer* overlay) {
 
 void Application::Run() {
 	while (m_Running) {
+		RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
+		RenderCommand::Clear();
 
-		glClearColor(0.1f, 0.1f, 0.1f, 1);
-		glClear(GL_COLOR_BUFFER_BIT);
-
-
+		Renderer::BeginScene();
+		
 		m_Shader->Bind();
-		m_VertexArray->Bind();
-		glDrawElements(GL_TRIANGLES, m_VertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+		Renderer::Submit(m_VertexArray);
+		/*
+		Renderer::Submit()
+			RenderCommand::DrawIndexed
+				RenderAPI::
+					OpenGLRendererAPI::DrawIndexed
+						glDrawElements();
+		*/
+
+		Renderer::EndScene();
 
 		for (Layer* layer : m_LayerStack) {
 			layer->OnUpdate();
