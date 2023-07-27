@@ -48,10 +48,6 @@ public:
 	}
 
 	virtual void OnImGuiRender() override {
-		ImGui::Begin("text");
-
-		ImGui::Text("hahahaha");
-		ImGui::End();
 
 	}
 
