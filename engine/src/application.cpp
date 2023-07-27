@@ -46,9 +46,9 @@ Application::Application() {
 
 
 	float vertices[3 * 7] = {
-		-0.5f, -0.2f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		0.5f,  -0.2f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-		0.0f,  0.8f,  0.0f, 0.0f, 0.0f, 1.0f, 1.0f
+		-0.4f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		 0.4f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+		 0.0f,  0.6f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
 	};
 
 	m_VertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
