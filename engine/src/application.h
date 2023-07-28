@@ -40,11 +40,6 @@ private:
 	bool m_Running = true;
 	LayerStack m_LayerStack;
 
-	std::shared_ptr<Shader> m_Shader;
-	std::shared_ptr<VertexArray> m_VertexArray;
-public:
-	OrthographicCamera m_Camera;
-
 private:
 	static Application* s_Instance;
 };
