@@ -9,10 +9,6 @@
 #include <log.h>
 #include "layers/layer_stack.h"
 #include "layers/imgui_layer/imgui_layer.h"
-#include "renderer/opengl/shader.h"
-#include "renderer/buffer.h"
-#include "renderer/vertex_array.h"
-#include "renderer/orthographic_camera.h"
 
 
 namespace Enik {
