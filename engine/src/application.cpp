@@ -1,5 +1,6 @@
 #include "application.h"
 #include "input.h"
+#include <imgui.h>
 
 #include "renderer/renderer.h"
 
@@ -132,6 +133,34 @@ void Application::Run() {
 		for (Layer* layer : m_LayerStack) {
 			layer->OnImGuiRender();
 		}
+		/*ShowCameraControls*/ {
+			ImGuiWindowFlags window_flags = 0;
+			window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
+			if (ImGui::Begin("Camera", NULL, window_flags)) {
+
+				static glm::vec3 pos = glm::vec3(0.0f, 0.0f, 0.0f);
+				ImGui::Text("Translation");
+				ImGui::SliderFloat("X",&pos.x,-1.5f,1.5f, "%.2f");
+				ImGui::SliderFloat("Y",&pos.y,-1.5f,1.5f, "%.2f");
+				ImGui::SliderFloat("Z",&pos.z,-1.5f,1.5f, "%.2f");
+
+				ImGui::Spacing();
+
+				static glm::vec3 rot = glm::vec3(0.0f, 0.0f, 0.0f);
+				ImGui::Text("Rotation");
+				ImGui::SliderFloat("X°",&rot.x,-180.0f,180.0f, "%.2f");
+				ImGui::SliderFloat("Y°",&rot.y,-180.0f,180.0f, "%.2f");
+				ImGui::SliderFloat("Z°",&rot.z,-180.0f,180.0f, "%.2f");
+
+				m_Camera.SetPosition(glm::vec3(pos.x, pos.y, pos.z));
+				m_Camera.SetRotation(glm::vec3(rot.x, rot.y, rot.z));
+
+				
+
+				ImGui::End();
+			}
+		}
+
 		m_ImGuiLayer->End();
 
 		m_Window->OnUpdate();
