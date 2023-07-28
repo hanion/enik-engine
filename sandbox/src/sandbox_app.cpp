@@ -76,13 +76,33 @@ public:
 	
 
 	void OnUpdate() override {
-
+		if(Input::IsKeyPressed(Key::A)){
+			m_CameraPosition -= glm::vec3(1, 0, 0) * m_CameraMoveSpeed;
 		}
+		else if (Input::IsKeyPressed(Key::D)) {
+			m_CameraPosition += glm::vec3(1, 0, 0) * m_CameraMoveSpeed;
 		}
 
+		if(Input::IsKeyPressed(Key::W)){
+			m_CameraPosition += glm::vec3(0, 1, 0) * m_CameraMoveSpeed;
+		}
+		else if (Input::IsKeyPressed(Key::S)) {
+			m_CameraPosition -= glm::vec3(0, 1, 0) * m_CameraMoveSpeed;
+		}
+
+		if(Input::IsKeyPressed(Key::Q)){
+			m_CameraRotation += glm::vec3(0, 0, 1) * m_CameraRotationSpeed;
+		}
+		else if (Input::IsKeyPressed(Key::E)) {
+			m_CameraRotation -= glm::vec3(0, 0, 1) * m_CameraRotationSpeed;
+		}
+
+		m_Camera.SetPosition(m_CameraPosition);
+		m_Camera.SetRotation(m_CameraRotation);
 
 
-		RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
+		// RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
+		RenderCommand::SetClearColor({glm::abs(m_CameraPosition.x), glm::abs(m_CameraPosition.y), glm::abs(m_CameraPosition.z), 1.0f});
 		RenderCommand::Clear();
 
 		Renderer::BeginScene(m_Camera);		
@@ -96,6 +116,26 @@ public:
 	}
 
 	virtual void OnImGuiRender() override {
+		/*ShowCameraControls*/ {
+			ImGuiWindowFlags window_flags = 0;
+			window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
+			if (ImGui::Begin("Camera", NULL, window_flags)) {
+
+				ImGui::Text("Translation");
+				ImGui::SliderFloat("X",&m_CameraPosition.x,-1.5f,1.5f, "%.2f");
+				ImGui::SliderFloat("Y",&m_CameraPosition.y,-1.5f,1.5f, "%.2f");
+				ImGui::SliderFloat("Z",&m_CameraPosition.z,-1.5f,1.5f, "%.2f");
+
+				ImGui::Spacing();
+
+				ImGui::Text("Rotation");
+				ImGui::SliderFloat("X°",&m_CameraRotation.x,-180.0f,180.0f, "%.2f");
+				ImGui::SliderFloat("Y°",&m_CameraRotation.y,-180.0f,180.0f, "%.2f");
+				ImGui::SliderFloat("Z°",&m_CameraRotation.z,-180.0f,180.0f, "%.2f");
+
+				ImGui::End();
+			}
+		}
 
 	}
 
@@ -104,6 +144,10 @@ private:
 	std::shared_ptr<VertexArray> m_VertexArray;
 public:
 	OrthographicCamera m_Camera;
+	glm::vec3 m_CameraPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 m_CameraRotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	float m_CameraMoveSpeed = 0.01f;
+	float m_CameraRotationSpeed = 1.0f;
 
 
 };
