@@ -12,6 +12,8 @@
 #include "renderer/opengl/shader.h"
 #include "renderer/buffer.h"
 #include "renderer/vertex_array.h"
+#include "renderer/orthographic_camera.h"
+
 
 namespace Enik {
 
@@ -40,6 +42,8 @@ private:
 
 	std::shared_ptr<Shader> m_Shader;
 	std::shared_ptr<VertexArray> m_VertexArray;
+public:
+	OrthographicCamera m_Camera;
 
 private:
 	static Application* s_Instance;
