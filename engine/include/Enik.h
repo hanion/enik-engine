@@ -7,6 +7,15 @@
 #include "../src/input.h"
 #include <base.h>
 
+#include "../src/renderer/renderer.h"
+#include "../src/renderer/render_command.h"
+
+#include "../src/renderer/buffer.h"
+#include "../src/renderer/vertex_array.h"
+#include "../src/renderer/opengl/shader.h"
+
+#include "../src/renderer/orthographic_camera.h"
+
 // ----- Entry Point -----
 #include "../src/entry_point.h"
 // -----------------------
