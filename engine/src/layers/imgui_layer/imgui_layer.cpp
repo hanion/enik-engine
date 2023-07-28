@@ -49,7 +49,7 @@ void ImGuiLayer::OnDetach() {
 void ImGuiLayer::OnImGuiRender() {
 	//static bool show = true;
 	//ImGui::ShowDemoWindow(&show);
-	ShowTestingWindow();
+	//ShowTestingWindow();
 }
 
 
