@@ -16,6 +16,7 @@ Application::Application() {
 
 	m_Window = new Window(WindowProperties("eengine",1280,600));
 	m_Window->SetEventCallback(EN_BIND_EVENT_FN(Application::OnEvent));
+	m_Window->SetVsync(false);
 
 	m_ImGuiLayer = new ImGuiLayer();
 	PushOverlay(m_ImGuiLayer);
@@ -39,9 +40,12 @@ void Application::PushOverlay(Layer* overlay) {
 
 void Application::Run() {
 	while (m_Running) {
+		float time = (float)glfwGetTime();
+		Timestep timestep = time - m_LastFrameTime;
+		m_LastFrameTime = time;
 
 		for (Layer* layer : m_LayerStack) {
-			layer->OnUpdate();
+			layer->OnUpdate(timestep);
 		}
 
 		m_ImGuiLayer->Begin();

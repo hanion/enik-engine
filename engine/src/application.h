@@ -9,6 +9,7 @@
 #include <log.h>
 #include "layers/layer_stack.h"
 #include "layers/imgui_layer/imgui_layer.h"
+#include "core/timestep.h"
 
 
 namespace Enik {
@@ -30,11 +31,12 @@ public:
 
 private:
 	bool OnWindowClose(WindowCloseEvent& e);
-
+private:
 	Window* m_Window;
 	ImGuiLayer* m_ImGuiLayer;
 	bool m_Running = true;
 	LayerStack m_LayerStack;
+	float m_LastFrameTime = 0.0f;
 
 private:
 	static Application* s_Instance;

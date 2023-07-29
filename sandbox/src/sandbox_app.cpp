@@ -75,26 +75,29 @@ public:
 	}
 	
 
-	void OnUpdate() override {
+	void OnUpdate(Timestep timestep) override {
+		m_Timestep = timestep;
+		float deltaTime = m_Timestep.GetSeconds();
+
 		if(Input::IsKeyPressed(Key::A)){
-			m_CameraPosition -= glm::vec3(1, 0, 0) * m_CameraMoveSpeed;
+			m_CameraPosition -= glm::vec3(1, 0, 0) * m_CameraMoveSpeed * deltaTime;
 		}
 		else if (Input::IsKeyPressed(Key::D)) {
-			m_CameraPosition += glm::vec3(1, 0, 0) * m_CameraMoveSpeed;
+			m_CameraPosition += glm::vec3(1, 0, 0) * m_CameraMoveSpeed * deltaTime;
 		}
 
 		if(Input::IsKeyPressed(Key::W)){
-			m_CameraPosition += glm::vec3(0, 1, 0) * m_CameraMoveSpeed;
+			m_CameraPosition += glm::vec3(0, 1, 0) * m_CameraMoveSpeed * deltaTime;
 		}
 		else if (Input::IsKeyPressed(Key::S)) {
-			m_CameraPosition -= glm::vec3(0, 1, 0) * m_CameraMoveSpeed;
+			m_CameraPosition -= glm::vec3(0, 1, 0) * m_CameraMoveSpeed * deltaTime;
 		}
 
 		if(Input::IsKeyPressed(Key::Q)){
-			m_CameraRotation += glm::vec3(0, 0, 1) * m_CameraRotationSpeed;
+			m_CameraRotation += glm::vec3(0, 0, 1) * m_CameraRotationSpeed * deltaTime;
 		}
 		else if (Input::IsKeyPressed(Key::E)) {
-			m_CameraRotation -= glm::vec3(0, 0, 1) * m_CameraRotationSpeed;
+			m_CameraRotation -= glm::vec3(0, 0, 1) * m_CameraRotationSpeed * deltaTime;
 		}
 
 		m_Camera.SetPosition(m_CameraPosition);
@@ -142,12 +145,13 @@ public:
 private:
 	std::shared_ptr<Shader> m_Shader;
 	std::shared_ptr<VertexArray> m_VertexArray;
+	Timestep m_Timestep;
 public:
 	OrthographicCamera m_Camera;
 	glm::vec3 m_CameraPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 m_CameraRotation = glm::vec3(0.0f, 0.0f, 0.0f);
-	float m_CameraMoveSpeed = 0.01f;
-	float m_CameraRotationSpeed = 1.0f;
+	float m_CameraMoveSpeed = 1.0f;
+	float m_CameraRotationSpeed = 50.0f;
 
 
 };
