@@ -3,8 +3,6 @@
 using namespace Enik;
 
 class ExampleLayer : public Layer {
-private:
-	int m_DebugKeyCode = Key::Comma;
 public:
 	ExampleLayer()
 		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f) {
