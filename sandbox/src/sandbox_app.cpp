@@ -102,8 +102,8 @@ public:
 		m_Camera.SetRotation(m_CameraRotation);
 
 
-		// RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
-		RenderCommand::SetClearColor({glm::abs(m_CameraPosition.x), glm::abs(m_CameraPosition.y), glm::abs(m_CameraPosition.z), 1.0f});
+		RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
+		// RenderCommand::SetClearColor({glm::abs(m_CameraPosition.x), glm::abs(m_CameraPosition.y), glm::abs(m_CameraPosition.z), 1.0f});
 		RenderCommand::Clear();
 
 		Renderer::BeginScene(m_Camera);		
