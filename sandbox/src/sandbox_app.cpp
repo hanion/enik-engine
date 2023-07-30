@@ -5,7 +5,7 @@ using namespace Enik;
 class ExampleLayer : public Layer {
 public:
 	ExampleLayer()
-		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f) {
+		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.75f, 0.75f) {
 		m_VertexArray.reset(VertexArray::Create());
 
 		float vertices[3 * 7] = {
