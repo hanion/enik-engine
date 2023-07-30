@@ -134,8 +134,8 @@ public:
 				ImGui::SliderFloat("Y°",&m_CameraRotation.y,-180.0f,180.0f, "%.2f");
 				ImGui::SliderFloat("Z°",&m_CameraRotation.z,-180.0f,180.0f, "%.2f");
 
-				ImGui::End();
 			}
+			ImGui::End();
 		}
 
 		/*ShowPerformance*/ {
