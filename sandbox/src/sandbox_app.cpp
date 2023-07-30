@@ -185,6 +185,19 @@ public:
 			}
 			ImGui::End();
 		}
+
+		/*ShowTriangleControls*/ {
+			ImGuiWindowFlags window_flags = 0;
+			window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
+			if (ImGui::Begin("Triangle", NULL, window_flags)) {
+
+				ImGui::Text("Translation");
+				ImGui::SliderFloat("X",&m_TrianglePosition.x,-1.5f,1.5f, "%.2f");
+				ImGui::SliderFloat("Y",&m_TrianglePosition.y,-1.5f,1.5f, "%.2f");
+				ImGui::SliderFloat("Z",&m_TrianglePosition.z,-1.5f,1.5f, "%.2f");
+			}
+			ImGui::End();
+		}
 	}
 
 private:
