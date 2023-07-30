@@ -9,10 +9,11 @@ public:
 		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.75f, 0.75f) {
 		m_VertexArray.reset(VertexArray::Create());
 
+		float half_height = sqrt(3)/4.0f;
 		float vertices[3 * 7] = {
-			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-			0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
+			-0.5f, -half_height, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+			 0.5f, -half_height, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+			 0.0f,  half_height, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
 		};
 
 
