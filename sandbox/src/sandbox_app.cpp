@@ -128,7 +128,6 @@ public:
 
 
 		RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
-		// RenderCommand::SetClearColor({glm::abs(m_CameraPosition.x), glm::abs(m_CameraPosition.y), glm::abs(m_CameraPosition.z), 1.0f});
 		RenderCommand::Clear();
 
 		Renderer::BeginScene(m_Camera);
@@ -184,7 +183,7 @@ private:
 	std::shared_ptr<Shader> m_Shader;
 	std::shared_ptr<VertexArray> m_VertexArray;
 	Timestep m_Timestep;
-public:
+
 	OrthographicCamera m_Camera;
 	glm::vec3 m_CameraPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 m_CameraRotation = glm::vec3(0.0f, 0.0f, 0.0f);
