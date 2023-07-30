@@ -1,4 +1,5 @@
 #include <Enik.h>
+#include <glm/gtc/matrix_transform.hpp>
 
 using namespace Enik;
 
@@ -41,6 +42,7 @@ public:
 			layout(location = 1) in vec4 a_Color;
 
 			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
 			
 			out vec3 v_Position;
 			out vec4 v_Color;
@@ -48,7 +50,7 @@ public:
 			void main() {
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
 			}
 
 		)";
@@ -106,8 +108,11 @@ public:
 		// RenderCommand::SetClearColor({glm::abs(m_CameraPosition.x), glm::abs(m_CameraPosition.y), glm::abs(m_CameraPosition.z), 1.0f});
 		RenderCommand::Clear();
 
-		Renderer::BeginScene(m_Camera);		
-		Renderer::Submit(m_Shader, m_VertexArray);
+		Renderer::BeginScene(m_Camera);
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_TrianglePosition);
+		Renderer::Submit(m_Shader, m_VertexArray, transform);
+
 
 		Renderer::EndScene(); 
 	}
@@ -163,6 +168,8 @@ public:
 	float m_CameraMoveSpeed = 1.0f;
 	float m_CameraRotationSpeed = 50.0f;
 
+	glm::vec3 m_TrianglePosition = glm::vec3(0.0f);
+	float m_TriangleMoveSpeed = 0.5f;
 
 };
 
