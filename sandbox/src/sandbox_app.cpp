@@ -74,11 +74,7 @@ public:
 		m_Shader.reset(new Shader(vertexSource, fragmentSource));
 	}
 	
-
-	void OnUpdate(Timestep timestep) override {
-		m_Timestep = timestep;
-		float deltaTime = m_Timestep.GetSeconds();
-
+	void ControlCamera(float& deltaTime) {
 		if(Input::IsKeyPressed(Key::A)){
 			m_CameraPosition -= glm::vec3(1, 0, 0) * m_CameraMoveSpeed * deltaTime;
 		}
@@ -102,6 +98,33 @@ public:
 
 		m_Camera.SetPosition(m_CameraPosition);
 		m_Camera.SetRotation(m_CameraRotation);
+	}
+
+	void ControlTriangle(float& deltaTime) {
+		if(Input::IsKeyPressed(Key::J)){
+			m_TrianglePosition.x -= m_TriangleMoveSpeed * deltaTime;
+		}
+		else if (Input::IsKeyPressed(Key::L)) {
+			m_TrianglePosition.x += m_TriangleMoveSpeed * deltaTime;
+		}
+
+		if(Input::IsKeyPressed(Key::I)){
+			m_TrianglePosition.y += m_TriangleMoveSpeed * deltaTime;
+		}
+		else if (Input::IsKeyPressed(Key::K)) {
+			m_TrianglePosition.y -= m_TriangleMoveSpeed * deltaTime;
+		}
+	}
+
+
+	void OnUpdate(Timestep timestep) override {
+		m_Timestep = timestep;
+		float deltaTime = m_Timestep.GetSeconds();
+
+		ControlCamera(deltaTime);
+		ControlTriangle(deltaTime);
+		
+
 
 
 		RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
