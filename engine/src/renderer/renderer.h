@@ -1,7 +1,7 @@
 #pragma once
 #include "render_command.h"
 #include "orthographic_camera.h"
-#include "opengl/shader.h"
+#include "shader.h"
 
 
 namespace Enik {

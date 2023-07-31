@@ -67,7 +67,7 @@ public:
 				}
 			)";
 
-			m_Shader.reset(new Shader(vertexSource, fragmentSource));
+			m_Shader.reset(Shader::Create(vertexSource, fragmentSource));
 		}
 	}
 	
@@ -130,6 +130,7 @@ public:
 		Renderer::BeginScene(m_Camera);
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_TrianglePosition);
+		m_Shader->Bind();
 		Renderer::Submit(m_Shader, m_VertexArray, transform);
 
 		/*Create mini triangles*/ {

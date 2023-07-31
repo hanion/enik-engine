@@ -13,7 +13,7 @@
 
 #include "../src/renderer/buffer.h"
 #include "../src/renderer/vertex_array.h"
-#include "../src/renderer/opengl/shader.h"
+#include "../src/renderer/shader.h"
 
 #include "../src/renderer/orthographic_camera.h"
 
