@@ -3,11 +3,17 @@
         {
             "name": "Linux",
             "includePath": [
+                /*
                 "${workspaceFolder}/engine/include",
+                "${workspaceFolder}/engine/external",
+                "${workspaceFolder}/engine/src",
                 "${workspaceFolder}/engine/external/spdlog/include",
                 "${workspaceFolder}/engine/external/glad/include",
                 "${workspaceFolder}/engine/external/imgui",
-                "${workspaceFolder}/engine/external/glm"
+                "${workspaceFolder}/engine/external/glm",
+                "${workspaceFolder}/engine/external/stb_image",
+                */
+                "${workspaceFolder}/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
@@ -17,11 +23,16 @@
             "mergeConfigurations": false,
             "browse": {
                 "path": [
+                    /*
                     "${workspaceFolder}/engine/include",
+                    "${workspaceFolder}/engine/external",
+                    "${workspaceFolder}/engine/src",
                     "${workspaceFolder}/engine/external/spdlog/include",
                     "${workspaceFolder}/engine/external/glad/include",
                     "${workspaceFolder}/engine/external/imgui",
                     "${workspaceFolder}/engine/external/glm",
+                    "${workspaceFolder}/engine/external/stb_image",
+                    */
                     "${workspaceFolder}"
                 ],
                 "limitSymbolsToIncludedHeaders": true
