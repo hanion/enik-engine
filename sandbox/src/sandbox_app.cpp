@@ -17,7 +17,7 @@ public:
 		};
 
 
-		std::shared_ptr<VertexBuffer> vertexBuffer;
+		Ref<VertexBuffer> vertexBuffer;
 		vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
 		
 		
@@ -31,7 +31,7 @@ public:
 
 		uint32_t indices[3] = { 0, 1, 2 };
 		
-		std::shared_ptr<IndexBuffer> indexBuffer;
+		Ref<IndexBuffer> indexBuffer;
 		indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices)/sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
@@ -198,8 +198,8 @@ public:
 	}
 
 private:
-	std::shared_ptr<Shader> m_Shader;
-	std::shared_ptr<VertexArray> m_VertexArray;
+	Ref<Shader> m_Shader;
+	Ref<VertexArray> m_VertexArray;
 	Timestep m_Timestep;
 
 	OrthographicCamera m_Camera;
