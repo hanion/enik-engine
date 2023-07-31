@@ -1,22 +1,22 @@
 #pragma once
 
-#include "../src/layers/imgui_layer/imgui_layer.h"
-#include "../external/imgui/imgui.h"
-#include "../src/layers/layer.h"
-#include "../src/application.h"
-#include "../src/input.h"
+#include "layers/imgui_layer/imgui_layer.h"
+#include "imgui/imgui.h"
+#include "layers/layer.h"
+#include "application.h"
+#include "input.h"
 #include <base.h>
-#include "../src/core/timestep.h"
+#include "core/timestep.h"
 
-#include "../src/renderer/renderer.h"
-#include "../src/renderer/render_command.h"
+#include "renderer/renderer.h"
+#include "renderer/render_command.h"
 
-#include "../src/renderer/buffer.h"
-#include "../src/renderer/vertex_array.h"
-#include "../src/renderer/shader.h"
+#include "renderer/buffer.h"
+#include "renderer/vertex_array.h"
+#include "renderer/shader.h"
 
-#include "../src/renderer/orthographic_camera.h"
+#include "renderer/orthographic_camera.h"
 
 // ----- Entry Point -----
-#include "../src/entry_point.h"
+#include "entry_point.h"
 // -----------------------

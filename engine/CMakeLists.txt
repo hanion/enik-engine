@@ -47,12 +47,16 @@ target_include_directories(${PROJECT_NAME}
 	$<INSTALL_INTERFACE:include>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 
-	PRIVATE
 	external/spdlog/include/spdlog
 	external/glfw/include/GLFW
 	external/glad/include/glad
 	external/imgui
 	external/glm/glm
+
+	external
+	src
+	include
+
 )
 
 target_link_libraries(${PROJECT_NAME}

@@ -1,5 +1,5 @@
 #pragma once
-#include "../buffer.h"
+#include "renderer/buffer.h"
 #include <pch.h>
 
 namespace Enik {

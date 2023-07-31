@@ -1,5 +1,5 @@
 #pragma once
-#include "../vertex_array.h"
+#include "renderer/vertex_array.h"
 
 
 namespace Enik {

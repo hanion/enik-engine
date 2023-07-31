@@ -1,5 +1,5 @@
 #pragma once
-#include "../shader.h"
+#include "renderer/shader.h"
 #include <glm/glm.hpp>
 
 namespace Enik {

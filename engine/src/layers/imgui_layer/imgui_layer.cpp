@@ -1,7 +1,7 @@
 #include "imgui_layer.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include "../../application.h"
+#include "application.h"
 #include "imgui_themes.h"
 
 namespace Enik {

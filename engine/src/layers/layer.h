@@ -1,8 +1,8 @@
 #pragma once
 
 #include <base.h>
-#include "../events/event.h"
-#include "../core/timestep.h"
+#include "events/event.h"
+#include "core/timestep.h"
 
 namespace Enik {
 

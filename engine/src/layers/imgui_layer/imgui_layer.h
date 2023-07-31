@@ -1,12 +1,12 @@
 #pragma once
 
 #include <base.h>
-#include "../layer.h"
+#include "layers/layer.h"
 
-#include "../../events/event.h"
-#include "../../events/key_event.h"
-#include "../../events/mouse_event.h"
-#include "../../events/application_event.h"
+#include "events/event.h"
+#include "events/key_event.h"
+#include "events/mouse_event.h"
+#include "events/application_event.h"
 
 
 namespace Enik {

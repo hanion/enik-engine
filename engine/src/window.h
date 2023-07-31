@@ -1,8 +1,8 @@
 #pragma once
 #include <base.h>
-#include "../include/pch.h"
+#include <pch.h>
 #include "events/event.h"
-#include "../../../include/log.h"
+#include "log.h"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
