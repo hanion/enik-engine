@@ -9,11 +9,11 @@ public:
 		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.75f, 0.75f) {
 		m_VertexArray.reset(VertexArray::Create());
 
-		float half_height = sqrt(3)/4.0f;
-		float vertices[3 * 7] = {
-			-0.5f, -half_height, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			 0.5f, -half_height, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-			 0.0f,  half_height, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
+		float vertices[4 * 7] = {
+			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+			 0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+			 0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f
 		};
 
 
@@ -29,7 +29,7 @@ public:
 		vertexBuffer->SetLayout(layout);
 		m_VertexArray->AddVertexBuffer(vertexBuffer);
 
-		uint32_t indices[3] = { 0, 1, 2 };
+		uint32_t indices[6] = { 0, 1, 2, 2, 3, 0 };
 		
 		Ref<IndexBuffer> indexBuffer;
 		indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices)/sizeof(uint32_t)));
@@ -99,17 +99,17 @@ public:
 
 	void ControlTriangle(float& deltaTime) {
 		if(Input::IsKeyPressed(Key::J)){
-			m_TrianglePosition.x -= m_TriangleMoveSpeed * deltaTime;
+			m_SquarePosition.x -= m_SquareMoveSpeed * deltaTime;
 		}
 		else if (Input::IsKeyPressed(Key::L)) {
-			m_TrianglePosition.x += m_TriangleMoveSpeed * deltaTime;
+			m_SquarePosition.x += m_SquareMoveSpeed * deltaTime;
 		}
 
 		if(Input::IsKeyPressed(Key::I)){
-			m_TrianglePosition.y += m_TriangleMoveSpeed * deltaTime;
+			m_SquarePosition.y += m_SquareMoveSpeed * deltaTime;
 		}
 		else if (Input::IsKeyPressed(Key::K)) {
-			m_TrianglePosition.y -= m_TriangleMoveSpeed * deltaTime;
+			m_SquarePosition.y -= m_SquareMoveSpeed * deltaTime;
 		}
 	}
 
@@ -129,17 +129,8 @@ public:
 
 		Renderer::BeginScene(m_Camera);
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_TrianglePosition);
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_SquarePosition);
 		Renderer::Submit(m_Shader, m_VertexArray, transform);
-
-		/*Create mini triangles*/ {
-			static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
-			for (size_t i = 0; i < 5; i++) {
-				glm::vec3 pos = glm::vec3(i * 0.2f - (2.0f*0.2f), -0.6f, 0.0f);
-				glm::mat4 miniTransform = glm::translate(glm::mat4(1.0f), pos) * scale;
-				Renderer::Submit(m_Shader, m_VertexArray, miniTransform);
-			}
-		}
 
 		Renderer::EndScene(); 
 	}
@@ -183,15 +174,15 @@ public:
 			ImGui::End();
 		}
 
-		/*ShowTriangleControls*/ {
+		/*ShowSquareControls*/ {
 			ImGuiWindowFlags window_flags = 0;
 			window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
-			if (ImGui::Begin("Triangle", NULL, window_flags)) {
+			if (ImGui::Begin("Square", NULL, window_flags)) {
 
 				ImGui::Text("Translation");
-				ImGui::SliderFloat("X",&m_TrianglePosition.x,-1.5f,1.5f, "%.2f");
-				ImGui::SliderFloat("Y",&m_TrianglePosition.y,-1.5f,1.5f, "%.2f");
-				ImGui::SliderFloat("Z",&m_TrianglePosition.z,-1.5f,1.5f, "%.2f");
+				ImGui::SliderFloat("X",&m_SquarePosition.x,-1.5f,1.5f, "%.2f");
+				ImGui::SliderFloat("Y",&m_SquarePosition.y,-1.5f,1.5f, "%.2f");
+				ImGui::SliderFloat("Z",&m_SquarePosition.z,-1.5f,1.5f, "%.2f");
 			}
 			ImGui::End();
 		}
@@ -208,8 +199,8 @@ private:
 	float m_CameraMoveSpeed = 1.0f;
 	float m_CameraRotationSpeed = 50.0f;
 
-	glm::vec3 m_TrianglePosition = glm::vec3(0.0f);
-	float m_TriangleMoveSpeed = 0.5f;
+	glm::vec3 m_SquarePosition = glm::vec3(0.0f);
+	float m_SquareMoveSpeed = 0.5f;
 
 };
 
