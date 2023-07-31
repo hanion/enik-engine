@@ -9,7 +9,7 @@ namespace Enik {
 Shader* Shader::Create(const std::string& vertexSource, const std::string& fragmentSource) {
     switch (Renderer::GetAPI()) {
 		case RendererAPI::API::OpenGL:
-			return new OpenglShader(vertexSource, fragmentSource);
+			return new OpenGLShader(vertexSource, fragmentSource);
 
 		case RendererAPI::API::None:
 			EN_CORE_ASSERT(false, "RendererAPI::None is currently not supported");

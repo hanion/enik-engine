@@ -10,7 +10,7 @@
 namespace Enik {
 
 
-OpenglShader::OpenglShader(const std::string& vertexSource, const std::string& fragmentSource) {
+OpenGLShader::OpenGLShader(const std::string& vertexSource, const std::string& fragmentSource) {
 
 	// Read our shaders into the appropriate buffers
 
@@ -115,27 +115,27 @@ OpenglShader::OpenglShader(const std::string& vertexSource, const std::string& f
 
 }
 
-OpenglShader::~OpenglShader() {
+OpenGLShader::~OpenGLShader() {
 	glDeleteProgram(m_RendererID);
 }
 
 
 
-void OpenglShader::Bind() const {
+void OpenGLShader::Bind() const {
 	glUseProgram(m_RendererID);
 }
 
 
-void OpenglShader::Unbind() const {
+void OpenGLShader::Unbind() const {
 	glUseProgram(0);
 }
 
-void OpenglShader::UploadUniformMat4(const std::string& name, const glm::mat4& matrix) {
+void OpenGLShader::UploadUniformMat4(const std::string& name, const glm::mat4& matrix) {
 	GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 	glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
-void OpenglShader::UploadUniformFloat4(const std::string& name, const glm::vec4& vec) {
+void OpenGLShader::UploadUniformFloat4(const std::string& name, const glm::vec4& vec) {
 	GLint location = glGetUniformLocation(m_RendererID, name.c_str());
 	glUniform4f(location, vec.x, vec.y, vec.z, vec.w);
 }

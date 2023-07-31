@@ -4,10 +4,10 @@
 
 namespace Enik {
 
-class OpenglShader : public Shader {
+class OpenGLShader : public Shader {
 public:
-	OpenglShader(const std::string& vertexSource, const std::string& fragmentSource);
-	virtual ~OpenglShader();
+	OpenGLShader(const std::string& vertexSource, const std::string& fragmentSource);
+	virtual ~OpenGLShader();
 
 	virtual void Bind() const override;
 	virtual void Unbind() const override;
