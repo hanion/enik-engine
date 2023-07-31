@@ -1,5 +1,6 @@
 #include <Enik.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include "renderer/opengl/opengl_shader.h"
 
 using namespace Enik;
 
@@ -9,11 +10,11 @@ public:
 		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.75f, 0.75f) {
 		m_VertexArray.reset(VertexArray::Create());
 
-		float vertices[4 * 7] = {
-			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-			 0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-			 0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f
+		float vertices[4 * 9] = {
+			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+			 0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+			 0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f
 		};
 
 
@@ -23,7 +24,8 @@ public:
 		
 		BufferLayout layout = {
 			{ShaderDataType::Float3, "a_Position"},
-			{ShaderDataType::Float4, "a_Color"}
+			{ShaderDataType::Float4, "a_Color"},
+			{ShaderDataType::Float2, "a_TexCoord"}
 		};
 		
 		vertexBuffer->SetLayout(layout);
@@ -67,7 +69,42 @@ public:
 				}
 			)";
 
+			std::string TextureShaderVertexSource = R"(
+				#version 330 core
+
+				layout(location = 0) in vec3 a_Position;
+				layout(location = 2) in vec2 a_TexCoord;
+
+				uniform mat4 u_ViewProjection;
+				uniform mat4 u_Transform;
+				
+				out vec2 v_TexCoord;
+
+
+				void main() {
+					v_TexCoord = a_TexCoord;
+					gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
+				}
+			)";
+
+			std::string TextureShaderFragmentSource = R"(
+				#version 330 core
+
+				layout(location = 0) out vec4 color;
+				in vec2 v_TexCoord;
+				uniform sampler2D u_Texture;
+
+				void main() {
+					//color = vec4(v_TexCoord, 0.0, 1.0);
+					color = texture(u_Texture, v_TexCoord);
+				}
+			)";
+
 			m_Shader.reset(Shader::Create(vertexSource, fragmentSource));
+			
+			m_TextureShader.reset(Shader::Create(TextureShaderVertexSource, TextureShaderFragmentSource));
+			std::dynamic_pointer_cast<OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
+			m_Texture2D = Texture2D::Create("/home/han/dev/enik-engine/sandbox/assets/checkerboard.png");
 		}
 	}
 	
@@ -130,7 +167,18 @@ public:
 		Renderer::BeginScene(m_Camera);
 
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_SquarePosition);
-		Renderer::Submit(m_Shader, m_VertexArray, transform);
+		m_Texture2D->Bind();
+		Renderer::Submit(m_TextureShader, m_VertexArray, transform);
+
+		/*Create mini squares*/ {
+			static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
+			for (size_t i = 0; i < 5; i++) {
+				glm::vec3 pos = glm::vec3(i * 0.2f - (2.0f*0.2f), -0.6f, 0.0f);
+				glm::mat4 miniTransform = glm::translate(glm::mat4(1.0f), pos) * scale;
+				Renderer::Submit(m_Shader, m_VertexArray, miniTransform);
+			}
+		}
+
 
 		Renderer::EndScene(); 
 	}
@@ -191,6 +239,10 @@ public:
 private:
 	Ref<Shader> m_Shader;
 	Ref<VertexArray> m_VertexArray;
+
+	Ref<Shader> m_TextureShader;
+	Ref<Texture2D> m_Texture2D;
+
 	Timestep m_Timestep;
 
 	OrthographicCamera m_Camera;
