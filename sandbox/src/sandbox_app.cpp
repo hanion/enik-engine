@@ -105,6 +105,7 @@ public:
 			m_TextureShader.reset(Shader::Create(TextureShaderVertexSource, TextureShaderFragmentSource));
 			std::dynamic_pointer_cast<OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
 			m_Texture2D = Texture2D::Create("/home/han/dev/enik-engine/sandbox/assets/checkerboard.png");
+			m_TransparentTexture2D = Texture2D::Create("/home/han/dev/enik-engine/sandbox/assets/tablordia_banner.png");
 		}
 	}
 	
@@ -244,7 +245,7 @@ private:
 	glm::vec3 m_TexturePosition = glm::vec3(0.0f);
 	float m_TextureMoveSpeed = 0.5f;
 
-	glm::vec3 m_TextureScale = glm::vec3(0.5f);
+	glm::vec3 m_TextureScale = glm::vec3(1.6f, 0.5f, 1.0f);
 
 };
 
