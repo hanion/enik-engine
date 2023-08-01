@@ -86,7 +86,10 @@ std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::stri
 void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources) {
 	
 	GLuint program = glCreateProgram();
-	std::vector<GLenum> glShaderIDs(shaderSources.size());
+
+	EN_CORE_ASSERT(shaderSources.size() <= 2, "Only 2 shaders supported for now!");
+	std::array<GLenum, 2> glShaderIDs;
+	int glShaderIDIndex = 0;
 
 	for (auto kv : shaderSources) {
 		GLenum type = kv.first;
@@ -121,7 +124,8 @@ void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shader
 			break;
 		}
 		glAttachShader(program, shader);
-		glShaderIDs.push_back(shader);
+		glShaderIDs[glShaderIDIndex] = shader;
+		glShaderIDIndex++;
 	}
 
 	// Link our program
