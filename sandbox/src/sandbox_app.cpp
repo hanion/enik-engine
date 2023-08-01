@@ -134,30 +134,12 @@ public:
 		m_Camera.SetRotation(m_CameraRotation);
 	}
 
-	void ControlTriangle(float& deltaTime) {
-		if(Input::IsKeyPressed(Key::J)){
-			m_SquarePosition.x -= m_SquareMoveSpeed * deltaTime;
-		}
-		else if (Input::IsKeyPressed(Key::L)) {
-			m_SquarePosition.x += m_SquareMoveSpeed * deltaTime;
-		}
-
-		if(Input::IsKeyPressed(Key::I)){
-			m_SquarePosition.y += m_SquareMoveSpeed * deltaTime;
-		}
-		else if (Input::IsKeyPressed(Key::K)) {
-			m_SquarePosition.y -= m_SquareMoveSpeed * deltaTime;
-		}
-	}
-
 
 	void OnUpdate(Timestep timestep) override {
 		m_Timestep = timestep;
 		float deltaTime = m_Timestep.GetSeconds();
 
-		ControlCamera(deltaTime);
-		ControlTriangle(deltaTime);
-		
+		ControlCamera(deltaTime);		
 
 
 
