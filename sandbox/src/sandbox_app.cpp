@@ -148,10 +148,6 @@ public:
 
 		Renderer::BeginScene(m_Camera);
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_SquarePosition);
-		m_Texture2D->Bind();
-		Renderer::Submit(m_TextureShader, m_VertexArray, transform);
-
 		/*Create mini squares*/ {
 			static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 			for (size_t i = 0; i < 5; i++) {
@@ -161,6 +157,14 @@ public:
 			}
 		}
 
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_TexturePosition);
+		
+		m_Texture2D->Bind();
+		Renderer::Submit(m_TextureShader, m_VertexArray, glm::mat4(1.0f));
+		
+		m_TransparentTexture2D->Bind();
+		Renderer::Submit(m_TextureShader, m_VertexArray, glm::scale(transform, m_TextureScale));
 
 		Renderer::EndScene(); 
 	}
@@ -204,15 +208,18 @@ public:
 			ImGui::End();
 		}
 
-		/*ShowSquareControls*/ {
+		/*ShowTextureControls*/ {
 			ImGuiWindowFlags window_flags = 0;
 			window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
-			if (ImGui::Begin("Square", NULL, window_flags)) {
+			if (ImGui::Begin("Texture", NULL, window_flags)) {
 
 				ImGui::Text("Translation");
-				ImGui::SliderFloat("X",&m_SquarePosition.x,-1.5f,1.5f, "%.2f");
-				ImGui::SliderFloat("Y",&m_SquarePosition.y,-1.5f,1.5f, "%.2f");
-				ImGui::SliderFloat("Z",&m_SquarePosition.z,-1.5f,1.5f, "%.2f");
+				ImGui::DragFloat("X",&m_TexturePosition.x, 0.02f, -10.0f, 10.0f, "%.2f");
+				ImGui::DragFloat("Y",&m_TexturePosition.y, 0.02f, -10.0f, 10.0f, "%.2f");
+			
+				ImGui::Text("Scale");
+				ImGui::DragFloat("x",&m_TextureScale.x, 0.02f, -10.0f, 10.0f, "%.2f");
+				ImGui::DragFloat("y",&m_TextureScale.y, 0.02f, -10.0f, 10.0f, "%.2f");
 			}
 			ImGui::End();
 		}
@@ -224,6 +231,7 @@ private:
 
 	Ref<Shader> m_TextureShader;
 	Ref<Texture2D> m_Texture2D;
+	Ref<Texture2D> m_TransparentTexture2D;
 
 	Timestep m_Timestep;
 
@@ -233,8 +241,10 @@ private:
 	float m_CameraMoveSpeed = 1.0f;
 	float m_CameraRotationSpeed = 50.0f;
 
-	glm::vec3 m_SquarePosition = glm::vec3(0.0f);
-	float m_SquareMoveSpeed = 0.5f;
+	glm::vec3 m_TexturePosition = glm::vec3(0.0f);
+	float m_TextureMoveSpeed = 0.5f;
+
+	glm::vec3 m_TextureScale = glm::vec3(0.5f);
 
 };
 
