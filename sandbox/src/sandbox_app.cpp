@@ -40,10 +40,11 @@ public:
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
 		/*Create shader sources*/{			
-			m_Shader.reset(Shader::Create(FULL_PATH("assets/shaders/colorful.glsl")));
+			m_ShaderLibrary.Load("colorful", FULL_PATH("assets/shaders/colorful.glsl"));
+
+			auto textureShader = m_ShaderLibrary.Load("texture", FULL_PATH("assets/shaders/texture.glsl"));
 			
-			m_TextureShader.reset(Shader::Create(FULL_PATH("assets/shaders/texture.glsl")));
-			std::dynamic_pointer_cast<OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
+			std::dynamic_pointer_cast<OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
 			
 			m_Texture2D = Texture2D::Create(FULL_PATH("assets/textures/checkerboard.png"));
 			m_TransparentTexture2D = Texture2D::Create(FULL_PATH("assets/textures/tablordia_banner.png"));
@@ -91,11 +92,12 @@ public:
 		Renderer::BeginScene(m_Camera);
 
 		/*Create mini squares*/ {
+			auto colorfulShader = m_ShaderLibrary.Get("colorful");
 			static glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 			for (size_t i = 0; i < 5; i++) {
 				glm::vec3 pos = glm::vec3(i * 0.2f - (2.0f*0.2f), -0.6f, 0.0f);
 				glm::mat4 miniTransform = glm::translate(glm::mat4(1.0f), pos) * scale;
-				Renderer::Submit(m_Shader, m_VertexArray, miniTransform);
+				Renderer::Submit(colorfulShader, m_VertexArray, miniTransform);
 			}
 		}
 
@@ -103,10 +105,11 @@ public:
 		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_TexturePosition);
 		
 		m_Texture2D->Bind();
-		Renderer::Submit(m_TextureShader, m_VertexArray, glm::mat4(1.0f));
+		auto textureShader = m_ShaderLibrary.Get("texture");
+		Renderer::Submit(textureShader, m_VertexArray, glm::mat4(1.0f));
 		
 		m_TransparentTexture2D->Bind();
-		Renderer::Submit(m_TextureShader, m_VertexArray, glm::scale(transform, m_TextureScale));
+		Renderer::Submit(textureShader, m_VertexArray, glm::scale(transform, m_TextureScale));
 
 		Renderer::EndScene(); 
 	}
@@ -168,10 +171,10 @@ public:
 	}
 
 private:
-	Ref<Shader> m_Shader;
+	ShaderLibrary m_ShaderLibrary;
+
 	Ref<VertexArray> m_VertexArray;
 
-	Ref<Shader> m_TextureShader;
 	Ref<Texture2D> m_Texture2D;
 	Ref<Texture2D> m_TransparentTexture2D;
 
