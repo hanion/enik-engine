@@ -2,6 +2,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "renderer/opengl/opengl_shader.h"
 
+#define FULL_PATH(x) (((std::string)"/home/han/dev/enik-engine/sandbox/") + ((std::string)x))
+
 using namespace Enik;
 
 class ExampleLayer : public Layer {
@@ -37,75 +39,14 @@ public:
 		indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices)/sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
-		/*Create shader sources*/{
-			std::string vertexSource = R"(
-				#version 330 core
-
-				layout(location = 0) in vec3 a_Position;
-				layout(location = 1) in vec4 a_Color;
-
-				uniform mat4 u_ViewProjection;
-				uniform mat4 u_Transform;
-				
-				out vec3 v_Position;
-				out vec4 v_Color;
-
-				void main() {
-					v_Position = a_Position;
-					v_Color = a_Color;
-					gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
-				}
-			)";
-
-			std::string fragmentSource = R"(
-				#version 330 core
-
-				layout(location = 0) out vec4 color;
-				in vec3 v_Position;
-				in vec4 v_Color;
-
-				void main() {
-					color = v_Color;
-				}
-			)";
-
-			std::string TextureShaderVertexSource = R"(
-				#version 330 core
-
-				layout(location = 0) in vec3 a_Position;
-				layout(location = 2) in vec2 a_TexCoord;
-
-				uniform mat4 u_ViewProjection;
-				uniform mat4 u_Transform;
-				
-				out vec2 v_TexCoord;
-
-
-				void main() {
-					v_TexCoord = a_TexCoord;
-					gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
-				}
-			)";
-
-			std::string TextureShaderFragmentSource = R"(
-				#version 330 core
-
-				layout(location = 0) out vec4 color;
-				in vec2 v_TexCoord;
-				uniform sampler2D u_Texture;
-
-				void main() {
-					//color = vec4(v_TexCoord, 0.0, 1.0);
-					color = texture(u_Texture, v_TexCoord);
-				}
-			)";
-
-			m_Shader.reset(Shader::Create(vertexSource, fragmentSource));
+		/*Create shader sources*/{			
+			m_Shader.reset(Shader::Create(FULL_PATH("assets/shaders/colorful.glsl")));
 			
-			m_TextureShader.reset(Shader::Create(TextureShaderVertexSource, TextureShaderFragmentSource));
+			m_TextureShader.reset(Shader::Create(FULL_PATH("assets/shaders/texture.glsl")));
 			std::dynamic_pointer_cast<OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
-			m_Texture2D = Texture2D::Create("/home/han/dev/enik-engine/sandbox/assets/textures/checkerboard.png");
-			m_TransparentTexture2D = Texture2D::Create("/home/han/dev/enik-engine/sandbox/assets/textures/tablordia_banner.png");
+			
+			m_Texture2D = Texture2D::Create(FULL_PATH("assets/textures/checkerboard.png"));
+			m_TransparentTexture2D = Texture2D::Create(FULL_PATH("assets/textures/tablordia_banner.png"));
 		}
 	}
 	

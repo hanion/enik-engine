@@ -5,6 +5,20 @@
 
 namespace Enik {
 
+Shader* Shader::Create(const std::string& filepath) {
+    switch (Renderer::GetAPI()) {
+		case RendererAPI::API::OpenGL:
+			return new OpenGLShader(filepath);
+
+		case RendererAPI::API::None:
+			EN_CORE_ASSERT(false, "RendererAPI::None is currently not supported");
+			return nullptr;
+
+		default:
+			EN_CORE_ASSERT(false, "Unknown RendererAPI");
+			return nullptr;
+	}
+}
 
 Shader* Shader::Create(const std::string& vertexSource, const std::string& fragmentSource) {
     switch (Renderer::GetAPI()) {
