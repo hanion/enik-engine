@@ -18,6 +18,8 @@ Application::Application() {
 	m_Window->SetEventCallback(EN_BIND_EVENT_FN(Application::OnEvent));
 	m_Window->SetVsync(false);
 
+	Renderer::Init();
+
 	m_ImGuiLayer = new ImGuiLayer();
 	PushOverlay(m_ImGuiLayer);
 }

@@ -5,6 +5,8 @@ namespace Enik {
 
 class OpenGLRendererAPI : public RendererAPI {
 public:
+	virtual void Init() override final;
+
 	virtual void SetClearColor(const glm::vec4& color) override final;
 	virtual void Clear() override final;
 
