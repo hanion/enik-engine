@@ -16,7 +16,7 @@
 #include "renderer/shader.h"
 #include "renderer/texture.h"
 
-#include "renderer/orthographic_camera.h"
+#include "ortho_camera_controller.h"
 
 // ----- Entry Point -----
 #include "entry_point.h"

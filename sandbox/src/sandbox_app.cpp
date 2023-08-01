@@ -9,7 +9,7 @@ using namespace Enik;
 class ExampleLayer : public Layer {
 public:
 	ExampleLayer()
-		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.75f, 0.75f) {
+		: Layer("Example"), m_CameraController(1.6f/0.75f, true) {
 		m_VertexArray.reset(VertexArray::Create());
 
 		float vertices[4 * 9] = {
@@ -50,46 +50,17 @@ public:
 			m_TransparentTexture2D = Texture2D::Create(FULL_PATH("assets/textures/tablordia_banner.png"));
 		}
 	}
-	
-	void ControlCamera(float& deltaTime) {
-		if(Input::IsKeyPressed(Key::A)){
-			m_CameraPosition -= glm::vec3(1, 0, 0) * m_CameraMoveSpeed * deltaTime;
-		}
-		else if (Input::IsKeyPressed(Key::D)) {
-			m_CameraPosition += glm::vec3(1, 0, 0) * m_CameraMoveSpeed * deltaTime;
-		}
-
-		if(Input::IsKeyPressed(Key::W)){
-			m_CameraPosition += glm::vec3(0, 1, 0) * m_CameraMoveSpeed * deltaTime;
-		}
-		else if (Input::IsKeyPressed(Key::S)) {
-			m_CameraPosition -= glm::vec3(0, 1, 0) * m_CameraMoveSpeed * deltaTime;
-		}
-
-		if(Input::IsKeyPressed(Key::Q)){
-			m_CameraRotation += glm::vec3(0, 0, 1) * m_CameraRotationSpeed * deltaTime;
-		}
-		else if (Input::IsKeyPressed(Key::E)) {
-			m_CameraRotation -= glm::vec3(0, 0, 1) * m_CameraRotationSpeed * deltaTime;
-		}
-
-		m_Camera.SetPosition(m_CameraPosition);
-		m_Camera.SetRotation(m_CameraRotation);
-	}
 
 
 	void OnUpdate(Timestep timestep) override {
 		m_Timestep = timestep;
-		float deltaTime = m_Timestep.GetSeconds();
 
-		ControlCamera(deltaTime);		
-
-
+		m_CameraController.OnUpdate(m_Timestep);
 
 		RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
 		RenderCommand::Clear();
 
-		Renderer::BeginScene(m_Camera);
+		Renderer::BeginScene(m_CameraController.GetCamera());
 
 		/*Create mini squares*/ {
 			auto colorfulShader = m_ShaderLibrary.Get("colorful");
@@ -115,31 +86,10 @@ public:
 	}
 
 	void OnEvent(Event& event) override {
-
+		m_CameraController.OnEvent(event);
 	}
 
 	virtual void OnImGuiRender() override {
-		/*ShowCameraControls*/ {
-			ImGuiWindowFlags window_flags = 0;
-			window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
-			if (ImGui::Begin("Camera", NULL, window_flags)) {
-
-				ImGui::Text("Translation");
-				ImGui::DragFloat("X",&m_CameraPosition.x, 0.02f, -10.0f,10.0f, "%.2f");
-				ImGui::DragFloat("Y",&m_CameraPosition.y, 0.02f, -10.0f,10.0f, "%.2f");
-				ImGui::DragFloat("Z",&m_CameraPosition.z, 0.02f, -10.0f,10.0f, "%.2f");
-
-				ImGui::Spacing();
-
-				ImGui::Text("Rotation");
-				ImGui::DragFloat("X°",&m_CameraRotation.x, 0.2f, -180.0f,180.0f, "%.2f");
-				ImGui::DragFloat("Y°",&m_CameraRotation.y, 0.2f, -180.0f,180.0f, "%.2f");
-				ImGui::DragFloat("Z°",&m_CameraRotation.z, 0.2f, -180.0f,180.0f, "%.2f");
-
-			}
-			ImGui::End();
-		}
-
 		/*ShowPerformance*/ {
 			ImGuiWindowFlags window_flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav;
 			window_flags |=  ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
@@ -180,11 +130,8 @@ private:
 
 	Timestep m_Timestep;
 
-	OrthographicCamera m_Camera;
-	glm::vec3 m_CameraPosition = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 m_CameraRotation = glm::vec3(0.0f, 0.0f, 0.0f);
-	float m_CameraMoveSpeed = 1.0f;
-	float m_CameraRotationSpeed = 50.0f;
+	OrthographicCameraController m_CameraController;
+
 
 	glm::vec3 m_TexturePosition = glm::vec3(0.0f);
 	float m_TextureMoveSpeed = 0.5f;
