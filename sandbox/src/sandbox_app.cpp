@@ -180,16 +180,16 @@ public:
 			if (ImGui::Begin("Camera", NULL, window_flags)) {
 
 				ImGui::Text("Translation");
-				ImGui::SliderFloat("X",&m_CameraPosition.x,-1.5f,1.5f, "%.2f");
-				ImGui::SliderFloat("Y",&m_CameraPosition.y,-1.5f,1.5f, "%.2f");
-				ImGui::SliderFloat("Z",&m_CameraPosition.z,-1.5f,1.5f, "%.2f");
+				ImGui::DragFloat("X",&m_CameraPosition.x, 0.02f, -10.0f,10.0f, "%.2f");
+				ImGui::DragFloat("Y",&m_CameraPosition.y, 0.02f, -10.0f,10.0f, "%.2f");
+				ImGui::DragFloat("Z",&m_CameraPosition.z, 0.02f, -10.0f,10.0f, "%.2f");
 
 				ImGui::Spacing();
 
 				ImGui::Text("Rotation");
-				ImGui::SliderFloat("X°",&m_CameraRotation.x,-180.0f,180.0f, "%.2f");
-				ImGui::SliderFloat("Y°",&m_CameraRotation.y,-180.0f,180.0f, "%.2f");
-				ImGui::SliderFloat("Z°",&m_CameraRotation.z,-180.0f,180.0f, "%.2f");
+				ImGui::DragFloat("X°",&m_CameraRotation.x, 0.2f, -180.0f,180.0f, "%.2f");
+				ImGui::DragFloat("Y°",&m_CameraRotation.y, 0.2f, -180.0f,180.0f, "%.2f");
+				ImGui::DragFloat("Z°",&m_CameraRotation.z, 0.2f, -180.0f,180.0f, "%.2f");
 
 			}
 			ImGui::End();
