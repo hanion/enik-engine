@@ -11,6 +11,7 @@ set(source_dir "${PROJECT_SOURCE_DIR}/src/")
 
 file(GLOB source_files 
 	"${source_dir}/*.cpp" 
+	"${source_dir}/core/*.cpp"
 	"${source_dir}/layers/*.cpp"
 	"${source_dir}/layers/imgui_layer/*.cpp"
 	"${source_dir}/renderer/*.cpp"
@@ -19,6 +20,7 @@ file(GLOB source_files
 	)
 	file(GLOB include_files 
 	"${PROJECT_SOURCE_DIR}/include/*.h"
+	"${source_dir}/core/*.h"
 	"${source_dir}/events/*.h"
 	"${source_dir}/layers/*.h"
 	"${source_dir}/layers/imgui_layer/*.h"

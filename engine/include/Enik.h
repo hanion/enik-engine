@@ -3,8 +3,8 @@
 #include "layers/imgui_layer/imgui_layer.h"
 #include "imgui/imgui.h"
 #include "layers/layer.h"
-#include "application.h"
-#include "input.h"
+#include "core/application.h"
+#include "core/input.h"
 #include <base.h>
 #include "core/timestep.h"
 
@@ -16,8 +16,8 @@
 #include "renderer/shader.h"
 #include "renderer/texture.h"
 
-#include "ortho_camera_controller.h"
+#include "renderer/ortho_camera_controller.h"
 
 // ----- Entry Point -----
-#include "entry_point.h"
+#include "core/entry_point.h"
 // -----------------------

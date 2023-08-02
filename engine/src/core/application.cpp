@@ -1,5 +1,5 @@
 #include "application.h"
-#include "input.h"
+#include "core/input.h"
 #include <imgui.h>
 
 #include "renderer/renderer.h"

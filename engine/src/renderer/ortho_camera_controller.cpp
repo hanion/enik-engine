@@ -1,7 +1,7 @@
 #include <pch.h>
 #include "ortho_camera_controller.h"
 
-#include "input.h"
+#include "core/input.h"
 #include "events/key_codes.h"
 
 namespace Enik {
