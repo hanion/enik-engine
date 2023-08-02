@@ -166,6 +166,7 @@ void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shader
 	// Always detach shaders after a successful link.
 	for (auto id : glShaderIDs) {
 		glDetachShader(program, id);
+		glDeleteShader(id);
 	}
 	
 	m_RendererID = program;
