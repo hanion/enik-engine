@@ -4,7 +4,7 @@
 
 namespace Enik {
 
-Input* Input::s_Instance = new Input();
+Scope<Input> Input::s_Instance = CreateScope<Input>();
 
 bool Input::IsKeyPressed(int keycode) {
 

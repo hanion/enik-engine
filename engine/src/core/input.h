@@ -12,7 +12,7 @@ public:
 	static std::pair<float, float> GetMousePosition();
 
 private:
-	static Input* s_Instance;
+	static Scope<Input> s_Instance;
 };
 
 }
