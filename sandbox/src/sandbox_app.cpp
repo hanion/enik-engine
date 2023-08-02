@@ -3,6 +3,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "renderer/opengl/opengl_shader.h"
 
+
+#include "sandbox2D.h"
+
 #define FULL_PATH(x) (((std::string)"/home/han/dev/enik-engine/sandbox/") + ((std::string)x))
 
 using namespace Enik;
@@ -148,7 +151,8 @@ class Sandbox : public Application {
 public:
 	Sandbox(){
 		EN_TRACE("Sandbox Created");
-		PushLayer(new ExampleLayer());
+		//PushLayer(new ExampleLayer());
+		PushLayer(new Sandbox2D());
 	}
 
 	~Sandbox(){
