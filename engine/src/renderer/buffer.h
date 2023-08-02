@@ -1,5 +1,5 @@
 #pragma once
-#include <asserter.h>
+#include "core/log.h"
 
 
 namespace Enik {

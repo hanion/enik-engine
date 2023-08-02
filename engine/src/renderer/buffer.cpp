@@ -1,7 +1,6 @@
 #include <pch.h>
 #include "buffer.h"
 #include "renderer.h"
-#include <log.h>
 
 #include "opengl/opengl_buffer.h"
 

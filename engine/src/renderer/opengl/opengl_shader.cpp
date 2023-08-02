@@ -1,7 +1,6 @@
 #include "opengl_shader.h"
 #include <pch.h>
-#include <log.h>
-#include <asserter.h>
+#include "core/log.h"
 
 #include <filesystem>
 #include <fstream>

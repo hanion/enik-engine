@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <log.h>
+#include "core/log.h"
 
 #define EN_PLATFORM_LINUX
 #define EN_DEBUG
