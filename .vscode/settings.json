@@ -77,6 +77,7 @@
 		"typeinfo": "cpp",
 		"variant": "cpp",
 		"complex": "cpp",
-		"any": "cpp"
+		"any": "cpp",
+		"filesystem": "cpp"
 	}
 }
