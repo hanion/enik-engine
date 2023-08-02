@@ -1,4 +1,5 @@
 #include <Enik.h>
+#include "core/entry_point.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "renderer/opengl/opengl_shader.h"
 

@@ -18,6 +18,3 @@
 
 #include "renderer/ortho_camera_controller.h"
 
-// ----- Entry Point -----
-#include "core/entry_point.h"
-// -----------------------
