@@ -10,7 +10,7 @@ class ExampleLayer : public Layer {
 public:
 	ExampleLayer()
 		: Layer("Example"), m_CameraController(1.6f/0.75f, true) {
-		m_VertexArray.reset(VertexArray::Create());
+		m_VertexArray = VertexArray::Create();
 
 		float vertices[4 * 9] = {
 			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
@@ -21,7 +21,7 @@ public:
 
 
 		Ref<VertexBuffer> vertexBuffer;
-		vertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
+		vertexBuffer = VertexBuffer::Create(vertices, sizeof(vertices));
 		
 		
 		BufferLayout layout = {
@@ -36,7 +36,7 @@ public:
 		uint32_t indices[6] = { 0, 1, 2, 2, 3, 0 };
 		
 		Ref<IndexBuffer> indexBuffer;
-		indexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices)/sizeof(uint32_t)));
+		indexBuffer = IndexBuffer::Create(indices, sizeof(indices)/sizeof(uint32_t));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
 		/*Create shader sources*/{			

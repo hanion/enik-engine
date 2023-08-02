@@ -5,10 +5,10 @@
 
 namespace Enik {
 
-VertexArray* VertexArray::Create() {
+Ref<VertexArray> VertexArray::Create() {
 	switch (Renderer::GetAPI()) {
 		case RendererAPI::API::OpenGL:
-			return new OpenGLVertexArray();
+			return CreateRef<OpenGLVertexArray>();
 
 		case RendererAPI::API::None:
 			EN_CORE_ASSERT(false, "RendererAPI::None is currently not supported");
