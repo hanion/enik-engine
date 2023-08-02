@@ -42,7 +42,7 @@ public:
 		/*Create shader sources*/{			
 			m_ShaderLibrary.Load("colorful", FULL_PATH("assets/shaders/colorful.glsl"));
 
-			auto textureShader = m_ShaderLibrary.Load("texture", FULL_PATH("assets/shaders/texture.glsl"));
+			auto textureShader = m_ShaderLibrary.Load("texture", FULL_PATH("assets/shaders/texture2.glsl"));
 			
 			std::dynamic_pointer_cast<OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
 			
