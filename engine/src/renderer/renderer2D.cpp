@@ -2,8 +2,9 @@
 #include <pch.h>
 #include "renderer/vertex_array.h"
 #include "renderer/shader.h"
-#include "renderer/opengl/opengl_shader.h"
 #include "renderer/render_command.h"
+
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace Enik {
 
@@ -54,9 +55,8 @@ void Renderer2D::Shutdown() {
 }
 
 void Renderer2D::BeginScene(const OrthographicCamera& camera) {
-	std::dynamic_pointer_cast<OpenGLShader>(s_Data->FlatShader)->Bind();
-	std::dynamic_pointer_cast<OpenGLShader>(s_Data->FlatShader)->UploadUniformMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
-	std::dynamic_pointer_cast<OpenGLShader>(s_Data->FlatShader)->UploadUniformMat4("u_Transform", glm::mat4(1.0f));
+	s_Data->FlatShader->Bind();
+	s_Data->FlatShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 }
 
 void Renderer2D::EndScene() {
@@ -69,9 +69,13 @@ void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& scale, con
 }
 
 void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& color) {
-	std::dynamic_pointer_cast<OpenGLShader>(s_Data->FlatShader)->Bind();
-	std::dynamic_pointer_cast<OpenGLShader>(s_Data->FlatShader)->UploadUniformFloat3("u_Position", position);
-	std::dynamic_pointer_cast<OpenGLShader>(s_Data->FlatShader)->UploadUniformFloat4("u_Color", color);
+	s_Data->FlatShader->Bind();
+	s_Data->FlatShader->SetFloat4("u_Color", color);
+
+	glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
+		glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f));
+
+	s_Data->FlatShader->SetMat4("u_Transform", transform);
 
 	s_Data->QuadVertexArray->Bind();
 	RenderCommand::DrawIndexed(s_Data->QuadVertexArray);
