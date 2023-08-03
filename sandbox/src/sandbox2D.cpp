@@ -2,7 +2,6 @@
 
 #include "renderer/opengl/opengl_shader.h"
 
-#define FULL_PATH(x) (((std::string)"/home/han/dev/enik-engine/sandbox/") + ((std::string)x))
 
 
 Sandbox2D::Sandbox2D()

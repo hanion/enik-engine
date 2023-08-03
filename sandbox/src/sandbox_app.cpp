@@ -6,7 +6,6 @@
 
 #include "sandbox2D.h"
 
-#define FULL_PATH(x) (((std::string)"/home/han/dev/enik-engine/sandbox/") + ((std::string)x))
 
 using namespace Enik;
 
