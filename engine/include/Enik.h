@@ -9,6 +9,7 @@
 #include "core/timestep.h"
 
 #include "renderer/renderer.h"
+#include "renderer/renderer2D.h"
 #include "renderer/render_command.h"
 
 #include "renderer/buffer.h"

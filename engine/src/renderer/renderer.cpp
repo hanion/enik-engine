@@ -1,5 +1,6 @@
 #include <pch.h>
 #include "renderer.h"
+#include "renderer2D.h"
 #include "opengl/opengl_shader.h"
 
 namespace Enik {
@@ -7,6 +8,7 @@ namespace Enik {
 Scope<Renderer::SceneData> Renderer::m_SceneData = CreateScope<Renderer::SceneData>();
 
 void Renderer::Init() {
+	Renderer2D::Init();
 	RenderCommand::Init();
 }
 
