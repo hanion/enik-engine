@@ -32,6 +32,7 @@ public:
 private:
 	bool OnWindowClose(WindowCloseEvent& e);
 	bool OnWindowResize(WindowResizeEvent& e);
+	bool OnKeyPressed(KeyPressedEvent& e);
 private:
 	Window* m_Window;
 	ImGuiLayer* m_ImGuiLayer;

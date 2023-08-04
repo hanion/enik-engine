@@ -68,6 +68,7 @@ void Application::OnEvent(Event& e) {
 	EventDispatcher dispatcher(e);
 	dispatcher.Dispatch<WindowCloseEvent>(EN_BIND_EVENT_FN(Application::OnWindowClose));
 	dispatcher.Dispatch<WindowResizeEvent>(EN_BIND_EVENT_FN(Application::OnWindowResize));
+	dispatcher.Dispatch<KeyPressedEvent>(EN_BIND_EVENT_FN(Application::OnKeyPressed));
 
 	for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); ) {
 		(*--it)->OnEvent(e);
@@ -95,4 +96,10 @@ bool Application::OnWindowResize(WindowResizeEvent& e){
 	return false;
 }
 
+bool Application::OnKeyPressed(KeyPressedEvent& e) {
+	if (e.GetKeyCode() == Key::P) {
+		m_Minimized = !m_Minimized;
+	}
+	return false;
+}
 }
