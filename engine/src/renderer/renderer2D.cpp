@@ -10,7 +10,8 @@ namespace Enik {
 
 struct Renderer2DData {
 	Ref<VertexArray> QuadVertexArray;
-	Ref<Shader> FlatShader;
+	Ref<Shader> TextureColorShader;
+	Ref<Texture2D> WhiteTexture;
 
 };
 
@@ -21,11 +22,11 @@ void Renderer2D::Init() {
 
 	s_Data->QuadVertexArray = VertexArray::Create();
 
-	float vertices[4 * 3] = {
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 0.5f,  0.5f, 0.0f,
-		-0.5f,  0.5f, 0.0f
+	float vertices[4 * 5] = {
+		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+		-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 	};
 
 
@@ -34,7 +35,8 @@ void Renderer2D::Init() {
 	
 	
 	BufferLayout layout = {
-		{ShaderDataType::Float3, "a_Position"}
+		{ShaderDataType::Float3, "a_Position"},
+		{ShaderDataType::Float2, "a_TexCoord"}
 	};
 	
 	vertexBuffer->SetLayout(layout);
@@ -46,8 +48,11 @@ void Renderer2D::Init() {
 	indexBuffer = IndexBuffer::Create(indices, sizeof(indices)/sizeof(uint32_t));
 	s_Data->QuadVertexArray->SetIndexBuffer(indexBuffer);
 
-	s_Data->FlatShader = Shader::Create(FULL_PATH("assets/shaders/flat_color.glsl"));
+	s_Data->TextureColorShader = Shader::Create(FULL_PATH("assets/shaders/texture_color.glsl"));
 
+	s_Data->WhiteTexture = Texture2D::Create(1,1);
+	uint32_t whiteTextureData = 0xffffffff;
+	s_Data->WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 }
 
 void Renderer2D::Shutdown() {
@@ -55,8 +60,10 @@ void Renderer2D::Shutdown() {
 }
 
 void Renderer2D::BeginScene(const OrthographicCamera& camera) {
-	s_Data->FlatShader->Bind();
-	s_Data->FlatShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+	s_Data->TextureColorShader->Bind();
+	s_Data->TextureColorShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
+	s_Data->TextureColorShader->SetInt("u_Texture", 0);
+
 }
 
 void Renderer2D::EndScene() {
@@ -69,13 +76,51 @@ void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& scale, con
 }
 
 void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& color) {
-	s_Data->FlatShader->Bind();
-	s_Data->FlatShader->SetFloat4("u_Color", color);
+	s_Data->WhiteTexture->Bind();
+	glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
+		glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f));
+
+	s_Data->TextureColorShader->SetMat4("u_Transform", transform);
+	s_Data->TextureColorShader->SetFloat4("u_Color", color);
+
+	s_Data->QuadVertexArray->Bind();
+	RenderCommand::DrawIndexed(s_Data->QuadVertexArray);
+}
+
+
+
+void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& scale, const Ref<Texture2D>& texture) {
+	DrawQuad({position.x, position.y, 0.0f}, scale, texture);
+}
+void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, const Ref<Texture2D>& texture) {
+	texture->Bind();
 
 	glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
 		glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f));
 
-	s_Data->FlatShader->SetMat4("u_Transform", transform);
+	s_Data->TextureColorShader->SetMat4("u_Transform", transform);
+	s_Data->TextureColorShader->SetFloat4("u_Color", glm::vec4(1.0f));
+
+	s_Data->QuadVertexArray->Bind();
+	RenderCommand::DrawIndexed(s_Data->QuadVertexArray);
+}
+
+
+
+void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& scale, const Ref<Texture2D>& texture, const glm::vec4& color) {
+	DrawQuad({position.x, position.y, 0.0f}, scale, texture, color);
+
+}
+
+void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, const Ref<Texture2D>& texture, const glm::vec4& color) {
+	texture->Bind();
+
+	glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
+		glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f));
+
+	s_Data->TextureColorShader->SetMat4("u_Transform", transform);
+	s_Data->TextureColorShader->SetFloat4("u_Color", color);
+	s_Data->TextureColorShader->SetFloat("u_TileScale", 100.0f);
 
 	s_Data->QuadVertexArray->Bind();
 	RenderCommand::DrawIndexed(s_Data->QuadVertexArray);
