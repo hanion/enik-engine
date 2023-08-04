@@ -41,10 +41,12 @@ void Sandbox2D::OnImGuiRender() {
 	/*ShowPerformance*/ {
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav;
 		window_flags |=  ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
+		window_flags |=  ImGuiWindowFlags_NoDecoration;
 		
 		ImGui::SetNextWindowBgAlpha(0.35f);
 		if (ImGui::Begin("Performance", nullptr, window_flags))
 		{
+			ImGui::Text("Performance");
 			ImGui::Text("deltaTime = %.2fms", m_Timestep.GetMilliseconds());
 			ImGui::Text("FPS = %.0f", (1.0f/m_Timestep.GetSeconds()));
 		}
