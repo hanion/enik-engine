@@ -20,6 +20,9 @@ public:
 private:
 	bool OnMouseScrolled(MouseScrolledEvent& e);
 	bool OnWindowResized(WindowResizeEvent& e);
+	bool OnMouseButtonPressed (MouseButtonPressedEvent& e);
+	bool OnMouseButtonReleased(MouseButtonReleasedEvent& e);
+	bool OnMouseMoved(MouseMovedEvent& e);
 
 private:
 	float m_AspectRatio = 1.6f/0.9f;
@@ -33,6 +36,10 @@ private:
 	
 	float m_CameraMoveSpeed = 1.0f;
 	float m_CameraRotationSpeed = 50.0f;
+
+	bool m_IsMoving = false;
+	bool m_StartedMoving = false;
+	glm::vec2 m_MouseStartPos;
 
 };
 

@@ -46,6 +46,10 @@ void OrthographicCameraController::OnEvent(Event& e) {
 	dispatcher.Dispatch<MouseScrolledEvent>(EN_BIND_EVENT_FN(OrthographicCameraController::OnMouseScrolled));
 	dispatcher.Dispatch<WindowResizeEvent> (EN_BIND_EVENT_FN(OrthographicCameraController::OnWindowResized));
 
+	dispatcher.Dispatch<MouseButtonPressedEvent> (EN_BIND_EVENT_FN(OrthographicCameraController::OnMouseButtonPressed));
+	dispatcher.Dispatch<MouseButtonReleasedEvent>(EN_BIND_EVENT_FN(OrthographicCameraController::OnMouseButtonReleased));
+	dispatcher.Dispatch<MouseMovedEvent>(EN_BIND_EVENT_FN(OrthographicCameraController::OnMouseMoved));
+
 }
 bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e) {
 	m_ZoomLevel -= e.GetYOffset() * 0.1f;
@@ -54,12 +58,43 @@ bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e) {
 	m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 	
 	m_CameraMoveSpeed = m_ZoomLevel;
-    return false;
+	return false;
 }
 bool OrthographicCameraController::OnWindowResized(WindowResizeEvent& e) {
-    m_AspectRatio = (float)e.GetWidth() / (float)e.GetHeight();
+	m_AspectRatio = (float)e.GetWidth() / (float)e.GetHeight();
 	m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 	return false;
 }
 
+
+bool OrthographicCameraController::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
+	if (e.GetMouseButton() == 1) {
+		m_IsMoving = true;
+	}
+	return false;
+}
+
+bool OrthographicCameraController::OnMouseButtonReleased(MouseButtonReleasedEvent& e) {
+	if (e.GetMouseButton() == 1) {
+		m_IsMoving = false;
+		m_StartedMoving = false;
+	}
+	return false;
+}
+
+bool OrthographicCameraController::OnMouseMoved(MouseMovedEvent& e) {
+	if (m_IsMoving && !m_StartedMoving) {
+		m_MouseStartPos = glm::vec2(e.GetX(), e.GetY());
+		m_StartedMoving = true;
+	}
+	else if (m_IsMoving && m_StartedMoving) {
+		// this is arbitrary, swithc to calculating camera with pixels
+		glm::vec3 diff = glm::vec3(m_MouseStartPos.x - e.GetX(), e.GetY() - m_MouseStartPos.y, 0.0f);
+		m_CameraPosition += diff/170.0f * m_ZoomLevel;
+		m_Camera.SetPosition(m_CameraPosition); 
+		m_StartedMoving = false;
+	}
+
+	return false;
+}
 }
