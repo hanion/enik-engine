@@ -41,7 +41,7 @@ add_subdirectory(external/imgui)
 add_subdirectory(external/glm)
 
 
-target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:EN_DEBUG>)
+target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:EN_DEBUG> $<$<CONFIG:Debug>:TRACY_ENABLE>)
 
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
