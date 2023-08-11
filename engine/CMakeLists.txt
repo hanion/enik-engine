@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 3.26.4)
 
 project(engine)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -DTRACY_ENABLE -Itracy/") #-Werror ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall") #-Werror ")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -DTRACY_ENABLE -Itracy/")
 
 set (CMAKE_CXX_STANDARD 14)
 
@@ -17,8 +18,8 @@ file(GLOB source_files
 	"${source_dir}/renderer/*.cpp"
 	"${source_dir}/renderer/opengl/*.cpp"
 	"${PROJECT_SOURCE_DIR}/external/stb_image/*.cpp"
-	)
-	file(GLOB include_files 
+)
+file(GLOB include_files 
 	"${PROJECT_SOURCE_DIR}/include/*.h"
 	"${source_dir}/core/*.h"
 	"${source_dir}/events/*.h"
@@ -40,9 +41,14 @@ add_subdirectory(external/imgui)
 add_subdirectory(external/glm)
 
 
-option(TRACY_ENABLE "" ON)
-option(TRACY_ON_DEMAND "" ON)
-add_subdirectory(external/tracy)
+target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:EN_DEBUG>)
+
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	add_subdirectory(external/tracy)
+	target_include_directories(${PROJECT_NAME} PUBLIC external/tracy/pubic/tracy)
+	target_link_libraries(${PROJECT_NAME} PUBLIC tracy)
+endif()
 
 
 target_include_directories(${PROJECT_NAME}
@@ -55,7 +61,6 @@ target_include_directories(${PROJECT_NAME}
 	external/glad/include/glad
 	external/imgui
 	external/glm/glm
-	external/tracy/pubic/tracy
 
 	external
 	src
@@ -70,7 +75,6 @@ target_link_libraries(${PROJECT_NAME}
 	glad
 	imgui
 	glm
-	tracy
 	PRIVATE
 
 )
