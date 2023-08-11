@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.26.4)
 
 project(engine)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall") #-Werror ")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -DTRACY_ENABLE -Itracy/") #-Werror ")
 
 set (CMAKE_CXX_STANDARD 14)
 
@@ -30,13 +30,6 @@ file(GLOB source_files
 )
 
 
-# these fix the undefined reference problem
-# turns out, we need to add every subdirectory we create to compile them
-# file(GLOB additional_files "${source_dir}/layers/*.cpp")
-# list(APPEND source_files ${additional_files})
-# 
-# file(GLOB additional_include_files "${source_dir}/events/*.h")
-# list(APPEND include_files ${additional_include_files})
 
 add_library(${PROJECT_NAME} SHARED ${source_files} ${include_files})
 
@@ -45,6 +38,12 @@ add_subdirectory(external/glfw)
 add_subdirectory(external/glad)
 add_subdirectory(external/imgui)
 add_subdirectory(external/glm)
+
+
+option(TRACY_ENABLE "" ON)
+option(TRACY_ON_DEMAND "" ON)
+add_subdirectory(external/tracy)
+
 
 target_include_directories(${PROJECT_NAME}
 	PUBLIC
@@ -56,6 +55,7 @@ target_include_directories(${PROJECT_NAME}
 	external/glad/include/glad
 	external/imgui
 	external/glm/glm
+	external/tracy/pubic/tracy
 
 	external
 	src
@@ -70,6 +70,7 @@ target_link_libraries(${PROJECT_NAME}
 	glad
 	imgui
 	glm
+	tracy
 	PRIVATE
 
 )

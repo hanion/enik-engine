@@ -11,3 +11,6 @@
 	path = engine/external/imgui
 	url = https://github.com/hanion/imgui.git
 	branch = docking
+[submodule "engine/external/tracy"]
+	path = engine/external/tracy
+	url = https://github.com/wolfpld/tracy
