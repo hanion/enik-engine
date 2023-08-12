@@ -18,28 +18,32 @@ void OrthographicCameraController::OnUpdate(Timestep timestep) {
 
 	if(Input::IsKeyPressed(Key::A)){
 		m_CameraPosition -= glm::vec3(1, 0, 0) * m_CameraMoveSpeed * deltaTime;
+		m_Camera.SetPosition(m_CameraPosition);
 	}
 	else if (Input::IsKeyPressed(Key::D)) {
 		m_CameraPosition += glm::vec3(1, 0, 0) * m_CameraMoveSpeed * deltaTime;
+		m_Camera.SetPosition(m_CameraPosition);
 	}
 
 	if(Input::IsKeyPressed(Key::W)){
 		m_CameraPosition += glm::vec3(0, 1, 0) * m_CameraMoveSpeed * deltaTime;
+		m_Camera.SetPosition(m_CameraPosition);
 	}
 	else if (Input::IsKeyPressed(Key::S)) {
 		m_CameraPosition -= glm::vec3(0, 1, 0) * m_CameraMoveSpeed * deltaTime;
+		m_Camera.SetPosition(m_CameraPosition);
 	}
 
-	m_Camera.SetPosition(m_CameraPosition);
 	
 	if (m_Rotation) {
 		if(Input::IsKeyPressed(Key::Q)){
 			m_CameraRotation += glm::vec3(0, 0, 1) * m_CameraRotationSpeed * deltaTime;
+			m_Camera.SetRotation(m_CameraRotation);
 		}
 		else if (Input::IsKeyPressed(Key::E)) {
 			m_CameraRotation -= glm::vec3(0, 0, 1) * m_CameraRotationSpeed * deltaTime;
+			m_Camera.SetRotation(m_CameraRotation);
 		}
-		m_Camera.SetRotation(m_CameraRotation);
 	}
 
 }
