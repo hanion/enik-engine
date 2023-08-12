@@ -25,7 +25,8 @@
 
 #define EN_BIND_EVENT_FN(fn) std::bind(&Enik::fn, this, std::placeholders::_1)
 
-#define FULL_PATH(x) (((std::string)"/home/han/dev/enik-engine/sandbox/") + ((std::string)x))
+// path relative to ./build/sandbox 
+#define FULL_PATH(x) (((std::string)"../../sandbox/") + ((std::string)x))
 
 namespace Enik {
 
