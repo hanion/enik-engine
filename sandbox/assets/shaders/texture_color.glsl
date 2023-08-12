@@ -2,17 +2,25 @@
 #version 330 core
 
 layout(location = 0) in vec3 a_Position;
-layout(location = 1) in vec2 a_TexCoord;
+layout(location = 1) in vec4 a_Color;
+layout(location = 2) in vec2 a_TexCoord;
+layout(location = 3) in float a_TexIndex;
+layout(location = 4) in float a_TileScale;
 
 uniform mat4 u_ViewProjection;
-uniform mat4 u_Transform;
 
+out vec4 v_Color;
 out vec2 v_TexCoord;
+out float v_TexIndex;
+out float v_TileScale;
 
 
 void main() {
+	v_Color = a_Color;
 	v_TexCoord = a_TexCoord;
-	gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
+	v_TexIndex = a_TexIndex;
+	v_TileScale = a_TileScale;
+	gl_Position = u_ViewProjection * vec4(a_Position, 1.0);
 }
 
 
@@ -21,12 +29,35 @@ void main() {
 
 layout(location = 0) out vec4 color;
 
+in vec4 v_Color;
 in vec2 v_TexCoord;
+in float v_TexIndex;
+in float v_TileScale;
 
-uniform sampler2D u_Texture;
-uniform vec4 u_Color;
-uniform float u_TileScale = 1.0;
+uniform sampler2D u_Textures[16];
 
 void main() {
-	color = u_Color * texture(u_Texture, v_TexCoord * u_TileScale);
+	vec4 l_Texture;
+	int l_TexIndex = int(v_TexIndex);
+
+	switch (l_TexIndex) {
+		case 0:  l_Texture = texture(u_Textures[0],  v_TexCoord * v_TileScale); break;
+		case 1:  l_Texture = texture(u_Textures[1],  v_TexCoord * v_TileScale); break;
+		case 2:  l_Texture = texture(u_Textures[2],  v_TexCoord * v_TileScale); break;
+		case 3:  l_Texture = texture(u_Textures[3],  v_TexCoord * v_TileScale); break;
+		case 4:  l_Texture = texture(u_Textures[4],  v_TexCoord * v_TileScale); break;
+		case 5:  l_Texture = texture(u_Textures[5],  v_TexCoord * v_TileScale); break;
+		case 6:  l_Texture = texture(u_Textures[6],  v_TexCoord * v_TileScale); break;
+		case 7:  l_Texture = texture(u_Textures[7],  v_TexCoord * v_TileScale); break;
+		case 8:  l_Texture = texture(u_Textures[8],  v_TexCoord * v_TileScale); break;
+		case 9:  l_Texture = texture(u_Textures[9],  v_TexCoord * v_TileScale); break;
+		case 10: l_Texture = texture(u_Textures[10], v_TexCoord * v_TileScale); break;
+		case 11: l_Texture = texture(u_Textures[11], v_TexCoord * v_TileScale); break;
+		case 12: l_Texture = texture(u_Textures[12], v_TexCoord * v_TileScale); break;
+		case 13: l_Texture = texture(u_Textures[13], v_TexCoord * v_TileScale); break;
+		case 14: l_Texture = texture(u_Textures[14], v_TexCoord * v_TileScale); break;
+		case 15: l_Texture = texture(u_Textures[15], v_TexCoord * v_TileScale); break;
+	}
+
+	color = l_Texture * v_Color;
 }
