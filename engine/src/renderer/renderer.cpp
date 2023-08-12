@@ -8,6 +8,8 @@ namespace Enik {
 Scope<Renderer::SceneData> Renderer::m_SceneData = CreateScope<Renderer::SceneData>();
 
 void Renderer::Init() {
+	EN_PROFILE_SCOPE;
+	
 	Renderer2D::Init();
 	RenderCommand::Init();
 }

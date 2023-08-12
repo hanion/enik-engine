@@ -17,6 +17,8 @@ ImGuiLayer::~ImGuiLayer() {
 
 
 void ImGuiLayer::OnAttach() {
+	EN_PROFILE_SCOPE;
+
   IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
   
@@ -40,6 +42,8 @@ void ImGuiLayer::OnAttach() {
 
 
 void ImGuiLayer::OnDetach() {
+	EN_PROFILE_SCOPE;
+
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
@@ -55,6 +59,8 @@ void ImGuiLayer::OnImGuiRender() {
 
 
 void ImGuiLayer::Begin() {
+	EN_PROFILE_SCOPE;
+
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
@@ -62,6 +68,8 @@ void ImGuiLayer::Begin() {
 
 
 void ImGuiLayer::End() {
+	EN_PROFILE_SCOPE;
+
 	ImGuiIO& io = ImGui::GetIO();
 	Application& app = Application::Get();
 	io.DisplaySize = ImVec2(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());

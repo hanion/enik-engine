@@ -31,6 +31,8 @@ Window::~Window(){
 
 
 void Window::Init(const WindowProperties& properties){
+	EN_PROFILE_SCOPE;
+
 	m_Data.Title = properties.Title;
 	m_Data.Width = properties.Width;
 	m_Data.Height = properties.Height;
@@ -38,6 +40,8 @@ void Window::Init(const WindowProperties& properties){
 	EN_CORE_INFO("Creating window {0} ({1}, {2}).", properties.Title, properties.Width, properties.Height);
 
 	if (!s_GLFWInitialized) {
+		EN_PROFILE_SECTION("glfwInit");
+
 		int success = glfwInit();
 		EN_CORE_ASSERT(success, "Could not initialize GLFW!");
 
@@ -45,8 +49,11 @@ void Window::Init(const WindowProperties& properties){
 
 		s_GLFWInitialized = true;
 	}
+	{
+		EN_PROFILE_SECTION("glfwCreateWindow");
 
-	m_Window = glfwCreateWindow((int)properties.Width, (int)properties.Height, m_Data.Title.c_str(), nullptr, nullptr);
+		m_Window = glfwCreateWindow((int)properties.Width, (int)properties.Height, m_Data.Title.c_str(), nullptr, nullptr);
+	}
 
 	m_Context = CreateScope<OpenGLContext>(m_Window);
 	m_Context->Init();
@@ -154,11 +161,15 @@ void Window::Init(const WindowProperties& properties){
 }
 
 void Window::Shutdown() {
+	EN_PROFILE_SCOPE;
+
 	glfwDestroyWindow(m_Window);
 }
 
 
 void Window::OnUpdate() {
+	EN_PROFILE_SCOPE;
+	
 	glfwPollEvents();
 	m_Context->SwapBuffers();
 }

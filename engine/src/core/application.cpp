@@ -11,6 +11,8 @@ Application* Application::s_Instance = nullptr;
 
 
 Application::Application() {
+	EN_PROFILE_SCOPE;
+
 	EN_CORE_ASSERT(!s_Instance, "Application already exists!");
 	s_Instance = this;
 
@@ -30,11 +32,15 @@ Application::~Application() {
 
 
 void Application::PushLayer(Layer* layer) {
+	EN_PROFILE_SCOPE;
+
 	m_LayerStack.PushLayer(layer);
 	layer->OnAttach();
 }
 
 void Application::PushOverlay(Layer* overlay) {
+	EN_PROFILE_SCOPE;
+
 	m_LayerStack.PushOverlay(overlay);
 	overlay->OnAttach();
 }
@@ -48,23 +54,28 @@ void Application::Run() {
 
 		if (!m_Minimized) {
 			for (Layer* layer : m_LayerStack) {
+				EN_PROFILE_SECTION("layers OnUpdate");
 				layer->OnUpdate(timestep);
 			}
 		}
 
 		m_ImGuiLayer->Begin();
 		for (Layer* layer : m_LayerStack) {
+			EN_PROFILE_SECTION("imgui layers OnUpdate");
 			layer->OnImGuiRender();
 		}
 
 		m_ImGuiLayer->End();
 
 		m_Window->OnUpdate();
+		EN_PROFILE_FRAME("Application::Run");
 	}
 }
 
 
 void Application::OnEvent(Event& e) {
+	EN_PROFILE_SCOPE;
+
 	EventDispatcher dispatcher(e);
 	dispatcher.Dispatch<WindowCloseEvent>(EN_BIND_EVENT_FN(Application::OnWindowClose));
 	dispatcher.Dispatch<WindowResizeEvent>(EN_BIND_EVENT_FN(Application::OnWindowResize));
@@ -85,6 +96,8 @@ bool Application::OnWindowClose(WindowCloseEvent& e){
 }
 
 bool Application::OnWindowResize(WindowResizeEvent& e){
+	EN_PROFILE_SCOPE;
+
 	if (e.GetWidth() == 0 ||  e.GetHeight() == 0) {
 		m_Minimized = true;
 		return false;

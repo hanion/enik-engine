@@ -10,14 +10,20 @@ Sandbox2D::Sandbox2D()
 }
 
 void Sandbox2D::OnAttach() {
+	EN_PROFILE_SCOPE;
+
 	m_Texture2D = Texture2D::Create(FULL_PATH("assets/textures/checkerboard.png"));
 }
 
 void Sandbox2D::OnDetach() {
+	EN_PROFILE_SCOPE;
+
 
 }
 
 void Sandbox2D::OnUpdate(Timestep timestep) {
+	EN_PROFILE_SCOPE;
+
 	m_Timestep = timestep;
 
 	m_CameraController.OnUpdate(m_Timestep);

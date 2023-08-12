@@ -24,6 +24,8 @@ static GLenum ShaderTypeFromString(const std::string& type) {
 
 
 OpenGLShader::OpenGLShader(const std::string& filepath) {
+	EN_PROFILE_SCOPE;
+
 	std::string source = ReadFile(filepath);
 	auto shaderSources = PreProcess(source);
 	Compile(shaderSources);
@@ -40,6 +42,8 @@ OpenGLShader::OpenGLShader(const std::string& filepath) {
 OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSource, const std::string& fragmentSource) 
 	: m_Name(name) {
 
+	EN_PROFILE_SCOPE;
+
 	std::unordered_map<GLenum, std::string> sources;
 	sources[GL_VERTEX_SHADER] = vertexSource;
 	sources[GL_FRAGMENT_SHADER] = fragmentSource;
@@ -47,12 +51,16 @@ OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSou
 }
 
 OpenGLShader::~OpenGLShader() {
+	EN_PROFILE_SCOPE;
+
 	glDeleteProgram(m_RendererID);
 }
 
 
 
 std::string OpenGLShader::ReadFile(const std::string& filepath) {
+	EN_PROFILE_SCOPE;
+
     std::ifstream in = std::ifstream(filepath, std::ios::in | std::ios::binary);
 	std::string result;
 
@@ -70,6 +78,8 @@ std::string OpenGLShader::ReadFile(const std::string& filepath) {
 }
 
 std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source) {
+	EN_PROFILE_SCOPE;
+
 	std::unordered_map<GLenum, std::string> shaderSources;
 	const char* typeToken = "#type";
 	size_t typeTokenLength = strlen(typeToken);
@@ -93,6 +103,8 @@ std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::stri
 }
 
 void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources) {
+	EN_PROFILE_SCOPE;
+
 	
 	GLuint program = glCreateProgram();
 
@@ -173,6 +185,8 @@ void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shader
 }
 
 void OpenGLShader::Bind() const {
+	EN_PROFILE_SCOPE;
+
 	glUseProgram(m_RendererID);
 }
 

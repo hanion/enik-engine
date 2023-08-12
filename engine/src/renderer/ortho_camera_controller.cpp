@@ -12,6 +12,8 @@ OrthographicCameraController::OrthographicCameraController(float aspectRatio, bo
 }
 
 void OrthographicCameraController::OnUpdate(Timestep timestep) {
+	EN_PROFILE_SCOPE;
+
 	float deltaTime = timestep.GetSeconds();
 
 	if(Input::IsKeyPressed(Key::A)){

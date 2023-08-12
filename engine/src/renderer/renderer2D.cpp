@@ -18,6 +18,8 @@ struct Renderer2DData {
 static Renderer2DData* s_Data;
 
 void Renderer2D::Init() {
+	EN_PROFILE_SCOPE;
+
 	s_Data = new Renderer2DData();
 
 	s_Data->QuadVertexArray = VertexArray::Create();
@@ -60,6 +62,8 @@ void Renderer2D::Shutdown() {
 }
 
 void Renderer2D::BeginScene(const OrthographicCamera& camera) {
+	EN_PROFILE_SCOPE;
+
 	s_Data->TextureColorShader->Bind();
 	s_Data->TextureColorShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 	s_Data->TextureColorShader->SetInt("u_Texture", 0);
@@ -67,6 +71,8 @@ void Renderer2D::BeginScene(const OrthographicCamera& camera) {
 }
 
 void Renderer2D::EndScene() {
+	EN_PROFILE_SCOPE;
+
 
 }
 
@@ -76,6 +82,8 @@ void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& scale, con
 }
 
 void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& color) {
+	EN_PROFILE_SCOPE;
+
 	s_Data->WhiteTexture->Bind();
 	glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
 		glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f));
@@ -93,6 +101,8 @@ void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& scale, con
 	DrawQuad({position.x, position.y, 0.0f}, scale, texture);
 }
 void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, const Ref<Texture2D>& texture) {
+	EN_PROFILE_SCOPE;
+
 	texture->Bind();
 
 	glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
