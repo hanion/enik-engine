@@ -85,8 +85,11 @@ void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, con
 	EN_PROFILE_SCOPE;
 
 	s_Data->WhiteTexture->Bind();
-	glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
-		glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f));
+
+	
+	glm::mat4 transform = glm::mat4(1.0f);
+	transform = glm::translate(transform, position) * 
+		glm::scale(transform, glm::vec3(scale.x, scale.y, 1.0f));
 
 	s_Data->TextureColorShader->SetMat4("u_Transform", transform);
 	s_Data->TextureColorShader->SetFloat4("u_Color", color);
@@ -105,8 +108,9 @@ void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, con
 
 	texture->Bind();
 
-	glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
-		glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f));
+	glm::mat4 transform = glm::mat4(1.0f);
+	transform = glm::translate(transform, position) * 
+		glm::scale(transform, glm::vec3(scale.x, scale.y, 1.0f));
 
 	s_Data->TextureColorShader->SetMat4("u_Transform", transform);
 	s_Data->TextureColorShader->SetFloat4("u_Color", glm::vec4(1.0f));
@@ -125,8 +129,9 @@ void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& scale, con
 void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, const Ref<Texture2D>& texture, const glm::vec4& color) {
 	texture->Bind();
 
-	glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * 
-		glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f));
+	glm::mat4 transform = glm::mat4(1.0f);
+	transform = glm::translate(transform, position) * 
+		glm::scale(transform, glm::vec3(scale.x, scale.y, 1.0f));
 
 	s_Data->TextureColorShader->SetMat4("u_Transform", transform);
 	s_Data->TextureColorShader->SetFloat4("u_Color", color);

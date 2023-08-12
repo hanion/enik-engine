@@ -76,7 +76,8 @@ public:
 		}
 
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_TexturePosition);
+		glm::mat4 transform = glm::mat4(1.0f);
+		transform = glm::translate(transform, m_TexturePosition);
 		
 		m_Texture2D->Bind();
 		auto textureShader = m_ShaderLibrary.Get("texture");
