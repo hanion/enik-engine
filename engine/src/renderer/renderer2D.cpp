@@ -34,6 +34,8 @@ struct Renderer2DData {
 
 	std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;	
 	uint32_t TextureSlotIndex = 1;	
+
+	Renderer2D::Statistics Stats;
 };
 
 static Renderer2DData s_Data;
@@ -129,6 +131,7 @@ void Renderer2D::Flush() {
 	}
 	
 	RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+	s_Data.Stats.DrawCalls++;
 }
 
 
@@ -215,6 +218,16 @@ void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, flo
 	
 	s_Data.QuadIndexCount += 6;
 
+	s_Data.Stats.QuadCount++;
+}
+
+void Renderer2D::ResetStats() {
+	s_Data.Stats.DrawCalls = 0;
+	s_Data.Stats.QuadCount = 0;
+}
+
+Renderer2D::Statistics Renderer2D::GetStats() {
+	return s_Data.Stats;
 }
 
 }

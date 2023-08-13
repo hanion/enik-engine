@@ -29,6 +29,8 @@ void Sandbox2D::OnUpdate(Timestep timestep) {
 
 	m_CameraController.OnUpdate(m_Timestep);
 
+	Renderer2D::ResetStats();
+
 	RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
 	RenderCommand::Clear();
 
@@ -87,6 +89,25 @@ void Sandbox2D::OnImGuiRender() {
 			ImGui::Text("Performance");
 			ImGui::Text("deltaTime = %.2fms", m_Timestep.GetMilliseconds());
 			ImGui::Text("FPS = %.0f", (1.0f/m_Timestep.GetSeconds()));
+		}
+		ImGui::End();
+	}
+	/*ShowRenderer2DStats*/ {
+		ImGuiWindowFlags window_flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav;
+		window_flags |=  ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
+		window_flags |=  ImGuiWindowFlags_NoDecoration;
+		
+		ImGui::SetNextWindowBgAlpha(0.65f);
+		ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowPos().x,ImGui::GetWindowPos().y + 70), ImGuiCond_Appearing);
+		if (ImGui::Begin("Rednerer2D Stats", nullptr, window_flags))
+		{
+			auto stats = Renderer2D::GetStats();
+
+			ImGui::Text("Renderer2D Stats");
+			ImGui::Text("Draw Calls: %d", stats.DrawCalls);
+			ImGui::Text("Quad Count: %d", stats.QuadCount);
+			ImGui::Text("Total Vertex Count: %d", stats.GetTotalVertexCount());
+			ImGui::Text("Total Index  Count: %d", stats.GetTotalIndexCount());
 		}
 		ImGui::End();
 	}
