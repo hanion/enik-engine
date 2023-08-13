@@ -23,6 +23,10 @@ public:
 	static void DrawQuad(const glm::vec3& position, const glm::vec2& scale, float textureIndex, const glm::vec4& color, float tileScale = 1.0f);
 
 
+
+private:
+	static void FlushAndReset();
+
 };
 
 

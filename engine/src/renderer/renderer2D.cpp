@@ -18,9 +18,9 @@ struct QuadVertex {
 };
 
 struct Renderer2DData {
-	const uint32_t MaxQuads = 10000;
-	const uint32_t MaxVertices = MaxQuads * 4;
-	const uint32_t MaxIndices  = MaxQuads * 6;
+	static const uint32_t MaxQuads = 10000;
+	static const uint32_t MaxVertices = MaxQuads * 4;
+	static const uint32_t MaxIndices  = MaxQuads * 6;
 	static const uint32_t MaxTextureSlots  = 16;
 
 	Ref<VertexArray> QuadVertexArray;
@@ -87,6 +87,15 @@ void Renderer2D::Init() {
 
 	s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 	s_Data.TextureSlots[0]->Bind();
+	
+	s_Data.TextureColorShader->Bind();
+	int32_t samplers[s_Data.MaxTextureSlots];
+	for (size_t i = 0; i < s_Data.MaxTextureSlots; i++) {
+		samplers[i] = i;
+	}
+	s_Data.TextureColorShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
+
+
 }
 
 void Renderer2D::Shutdown() {
@@ -96,14 +105,7 @@ void Renderer2D::Shutdown() {
 void Renderer2D::BeginScene(const OrthographicCamera& camera) {
 	EN_PROFILE_SCOPE;
 
-	int32_t samplers[s_Data.MaxTextureSlots];
-	for (size_t i = 0; i < s_Data.MaxTextureSlots; i++) {
-		samplers[i] = i;
-	}
-
-	s_Data.TextureColorShader->Bind();
 	s_Data.TextureColorShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
-	s_Data.TextureColorShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
 
 	s_Data.QuadIndexCount = 0;
 	s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
@@ -129,6 +131,15 @@ void Renderer2D::Flush() {
 	RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
 }
 
+
+void Renderer2D::FlushAndReset() {
+	EndScene();
+
+	s_Data.QuadIndexCount = 0;
+	s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+
+	s_Data.TextureSlotIndex = 1;
+}
 
 
 
@@ -181,34 +192,27 @@ void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, con
 void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, float textureIndex, const glm::vec4& color, float tileScale) {
 	EN_PROFILE_SCOPE;
 
-	s_Data.QuadVertexBufferPtr->Position = position;
-	s_Data.QuadVertexBufferPtr->Color = color;
-	s_Data.QuadVertexBufferPtr->TexCoord = {0.0f, 0.0f};
-	s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-	s_Data.QuadVertexBufferPtr->TileScale = tileScale;
-	s_Data.QuadVertexBufferPtr++;
-
-	s_Data.QuadVertexBufferPtr->Position = { position.x + scale.x, position.y, 0.0f };
-	s_Data.QuadVertexBufferPtr->Color = color;
-	s_Data.QuadVertexBufferPtr->TexCoord = {1.0f, 0.0f};
-	s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-	s_Data.QuadVertexBufferPtr->TileScale = tileScale;
-	s_Data.QuadVertexBufferPtr++;
-
-	s_Data.QuadVertexBufferPtr->Position = { position.x + scale.x, position.y + scale.y, 0.0f };
-	s_Data.QuadVertexBufferPtr->Color = color;
-	s_Data.QuadVertexBufferPtr->TexCoord = {1.0f, 1.0f};
-	s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-	s_Data.QuadVertexBufferPtr->TileScale = tileScale;
-	s_Data.QuadVertexBufferPtr++;
-
-	s_Data.QuadVertexBufferPtr->Position = { position.x, position.y + scale.y, 0.0f };
-	s_Data.QuadVertexBufferPtr->Color = color;
-	s_Data.QuadVertexBufferPtr->TexCoord = {0.0f, 1.0f};
-	s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-	s_Data.QuadVertexBufferPtr->TileScale = tileScale;
-	s_Data.QuadVertexBufferPtr++;
-
+	if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
+		FlushAndReset();
+	}
+	
+	constexpr glm::vec2 textureCoords[] = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}}; 
+	glm::vec3 positions[] = {
+		position,
+		{ position.x + scale.x, position.y          , 0.0f }, 
+		{ position.x + scale.x, position.y + scale.y, 0.0f },
+		{ position.x          , position.y + scale.y, 0.0f }
+	}; 
+	
+	for (size_t i = 0; i < 4; i++) {
+		s_Data.QuadVertexBufferPtr->Position = positions[i];
+		s_Data.QuadVertexBufferPtr->Color = color;
+		s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
+		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+		s_Data.QuadVertexBufferPtr->TileScale = tileScale;
+		s_Data.QuadVertexBufferPtr++;
+	}
+	
 	s_Data.QuadIndexCount += 6;
 
 }

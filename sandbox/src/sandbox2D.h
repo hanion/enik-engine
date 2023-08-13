@@ -21,6 +21,7 @@ private:
 	// Temporary
 	Ref<Shader> m_Shader;
 	Ref<Texture2D> m_Texture2D;
+	Ref<Texture2D> m_Texture2D_2;
 	Ref<VertexArray> m_VertexArray;
 
 	Timestep m_Timestep;
