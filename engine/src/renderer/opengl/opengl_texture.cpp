@@ -38,7 +38,12 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
 		data = stbi_load(path.c_str(), &width, &height, &channels, 0);
 	}
 
-	EN_CORE_ASSERT(data, "Failed to load image!");
+	// EN_CORE_ASSERT(data, "Failed to load image!");
+	if (!data) {
+		EN_CORE_ERROR("Failed to load image!");
+		data = stbi_load(FULL_PATH("assets/textures/error.png").c_str(), &width, &height, &channels, 0);
+	}
+
 	
 	m_Width = width;
 	m_Height = height;
