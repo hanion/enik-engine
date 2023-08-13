@@ -32,6 +32,8 @@ struct Renderer2DData {
 	QuadVertex* QuadVertexBufferBase = nullptr;
 	QuadVertex* QuadVertexBufferPtr  = nullptr;
 
+	static const glm::vec4 QuadVertexPositions[4];
+
 	std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;	
 	uint32_t TextureSlotIndex = 1;	
 
@@ -39,6 +41,13 @@ struct Renderer2DData {
 };
 
 static Renderer2DData s_Data;
+
+const glm::vec4 Renderer2DData::QuadVertexPositions[] = {
+    glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f),
+    glm::vec4( 0.5f, -0.5f, 0.0f, 1.0f),
+    glm::vec4( 0.5f,  0.5f, 0.0f, 1.0f),
+    glm::vec4(-0.5f,  0.5f, 0.0f, 1.0f)
+};
 
 
 void Renderer2D::Init() {
@@ -146,33 +155,21 @@ void Renderer2D::FlushAndReset() {
 
 
 
-void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& scale, const glm::vec4& color) {
-	DrawQuad({position.x, position.y, 0.0f}, scale, color);
+void Renderer2D::DrawQuad(const QuadProperties& quadProperties) {
+	DrawQuad(
+		quadProperties.position, 
+		quadProperties.scale, 
+		GetTextureIndex(quadProperties.texture), 
+		quadProperties.color, 
+		quadProperties.tileScale, 
+		quadProperties.rotation 
+	);
 }
 
-void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, const glm::vec4& color) {
-	const float textureIndex = 0.0f; // white texture
-	DrawQuad(position, scale, textureIndex, color);
-}
+float Renderer2D::GetTextureIndex(const Ref<Texture2D>& texture) {
+    EN_PROFILE_SCOPE;
 
-
-
-void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& scale, const Ref<Texture2D>& texture) {
-	DrawQuad({position.x, position.y, 0.0f}, scale, texture);
-}
-void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, const Ref<Texture2D>& texture) {
-	constexpr glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	DrawQuad(position, scale, texture, color);
-}
-
-
-
-void Renderer2D::DrawQuad(const glm::vec2& position, const glm::vec2& scale, const Ref<Texture2D>& texture, const glm::vec4& color, float tileScale) {
-	DrawQuad({position.x, position.y, 0.0f}, scale, texture, color, tileScale);
-}
-
-void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, const Ref<Texture2D>& texture, const glm::vec4& color, float tileScale) {
-	EN_PROFILE_SECTION("Texture Index finder");
+	if (texture == nullptr) { return 0.0f; }
 
 	float textureIndex = 0.0f;
 	for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++) {
@@ -188,27 +185,44 @@ void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, con
 		s_Data.TextureSlotIndex++;
 	}
 
-	DrawQuad(position, scale, textureIndex, color, tileScale);
+	return textureIndex;
 }
 
 
-void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, float textureIndex, const glm::vec4& color, float tileScale) {
+void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, float textureIndex, const glm::vec4& color, float tileScale, float rotation) {
 	EN_PROFILE_SCOPE;
 
 	if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
 		FlushAndReset();
 	}
 	
-	constexpr glm::vec2 textureCoords[] = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}}; 
-	glm::vec3 positions[] = {
-		position,
-		{ position.x + scale.x, position.y          , 0.0f }, 
-		{ position.x + scale.x, position.y + scale.y, 0.0f },
-		{ position.x          , position.y + scale.y, 0.0f }
-	}; 
+	constexpr glm::vec2 textureCoords[] = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
+
+	glm::mat4 transform;
+	glm::vec3 positions[4];
+
+	if (rotation) {
+		transform = glm::mat4(1.0f);
+		transform = glm::translate(transform, position)
+			* glm::rotate(transform, rotation, glm::vec3(0.0f, 0.0f, 1.0f))
+			* glm::scale(transform, glm::vec3(scale.x, scale.y, 1.0f));
+	}
+	else {
+		glm::vec2 half_scale = scale/2.0f;
+
+		positions[0] = { position.x - half_scale.x, position.y - half_scale.y, position.z };
+		positions[1] = { position.x + half_scale.x, position.y - half_scale.y, position.z }; 
+		positions[2] = { position.x + half_scale.x, position.y + half_scale.y, position.z };
+		positions[3] = { position.x - half_scale.x, position.y + half_scale.y, position.z };
+	}
 	
 	for (size_t i = 0; i < 4; i++) {
-		s_Data.QuadVertexBufferPtr->Position = positions[i];
+		if (rotation) {
+			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
+		}
+		else {
+			s_Data.QuadVertexBufferPtr->Position = positions[i];
+		}
 		s_Data.QuadVertexBufferPtr->Color = color;
 		s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
 		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
