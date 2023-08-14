@@ -90,8 +90,12 @@ void Application::OnEvent(Event& e) {
 	
 }
 
-bool Application::OnWindowClose(WindowCloseEvent& e){
+void Application::Close() {
 	m_Running = false;
+}
+
+bool Application::OnWindowClose(WindowCloseEvent& e){
+	Close();
 	return true;
 }
 
