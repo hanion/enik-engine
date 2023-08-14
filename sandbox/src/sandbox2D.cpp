@@ -13,7 +13,12 @@ void Sandbox2D::OnAttach() {
 	EN_PROFILE_SCOPE;
 
 	m_Texture2D = Texture2D::Create(FULL_PATH("assets/textures/checkerboard.png"));
-	m_Texture2D_2 = Texture2D::Create(FULL_PATH("assets/textures/tablordia_banner.png"));
+
+	Ref<Texture2D> tileset = Texture2D::Create(FULL_PATH("assets/textures/tiles.png"));
+	Ref<SubTexture2D> subTexture = SubTexture2D::CreateFromTileIndex(tileset, glm::vec2(18), glm::vec2(0,8), glm::vec2(2));
+	m_Tile.subTexture = subTexture;
+	m_Tile.position.z = 0.5f;
+	
 }
 
 void Sandbox2D::OnDetach() {
@@ -79,10 +84,8 @@ void Sandbox2D::OnUpdate(Timestep timestep) {
 	Renderer2D::DrawQuad(checkerboard);
 
 
-	QuadProperties plane;
-	plane.color = glm::vec4(0.8f, 0.1f, 0.1f, 0.5f);
-	plane.rotation = glm::radians(45.0f * glfwGetTime());
-	Renderer2D::DrawQuad(plane);
+	m_Tile.rotation += glm::radians(45.0f) * timestep.GetSeconds();
+	Renderer2D::DrawQuad(m_Tile);
 
 	Renderer2D::EndScene();
 }
