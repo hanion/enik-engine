@@ -11,6 +11,8 @@ public:
 	virtual void Bind()   override final;
 	virtual void Unbind() override final;
 
+	virtual void Resize(uint32_t width, uint32_t height) override final;
+
 	virtual uint32_t GetColorAttachmentRendererID() const override final { return m_ColorAttachment; }
 
 	virtual const FrameBufferSpecification& GetSpecification() const override final { return m_Specification; }
