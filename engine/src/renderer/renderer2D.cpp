@@ -155,17 +155,6 @@ void Renderer2D::FlushAndReset() {
 
 
 
-void Renderer2D::DrawQuad(const QuadProperties& quadProperties) {
-	DrawQuad(
-		quadProperties.position, 
-		quadProperties.scale, 
-		GetTextureIndex(quadProperties.texture), 
-		quadProperties.color, 
-		quadProperties.tileScale, 
-		quadProperties.rotation 
-	);
-}
-
 float Renderer2D::GetTextureIndex(const Ref<Texture2D>& texture) {
     EN_PROFILE_SCOPE;
 
@@ -189,44 +178,60 @@ float Renderer2D::GetTextureIndex(const Ref<Texture2D>& texture) {
 }
 
 
-void Renderer2D::DrawQuad(const glm::vec3& position, const glm::vec2& scale, float textureIndex, const glm::vec4& color, float tileScale, float rotation) {
+void Renderer2D::DrawQuad(const QuadProperties& quad) {
 	EN_PROFILE_SCOPE;
+
+
+	const glm::vec2 defaultTextureCoords[] = { {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f} };
+	const glm::vec2* textureCoords = defaultTextureCoords;
+	
+	float textureIndex = 0.0f;
+
+	if (quad.subTexture) {
+		textureIndex = GetTextureIndex(quad.subTexture->GetTexture());
+		textureCoords = quad.subTexture->GetTextureCoords();
+	}
+	else {
+		textureIndex = GetTextureIndex(quad.texture);
+	}
+
 
 	if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
 		FlushAndReset();
 	}
 	
-	constexpr glm::vec2 textureCoords[] = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
+
+	
 
 	glm::mat4 transform;
 	glm::vec3 positions[4];
 
-	if (rotation) {
+	if (quad.rotation) {
 		transform = glm::mat4(1.0f);
-		transform = glm::translate(transform, position)
-			* glm::rotate(transform, rotation, glm::vec3(0.0f, 0.0f, 1.0f))
-			* glm::scale(transform, glm::vec3(scale.x, scale.y, 1.0f));
+		transform = glm::translate(transform, quad.position)
+			* glm::rotate(transform, quad.rotation, glm::vec3(0.0f, 0.0f, 1.0f))
+			* glm::scale(transform, glm::vec3(quad.scale.x, quad.scale.y, 1.0f));
 	}
 	else {
-		glm::vec2 half_scale = scale/2.0f;
+		glm::vec2 half_scale = quad.scale/2.0f;
 
-		positions[0] = { position.x - half_scale.x, position.y - half_scale.y, position.z };
-		positions[1] = { position.x + half_scale.x, position.y - half_scale.y, position.z }; 
-		positions[2] = { position.x + half_scale.x, position.y + half_scale.y, position.z };
-		positions[3] = { position.x - half_scale.x, position.y + half_scale.y, position.z };
+		positions[0] = { quad.position.x - half_scale.x, quad.position.y - half_scale.y, quad.position.z };
+		positions[1] = { quad.position.x + half_scale.x, quad.position.y - half_scale.y, quad.position.z };
+		positions[2] = { quad.position.x + half_scale.x, quad.position.y + half_scale.y, quad.position.z };
+		positions[3] = { quad.position.x - half_scale.x, quad.position.y + half_scale.y, quad.position.z };
 	}
 	
 	for (size_t i = 0; i < 4; i++) {
-		if (rotation) {
+		if (quad.rotation) {
 			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
 		}
 		else {
 			s_Data.QuadVertexBufferPtr->Position = positions[i];
 		}
-		s_Data.QuadVertexBufferPtr->Color = color;
+		s_Data.QuadVertexBufferPtr->Color = quad.color;
 		s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
 		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
-		s_Data.QuadVertexBufferPtr->TileScale = tileScale;
+		s_Data.QuadVertexBufferPtr->TileScale = quad.tileScale;
 		s_Data.QuadVertexBufferPtr++;
 	}
 	

@@ -1,6 +1,7 @@
 #pragma once
 #include "renderer/orthographic_camera.h"
 #include "renderer/texture.h"
+#include "renderer/sub_texture2D.h"
 
 namespace Enik {
 
@@ -10,6 +11,7 @@ struct QuadProperties {
 	glm::vec4 color    = glm::vec4(1.0f);
 	
 	Ref<Texture2D> texture = nullptr;
+	Ref<SubTexture2D> subTexture = nullptr;
 	float tileScale = 1.0f;
 	float rotation = 0.0f;
 };
@@ -24,11 +26,7 @@ public:
 	static void EndScene();
 	static void Flush();
 
-	// Primitives
 	static void DrawQuad(const QuadProperties& quadProperties);
-	static void DrawQuad(const glm::vec3& position, const glm::vec2& scale, const Ref<Texture2D>& texture, const glm::vec4& color, float tileScale = 1.0f);
-	static void DrawQuad(const glm::vec3& position, const glm::vec2& scale, float textureIndex, const glm::vec4& color, float tileScale = 1.0f);
-	static void DrawQuad(const glm::vec3& position, const glm::vec2& scale, float textureIndex, const glm::vec4& color, float tileScale, float rotation);
 
 
 	struct Statistics {
