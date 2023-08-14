@@ -17,7 +17,7 @@ namespace Enik {
 class Application {
 
 public:
-	Application();
+	Application(const std::string& name = "eengine");
 	virtual ~Application();
 	virtual void Run();
 

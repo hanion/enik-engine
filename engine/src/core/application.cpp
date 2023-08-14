@@ -10,13 +10,13 @@ namespace Enik {
 Application* Application::s_Instance = nullptr;
 
 
-Application::Application() {
+Application::Application(const std::string& name) {
 	EN_PROFILE_SCOPE;
 
 	EN_CORE_ASSERT(!s_Instance, "Application already exists!");
 	s_Instance = this;
 
-	m_Window = new Window(WindowProperties("eengine",1280,600));
+	m_Window = new Window(WindowProperties(name,1280,600));
 	m_Window->SetEventCallback(EN_BIND_EVENT_FN(Application::OnEvent));
 	m_Window->SetVsync(false);
 
