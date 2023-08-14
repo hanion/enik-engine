@@ -13,6 +13,7 @@
 #include "renderer/render_command.h"
 
 #include "renderer/buffer.h"
+#include "renderer/frame_buffer.h"
 #include "renderer/vertex_array.h"
 #include "renderer/shader.h"
 #include "renderer/texture.h"
