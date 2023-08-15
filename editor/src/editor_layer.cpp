@@ -162,7 +162,7 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 		
 		
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-		if ((viewportSize.x != m_ViewportSize.x) or (viewportSize.y != m_ViewportSize.y)) {
+		if (((viewportSize.x != m_ViewportSize.x) or (viewportSize.y != m_ViewportSize.y)) and (viewportSize.x > 0 and viewportSize.y > 0)){
 			m_ViewportSize.x = viewportSize.x;
 			m_ViewportSize.y = viewportSize.y;
 
