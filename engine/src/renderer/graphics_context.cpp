@@ -7,6 +7,4 @@ namespace Enik {
 GraphicsContext::GraphicsContext() {
 }
 
-GraphicsContext::~GraphicsContext() {
-}
 }
