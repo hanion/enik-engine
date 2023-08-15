@@ -5,7 +5,7 @@ namespace Enik {
 class GraphicsContext {
    public:
 	GraphicsContext();
-	~GraphicsContext();
+	virtual ~GraphicsContext();
 
 	virtual void Init() = 0;
 	virtual void SwapBuffers() = 0;
