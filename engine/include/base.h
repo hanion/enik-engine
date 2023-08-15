@@ -3,7 +3,6 @@
 #include <memory>
 #include "core/log.h"
 
-#define EN_PLATFORM_LINUX
 
 #ifdef EN_DEBUG
 	#if defined(EN_PLATFORM_WINDOWS)

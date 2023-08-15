@@ -41,6 +41,22 @@ add_subdirectory(external/imgui)
 add_subdirectory(external/glm)
 
 
+# automatically set platform globally
+if(UNIX AND NOT APPLE)
+	set(EN_PLATFORM_LINUX 1)
+endif()
+
+if(WIN32)
+	set(EN_PLATFORM_WINDOWS 1)
+endif()
+
+target_compile_definitions(${PROJECT_NAME}
+	PUBLIC
+	$<$<BOOL:${EN_PLATFORM_LINUX}>:EN_PLATFORM_LINUX>
+	$<$<BOOL:${EN_PLATFORM_WINDOWS}>:EN_PLATFORM_WINDOWS>
+)
+
+
 target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:EN_DEBUG> $<$<CONFIG:Debug>:TRACY_ENABLE>)
 
 
