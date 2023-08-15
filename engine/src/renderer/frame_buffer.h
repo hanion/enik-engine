@@ -5,7 +5,8 @@
 namespace Enik {
 
 struct FrameBufferSpecification {
-	uint32_t Width, Height;
+	uint32_t Width = 32;
+	uint32_t Height = 32;
 	bool SwapChainTarget = false;
 };
 
