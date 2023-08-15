@@ -50,13 +50,13 @@ void ImGuiLayer::OnDetach() {
 }
 
 
-void ImGuiLayer::OnImGuiRender() {
-	//static bool show = true;
-	//ImGui::ShowDemoWindow(&show);
-	//ShowTestingWindow();
+void ImGuiLayer::OnEvent(Event& e) {
+	if (m_BlockEvents) {
+		ImGuiIO& io = ImGui::GetIO();
+		e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
+		e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
+	}
 }
-
-
 
 void ImGuiLayer::Begin() {
 	EN_PROFILE_SCOPE;
@@ -85,33 +85,6 @@ void ImGuiLayer::End() {
 	}
 	
 
-}
-
-
-
-void ImGuiLayer::ShowTestingWindow() {
-
-
-
-	ImGuiWindowFlags window_flags = 0;
-	window_flags |= ImGuiWindowFlags_NoTitleBar;
-	window_flags |= ImGuiWindowFlags_NoDecoration;
-	window_flags |= ImGuiWindowFlags_AlwaysAutoResize;
-
-	ImGui::SetNextWindowSize(ImVec2(300,42));
-	if (ImGui::Begin("testing window", NULL, window_flags)) {
-		ImGui::PushItemWidth(ImGui::GetFontSize() * -12);
-
-
-
-		ImGui::Spacing();
-		static float slider_float = 1.0f;
-		ImGui::SliderFloat("slider float",&slider_float,0.0f,100.0f, "%.2f");
-
-		
-
-		ImGui::End();
-	}
 }
 
 }

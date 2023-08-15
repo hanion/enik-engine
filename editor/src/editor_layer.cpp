@@ -155,6 +155,11 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
 		ImGui::Begin("Viewport", nullptr, window_flags);
 		ImGui::PopStyleVar(1);
+
+		m_ViewportFocused = ImGui::IsWindowFocused();
+		m_ViewportHovered = ImGui::IsWindowHovered();
+		Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);
+		
 		
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
 		if ((viewportSize.x != m_ViewportSize.x) or (viewportSize.y != m_ViewportSize.y)) {

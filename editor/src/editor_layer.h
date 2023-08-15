@@ -26,6 +26,8 @@ private:
 
 	Ref<FrameBuffer> m_FrameBuffer;
 
+	bool m_ViewportFocused = false;
+	bool m_ViewportHovered = false;
 	glm::vec2 m_ViewportSize = glm::vec2(0);
 
 	QuadProperties m_Tile;
