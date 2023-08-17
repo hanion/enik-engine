@@ -46,7 +46,7 @@ void EditorLayer::OnAttach() {
 
 	/* Create Camera Entity */{
 		m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
-		m_CameraEntity.Add<Component::Camera>(glm::ortho(-1.6f, 1.6f, -0.9f, 0.9f, -1.0f, 1.0f));
+		m_CameraEntity.Add<Component::Camera>();
 	}
 
 }
@@ -135,8 +135,8 @@ void EditorLayer::OnImGuiRender() {
 
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 
 		ImGui::Begin("DockSpace", nullptr, window_flags);
 

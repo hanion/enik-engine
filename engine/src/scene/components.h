@@ -2,7 +2,7 @@
 
 #include <glm.hpp>
 #include "renderer/sub_texture2D.h"
-#include "renderer/camera.h"
+#include "scene/scene_camera.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace Enik {
@@ -60,14 +60,12 @@ struct SpriteRenderer {
 };
 
 struct Camera {
-	Enik::Camera Cam;
+	SceneCamera Cam;
 	bool Primary = true;
 	bool FixedAspectRatio = false;
 
 	Camera() = default;
 	Camera(const Camera&) = default;
-	Camera(const glm::mat4& projection) 
-		: Cam(projection) {}
 	
 };
 

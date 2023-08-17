@@ -8,15 +8,13 @@
 namespace Enik {
 
 Scene::Scene() {
-	
 }
 
 Scene::~Scene() {
-
 }
 
 Entity Scene::CreateEntity(const std::string& name) {
-    Entity entity = Entity(m_Registry.create(), this);
+	Entity entity = Entity(m_Registry.create(), this);
 	entity.Add<Component::Transform>();
 	auto& tag = entity.Add<Component::Tag>();
 	tag.Text = name.empty() ? "Empty Entity" : name;
@@ -60,4 +58,15 @@ void Scene::OnUpdate(Timestep ts) {
 	Renderer2D::EndScene();
 
 }
+
+void Scene::OnViewportResize(uint32_t width, uint32_t height) {
+	auto view = m_Registry.view<Component::Camera>();
+	for (auto entity : view) {
+		Component::Camera& camera = view.get<Component::Camera>(entity);
+		if (not camera.FixedAspectRatio) {
+			camera.Cam.SetViewportSize(width, height);
+		}
+	}
+}
+
 }
