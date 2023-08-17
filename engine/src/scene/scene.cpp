@@ -24,15 +24,40 @@ Entity Scene::CreateEntity(const std::string& name) {
 }
 
 void Scene::OnUpdate(Timestep ts) {
-	auto group = m_Registry.group<Component::Transform>(entt::get<Component::SpriteRenderer>);
-	
-	for (auto entity : group) {
-		Component::Transform& transform   = group.get<Component::Transform>     (entity);
-		Component::SpriteRenderer& sprite = group.get<Component::SpriteRenderer>(entity);
+	EN_PROFILE_SECTION("Scene::OnUpdate");
 
-		Renderer2D::DrawQuad(transform, sprite);
+	Camera* mainCamera;
+	glm::mat4 mainCameraTransform;
+	/* Get Camera */ {
+		EN_PROFILE_SECTION("Get Camera");
 
+		auto view = m_Registry.view<Component::Transform, Component::Camera>();
+		for (auto entity : view) {
+			Component::Transform& transform = view.get<Component::Transform>  (entity);
+			Component::Camera& camera       = view.get<Component::Camera>     (entity);
+			mainCamera = &camera.Cam;
+			mainCameraTransform = transform.GetTransform();
+		}
 	}
-	
+
+	if (not mainCamera) { return; }
+
+	Renderer2D::BeginScene(*mainCamera, mainCameraTransform);
+
+	/* Get Sprites */ {
+		EN_PROFILE_SECTION("Get Sprites");
+
+		auto group = m_Registry.group<Component::Transform>(entt::get<Component::SpriteRenderer>);
+		for (auto entity : group) {
+			Component::Transform& transform   = group.get<Component::Transform>     (entity);
+			Component::SpriteRenderer& sprite = group.get<Component::SpriteRenderer>(entity);
+
+			Renderer2D::DrawQuad(transform, sprite);
+
+		}
+	}
+
+	Renderer2D::EndScene();
+
 }
 }

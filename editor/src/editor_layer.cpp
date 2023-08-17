@@ -1,6 +1,7 @@
 #include "editor_layer.h"
 
 #include "renderer/opengl/opengl_shader.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 
 
@@ -29,8 +30,8 @@ void EditorLayer::OnAttach() {
 		m_Tile.Get<Component::Transform>().Position = glm::vec3(0.0f, 0.0f, 0.9f);
 	}
 
-	/*Creating Background Entity*/{
-		Entity backgroundEntity = m_ActiveScene->CreateEntity();
+	/* Creating Background Entity */{
+		Entity backgroundEntity = m_ActiveScene->CreateEntity("Background");
 
 		Component::Transform& trans = backgroundEntity.Get<Component::Transform>();
 		trans.Position.z = -0.9f;
@@ -41,6 +42,11 @@ void EditorLayer::OnAttach() {
 		sprite.Color = glm::vec4(0.2f,0.4f,0.4f,0.5f);
 		sprite.TileScale = 100.0f;
 
+	}
+
+	/* Create Camera Entity */{
+		m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
+		m_CameraEntity.Add<Component::Camera>(glm::ortho(-1.6f, 1.6f, -0.9f, 0.9f, -1.0f, 1.0f));
 	}
 
 }
@@ -65,7 +71,6 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 	RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
 	RenderCommand::Clear();
 
-	Renderer2D::BeginScene(m_CameraController.GetCamera());
 
 #if 0 
 	{
@@ -105,10 +110,10 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 
 	
 	m_Tile.Get<Component::Transform>().Rotation += glm::radians(15.0f) * timestep.GetSeconds();
+	m_CameraEntity.Get<Component::Transform>().Rotation += glm::radians(15.0f) * timestep.GetSeconds();
 
 	m_ActiveScene->OnUpdate(m_Timestep);
 
-	Renderer2D::EndScene();
 	m_FrameBuffer->Unbind();
 }
 
@@ -183,6 +188,8 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 
 			m_FrameBuffer->Resize(m_ViewportSize.x, m_ViewportSize.y);
 			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
+
+			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 
 		uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();

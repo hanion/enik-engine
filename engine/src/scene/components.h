@@ -2,6 +2,8 @@
 
 #include <glm.hpp>
 #include "renderer/sub_texture2D.h"
+#include "renderer/camera.h"
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace Enik {
 namespace Component {
@@ -33,6 +35,13 @@ struct Transform {
 	Transform(const glm::vec3& position, const float rotation = 0.0f, const glm::vec3& scale = glm::vec3(0.0f)) 
 		: Position(position), Rotation(rotation), Scale(scale) {}
 
+	glm::mat4 GetTransform() {
+		glm::mat4 transform = glm::mat4(1.0f);
+		transform = glm::translate(transform, Position)
+			* glm::rotate(transform, Rotation, glm::vec3(0.0f, 0.0f, 1.0f))
+			* glm::scale(transform, glm::vec3(Scale.x, Scale.y, 1.0f));
+		return transform;
+	}
 };
 
 
@@ -50,6 +59,17 @@ struct SpriteRenderer {
 	
 };
 
+struct Camera {
+	Enik::Camera Cam;
+	bool Primary = true;
+	bool FixedAspectRatio = false;
+
+	Camera() = default;
+	Camera(const Camera&) = default;
+	Camera(const glm::mat4& projection) 
+		: Cam(projection) {}
+	
+};
 
 }
 

@@ -33,6 +33,7 @@ private:
 	glm::vec2 m_ViewportSize = glm::vec2(0);
 
 	Entity m_Tile;
+	Entity m_CameraEntity;
 
 	Timestep m_Timestep;
 
