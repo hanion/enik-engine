@@ -16,11 +16,33 @@ void EditorLayer::OnAttach() {
 
 	Ref<Texture2D> tileset = Texture2D::Create(FULL_PATH("assets/textures/tiles.png"));
 	Ref<SubTexture2D> subTexture = SubTexture2D::CreateFromTileIndex(tileset, glm::vec2(18), glm::vec2(0,8), glm::vec2(2));
-	m_Tile.subTexture = subTexture;
-	m_Tile.position.z = 0.5f;
-	
+
 	FrameBufferSpecification spec;
 	m_FrameBuffer = FrameBuffer::Create(spec);
+
+
+	m_ActiveScene = CreateRef<Scene>();
+
+	/* Creating Tile */{
+		m_Tile = m_ActiveScene->CreateEntity();
+		m_Tile.Add<Component::SpriteRenderer>().SubTexture = subTexture;
+		m_Tile.Get<Component::Transform>().Position = glm::vec3(0.0f, 0.0f, 0.9f);
+	}
+
+	/*Creating Background Entity*/{
+		Entity backgroundEntity = m_ActiveScene->CreateEntity();
+
+		Component::Transform& trans = backgroundEntity.Get<Component::Transform>();
+		trans.Position.z = -0.9f;
+		trans.Scale = glm::vec2(200.0f);
+		
+		Component::SpriteRenderer& sprite = backgroundEntity.Add<Component::SpriteRenderer>();
+		sprite.Texture = m_Texture2D;
+		sprite.Color = glm::vec4(0.2f,0.4f,0.4f,0.5f);
+		sprite.TileScale = 100.0f;
+
+	}
+
 }
 
 void EditorLayer::OnDetach() {
@@ -80,18 +102,11 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 	}
 #endif
 
-	QuadProperties checkerboard;
-	checkerboard.position.z = -0.9f;
-	checkerboard.scale = glm::vec2(200.0f);
-	checkerboard.texture = m_Texture2D;
-	checkerboard.color = glm::vec4(0.2f,0.4f,0.4f,0.5f);
-	checkerboard.tileScale = 100.0f;
-	checkerboard.rotation = 0.0f;
-	Renderer2D::DrawQuad(checkerboard);
 
+	
+	m_Tile.Get<Component::Transform>().Rotation += glm::radians(15.0f) * timestep.GetSeconds();
 
-	m_Tile.rotation += glm::radians(45.0f) * timestep.GetSeconds();
-	Renderer2D::DrawQuad(m_Tile);
+	m_ActiveScene->OnUpdate(m_Timestep);
 
 	Renderer2D::EndScene();
 	m_FrameBuffer->Unbind();

@@ -19,6 +19,7 @@ file(GLOB source_files
 	"${source_dir}/renderer/opengl/*.cpp"
 	"${PROJECT_SOURCE_DIR}/external/stb_image/*.cpp"
 	"${PROJECT_SOURCE_DIR}/external/entt/*.hpp"
+	"${source_dir}/scene/*.cpp"
 )
 file(GLOB include_files 
 	"${PROJECT_SOURCE_DIR}/include/*.h"
@@ -30,6 +31,7 @@ file(GLOB include_files
 	"${source_dir}/renderer/opengl/*.h"
 	"${PROJECT_SOURCE_DIR}/external/stb_image/*.h"
 	"${PROJECT_SOURCE_DIR}/external/entt/*.hpp"
+	"${source_dir}/scene/*.h"
 )
 
 

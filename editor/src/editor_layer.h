@@ -26,11 +26,13 @@ private:
 
 	Ref<FrameBuffer> m_FrameBuffer;
 
+	Ref<Scene> m_ActiveScene;
+
 	bool m_ViewportFocused = false;
 	bool m_ViewportHovered = false;
 	glm::vec2 m_ViewportSize = glm::vec2(0);
 
-	QuadProperties m_Tile;
+	Entity m_Tile;
 
 	Timestep m_Timestep;
 

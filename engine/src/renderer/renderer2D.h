@@ -3,19 +3,9 @@
 #include "renderer/texture.h"
 #include "renderer/sub_texture2D.h"
 
+#include "scene/components.h"
+
 namespace Enik {
-
-struct QuadProperties {
-	glm::vec3 position = glm::vec3(0.0f);
-	glm::vec2 scale    = glm::vec2(1.0f);
-	glm::vec4 color    = glm::vec4(1.0f);
-	
-	Ref<Texture2D> texture = nullptr;
-	Ref<SubTexture2D> subTexture = nullptr;
-	float tileScale = 1.0f;
-	float rotation = 0.0f;
-};
-
 
 class Renderer2D {
 public:
@@ -26,7 +16,7 @@ public:
 	static void EndScene();
 	static void Flush();
 
-	static void DrawQuad(const QuadProperties& quadProperties);
+	static void DrawQuad(const Component::Transform& transform, const Component::SpriteRenderer& sprite);
 
 
 	struct Statistics {
