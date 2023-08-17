@@ -18,12 +18,6 @@ public:
 private:
 	OrthographicCameraController m_CameraController;
 
-	// Temporary
-	Ref<Shader> m_Shader;
-	Ref<Texture2D> m_Texture2D;
-
-	QuadProperties m_Tile;
-
 	Timestep m_Timestep;
 
 };

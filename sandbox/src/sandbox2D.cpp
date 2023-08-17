@@ -12,13 +12,6 @@ Sandbox2D::Sandbox2D()
 void Sandbox2D::OnAttach() {
 	EN_PROFILE_SCOPE;
 
-	m_Texture2D = Texture2D::Create(FULL_PATH("assets/textures/checkerboard.png"));
-
-	Ref<Texture2D> tileset = Texture2D::Create(FULL_PATH("assets/textures/tiles.png"));
-	Ref<SubTexture2D> subTexture = SubTexture2D::CreateFromTileIndex(tileset, glm::vec2(18), glm::vec2(0,8), glm::vec2(2));
-	m_Tile.subTexture = subTexture;
-	m_Tile.position.z = 0.5f;
-	
 }
 
 void Sandbox2D::OnDetach() {
@@ -41,51 +34,6 @@ void Sandbox2D::OnUpdate(Timestep timestep) {
 
 	Renderer2D::BeginScene(m_CameraController.GetCamera());
 
-	if (false) {
-		EN_PROFILE_SECTION("Squares");
-
-		static const int count = 99;
-		static const float spacing = 0.25f;
-		static const glm::vec2 scale = glm::vec2(0.2f);
-		static const float offset = ( ((count + (count%2)) * spacing) / 2.0f + spacing/2.0f);
-
-		static const glm::vec4 darkColor  = glm::vec4(0.1f, 0.1f, 0.1f, 0.6f);
-		static const glm::vec4 lightColor = glm::vec4(0.4f, 0.4f, 0.4f, 0.6f);
-
-		QuadProperties square;
-		square.scale = scale;
-		square.position.z = -0.2f;
-
-		for (int i = 0; i < count; i++){
-			for (int j = 0; j < count; j++) {
-				if (((i % 2 == 0) and (j % 2 == 0)) or ((i % 2 != 0) and (j % 2 != 0))) {
-					square.color = darkColor;
-				}
-				else {
-					square.color = lightColor;
-				}
-
-				square.position.x = j*spacing - offset;
-				square.position.y = i*spacing - offset;
-				
-				Renderer2D::DrawQuad(square);
-			}
-			
-		}
-	}
-
-	QuadProperties checkerboard;
-	checkerboard.position.z = -0.9f;
-	checkerboard.scale = glm::vec2(200.0f);
-	checkerboard.texture = m_Texture2D;
-	checkerboard.color = glm::vec4(0.2f,0.4f,0.4f,0.5f);
-	checkerboard.tileScale = 100.0f;
-	checkerboard.rotation = 0.0f;
-	Renderer2D::DrawQuad(checkerboard);
-
-
-	m_Tile.rotation += glm::radians(45.0f) * timestep.GetSeconds();
-	Renderer2D::DrawQuad(m_Tile);
 
 	Renderer2D::EndScene();
 }
