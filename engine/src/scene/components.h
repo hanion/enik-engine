@@ -3,6 +3,7 @@
 #include <glm.hpp>
 #include "renderer/sub_texture2D.h"
 #include "scene/scene_camera.h"
+#include "scene/scriptable_entity.h"
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace Enik {
@@ -67,6 +68,27 @@ struct Camera {
 	Camera() = default;
 	Camera(const Camera&) = default;
 	
+};
+
+
+struct NativeScript {
+	ScriptableEntity* Instance = nullptr;
+
+	ScriptableEntity*(*InstantiateScript)();
+	void (*DestroyScript)(NativeScript*);
+
+	template<typename T>
+	void Bind() {
+		
+		InstantiateScript = []() {
+			return static_cast<ScriptableEntity*>(new T());
+		};
+
+		DestroyScript = [](NativeScript* ns) {
+			delete ns->Instance;
+			ns->Instance = nullptr;
+		};
+	}
 };
 
 }

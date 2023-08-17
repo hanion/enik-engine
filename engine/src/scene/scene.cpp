@@ -11,6 +11,14 @@ Scene::Scene() {
 }
 
 Scene::~Scene() {
+	/* Destroy Scripts */ {
+		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns){
+			if (ns.Instance) {
+				ns.Instance->OnDestroy();
+				ns.DestroyScript(&ns);
+			}
+		});
+	}
 }
 
 Entity Scene::CreateEntity(const std::string& name) {
@@ -23,6 +31,20 @@ Entity Scene::CreateEntity(const std::string& name) {
 
 void Scene::OnUpdate(Timestep ts) {
 	EN_PROFILE_SECTION("Scene::OnUpdate");
+
+	// TODO do this On Editor Play
+	/* Update Scripts */ {
+		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns){
+			if (!ns.Instance) {
+				ns.Instance = ns.InstantiateScript();
+				ns.Instance->m_Entity = Entity(entity, this);
+				ns.Instance->OnCreate();
+			}
+			ns.Instance->OnUpdate(ts);
+		});
+	}
+
+
 
 	Camera* mainCamera;
 	glm::mat4 mainCameraTransform;

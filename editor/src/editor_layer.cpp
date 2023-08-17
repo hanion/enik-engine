@@ -49,6 +49,41 @@ void EditorLayer::OnAttach() {
 		m_CameraEntity.Add<Component::Camera>();
 	}
 
+	/* Create a test native script */ {
+		class CameraContoller : public ScriptableEntity {
+		public:
+			CameraContoller() 
+				: m_Transform(nullptr) {}
+
+			virtual void OnCreate() override final {
+				m_Transform = &Get<Component::Transform>();
+			}
+			
+			virtual void OnUpdate(Timestep ts) override final {
+				if (Input::IsKeyPressed(Key::A)) {
+					m_Transform->Position.x -= m_Speed * ts;
+				}
+				if (Input::IsKeyPressed(Key::D)) {
+					m_Transform->Position.x += m_Speed * ts;
+				}
+				
+				if (Input::IsKeyPressed(Key::W)) {
+					m_Transform->Position.y += m_Speed * ts;
+				}
+				if (Input::IsKeyPressed(Key::S)) {
+					m_Transform->Position.y -= m_Speed * ts;
+				}
+			}
+		private:
+			const glm::vec3 start_pos = glm::vec3(0.0f);
+			float m_Speed = 5.0f;
+			Component::Transform* m_Transform;
+		};
+
+		m_CameraEntity.Add<Component::NativeScript>().Bind<CameraContoller>();
+
+	}
+
 }
 
 void EditorLayer::OnDetach() {
@@ -110,7 +145,7 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 
 	
 	m_Tile.Get<Component::Transform>().Rotation += glm::radians(15.0f) * timestep.GetSeconds();
-	m_CameraEntity.Get<Component::Transform>().Rotation += glm::radians(15.0f) * timestep.GetSeconds();
+	//m_CameraEntity.Get<Component::Transform>().Rotation += glm::radians(15.0f) * timestep.GetSeconds();
 
 	m_ActiveScene->OnUpdate(m_Timestep);
 

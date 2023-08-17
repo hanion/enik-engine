@@ -9,6 +9,7 @@
 #include "core/timestep.h"
 #include "scene/components.h"
 #include "scene/entity.h"
+#include "scene/scriptable_entity.h"
 #include "scene/scene.h"
 
 #include "renderer/renderer.h"
