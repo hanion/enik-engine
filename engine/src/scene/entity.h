@@ -35,9 +35,10 @@ public:
 		return m_Scene->m_Registry.remove<T>(m_Hanle);
 	}
 
+	operator bool() const { return m_Hanle != entt::null; }
 
 private:
-	entt::entity m_Hanle{ 0 };
+	entt::entity m_Hanle{ entt::null };
 	Scene* m_Scene = nullptr;
 
 };
