@@ -1,6 +1,6 @@
 #pragma once
 
-#include "entt/entt.hpp"
+#include <entt/entt.hpp>
 #include "scene/scene.h"
 #include "core/asserter.h"
 

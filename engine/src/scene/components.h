@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glm.hpp>
+#include <glm/glm.hpp>
 #include "renderer/sub_texture2D.h"
 #include "scene/scene_camera.h"
 #include "scene/scriptable_entity.h"

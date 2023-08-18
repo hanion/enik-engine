@@ -1,6 +1,6 @@
 #include "scene.h"
 
-#include <glm.hpp>
+#include <glm/glm.hpp>
 #include "scene/components.h"
 #include "renderer/renderer2D.h"
 #include "scene/entity.h"

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "core/timestep.h"
-#include "entt/entt.hpp"
+#include <entt/entt.hpp>
 
 namespace Enik {
 
