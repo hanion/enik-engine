@@ -6,17 +6,12 @@
 
 
 EditorLayer::EditorLayer()
-	: Layer("EditorLayer"), m_CameraController(1.6f/0.75f, true) {
+	: Layer("EditorLayer") {
 	
 }
 
 void EditorLayer::OnAttach() {
 	EN_PROFILE_SCOPE;
-
-	m_Texture2D = Texture2D::Create(FULL_PATH("assets/textures/checkerboard.png"));
-
-	Ref<Texture2D> tileset = Texture2D::Create(FULL_PATH("assets/textures/tiles.png"));
-	Ref<SubTexture2D> subTexture = SubTexture2D::CreateFromTileIndex(tileset, glm::vec2(18), glm::vec2(0,8), glm::vec2(2));
 
 	FrameBufferSpecification spec;
 	m_FrameBuffer = FrameBuffer::Create(spec);
@@ -25,12 +20,17 @@ void EditorLayer::OnAttach() {
 	m_ActiveScene = CreateRef<Scene>();
 
 	/* Creating Tile */{
+		Ref<Texture2D> tileset = Texture2D::Create(FULL_PATH("assets/textures/tiles.png"));
+		Ref<SubTexture2D> subTexture = SubTexture2D::CreateFromTileIndex(tileset, glm::vec2(18), glm::vec2(0,8), glm::vec2(2));
+		
 		m_Tile = m_ActiveScene->CreateEntity();
 		m_Tile.Add<Component::SpriteRenderer>().SubTexture = subTexture;
 		m_Tile.Get<Component::Transform>().Position = glm::vec3(0.0f, 0.0f, 0.9f);
 	}
 
 	/* Creating Background Entity */{
+		Ref<Texture2D> backgroundTexture = Texture2D::Create(FULL_PATH("assets/textures/checkerboard.png"));
+
 		Entity backgroundEntity = m_ActiveScene->CreateEntity("Background");
 
 		Component::Transform& trans = backgroundEntity.Get<Component::Transform>();
@@ -38,7 +38,7 @@ void EditorLayer::OnAttach() {
 		trans.Scale = glm::vec2(200.0f);
 		
 		Component::SpriteRenderer& sprite = backgroundEntity.Add<Component::SpriteRenderer>();
-		sprite.Texture = m_Texture2D;
+		sprite.Texture = backgroundTexture;
 		sprite.Color = glm::vec4(0.2f,0.4f,0.4f,0.5f);
 		sprite.TileScale = 100.0f;
 
@@ -80,6 +80,7 @@ void EditorLayer::OnAttach() {
 			Component::Transform* m_Transform;
 		};
 
+		//m_CameraEntity.AddScript<CameraContoller>();
 		m_CameraEntity.Add<Component::NativeScript>().Bind<CameraContoller>();
 
 	}
@@ -96,8 +97,6 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 	EN_PROFILE_SCOPE;
 
 	m_Timestep = timestep;
-
-	m_CameraController.OnUpdate(m_Timestep);
 
 	Renderer2D::ResetStats();
 
@@ -153,7 +152,7 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 }
 
 void EditorLayer::OnEvent(Event& event) {
-	m_CameraController.OnEvent(event);
+	
 }
 
 void EditorLayer::OnImGuiRender() {
@@ -222,7 +221,6 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 			m_ViewportSize.y = viewportSize.y;
 
 			m_FrameBuffer->Resize(m_ViewportSize.x, m_ViewportSize.y);
-			m_CameraController.OnResize(m_ViewportSize.x, m_ViewportSize.y);
 
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}

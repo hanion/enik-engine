@@ -18,12 +18,6 @@ public:
 	void OnImGuiDockSpaceRender();
 
 private:
-	OrthographicCameraController m_CameraController;
-
-	// Temporary
-	Ref<Shader> m_Shader;
-	Ref<Texture2D> m_Texture2D;
-
 	Ref<FrameBuffer> m_FrameBuffer;
 
 	Ref<Scene> m_ActiveScene;
