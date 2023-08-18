@@ -1,43 +1,43 @@
 {
-    "configurations": [
-        {
-            "name": "Linux",
-            "includePath": [
-                /*
-                "${workspaceFolder}/engine/include",
-                "${workspaceFolder}/engine/external",
-                "${workspaceFolder}/engine/src",
-                "${workspaceFolder}/engine/external/spdlog/include",
-                "${workspaceFolder}/engine/external/glad/include",
-                "${workspaceFolder}/engine/external/imgui",
-                "${workspaceFolder}/engine/external/glm",
-                "${workspaceFolder}/engine/external/stb_image",
-                */
-                "${workspaceFolder}/**"
-            ],
-            "defines": [],
-            "compilerPath": "/usr/bin/gcc",
-            "cStandard": "c17",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "linux-gcc-x64",
-            "mergeConfigurations": false,
-            "browse": {
-                "path": [
-                    /*
-                    "${workspaceFolder}/engine/include",
-                    "${workspaceFolder}/engine/external",
-                    "${workspaceFolder}/engine/src",
-                    "${workspaceFolder}/engine/external/spdlog/include",
-                    "${workspaceFolder}/engine/external/glad/include",
-                    "${workspaceFolder}/engine/external/imgui",
-                    "${workspaceFolder}/engine/external/glm",
-                    "${workspaceFolder}/engine/external/stb_image",
-                    */
-                    "${workspaceFolder}"
-                ],
-                "limitSymbolsToIncludedHeaders": true
-            }
-        }
-    ],
-    "version": 4
+	"configurations": [
+		{
+			"name": "Linux",
+			"includePath": [
+				"${workspaceFolder}/engine/include/**",
+				"${workspaceFolder}/engine/src/**",
+				
+				"${workspaceFolder}/engine/external",
+				"${workspaceFolder}/engine/external/glad/include/**",
+				"${workspaceFolder}/engine/external/glfw/include/**",
+				"${workspaceFolder}/engine/external/glm",
+				"${workspaceFolder}/engine/external/spdlog/include/**",
+				
+				"${workspaceFolder}/editor/**",
+				"${workspaceFolder}/sandbox/**"
+			],
+			"defines": [],
+			"compilerPath": "/usr/bin/gcc",
+			"cStandard": "c17",
+			"cppStandard": "c++17",
+			"intelliSenseMode": "linux-gcc-x64",
+			"mergeConfigurations": false,
+			"browse": {
+				"path": [
+					"${workspaceFolder}/engine/include",
+					"${workspaceFolder}/engine/src",
+					
+					"${workspaceFolder}/engine/external/*",
+					"${workspaceFolder}/engine/external/glad/include",
+					"${workspaceFolder}/engine/external/glfw/include",
+					"${workspaceFolder}/engine/external/glm/glm",
+					"${workspaceFolder}/engine/external/spdlog/include",
+					
+					"${workspaceFolder}/editor",
+					"${workspaceFolder}/sandbox"
+				],
+				"limitSymbolsToIncludedHeaders": true
+			}
+		}
+	],
+	"version": 4
 }
