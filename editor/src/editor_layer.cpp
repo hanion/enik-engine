@@ -231,16 +231,25 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 		ImGui::Image(reinterpret_cast<void*>(static_cast<uintptr_t>(textureID)), 
 			ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0,1), ImVec2(1,0));
 		
+
+		auto pos = ImGui::GetWindowPos();
+		m_ViewportPosition.x = pos.x;
+		m_ViewportPosition.y = pos.y;
+
 		ImGui::End();
 	}
 
 	/*ShowPerformance*/ {
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav;
 		window_flags |=  ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
-		window_flags |=  ImGuiWindowFlags_NoDecoration;
+		window_flags |=  ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking;
 		
 		ImGui::SetNextWindowBgAlpha(0.65f);
-		ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowPos().x + 20, ImGui::GetWindowPos().y + 50), ImGuiCond_Appearing);
+		ImVec2 pos;
+		pos.x = 20 + m_ViewportPosition.x;
+		pos.y = 40 + m_ViewportPosition.y;
+
+		ImGui::SetNextWindowPos(pos);
 		if (ImGui::Begin("Performance", nullptr, window_flags))
 		{
 			ImGui::Text("Performance");
@@ -254,10 +263,14 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 	/*ShowRenderer2DStats*/ {
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav;
 		window_flags |=  ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
-		window_flags |=  ImGuiWindowFlags_NoDecoration;
+		window_flags |=  ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking;
 		
 		ImGui::SetNextWindowBgAlpha(0.65f);
-		ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowPos().x + 20,ImGui::GetWindowPos().y + 120), ImGuiCond_Appearing);
+		ImVec2 pos;
+		pos.x = 20  + m_ViewportPosition.x;
+		pos.y = 110 + m_ViewportPosition.y;
+
+		ImGui::SetNextWindowPos(pos);
 		if (ImGui::Begin("Rednerer2D Stats", nullptr, window_flags))
 		{
 			auto stats = Renderer2D::GetStats();
