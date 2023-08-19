@@ -27,6 +27,10 @@ void SceneTreePanel::OnImGuiRender() {
 		DrawEntityInSceneTree(entity);
 	});
 
+	if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
+		m_SelectionContext = {};
+	}
+
 	ImGui::EndTable();
 	ImGui::End();
 }
