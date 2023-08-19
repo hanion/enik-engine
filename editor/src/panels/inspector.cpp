@@ -138,7 +138,15 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	}
 
 
-
+	if (entity.Has<Component::NativeScript>()) {
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+		
+		if (ImGui::TreeNodeEx((void*)typeid(Component::NativeScript).hash_code(), treeNodeFlags, "Script")) {
+			ImGui::TextColored(ImVec4(0.4f, 0.7f, 0.2f, 1.0f), "Has Script");
+			ImGui::TreePop();
+		}
+	}
 
 }
 
