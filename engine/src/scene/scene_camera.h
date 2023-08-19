@@ -13,6 +13,16 @@ public:
 
 	void SetViewportSize(uint32_t width, uint32_t height);
 
+	float GetSize       () { return m_OrthographicSize; }
+	float GetFar        () { return m_OrthographicFar ; }
+	float GetNear       () { return m_OrthographicNear; }
+	float GetAspectRatio() { return m_AspectRatio     ; }
+
+	void SetSize       (float size ) { m_OrthographicSize = size ; RecalculateProjection(); }
+	void SetFar        (float far  ) { m_OrthographicFar  = far  ; RecalculateProjection(); }
+	void SetNear       (float near ) { m_OrthographicNear = near ; RecalculateProjection(); }
+	void SetAspectRatio(float ratio) { m_AspectRatio      = ratio; RecalculateProjection(); }
+
 private:
 	void RecalculateProjection();
 
