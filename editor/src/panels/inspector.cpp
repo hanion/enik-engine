@@ -76,6 +76,34 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	}
 
 
+	if (entity.Has<Component::Camera>()) {
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+
+		if (ImGui::TreeNodeEx((void*)typeid(Component::Camera).hash_code(), treeNodeFlags, "Camera")) {
+			auto& cam = entity.Get<Component::Camera>();
+
+			ImGui::Checkbox("Primary", &cam.Primary);
+			
+			static float size = cam.Cam.GetSize();
+			if (ImGui::DragFloat("Size", &size, 0.01f, 0.01f)) {
+				cam.Cam.SetSize(size);
+			}
+			
+			if (ImGui::Checkbox("Fixed Aspect Ratio", &cam.FixedAspectRatio)) {
+				m_Context->OnViewportResize(m_Context->m_ViewportWidth, m_Context->m_ViewportHeight);
+			}
+			if (cam.FixedAspectRatio) {
+				static float ratio = cam.Cam.GetAspectRatio();
+				if (ImGui::DragFloat("Aspect Ratio", &ratio, 0.01f, 0.001f)) {
+					cam.Cam.SetAspectRatio(ratio);
+				}
+			}
+			
+			ImGui::TreePop();
+		}
+	}
+
 
 }
 
