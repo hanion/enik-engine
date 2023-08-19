@@ -46,7 +46,7 @@ void Scene::OnUpdate(Timestep ts) {
 
 
 
-	Camera* mainCamera;
+	Camera* mainCamera = nullptr;
 	glm::mat4 mainCameraTransform;
 	/* Get Camera */ {
 		EN_PROFILE_SECTION("Get Camera");
@@ -55,6 +55,9 @@ void Scene::OnUpdate(Timestep ts) {
 		for (auto entity : view) {
 			Component::Transform& transform = view.get<Component::Transform>  (entity);
 			Component::Camera& camera       = view.get<Component::Camera>     (entity);
+			
+			if (not camera.Primary) { continue; }
+			
 			mainCamera = &camera.Cam;
 			mainCameraTransform = transform.GetTransform();
 		}
