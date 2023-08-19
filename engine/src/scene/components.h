@@ -36,7 +36,7 @@ struct Transform {
 	Transform(const glm::vec3& position, const float rotation = 0.0f, const glm::vec3& scale = glm::vec3(0.0f)) 
 		: Position(position), Rotation(rotation), Scale(scale) {}
 
-	glm::mat4 GetTransform() {
+	glm::mat4 GetTransform() const {
 		glm::mat4 transform = glm::mat4(1.0f);
 		transform = glm::translate(transform, Position)
 			* glm::rotate(transform, Rotation, glm::vec3(0.0f, 0.0f, 1.0f))

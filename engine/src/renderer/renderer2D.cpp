@@ -221,10 +221,7 @@ void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::Sp
 	glm::vec3 positions[4];
 
 	if (trans.Rotation) {
-		transform = glm::mat4(1.0f);
-		transform = glm::translate(transform, trans.Position)
-			* glm::rotate(transform, trans.Rotation, glm::vec3(0.0f, 0.0f, 1.0f))
-			* glm::scale(transform, glm::vec3(trans.Scale.x, trans.Scale.y, 1.0f));
+		transform = trans.GetTransform();
 	}
 	else {
 		glm::vec2 half_scale = trans.Scale/2.0f;
