@@ -1,6 +1,7 @@
 #pragma once
 #include <base.h>
 #include "scene/scene.h"
+#include "scene/entity.h"
 
 namespace Enik {
 
@@ -19,6 +20,8 @@ private:
 
 private:
 	Ref<Scene> m_Context;
+
+	Entity m_SelectionContext;
 
 };
 
