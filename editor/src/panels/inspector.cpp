@@ -56,6 +56,25 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	}
 
 
+	if (entity.Has<Component::Transform>()) {
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+
+		if (ImGui::TreeNodeEx((void*)typeid(Component::Transform).hash_code(), treeNodeFlags, "Transform")) {
+			auto& transform = entity.Get<Component::Transform>();
+			ImGui::DragFloat2("Position", glm::value_ptr(transform.Position), 0.01f);
+
+			float rot = glm::degrees(transform.Rotation);
+			if (ImGui::DragFloat("Rotation", &rot, 0.1f)) {
+				transform.Rotation = glm::radians(rot);
+			}
+
+			ImGui::DragFloat2("Scale", glm::value_ptr(transform.Scale), 0.01f);
+			
+			ImGui::TreePop();
+		}
+	}
+
 
 
 }
