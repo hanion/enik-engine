@@ -23,6 +23,9 @@ public:
 private:
 	entt::registry m_Registry;
 
+	uint32_t m_ViewportWidth;
+	uint32_t m_ViewportHeight;
+
 	friend class Entity;
 	friend class SceneTreePanel;
 };

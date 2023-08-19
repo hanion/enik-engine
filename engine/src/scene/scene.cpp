@@ -85,6 +85,9 @@ void Scene::OnUpdate(Timestep ts) {
 }
 
 void Scene::OnViewportResize(uint32_t width, uint32_t height) {
+	m_ViewportWidth = width;
+	m_ViewportHeight = height;
+
 	auto view = m_Registry.view<Component::Camera>();
 	for (auto entity : view) {
 		Component::Camera& camera = view.get<Component::Camera>(entity);
