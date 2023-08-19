@@ -37,6 +37,15 @@ public:
 
 	operator bool() const { return m_Hanle != entt::null; }
 
+	operator uint32_t() const { return (uint32_t)m_Hanle; }
+
+	bool operator == (Entity other) {
+		return m_Hanle == other.m_Hanle && m_Scene == other.m_Scene;
+	}
+	bool operator != (Entity other) {
+		return !(*this == other);
+	}
+
 private:
 	entt::entity m_Hanle{ entt::null };
 	Scene* m_Scene = nullptr;
