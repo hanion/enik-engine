@@ -105,6 +105,41 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	}
 
 
+	if (entity.Has<Component::SpriteRenderer>()) {
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
+
+		if (ImGui::TreeNodeEx((void*)typeid(Component::SpriteRenderer).hash_code(), treeNodeFlags, "Sprite Renderer")) {
+			auto& sprite = entity.Get<Component::SpriteRenderer>();
+			
+			ImGui::ColorEdit4("Sprite Color", glm::value_ptr(sprite.Color));
+			// ImGui::ColorEdit3("Sprite Color", glm::value_ptr(sprite.Color));
+			
+			/* Texture */ {
+				ImTextureID tex_id;
+				ImVec2 tex_size;
+
+				if (sprite.Texture) {
+					tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(sprite.Texture->GetRendererID()));
+					tex_size = ImVec2(sprite.Texture->GetWidth(), sprite.Texture->GetHeight());
+				}
+				else if (sprite.SubTexture) {
+					tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(sprite.SubTexture->GetTexture()->GetRendererID()));
+					tex_size = ImVec2(sprite.SubTexture->GetTexture()->GetWidth()/2.0f, sprite.SubTexture->GetTexture()->GetHeight()/2.0f);	
+				}
+
+				ImVec4 tint_col = ImGui::GetStyleColorVec4(ImGuiCol_Text);
+				ImVec4 border_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
+				ImGui::Image(tex_id, tex_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), tint_col, border_col);
+			}
+			
+			ImGui::TreePop();
+		}
+	}
+
+
+
+
 }
 
 
