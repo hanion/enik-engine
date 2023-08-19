@@ -208,6 +208,7 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 	/*Viewport*/ {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
+		ImGui::SetNextWindowSize(ImVec2(300.0f, 300.0f), ImGuiCond_FirstUseEver);
 		ImGui::Begin("Viewport", nullptr, window_flags);
 		ImGui::PopStyleVar(1);
 
