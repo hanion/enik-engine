@@ -86,6 +86,8 @@ void EditorLayer::OnAttach() {
 
 	}
 
+	m_SceneTreePanel.SetContext(m_ActiveScene);
+
 }
 
 void EditorLayer::OnDetach() {
@@ -204,6 +206,7 @@ void EditorLayer::OnImGuiRender() {
 void EditorLayer::OnImGuiDockSpaceRender() {
 	EN_PROFILE_SCOPE;
 
+	m_SceneTreePanel.OnImGuiRender();
 
 	/*Viewport*/ {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));

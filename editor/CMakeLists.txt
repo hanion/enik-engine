@@ -8,10 +8,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall") #-Werror ")
 set (CMAKE_CXX_STANDARD 17)
 
 set(source_dir "${PROJECT_SOURCE_DIR}/src/")
-file(GLOB source_files "${source_dir}/*.cpp")
-file(GLOB include_files "${source_dir}/*h")
+file(GLOB source_files "${source_dir}/*.cpp" "${source_dir}/panels/*.cpp")
+file(GLOB include_files "${source_dir}/*h" "${source_dir}/panels/*.h")
 
 add_executable(${PROJECT_NAME} ${source_files} ${include_files})
 
 target_link_libraries(${PROJECT_NAME} engine)
-target_include_directories(${PROJECT_NAME} PRIVATE engine)
+target_include_directories(${PROJECT_NAME} PRIVATE engine editor)
