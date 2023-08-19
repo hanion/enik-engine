@@ -24,7 +24,7 @@ void EditorLayer::OnAttach() {
 		Ref<Texture2D> tileset = Texture2D::Create(FULL_PATH("assets/textures/tiles.png"));
 		Ref<SubTexture2D> subTexture = SubTexture2D::CreateFromTileIndex(tileset, glm::vec2(18), glm::vec2(0,8), glm::vec2(2));
 		
-		m_Tile = m_ActiveScene->CreateEntity();
+		m_Tile = m_ActiveScene->CreateEntity("Grass Tile");
 		m_Tile.Add<Component::SpriteRenderer>().SubTexture = subTexture;
 		m_Tile.Get<Component::Transform>().Position = glm::vec3(0.0f, 0.0f, 0.9f);
 	}
@@ -87,6 +87,7 @@ void EditorLayer::OnAttach() {
 	}
 
 	m_SceneTreePanel.SetContext(m_ActiveScene);
+	m_InspectorPanel.SetContext(m_ActiveScene, &m_SceneTreePanel);
 
 }
 
@@ -207,6 +208,7 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 	EN_PROFILE_SCOPE;
 
 	m_SceneTreePanel.OnImGuiRender();
+	m_InspectorPanel.OnImGuiRender();
 
 	/*Viewport*/ {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));

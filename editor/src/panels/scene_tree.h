@@ -23,6 +23,8 @@ private:
 
 	Entity m_SelectionContext;
 
+	friend class InspectorPanel;
+
 };
 
 

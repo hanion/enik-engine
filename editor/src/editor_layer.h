@@ -1,6 +1,7 @@
 #pragma once
 #include <Enik.h>
 #include "panels/scene_tree.h"
+#include "panels/inspector.h"
 
 using namespace Enik;
 
@@ -34,5 +35,5 @@ private:
 	Timestep m_Timestep;
 
 	SceneTreePanel m_SceneTreePanel;
-
+	InspectorPanel m_InspectorPanel;
 };

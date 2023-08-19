@@ -28,6 +28,7 @@ private:
 
 	friend class Entity;
 	friend class SceneTreePanel;
+	friend class InspectorPanel;
 };
 
 }
