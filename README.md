@@ -1,4 +1,5 @@
 # enik-engine
 
 ### a tiny game engine i am currently developing to learn
-![eec](https://github.com/hanion/enik-engine/assets/55713249/3b60a14b-5e41-45f9-9a83-644bf09de82a)
+
+![ss08_20-26-cover](https://github.com/hanion/enik-engine/assets/55713249/dfeaffc8-e814-4523-ac47-c83e9f970f4d)
