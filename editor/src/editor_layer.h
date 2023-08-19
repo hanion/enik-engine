@@ -1,5 +1,6 @@
 #pragma once
 #include <Enik.h>
+#include "panels/scene_tree.h"
 
 using namespace Enik;
 
@@ -25,10 +26,13 @@ private:
 	bool m_ViewportFocused = false;
 	bool m_ViewportHovered = false;
 	glm::vec2 m_ViewportSize = glm::vec2(0);
+	glm::vec2 m_ViewportPosition = glm::vec2(0);
 
 	Entity m_Tile;
 	Entity m_CameraEntity;
 
 	Timestep m_Timestep;
+
+	SceneTreePanel m_SceneTreePanel;
 
 };
