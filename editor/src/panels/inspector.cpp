@@ -226,6 +226,10 @@ void InspectorPanel::DisplayComponentInPopup(const std::string& name) {
 		ImGui::CloseCurrentPopup();
 	}
 
+	if (std::is_same<T, Component::Camera>::value) {
+		m_SceneTreePanel->m_Context->OnViewportResize(m_SceneTreePanel->m_Context->m_ViewportWidth, m_SceneTreePanel->m_Context->m_ViewportHeight);
+	}
+
 	ImGui::EndDisabled();
 }
 }
