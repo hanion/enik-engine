@@ -26,6 +26,7 @@
 
 // path relative to ./build/sandbox 
 #define FULL_PATH(x) (((std::string)"../../sandbox/") + ((std::string)x))
+#define FULL_PATH_EDITOR(x) (((std::string)"../../editor/") + ((std::string)x))
 
 namespace Enik {
 

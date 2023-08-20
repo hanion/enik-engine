@@ -3,6 +3,7 @@
 #include "imgui_impl_opengl3.h"
 #include "core/application.h"
 #include "imgui_themes.h"
+#include <base.h>
 
 namespace Enik {
 
@@ -27,6 +28,7 @@ void ImGuiLayer::OnAttach() {
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
+	io.FontDefault = io.Fonts->AddFontFromFileTTF(FULL_PATH_EDITOR("assets/fonts/Noto_Sans/NotoSans-Regular.ttf").c_str(), 16.0f);
 
 	ImGui::StyleColorsDark();
 	ImGuiTheme::Gray();
