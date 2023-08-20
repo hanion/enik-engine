@@ -37,6 +37,7 @@ public:
 
 	operator bool() const { return m_Hanle != entt::null; }
 
+	operator entt::entity() const { return m_Hanle; }
 	operator uint32_t() const { return (uint32_t)m_Hanle; }
 
 	bool operator == (Entity other) {
