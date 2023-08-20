@@ -86,6 +86,24 @@ void EditorLayer::OnAttach() {
 
 	}
 
+	/* Create a tile rotator native script */ {
+		class TileRotator : public ScriptableEntity {
+		public:
+			virtual void OnCreate() override final {
+				m_Transform = &Get<Component::Transform>();
+			}
+			
+			virtual void OnUpdate(Timestep ts) override final {
+				m_Transform->Rotation += glm::radians(15.0f) * ts.GetSeconds();
+			}
+		private:
+			float m_Speed = 5.0f;
+			Component::Transform* m_Transform = nullptr;
+		};
+
+		m_Tile.Add<Component::NativeScript>().Bind<TileRotator>();
+	}
+
 	m_SceneTreePanel.SetContext(m_ActiveScene);
 	m_InspectorPanel.SetContext(m_ActiveScene, &m_SceneTreePanel);
 
@@ -147,9 +165,6 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 
 
 	
-	m_Tile.Get<Component::Transform>().Rotation += glm::radians(15.0f) * timestep.GetSeconds();
-	//m_CameraEntity.Get<Component::Transform>().Rotation += glm::radians(15.0f) * timestep.GetSeconds();
-
 	m_ActiveScene->OnUpdate(m_Timestep);
 
 	m_FrameBuffer->Unbind();
