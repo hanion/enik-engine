@@ -288,7 +288,7 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 		ImGui::SetNextWindowBgAlpha(0.65f);
 		ImVec2 pos;
 		pos.x = 20  + m_ViewportPosition.x;
-		pos.y = 110 + m_ViewportPosition.y;
+		pos.y = 130 + m_ViewportPosition.y;
 
 		ImGui::SetNextWindowPos(pos);
 		if (ImGui::Begin("Rednerer2D Stats", nullptr, window_flags))
