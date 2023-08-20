@@ -53,7 +53,7 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 	ImGui::TableSetColumnIndex(0);
 	ImGui::AlignTextToFramePadding();
 	
-	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_OpenOnDoubleClick;
 	if (m_SelectionContext == entity) {
 		flags |= ImGuiTreeNodeFlags_Selected;
 	}
