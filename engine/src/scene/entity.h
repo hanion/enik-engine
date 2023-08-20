@@ -30,9 +30,9 @@ public:
 	}
 
 	template<typename T>
-	void Revmove(T){
+	void Remove(){
 		EN_CORE_ASSERT(Has<T>(), "Entity does not have component!");
-		return m_Scene->m_Registry.remove<T>(m_Hanle);
+		m_Scene->m_Registry.remove<T>(m_Hanle);
 	}
 
 	operator bool() const { return m_Hanle != entt::null; }
