@@ -30,6 +30,16 @@ void SceneTreePanel::OnImGuiRender() {
 	if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
 		m_SelectionContext = {};
 	}
+	if (ImGui::IsMouseDown(1) && ImGui::IsWindowHovered()) {
+		ImGui::OpenPopup("pop");
+	}
+	if (ImGui::BeginPopup("pop")) {
+		if (ImGui::MenuItem("Create Entity")) {
+			m_Context->CreateEntity("Empty Entity");
+		}
+
+		ImGui::EndPopup();
+	}
 
 	ImGui::EndTable();
 	ImGui::End();
@@ -55,6 +65,16 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 		m_SelectionContext = entity;
 	}
 	
+
+	bool entityDeleted = false;
+	if (ImGui::BeginPopupContextItem()) {
+		if (ImGui::MenuItem("Delete Entity")) {
+			entityDeleted = true;
+		}
+		ImGui::EndPopup();
+	}
+	
+	
 	if (node_open) {
 		// Temp
 		ImGui::TextColored(ImVec4(0.1f, 0.6f, 0.1f, 1.0f), "Entity %d", (uint32_t)entity);
@@ -62,6 +82,13 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 	}
 
 	ImGui::PopID();
+
+	if (entityDeleted) {
+		m_Context->DestroyEntity(entity);
+		if (m_SelectionContext == entity) {
+			m_SelectionContext = {};
+		}
+	}
 }
 
 
