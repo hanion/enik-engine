@@ -30,7 +30,11 @@ void InspectorPanel::OnImGuiRender() {
 	if (m_SceneTreePanel->m_SelectionContext) {
 		DrawEntityInInspector(m_SceneTreePanel->m_SelectionContext);
 
-		if (ImGui::Button("Add Component")) {
+		ImVec2 buttonSize(150, GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f);
+		ImVec2 buttonPosition( (ImGui::GetContentRegionAvail().x - buttonSize.x) * 0.5f, ImGui::GetCursorPosY());
+		ImGui::SetCursorPos(buttonPosition);
+
+		if (ImGui::Button("Add Component", buttonSize)) {
 			ImGui::OpenPopup("AddComponent");
 		}
 		if (ImGui::BeginPopup("AddComponent")) {
@@ -57,7 +61,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		memset(buffer, 0 ,sizeof(buffer));
 		strcpy(buffer, text.c_str());
 		LabelPrefix("Text");
-		if (ImGui::InputText("Tag", buffer, sizeof(buffer))) {
+		if (ImGui::InputText("##Tag", buffer, sizeof(buffer))) {
 			text = std::string(buffer);
 		}
 	});
@@ -66,16 +70,16 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	DisplayComponentInInspector<Component::Transform>("Transform", entity, false, [&]() {
 		auto& transform = entity.Get<Component::Transform>();
 		LabelPrefix("Position");
-		ImGui::DragFloat2("Position", glm::value_ptr(transform.Position), 0.01f);
+		ImGui::DragFloat3("##Position", glm::value_ptr(transform.Position), 0.01f);
 
 		LabelPrefix("Rotation");
 		float rot = glm::degrees(transform.Rotation);
-		if (ImGui::DragFloat("Rotation", &rot, 0.1f)) {
+		if (ImGui::DragFloat("##Rotation", &rot, 0.1f)) {
 			transform.Rotation = glm::radians(rot);
 		}
 
 		LabelPrefix("Scale");
-		ImGui::DragFloat2("Scale", glm::value_ptr(transform.Scale), 0.01f);
+		ImGui::DragFloat2("##Scale", glm::value_ptr(transform.Scale), 0.01f);
 	});
 
 	DisplayComponentInInspector<Component::Camera>("Camera",entity, true, [&]() {
@@ -84,7 +88,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		
 		static float size = cam.Cam.GetSize();
 		LabelPrefix("Size");
-		if (ImGui::DragFloat("Size", &size, 0.01f, 0.01f)) {
+		if (ImGui::DragFloat("##Size", &size, 0.01f, 0.01f)) {
 			cam.Cam.SetSize(size);
 		}
 		
@@ -94,7 +98,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		if (cam.FixedAspectRatio) {
 			static float ratio = cam.Cam.GetAspectRatio();
 			LabelPrefix("Aspect Ratio");
-			if (ImGui::DragFloat("Aspect Ratio", &ratio, 0.01f, 0.001f)) {
+			if (ImGui::DragFloat("##Aspect Ratio", &ratio, 0.01f, 0.001f)) {
 				cam.Cam.SetAspectRatio(ratio);
 			}
 		}
@@ -104,24 +108,40 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		auto& sprite = entity.Get<Component::SpriteRenderer>();
 			
 		LabelPrefix("Color");
-		ImGui::ColorEdit4("Sprite Color", glm::value_ptr(sprite.Color));
+		ImGui::ColorEdit4("##Sprite Color", glm::value_ptr(sprite.Color));
 		// ImGui::ColorEdit3("Sprite Color", glm::value_ptr(sprite.Color));
 		
 		/* Texture */ {
+			LabelPrefix("Texture");		
 			// ImVec4 tint_col = ImGui::GetStyleColorVec4(ImGuiCol_Text);
 			ImVec4 tint_col = ImVec4(sprite.Color.r,sprite.Color.g,sprite.Color.b,sprite.Color.a);
 			ImVec4 border_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
+			ImVec2 avail = ImGui::GetContentRegionAvail();
+			avail.y = (avail.y < 128) ? avail.y : 128;
+			avail.x -= GImGui->Style.FramePadding.x;
+
+			ImTextureID tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(0));
+			ImVec2 tex_size = ImVec2(0,0);
 
 			if (sprite.Texture) {
-				ImTextureID tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(sprite.Texture->GetRendererID()));
-				ImVec2 tex_size = ImVec2(sprite.Texture->GetWidth(), sprite.Texture->GetHeight());
-				ImGui::Image(tex_id, tex_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), tint_col, border_col);
+				tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(sprite.Texture->GetRendererID()));
+				tex_size = ImVec2(sprite.Texture->GetWidth(), sprite.Texture->GetHeight());
 			}
 			else if (sprite.SubTexture) {
-				ImTextureID tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(sprite.SubTexture->GetTexture()->GetRendererID()));
-				ImVec2 tex_size = ImVec2(sprite.SubTexture->GetTexture()->GetWidth()/2.0f, sprite.SubTexture->GetTexture()->GetHeight()/2.0f);	
-				ImGui::Image(tex_id, tex_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), tint_col, border_col);
+				tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(sprite.SubTexture->GetTexture()->GetRendererID()));
+				tex_size = ImVec2(sprite.SubTexture->GetTexture()->GetWidth(), sprite.SubTexture->GetTexture()->GetHeight());	
 			}
+
+			if (tex_size.x > avail.x) {
+				tex_size.y = tex_size.y - ( (tex_size.x-avail.x) * (tex_size.y/tex_size.x) );
+				tex_size.x = avail.x;
+			}
+			if (tex_size.y > avail.y) {
+				tex_size.x = tex_size.x - ( (tex_size.y-avail.y) * (tex_size.x/tex_size.y) );
+				tex_size.y = avail.y;
+			}
+			ImGui::Image(tex_id, tex_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), tint_col, border_col);
+		
 
 		}
 	});
@@ -194,8 +214,8 @@ void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity
 		
 		if (canDelete) {
 			float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-			ImGui::SameLine(ImGui::GetContentRegionAvail().x + lineHeight * 0.2f);
-			if (ImGui::Button("+", ImVec2(lineHeight,lineHeight))) {
+			ImGui::SameLine(ImGui::GetContentRegionAvail().x - GImGui->Style.FramePadding.x);
+			if (ImGui::Button("...", ImVec2(lineHeight,lineHeight))) {
 				ImGui::OpenPopup("ComponentSettings");
 			}
 			if (ImGui::BeginPopup("ComponentSettings")) {
