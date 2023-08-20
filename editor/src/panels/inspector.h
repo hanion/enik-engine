@@ -26,6 +26,12 @@ private:
 		Default = Left,
 	};
 	void LabelPrefix(std::string_view title, InspectorPanel::ItemLabelFlag flags = InspectorPanel::ItemLabelFlag::Default);
+
+	template <typename T>
+	void DisplayComponentInInspector(const std::string& name, Entity& entity, const bool canDelete, const std::function<void()>& lambda);
+
+	template <typename T>
+	void DisplayComponentInPopup(const std::string& name);
 private:
 	Ref<Scene> m_Context;
 
