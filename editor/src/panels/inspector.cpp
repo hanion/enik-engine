@@ -193,8 +193,9 @@ void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity
 	if (ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, name.c_str())) {
 		
 		if (canDelete) {
-			ImGui::SameLine(ImGui::GetWindowWidth() - 26.0f);
-			if (ImGui::Button("+", ImVec2(18,18))) {
+			float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+			ImGui::SameLine(ImGui::GetContentRegionAvail().x + lineHeight * 0.2f);
+			if (ImGui::Button("+", ImVec2(lineHeight,lineHeight))) {
 				ImGui::OpenPopup("ComponentSettings");
 			}
 			if (ImGui::BeginPopup("ComponentSettings")) {
