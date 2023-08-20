@@ -29,6 +29,10 @@ Entity Scene::CreateEntity(const std::string& name) {
 	return entity;
 }
 
+void Scene::DestroyEntity(const Entity& entity) {
+	m_Registry.destroy(entity);
+}
+
 void Scene::OnUpdate(Timestep ts) {
 	EN_PROFILE_SECTION("Scene::OnUpdate");
 

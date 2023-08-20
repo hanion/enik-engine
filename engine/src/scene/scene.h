@@ -13,6 +13,7 @@ public:
 	~Scene();
 
 	Entity CreateEntity(const std::string& name = std::string());
+	void DestroyEntity(const Entity& entity);
 
 	entt::registry& Reg() { return m_Registry; }
 
