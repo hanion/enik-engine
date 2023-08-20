@@ -50,6 +50,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		char buffer[256];
 		memset(buffer, 0 ,sizeof(buffer));
 		strcpy(buffer, text.c_str());
+		LabelPrefix("Tag");
 		if (ImGui::InputText("Tag", buffer, sizeof(buffer))) {
 			text = std::string(buffer);
 		}
@@ -62,13 +63,16 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 
 		if (ImGui::TreeNodeEx((void*)typeid(Component::Transform).hash_code(), treeNodeFlags, "Transform")) {
 			auto& transform = entity.Get<Component::Transform>();
+			LabelPrefix("Position");
 			ImGui::DragFloat2("Position", glm::value_ptr(transform.Position), 0.01f);
 
+			LabelPrefix("Rotation");
 			float rot = glm::degrees(transform.Rotation);
 			if (ImGui::DragFloat("Rotation", &rot, 0.1f)) {
 				transform.Rotation = glm::radians(rot);
 			}
 
+			LabelPrefix("Scale");
 			ImGui::DragFloat2("Scale", glm::value_ptr(transform.Scale), 0.01f);
 			
 			ImGui::TreePop();
@@ -86,6 +90,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			ImGui::Checkbox("Primary", &cam.Primary);
 			
 			static float size = cam.Cam.GetSize();
+			LabelPrefix("Size");
 			if (ImGui::DragFloat("Size", &size, 0.01f, 0.01f)) {
 				cam.Cam.SetSize(size);
 			}
@@ -95,6 +100,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			}
 			if (cam.FixedAspectRatio) {
 				static float ratio = cam.Cam.GetAspectRatio();
+				LabelPrefix("Aspect Ratio");
 				if (ImGui::DragFloat("Aspect Ratio", &ratio, 0.01f, 0.001f)) {
 					cam.Cam.SetAspectRatio(ratio);
 				}
@@ -112,25 +118,26 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		if (ImGui::TreeNodeEx((void*)typeid(Component::SpriteRenderer).hash_code(), treeNodeFlags, "Sprite Renderer")) {
 			auto& sprite = entity.Get<Component::SpriteRenderer>();
 			
+			LabelPrefix("Color");
 			ImGui::ColorEdit4("Sprite Color", glm::value_ptr(sprite.Color));
 			// ImGui::ColorEdit3("Sprite Color", glm::value_ptr(sprite.Color));
 			
 			/* Texture */ {
-				ImTextureID tex_id;
-				ImVec2 tex_size;
+				// ImVec4 tint_col = ImGui::GetStyleColorVec4(ImGuiCol_Text);
+				ImVec4 tint_col = ImVec4(sprite.Color.r,sprite.Color.g,sprite.Color.b,sprite.Color.a);
+				ImVec4 border_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
 
 				if (sprite.Texture) {
-					tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(sprite.Texture->GetRendererID()));
-					tex_size = ImVec2(sprite.Texture->GetWidth(), sprite.Texture->GetHeight());
+					ImTextureID tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(sprite.Texture->GetRendererID()));
+					ImVec2 tex_size = ImVec2(sprite.Texture->GetWidth(), sprite.Texture->GetHeight());
+					ImGui::Image(tex_id, tex_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), tint_col, border_col);
 				}
 				else if (sprite.SubTexture) {
-					tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(sprite.SubTexture->GetTexture()->GetRendererID()));
-					tex_size = ImVec2(sprite.SubTexture->GetTexture()->GetWidth()/2.0f, sprite.SubTexture->GetTexture()->GetHeight()/2.0f);	
+					ImTextureID tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(sprite.SubTexture->GetTexture()->GetRendererID()));
+					ImVec2 tex_size = ImVec2(sprite.SubTexture->GetTexture()->GetWidth()/2.0f, sprite.SubTexture->GetTexture()->GetHeight()/2.0f);	
+					ImGui::Image(tex_id, tex_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), tint_col, border_col);
 				}
 
-				ImVec4 tint_col = ImGui::GetStyleColorVec4(ImGuiCol_Text);
-				ImVec4 border_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
-				ImGui::Image(tex_id, tex_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), tint_col, border_col);
 			}
 			
 			ImGui::TreePop();
@@ -150,5 +157,46 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 
 }
 
+
+
+void InspectorPanel::LabelPrefix(std::string_view title, InspectorPanel::ItemLabelFlag flag) {
+	ImGuiWindow* window = ImGui::GetCurrentWindow();
+	const ImVec2 lineStart = ImGui::GetCursorScreenPos();
+	const ImGuiStyle& style = ImGui::GetStyle();
+	float fullWidth = ImGui::GetContentRegionAvail().x;
+	float itemWidth = ImGui::CalcItemWidth() + style.ItemSpacing.x;
+	ImVec2 textSize = ImGui::CalcTextSize(title.begin(), title.end());
+	ImRect textRect;
+	textRect.Min = ImGui::GetCursorScreenPos();
+	if (flag & ItemLabelFlag::Right)
+		textRect.Min.x = textRect.Min.x + itemWidth;
+	textRect.Max = textRect.Min;
+	textRect.Max.x += fullWidth - itemWidth;
+	textRect.Max.y += textSize.y;
+
+	ImGui::SetCursorScreenPos(textRect.Min);
+
+	ImGui::AlignTextToFramePadding();
+	// Adjust text rect manually because we render it directly into a drawlist instead of using public functions.
+	textRect.Min.y += window->DC.CurrLineTextBaseOffset;
+	textRect.Max.y += window->DC.CurrLineTextBaseOffset + 1; // +1 so there is no letters bottom clip
+
+	ImGui::ItemSize(textRect);
+	if (ImGui::ItemAdd(textRect, window->GetID(title.data(), title.data() + title.size()))) {
+		ImGui::RenderTextEllipsis(ImGui::GetWindowDrawList(), textRect.Min, textRect.Max, textRect.Max.x,
+			textRect.Max.x, title.data(), title.data() + title.size(), &textSize);
+
+		if (textRect.GetWidth() < textSize.x && ImGui::IsItemHovered()) {
+			ImGui::SetTooltip("%.*s", (int)title.size(), title.data());
+		}
+	}
+	if (flag & ItemLabelFlag::Left) {
+		ImGui::SetCursorScreenPos(ImVec2(textRect.Max.x, textRect.Max.y - (textSize.y + window->DC.CurrLineTextBaseOffset)));
+		ImGui::SameLine();
+	}
+	else if (flag & ItemLabelFlag::Right) {
+		ImGui::SetCursorScreenPos(lineStart);
+	}
+}
 
 }

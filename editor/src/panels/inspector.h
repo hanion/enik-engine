@@ -20,6 +20,12 @@ public:
 private:
 	void DrawEntityInInspector(Entity entity);
 	
+	enum ItemLabelFlag {
+		Left = 1u << 0u,
+		Right = 1u << 1u,
+		Default = Left,
+	};
+	void LabelPrefix(std::string_view title, InspectorPanel::ItemLabelFlag flags = InspectorPanel::ItemLabelFlag::Default);
 private:
 	Ref<Scene> m_Context;
 
