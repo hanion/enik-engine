@@ -1,0 +1,46 @@
+Scene: Untitled Scene
+Entities:
+  - Entity: 1111111111
+    Component::Tag:
+      Text: bg
+    Component::Transform:
+      Position: [0, 0, -0.790000021]
+      Rotation: 0
+      Scale: [20, 7]
+    Component::SpriteRenderer:
+      Color: [0.2236287, 0.198152021, 0.198152021, 1]
+      TileScale: 1
+  - Entity: 1111111111
+    Component::Tag:
+      Text: camera
+    Component::Transform:
+      Position: [0, 0, 0.0900000036]
+      Rotation: 0
+      Scale: [1, 1]
+    Component::Camera:
+      Camera:
+        Size: 10
+        Near: -1
+        Far: 1
+      Primary: true
+      FixedAspectRatio: false
+  - Entity: 1111111111
+    Component::Tag:
+      Text: platform
+    Component::Transform:
+      Position: [1.52999997, -1.27999997, 0]
+      Rotation: 0
+      Scale: [5.4000001, 0.649999976]
+    Component::SpriteRenderer:
+      Color: [0.25316453, 1, 0, 1]
+      TileScale: 1
+  - Entity: 1111111111
+    Component::Tag:
+      Text: player
+    Component::Transform:
+      Position: [-4.03000021, -2.99000001, 0]
+      Rotation: 0
+      Scale: [1, 1]
+    Component::SpriteRenderer:
+      Color: [0.932489455, 0.20838201, 0.0786911026, 1]
+      TileScale: 1

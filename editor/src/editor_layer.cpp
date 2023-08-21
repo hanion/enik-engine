@@ -4,6 +4,8 @@
 #include "renderer/opengl/opengl_shader.h"
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "scene/scene_serializer.h"
+
 
 
 EditorLayer::EditorLayer()
@@ -204,6 +206,16 @@ void EditorLayer::OnImGuiRender() {
 
 		if (ImGui::BeginMenuBar()) {
 			if (ImGui::BeginMenu("File")) {
+				if (ImGui::MenuItem("Serialize")) {
+					SceneSerializer serializer = SceneSerializer(m_ActiveScene);
+					serializer.Serialize(FULL_PATH_EDITOR("assets/scenes/untitled_scene.escn"));
+				}
+				if (ImGui::MenuItem("Deserialize")) {
+					SceneSerializer serializer = SceneSerializer(m_ActiveScene);
+					serializer.Deserialize(FULL_PATH_EDITOR("assets/scenes/untitled_scene.escn"));
+					m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+				}
+				
 				if (ImGui::MenuItem("Exit")) {
 					Application::Get().Close();
 				}
