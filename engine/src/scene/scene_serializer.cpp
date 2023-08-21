@@ -97,6 +97,7 @@ SceneSerializer::SceneSerializer(const Ref<Scene>& scene)
 
 
 void SceneSerializer::Serialize(const std::string& filepath) {
+	EN_CORE_TRACE("Serializing scene '{0}'", filepath);
 	YAML::Emitter out;
 	out << YAML::BeginMap;
 	
@@ -149,7 +150,7 @@ bool SceneSerializer::Deserialize(const std::string& filepath) {
 			}
 			
 			DeserializeEntity(entity, uuid, name);
-			EN_CORE_TRACE("Deserialized entity {0}, with name '{1}'", uuid, name);
+			// EN_CORE_TRACE("Deserialized entity {0}, with name '{1}'", uuid, name);
 		}
 	}
 	
