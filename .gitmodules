@@ -17,6 +17,3 @@
 [submodule "engine/external/yaml-cpp"]
 	path = engine/external/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git
-[submodule "engine/external/ImGuiFileDialog"]
-	path = engine/external/ImGuiFileDialog
-	url = https://github.com/hanion/ImGuiFileDialog.git

@@ -44,7 +44,6 @@ add_subdirectory(external/glad)
 add_subdirectory(external/imgui)
 add_subdirectory(external/glm)
 add_subdirectory(external/yaml-cpp)
-add_subdirectory(external/ImGuiFileDialog)
 
 
 # automatically set platform globally
@@ -84,7 +83,6 @@ target_include_directories(${PROJECT_NAME}
 	external/imgui
 	external/glm/glm
 	external/yaml-cpp
-	external/ImGuiFileDialog
 
 	external
 	src
@@ -100,7 +98,6 @@ target_link_libraries(${PROJECT_NAME}
 	imgui
 	glm
 	yaml-cpp
-	ImGuiFileDialog
 	PRIVATE
 
 )
