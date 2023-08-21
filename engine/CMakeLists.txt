@@ -43,6 +43,7 @@ add_subdirectory(external/glfw)
 add_subdirectory(external/glad)
 add_subdirectory(external/imgui)
 add_subdirectory(external/glm)
+add_subdirectory(external/yaml-cpp)
 
 
 # automatically set platform globally
@@ -81,6 +82,7 @@ target_include_directories(${PROJECT_NAME}
 	external/glad/include/glad
 	external/imgui
 	external/glm/glm
+	external/yaml-cpp
 
 	external
 	src
@@ -95,6 +97,7 @@ target_link_libraries(${PROJECT_NAME}
 	glad
 	imgui
 	glm
+	yaml-cpp
 	PRIVATE
 
 )

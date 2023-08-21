@@ -14,3 +14,6 @@
 [submodule "engine/external/tracy"]
 	path = engine/external/tracy
 	url = https://github.com/wolfpld/tracy
+[submodule "engine/external/yaml-cpp"]
+	path = engine/external/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git
