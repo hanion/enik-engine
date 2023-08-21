@@ -50,9 +50,6 @@ void InspectorPanel::OnImGuiRender() {
 
 
 void InspectorPanel::DrawEntityInInspector(Entity entity) {
-	ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
-	treeNodeFlags |= ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen; 
-	treeNodeFlags |= ImGuiTreeNodeFlags_FramePadding   | ImGuiTreeNodeFlags_AllowItemOverlap;
 
 	DisplayComponentInInspector<Component::Tag>("Tag",entity,false,[&]() {
 		auto& text =  entity.Get<Component::Tag>().Text;
