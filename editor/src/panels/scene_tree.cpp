@@ -10,6 +10,7 @@ SceneTreePanel::SceneTreePanel(const Ref<Scene>& context) {
 
 void SceneTreePanel::SetContext(const Ref<Scene>& context) {
 	m_Context = context;
+	m_SelectionContext = {};
 }
 
 void SceneTreePanel::OnImGuiRender() {
