@@ -17,6 +17,8 @@ void InspectorPanel::SetContext(const Ref<Scene>& context, SceneTreePanel* scene
 }
 
 void InspectorPanel::OnImGuiRender() {
+	ImGui::SetNextWindowSize(ImVec2(200, 500), ImGuiCond_FirstUseEver);
+
 	if (!ImGui::Begin("Inspector")) {
 		ImGui::End();
 		return;

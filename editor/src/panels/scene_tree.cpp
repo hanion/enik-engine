@@ -14,6 +14,8 @@ void SceneTreePanel::SetContext(const Ref<Scene>& context) {
 }
 
 void SceneTreePanel::OnImGuiRender() {
+	ImGui::SetNextWindowSize(ImVec2(200, 500), ImGuiCond_FirstUseEver);
+
 	if (!ImGui::Begin("Scene Tree")) {
 		ImGui::End();
 		return;
