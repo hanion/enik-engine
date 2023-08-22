@@ -221,6 +221,15 @@ void EditorLayer::OnImGuiRender() {
 				}
 				ImGui::EndMenu();
 			}
+
+			if (ImGui::BeginMenu("View")) {
+				ImGui::Checkbox("Show Performance",    &m_ShowPerformance  );
+				ImGui::Checkbox("Show Renderer Stats", &m_ShowRendererStats);
+
+				ImGui::EndMenu();
+			}
+
+			
 			ImGui::EndMenuBar();
 		}
 
@@ -271,7 +280,8 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 		ImGui::End();
 	}
 
-	/*ShowPerformance*/ {
+	/* ShowPerformance */
+	if (m_ShowPerformance) {
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav;
 		window_flags |=  ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
 		window_flags |=  ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking;
@@ -292,7 +302,8 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 	}
 
 
-	/*ShowRenderer2DStats*/ {
+	/* ShowRenderer2DStats */
+	if (m_ShowRendererStats) {
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav;
 		window_flags |=  ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
 		window_flags |=  ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking;

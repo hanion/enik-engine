@@ -29,6 +29,9 @@ private:
 	glm::vec2 m_ViewportSize = glm::vec2(0);
 	glm::vec2 m_ViewportPosition = glm::vec2(0);
 
+	bool m_ShowRendererStats = false;
+	bool m_ShowPerformance   = true;
+
 	Entity m_Tile;
 	Entity m_CameraEntity;
 
