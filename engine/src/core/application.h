@@ -38,7 +38,7 @@ private:
 	bool OnWindowResize(WindowResizeEvent& e);
 	bool OnKeyPressed(KeyPressedEvent& e);
 private:
-	Window* m_Window;
+	Scope<Window> m_Window;
 	ImGuiLayer* m_ImGuiLayer;
 	bool m_Running = true;
 	bool m_Minimized = false;

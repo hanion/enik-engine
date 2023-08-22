@@ -16,7 +16,7 @@ Application::Application(const std::string& name) {
 	EN_CORE_ASSERT(!s_Instance, "Application already exists!");
 	s_Instance = this;
 
-	m_Window = new Window(WindowProperties(name,1280,600));
+	m_Window = CreateScope<Window>(WindowProperties(name,1280,600));
 	m_Window->SetEventCallback(EN_BIND_EVENT_FN(Application::OnEvent));
 	m_Window->SetVsync(false);
 
