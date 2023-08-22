@@ -20,6 +20,11 @@ public:
 	void OnImGuiDockSpaceRender();
 
 private:
+	void CreateNewScene();
+	void LoadScene(const std::string& path);
+	void SaveScene();
+
+private:
 	Ref<FrameBuffer> m_FrameBuffer;
 
 	Ref<Scene> m_ActiveScene;
@@ -39,4 +44,6 @@ private:
 
 	SceneTreePanel m_SceneTreePanel;
 	InspectorPanel m_InspectorPanel;
+
+	std::string m_ActiveScenePath;
 };

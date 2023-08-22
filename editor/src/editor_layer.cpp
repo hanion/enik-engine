@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "scene/scene_serializer.h"
+#include "dialogs/dialog_file.h"
 
 
 
@@ -177,6 +178,9 @@ void EditorLayer::OnEvent(Event& event) {
 }
 
 void EditorLayer::OnImGuiRender() {
+	static DialogType showFileDialogAs = DialogType::OPEN_FILE;
+	static bool isDialogOpen = false;
+	
 	/*DockSpace*/ {
 		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
@@ -206,14 +210,28 @@ void EditorLayer::OnImGuiRender() {
 
 		if (ImGui::BeginMenuBar()) {
 			if (ImGui::BeginMenu("File")) {
-				if (ImGui::MenuItem("Serialize")) {
-					SceneSerializer serializer = SceneSerializer(m_ActiveScene);
-					serializer.Serialize(FULL_PATH_EDITOR("assets/scenes/untitled_scene.escn"));
+				if (ImGui::MenuItem("New")) {
+					// TODO: prompt dialog confirm
+					CreateNewScene();
 				}
-				if (ImGui::MenuItem("Deserialize")) {
-					SceneSerializer serializer = SceneSerializer(m_ActiveScene);
-					serializer.Deserialize(FULL_PATH_EDITOR("assets/scenes/untitled_scene.escn"));
-					m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+				
+				if (ImGui::MenuItem("Open File")) {
+					showFileDialogAs = DialogType::OPEN_FILE;
+					isDialogOpen = true;
+				}
+				
+				if (ImGui::MenuItem("Save")) {
+					if (m_ActiveScenePath.empty()) {
+						showFileDialogAs = DialogType::SAVE_FILE;
+						isDialogOpen = true;
+					}
+					else {
+						SaveScene();
+					}
+				}
+				if (ImGui::MenuItem("Save As")) {
+					showFileDialogAs = DialogType::SAVE_FILE;
+					isDialogOpen = true;
 				}
 				
 				if (ImGui::MenuItem("Exit")) {
@@ -238,6 +256,18 @@ void EditorLayer::OnImGuiRender() {
 
 		ImGui::End();
 	}
+
+	if (DialogFile::Show(isDialogOpen, showFileDialogAs) == DialogResult::ACCEPT) {
+		if (showFileDialogAs == DialogType::OPEN_FILE) {
+			CreateNewScene();
+			LoadScene(DialogFile::GetSelectedPath());
+		}
+		else if (showFileDialogAs == DialogType::SAVE_FILE) {
+			m_ActiveScenePath = DialogFile::GetSelectedPath();
+			SaveScene();
+		}
+	}
+
 }
 
 void EditorLayer::OnImGuiDockSpaceRender() {
@@ -328,4 +358,23 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 	}
 
 
+}
+
+
+void EditorLayer::CreateNewScene() {
+	m_ActiveScene = CreateRef<Scene>();
+	m_SceneTreePanel.SetContext(m_ActiveScene);
+	m_InspectorPanel.SetContext(m_ActiveScene, &m_SceneTreePanel);
+}
+
+void EditorLayer::LoadScene(const std::string& path) {
+	m_ActiveScenePath = path;
+	SceneSerializer serializer = SceneSerializer(m_ActiveScene);
+	serializer.Deserialize(m_ActiveScenePath);
+	m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+}
+
+void EditorLayer::SaveScene() {
+	SceneSerializer serializer = SceneSerializer(m_ActiveScene);
+	serializer.Serialize(m_ActiveScenePath);
 }
