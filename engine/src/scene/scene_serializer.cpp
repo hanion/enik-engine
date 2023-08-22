@@ -10,6 +10,7 @@ struct convert<glm::vec2> {
 		Node node;
 		node.push_back(vec.x);
 		node.push_back(vec.y);
+		node.SetStyle(EmitterStyle::Flow);
 		return node;
 	};
 
@@ -30,6 +31,7 @@ struct convert<glm::vec3> {
 		node.push_back(vec.x);
 		node.push_back(vec.y);
 		node.push_back(vec.z);
+		node.SetStyle(EmitterStyle::Flow);
 		return node;
 	};
 
@@ -52,6 +54,7 @@ struct convert<glm::vec4> {
 		node.push_back(vec.y);
 		node.push_back(vec.z);
 		node.push_back(vec.w);
+		node.SetStyle(EmitterStyle::Flow);
 		return node;
 	};
 
@@ -127,11 +130,7 @@ void SceneSerializer::SerializeRuntime(const std::string& filepath) {
 }
 
 bool SceneSerializer::Deserialize(const std::string& filepath) {
-	std::ifstream stream(filepath);
-	std::stringstream strStream;
-	strStream << stream.rdbuf();
-
-	YAML::Node data = YAML::Load(strStream.str());
+	YAML::Node data = YAML::LoadFile(filepath);
 	if (not data["Scene"]) {
 		return false;
 	}
