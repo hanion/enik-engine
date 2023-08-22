@@ -285,7 +285,7 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
-		Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused || !m_ViewportHovered);
+		Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);
 		
 		
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
