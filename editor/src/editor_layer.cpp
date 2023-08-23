@@ -17,7 +17,7 @@ void EditorLayer::OnAttach() {
 	EN_PROFILE_SCOPE;
 
 	FrameBufferSpecification spec;
-	spec.Attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::Depth };
+	spec.Attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::Depth };
 	m_FrameBuffer = FrameBuffer::Create(spec);
 
 
@@ -137,7 +137,11 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 	RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
 	RenderCommand::Clear();
 
+	m_FrameBuffer->ClearAttachment(1, -1);
+
 	m_ActiveScene->OnUpdateEditor(m_Timestep, m_EditorCameraController);
+
+	HandlePickEntityWithMouse();
 
 	m_FrameBuffer->Unbind();
 }
@@ -147,6 +151,7 @@ void EditorLayer::OnEvent(Event& event) {
 
 	EventDispatcher dispatcher = EventDispatcher(event);
 	dispatcher.Dispatch<KeyPressedEvent>(std::bind(&EditorLayer::OnKeyPressed, this, std::placeholders::_1));
+	dispatcher.Dispatch<MouseButtonReleasedEvent>(std::bind(&EditorLayer::OnMouseButtonReleased, this, std::placeholders::_1));
 }
 
 void EditorLayer::OnImGuiRender() {
@@ -252,12 +257,19 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 		ImGui::Begin("Viewport", nullptr, window_flags);
 		ImGui::PopStyleVar(1);
 
+		auto viewportMinRegion = ImGui::GetWindowContentRegionMin();
+		auto viewportMaxRegion = ImGui::GetWindowContentRegionMax();
+		auto viewportOffset = ImGui::GetWindowPos();
+		m_ViewportBounds[0] = { viewportMinRegion.x + viewportOffset.x, viewportMinRegion.y + viewportOffset.y };
+		m_ViewportBounds[1] = { viewportMaxRegion.x + viewportOffset.x, viewportMaxRegion.y + viewportOffset.y };
+
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
 		Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);
 		
 		
 		ImVec2 viewportSize = ImGui::GetContentRegionAvail();
+		m_ViewportSize = glm::vec2(viewportSize.x, viewportSize.y);
 		if (((viewportSize.x != m_ViewportSize.x) or (viewportSize.y != m_ViewportSize.y)) and (viewportSize.x > 0 and viewportSize.y > 0)){
 			m_ViewportSize.x = viewportSize.x;
 			m_ViewportSize.y = viewportSize.y;
@@ -272,11 +284,6 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 		ImGui::Image(reinterpret_cast<void*>(static_cast<uintptr_t>(textureID)), 
 			ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0,1), ImVec2(1,0));
 		
-
-		auto pos = ImGui::GetWindowPos();
-		m_ViewportPosition.x = pos.x;
-		m_ViewportPosition.y = pos.y;
-
 		ImGui::End();
 	}
 
@@ -288,8 +295,8 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 		
 		ImGui::SetNextWindowBgAlpha(0.65f);
 		ImVec2 pos;
-		pos.x = 20 + m_ViewportPosition.x;
-		pos.y = 40 + m_ViewportPosition.y;
+		pos.x = 20 + m_ViewportBounds[0].x;
+		pos.y = 40 + m_ViewportBounds[0].y;
 
 		ImGui::SetNextWindowPos(pos);
 		if (ImGui::Begin("Performance", nullptr, window_flags))
@@ -310,8 +317,8 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 		
 		ImGui::SetNextWindowBgAlpha(0.65f);
 		ImVec2 pos;
-		pos.x = 20  + m_ViewportPosition.x;
-		pos.y = 130 + m_ViewportPosition.y;
+		pos.x = 20  + m_ViewportBounds[0].x;
+		pos.y = 130 + m_ViewportBounds[0].y;
 
 		ImGui::SetNextWindowPos(pos);
 		if (ImGui::Begin("Rednerer2D Stats", nullptr, window_flags))
@@ -384,4 +391,42 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 	}
 
 	return false;
+}
+
+bool EditorLayer::OnMouseButtonReleased(MouseButtonReleasedEvent& event) {
+	if (event.GetMouseButton() == Mouse::ButtonLeft) {
+		m_PickEntityWithMouse = true;
+	}
+	return false;
+}
+
+void EditorLayer::HandlePickEntityWithMouse() {
+	if (not m_PickEntityWithMouse) { 
+		return;
+	}
+
+	EN_PROFILE_SCOPE;
+
+	ImVec2 mousePos = ImGui::GetMousePos();
+	mousePos.x -= m_ViewportBounds[0].x;
+	mousePos.y -= m_ViewportBounds[0].y;
+	
+	glm::vec2 viewportSize = m_ViewportBounds[1] - m_ViewportBounds[0];
+	
+	mousePos.y  = viewportSize.y - mousePos.y;
+	
+	int mouseX = (int)mousePos.x;
+	int mouseY = (int)mousePos.y;
+
+	if (mouseX >= 0 and mouseY >= 0 and mouseX < (int)viewportSize.x and mouseY < (int)viewportSize.y) {
+		int pixelData = m_FrameBuffer->ReadPixel(1,mouseX, mouseY);
+		if (pixelData == -1) {
+			m_SceneTreePanel.SetSelectedEntity(Entity());
+		}
+		else {
+			m_SceneTreePanel.SetSelectedEntity(Entity((entt::entity)pixelData, m_ActiveScene.get()));
+		}
+	}
+
+	m_PickEntityWithMouse = false;
 }

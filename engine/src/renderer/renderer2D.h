@@ -17,7 +17,7 @@ public:
 	static void EndScene();
 	static void Flush();
 
-	static void DrawQuad(const Component::Transform& transform, const Component::SpriteRenderer& sprite);
+	static void DrawQuad(const Component::Transform& transform, const Component::SpriteRenderer& sprite, int32_t entityID = -1);
 
 
 	struct Statistics {

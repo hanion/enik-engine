@@ -28,6 +28,9 @@ private:
 	void SaveScene();
 
 	bool OnKeyPressed(KeyPressedEvent& event);
+	bool OnMouseButtonReleased(MouseButtonReleasedEvent& event);
+
+	void HandlePickEntityWithMouse();
 
 private:
 	Ref<FrameBuffer> m_FrameBuffer;
@@ -39,7 +42,9 @@ private:
 	bool m_ViewportFocused = false;
 	bool m_ViewportHovered = false;
 	glm::vec2 m_ViewportSize = glm::vec2(0);
-	glm::vec2 m_ViewportPosition = glm::vec2(0);
+	glm::vec2 m_ViewportBounds[2];
+
+	bool m_PickEntityWithMouse = false;
 
 	bool m_ShowRendererStats = false;
 	bool m_ShowPerformance   = true;

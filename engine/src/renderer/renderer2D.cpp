@@ -15,6 +15,9 @@ struct QuadVertex {
 	glm::vec2 TexCoord;
 	float TexIndex;
 	float TileScale;
+
+	// Editor only
+	int a_EntityID;
 };
 
 struct Renderer2DData {
@@ -65,7 +68,8 @@ void Renderer2D::Init() {
 		{ShaderDataType::Float4, "a_Color"},
 		{ShaderDataType::Float2, "a_TexCoord"},
 		{ShaderDataType::Float , "a_TexIndex"},
-		{ShaderDataType::Float , "a_TileScale"}
+		{ShaderDataType::Float , "a_TileScale"},
+		{ShaderDataType::Int   , "a_EntityID"}
 	};
 	
 	s_Data.QuadVertexBuffer->SetLayout(layout);
@@ -192,7 +196,7 @@ float Renderer2D::GetTextureIndex(const Ref<Texture2D>& texture) {
 }
 
 
-void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::SpriteRenderer& sprite) {
+void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::SpriteRenderer& sprite, int32_t entityID) {
 	EN_PROFILE_SCOPE;
 
 
@@ -243,6 +247,7 @@ void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::Sp
 		s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
 		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
 		s_Data.QuadVertexBufferPtr->TileScale = sprite.TileScale;
+		s_Data.QuadVertexBufferPtr->a_EntityID = entityID;
 		s_Data.QuadVertexBufferPtr++;
 	}
 	

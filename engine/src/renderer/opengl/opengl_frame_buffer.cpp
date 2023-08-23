@@ -63,6 +63,16 @@ namespace Utils {
 		}	
 		return false;
 	}
+
+	static GLenum FrameBufferTextureFormatToGL(FrameBufferTextureFormat format) {
+		switch (format) {
+			case FrameBufferTextureFormat::RGBA8:       return GL_RGBA8;
+			case FrameBufferTextureFormat::RED_INTEGER: return GL_RED_INTEGER;
+			default: break;
+		}
+		EN_CORE_ASSERT(false);
+		return 0;
+	}
 }
 
 
@@ -174,4 +184,24 @@ void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height) {
 	
 	Invalidate();
 }
+
+int OpenGLFrameBuffer::ReadPixel(uint32_t attachmentIndex, int x, int y) {
+	EN_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size());
+	
+	glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+
+	int pixelData;
+	glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+	return pixelData;
+}
+
+
+void OpenGLFrameBuffer::ClearAttachment(uint32_t attachmentIndex, int value) {
+	EN_CORE_ASSERT(attachmentIndex < m_ColorAttachments.size());
+	
+	auto& spec = m_ColorAttachmentSpecs[attachmentIndex];
+	glClearTexImage(m_ColorAttachments[attachmentIndex], 0, Utils::FrameBufferTextureFormatToGL(spec.TextureFormat), GL_INT, &value);
+}
+
+
 }
