@@ -13,7 +13,10 @@ public:
 
 	virtual void Resize(uint32_t width, uint32_t height) override final;
 
-	virtual uint32_t GetColorAttachmentRendererID() const override final { return m_ColorAttachment; }
+	virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const override final { 
+		EN_CORE_ASSERT(index < m_ColorAttachments.size());
+		return m_ColorAttachments[index];
+	}
 
 	virtual const FrameBufferSpecification& GetSpecification() const override final { return m_Specification; }
 
@@ -21,9 +24,13 @@ public:
 
 private:
 	uint32_t m_RendererID;
-	uint32_t m_ColorAttachment, m_DepthAttachment;
 	FrameBufferSpecification m_Specification;
 
+	std::vector<FrameBufferTextureSpecification> m_ColorAttachmentSpecs;
+	FrameBufferTextureSpecification m_DepthAttachmentSpec;
+
+	std::vector<uint32_t> m_ColorAttachments;
+	uint32_t m_DepthAttachment;
 
 };
 

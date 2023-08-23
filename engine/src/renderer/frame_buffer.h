@@ -4,9 +4,42 @@
 
 namespace Enik {
 
+enum class FrameBufferTextureFromat {
+	None = 0,
+	RGBA8,
+	RED_INTEGER,
+	DEPTH24_STENCIL8,
+	Depth = DEPTH24_STENCIL8
+};
+
+struct FrameBufferTextureSpecification {
+	FrameBufferTextureSpecification() = default;
+	FrameBufferTextureSpecification(FrameBufferTextureFromat format)
+		: TextureFormat(format) { 	
+	}
+
+	FrameBufferTextureFromat TextureFormat = FrameBufferTextureFromat::None;
+};
+
+struct FrameBufferAttachmentSpecification {
+	FrameBufferAttachmentSpecification() = default;
+	FrameBufferAttachmentSpecification(std::initializer_list<FrameBufferTextureSpecification> attachments)
+		: Attachments(attachments) {
+	}
+
+	std::vector<FrameBufferTextureSpecification> Attachments;
+};
+
+
+
+
 struct FrameBufferSpecification {
 	uint32_t Width = 32;
 	uint32_t Height = 32;
+
+	FrameBufferAttachmentSpecification Attachments;
+
+	uint32_t Samles = 1;
 	bool SwapChainTarget = false;
 };
 
@@ -21,7 +54,7 @@ public:
 
 	virtual void Resize(uint32_t width, uint32_t height) = 0;
 
-	virtual uint32_t GetColorAttachmentRendererID() const = 0;
+	virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const = 0;
 
 	virtual const FrameBufferSpecification& GetSpecification() const = 0;
 

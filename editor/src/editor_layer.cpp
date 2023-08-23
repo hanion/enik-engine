@@ -17,6 +17,7 @@ void EditorLayer::OnAttach() {
 	EN_PROFILE_SCOPE;
 
 	FrameBufferSpecification spec;
+	spec.Attachments = { FrameBufferTextureFromat::RGBA8, FrameBufferTextureFromat::Depth };
 	m_FrameBuffer = FrameBuffer::Create(spec);
 
 
