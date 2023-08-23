@@ -56,9 +56,9 @@ namespace Utils {
 	}
 
 	
-	static bool IsDepthFormat(FrameBufferTextureFromat format) {
+	static bool IsDepthFormat(FrameBufferTextureFormat format) {
 		switch (format) {
-			case FrameBufferTextureFromat::DEPTH24_STENCIL8: return true;
+			case FrameBufferTextureFormat::DEPTH24_STENCIL8: return true;
 			default: break;
 		}	
 		return false;
@@ -115,10 +115,10 @@ void OpenGLFrameBuffer::Invalidate() {
 			Utils::BindTexture(mulitsample, m_ColorAttachments[i]);
 
 			switch (m_ColorAttachmentSpecs[i].TextureFormat) {
-				case FrameBufferTextureFromat::RGBA8:
+				case FrameBufferTextureFormat::RGBA8:
 					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samles, GL_RGBA8, GL_RGBA, m_Specification.Width, m_Specification.Height, i);
 					break;
-				case FrameBufferTextureFromat::RED_INTEGER:
+				case FrameBufferTextureFormat::RED_INTEGER:
 					Utils::AttachColorTexture(m_ColorAttachments[i], m_Specification.Samles, GL_R32I, GL_RED_INTEGER, m_Specification.Width, m_Specification.Height, i);
 					break;
 				default:
@@ -127,11 +127,11 @@ void OpenGLFrameBuffer::Invalidate() {
 		}
 	}
 
-	if (m_DepthAttachmentSpec.TextureFormat != FrameBufferTextureFromat::None) {
+	if (m_DepthAttachmentSpec.TextureFormat != FrameBufferTextureFormat::None) {
 		Utils::CreateTextures(mulitsample, &m_DepthAttachment, 1);
 		Utils::BindTexture(mulitsample, m_DepthAttachment);
 		switch (m_DepthAttachmentSpec.TextureFormat) {
-			case FrameBufferTextureFromat::DEPTH24_STENCIL8:
+			case FrameBufferTextureFormat::DEPTH24_STENCIL8:
 				Utils::AttachDepthTexture(m_DepthAttachment, m_Specification.Samles, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, m_Specification.Width, m_Specification.Height);
 				break;
 			

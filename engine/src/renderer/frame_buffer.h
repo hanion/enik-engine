@@ -4,7 +4,7 @@
 
 namespace Enik {
 
-enum class FrameBufferTextureFromat {
+enum class FrameBufferTextureFormat {
 	None = 0,
 	RGBA8,
 	RED_INTEGER,
@@ -14,11 +14,11 @@ enum class FrameBufferTextureFromat {
 
 struct FrameBufferTextureSpecification {
 	FrameBufferTextureSpecification() = default;
-	FrameBufferTextureSpecification(FrameBufferTextureFromat format)
+	FrameBufferTextureSpecification(FrameBufferTextureFormat format)
 		: TextureFormat(format) { 	
 	}
 
-	FrameBufferTextureFromat TextureFormat = FrameBufferTextureFromat::None;
+	FrameBufferTextureFormat TextureFormat = FrameBufferTextureFormat::None;
 };
 
 struct FrameBufferAttachmentSpecification {
