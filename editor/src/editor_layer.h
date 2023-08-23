@@ -26,6 +26,8 @@ private:
 	void LoadScene(const std::string& path);
 	void SaveScene();
 
+	bool OnKeyPressed(KeyPressedEvent& event);
+
 private:
 	Ref<FrameBuffer> m_FrameBuffer;
 

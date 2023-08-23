@@ -141,7 +141,9 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 }
 
 void EditorLayer::OnEvent(Event& event) {
-	
+
+	EventDispatcher dispatcher = EventDispatcher(event);
+	dispatcher.Dispatch<KeyPressedEvent>(std::bind(&EditorLayer::OnKeyPressed, this, std::placeholders::_1));
 }
 
 void EditorLayer::OnImGuiRender() {
@@ -341,4 +343,41 @@ void EditorLayer::LoadScene(const std::string& path) {
 void EditorLayer::SaveScene() {
 	SceneSerializer serializer = SceneSerializer(m_ActiveScene);
 	serializer.Serialize(m_ActiveScenePath);
+}
+
+bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
+	if (event.IsRepeat()) {
+		return false;
+	}
+
+	bool control = Input::IsKeyPressed(Key::LeftControl) or Input::IsKeyPressed(Key::RightControl);
+	bool shift   = Input::IsKeyPressed(Key::LeftShift  ) or Input::IsKeyPressed(Key::RightShift  );
+
+	switch (event.GetKeyCode()) {
+		case Key::N:
+			CreateNewScene();
+			break;
+
+		case Key::O:
+			if (control) {
+				m_ShowFileDialogAs = DialogType::OPEN_FILE;
+				m_IsDialogOpen = true;
+			}
+			break;
+
+		case Key::S:
+			if (control and shift) {
+				m_ShowFileDialogAs = DialogType::SAVE_FILE;
+				m_IsDialogOpen = true;
+			}
+			else if (control) {
+				SaveScene();
+			}
+			break;
+
+		default:
+			break;
+	}
+
+	return false;
 }
