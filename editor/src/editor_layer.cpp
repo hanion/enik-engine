@@ -122,6 +122,12 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 
 	m_Timestep = timestep;
 
+	FrameBufferSpecification spec = m_FrameBuffer->GetSpecification();
+	if (m_ViewportSize.x > 0.0f and m_ViewportSize.y > 0.0f and (spec.Width != m_ViewportSize.x or spec.Height != m_ViewportSize.y)) {
+		m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+	}
+
 	Renderer2D::ResetStats();
 
 	m_FrameBuffer->Bind();
