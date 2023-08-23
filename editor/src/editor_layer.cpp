@@ -5,7 +5,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "scene/scene_serializer.h"
-#include "dialogs/dialog_file.h"
 
 
 
@@ -178,9 +177,6 @@ void EditorLayer::OnEvent(Event& event) {
 }
 
 void EditorLayer::OnImGuiRender() {
-	static DialogType showFileDialogAs = DialogType::OPEN_FILE;
-	static bool isDialogOpen = false;
-	
 	/*DockSpace*/ {
 		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
@@ -216,22 +212,22 @@ void EditorLayer::OnImGuiRender() {
 				}
 				
 				if (ImGui::MenuItem("Open File")) {
-					showFileDialogAs = DialogType::OPEN_FILE;
-					isDialogOpen = true;
+					m_ShowFileDialogAs = DialogType::OPEN_FILE;
+					m_IsDialogOpen = true;
 				}
 				
 				if (ImGui::MenuItem("Save")) {
 					if (m_ActiveScenePath.empty()) {
-						showFileDialogAs = DialogType::SAVE_FILE;
-						isDialogOpen = true;
+						m_ShowFileDialogAs = DialogType::SAVE_FILE;
+						m_IsDialogOpen = true;
 					}
 					else {
 						SaveScene();
 					}
 				}
 				if (ImGui::MenuItem("Save As")) {
-					showFileDialogAs = DialogType::SAVE_FILE;
-					isDialogOpen = true;
+					m_ShowFileDialogAs = DialogType::SAVE_FILE;
+					m_IsDialogOpen = true;
 				}
 				
 				if (ImGui::MenuItem("Exit")) {
@@ -257,12 +253,12 @@ void EditorLayer::OnImGuiRender() {
 		ImGui::End();
 	}
 
-	if (DialogFile::Show(isDialogOpen, showFileDialogAs) == DialogResult::ACCEPT) {
-		if (showFileDialogAs == DialogType::OPEN_FILE) {
+	if (DialogFile::Show(m_IsDialogOpen, m_ShowFileDialogAs) == DialogResult::ACCEPT) {
+		if (m_ShowFileDialogAs == DialogType::OPEN_FILE) {
 			CreateNewScene();
 			LoadScene(DialogFile::GetSelectedPath());
 		}
-		else if (showFileDialogAs == DialogType::SAVE_FILE) {
+		else if (m_ShowFileDialogAs == DialogType::SAVE_FILE) {
 			m_ActiveScenePath = DialogFile::GetSelectedPath();
 			SaveScene();
 		}

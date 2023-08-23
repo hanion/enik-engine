@@ -2,6 +2,8 @@
 #include <Enik.h>
 #include "panels/scene_tree.h"
 #include "panels/inspector.h"
+#include "dialogs/dialog_file.h"
+
 
 using namespace Enik;
 
@@ -46,4 +48,7 @@ private:
 	InspectorPanel m_InspectorPanel;
 
 	std::string m_ActiveScenePath;
+
+	DialogType m_ShowFileDialogAs = DialogType::OPEN_FILE;
+	bool m_IsDialogOpen = false;
 };
