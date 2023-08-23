@@ -2,6 +2,7 @@
 #include <Enik.h>
 #include "panels/scene_tree.h"
 #include "panels/inspector.h"
+#include "renderer/ortho_camera_controller.h"
 #include "dialogs/dialog_file.h"
 
 
@@ -32,6 +33,8 @@ private:
 	Ref<FrameBuffer> m_FrameBuffer;
 
 	Ref<Scene> m_ActiveScene;
+
+	OrthographicCameraController m_EditorCameraController;
 
 	bool m_ViewportFocused = false;
 	bool m_ViewportHovered = false;

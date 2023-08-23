@@ -1,6 +1,7 @@
 #pragma once
 
 #include "core/timestep.h"
+#include "renderer/ortho_camera_controller.h"
 #include <entt/entt.hpp>
 
 namespace Enik {
@@ -17,7 +18,8 @@ public:
 
 	entt::registry& Reg() { return m_Registry; }
 
-	void OnUpdate(Timestep ts);
+	void OnUpdateEditor (Timestep ts, OrthographicCameraController& camera);
+	void OnUpdateRuntime(Timestep ts);
 	void OnViewportResize(uint32_t width, uint32_t height);
 
 

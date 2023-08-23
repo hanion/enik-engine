@@ -9,7 +9,7 @@
 
 
 EditorLayer::EditorLayer()
-	: Layer("EditorLayer") {
+	: Layer("EditorLayer"), m_EditorCameraController(1280.0f/600.0f) {
 	
 }
 
@@ -125,6 +125,7 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 	FrameBufferSpecification spec = m_FrameBuffer->GetSpecification();
 	if (m_ViewportSize.x > 0.0f and m_ViewportSize.y > 0.0f and (spec.Width != m_ViewportSize.x or spec.Height != m_ViewportSize.y)) {
 		m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_EditorCameraController.OnResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 	}
 
@@ -135,12 +136,13 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 	RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
 	RenderCommand::Clear();
 
-	m_ActiveScene->OnUpdate(m_Timestep);
+	m_ActiveScene->OnUpdateEditor(m_Timestep, m_EditorCameraController);
 
 	m_FrameBuffer->Unbind();
 }
 
 void EditorLayer::OnEvent(Event& event) {
+	m_EditorCameraController.OnEvent(event);
 
 	EventDispatcher dispatcher = EventDispatcher(event);
 	dispatcher.Dispatch<KeyPressedEvent>(std::bind(&EditorLayer::OnKeyPressed, this, std::placeholders::_1));
@@ -262,6 +264,7 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 			m_FrameBuffer->Resize(m_ViewportSize.x, m_ViewportSize.y);
 
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_EditorCameraController.OnResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 
 		uint32_t textureID = m_FrameBuffer->GetColorAttachmentRendererID();

@@ -33,8 +33,28 @@ void Scene::DestroyEntity(const Entity& entity) {
 	m_Registry.destroy(entity);
 }
 
-void Scene::OnUpdate(Timestep ts) {
-	EN_PROFILE_SECTION("Scene::OnUpdate");
+void Scene::OnUpdateEditor(Timestep ts, OrthographicCameraController& camera) {
+	EN_PROFILE_SECTION("Scene::OnUpdateEditor");
+
+	Renderer2D::BeginScene(camera.GetCamera());
+
+	/* Get Sprites */ {
+		EN_PROFILE_SECTION("Get Sprites");
+
+		auto group = m_Registry.group<Component::Transform>(entt::get<Component::SpriteRenderer>);
+		for (auto entity : group) {
+			Component::Transform& transform   = group.get<Component::Transform>     (entity);
+			Component::SpriteRenderer& sprite = group.get<Component::SpriteRenderer>(entity);
+
+			Renderer2D::DrawQuad(transform, sprite);
+		}
+	}
+
+	Renderer2D::EndScene();
+}
+
+void Scene::OnUpdateRuntime(Timestep ts) {
+	EN_PROFILE_SECTION("Scene::OnUpdateRuntime");
 
 	// TODO do this On Editor Play
 	/* Update Scripts */ {
