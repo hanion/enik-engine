@@ -13,6 +13,10 @@ void SceneTreePanel::SetContext(const Ref<Scene>& context) {
 	m_SelectionContext = {};
 }
 
+void SceneTreePanel::SetSelectedEntity(const Entity& entity) {
+	m_SelectionContext = entity;
+}
+
 void SceneTreePanel::OnImGuiRender() {
 	ImGui::SetNextWindowSize(ImVec2(200, 500), ImGuiCond_FirstUseEver);
 
@@ -48,7 +52,6 @@ void SceneTreePanel::OnImGuiRender() {
 	ImGui::End();
 }
 
-
 void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 	ImGui::PushID(entity);
 
@@ -65,7 +68,7 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 	bool node_open = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.Text.c_str());
 
 	if (ImGui::IsItemClicked()) {
-		m_SelectionContext = entity;
+		SetSelectedEntity(entity);
 	}
 	
 

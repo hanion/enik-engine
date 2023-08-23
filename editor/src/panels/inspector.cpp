@@ -29,8 +29,9 @@ void InspectorPanel::OnImGuiRender() {
 		return;
 	}
 
-	if (m_SceneTreePanel->m_SelectionContext) {
-		DrawEntityInInspector(m_SceneTreePanel->m_SelectionContext);
+	Entity selectedEntity = m_SceneTreePanel->GetSelectedEntity();
+	if (selectedEntity) {
+		DrawEntityInInspector(selectedEntity);
 
 		ImVec2 buttonSize(150, GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f);
 		ImVec2 buttonPosition( (ImGui::GetContentRegionAvail().x - buttonSize.x) * 0.5f, ImGui::GetCursorPosY());
@@ -239,15 +240,15 @@ void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity
 
 template <typename T>
 void InspectorPanel::DisplayComponentInPopup(const std::string& name) {
-    ImGui::BeginDisabled(m_SceneTreePanel->m_SelectionContext.Has<T>());
+    ImGui::BeginDisabled(m_SceneTreePanel->GetSelectedEntity().Has<T>());
     
 	if (ImGui::MenuItem(name.c_str())) {
-		m_SceneTreePanel->m_SelectionContext.Add<T>();
+		m_SceneTreePanel->GetSelectedEntity().Add<T>();
 		ImGui::CloseCurrentPopup();
 	}
 
 	if (std::is_same<T, Component::Camera>::value) {
-		m_SceneTreePanel->m_Context->OnViewportResize(m_SceneTreePanel->m_Context->m_ViewportWidth, m_SceneTreePanel->m_Context->m_ViewportHeight);
+		m_Context->OnViewportResize(m_Context->m_ViewportWidth, m_Context->m_ViewportHeight);
 	}
 
 	ImGui::EndDisabled();

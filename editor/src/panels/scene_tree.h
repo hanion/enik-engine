@@ -13,6 +13,9 @@ public:
 
 	void SetContext(const Ref<Scene>& context);
 
+	Entity GetSelectedEntity() const { return m_SelectionContext; }
+	void SetSelectedEntity(const Entity& entity);
+
 	void OnImGuiRender();
 
 private:
@@ -22,9 +25,6 @@ private:
 	Ref<Scene> m_Context;
 
 	Entity m_SelectionContext;
-
-	friend class InspectorPanel;
-
 };
 
 
