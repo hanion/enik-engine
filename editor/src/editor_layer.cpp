@@ -135,44 +135,6 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 	RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
 	RenderCommand::Clear();
 
-
-#if 0 
-	{
-		EN_PROFILE_SECTION("Squares");
-
-		static const int count = 99;
-		static const float spacing = 0.25f;
-		static const glm::vec2 scale = glm::vec2(0.2f);
-		static const float offset = ( ((count + (count%2)) * spacing) / 2.0f + spacing/2.0f);
-
-		static const glm::vec4 darkColor  = glm::vec4(0.1f, 0.1f, 0.1f, 0.6f);
-		static const glm::vec4 lightColor = glm::vec4(0.4f, 0.4f, 0.4f, 0.6f);
-
-		QuadProperties square;
-		square.scale = scale;
-		square.position.z = -0.2f;
-
-		for (int i = 0; i < count; i++){
-			for (int j = 0; j < count; j++) {
-				if (((i % 2 == 0) and (j % 2 == 0)) or ((i % 2 != 0) and (j % 2 != 0))) {
-					square.color = darkColor;
-				}
-				else {
-					square.color = lightColor;
-				}
-
-				square.position.x = j*spacing - offset;
-				square.position.y = i*spacing - offset;
-				
-				Renderer2D::DrawQuad(square);
-			}
-			
-		}
-	}
-#endif
-
-
-	
 	m_ActiveScene->OnUpdate(m_Timestep);
 
 	m_FrameBuffer->Unbind();
