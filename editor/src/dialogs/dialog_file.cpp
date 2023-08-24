@@ -159,10 +159,14 @@ void DialogFile::ShowDirectoriesTable(char* filePathBuffer) {
 	if (ImGui::BeginTable("Directory", 1)) {
 		for (const auto& entry : s_Data.entries) {
 			const auto& path = entry.path();
-			const std::string fileName = path.filename().string();
+			std::string fileName = path.filename().string();
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
+
+			if (entry.is_directory()){
+				fileName = fileName + "/";
+			}
 
 			if (ImGui::Selectable(fileName.c_str())) {
 				if (fs::is_directory(path)) {
