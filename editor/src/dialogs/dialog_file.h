@@ -32,6 +32,7 @@ public:
 	static const std::string& GetSelectedPath();
 
 private:
+	static DialogResult ShowPopup(bool& isOpen, DialogType type, const std::string& ext);
 	static void ShowDirectoriesTable(char* filePathBuffer);
 	static bool isValidSelection();
 

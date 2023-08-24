@@ -29,8 +29,17 @@ DialogResult DialogFile::Show(bool& isOpen, DialogType type, const std::string& 
 		widnowName = ("Save File ("+ext+")");
 	}
 
-	ImGui::Begin(widnowName.c_str(), nullptr, ImGuiWindowFlags_NoCollapse);
+	ImGui::OpenPopup(widnowName.c_str());
+	if (ImGui::BeginPopupModal(widnowName.c_str(), &isOpen)) {
+		DialogResult result = ShowPopup(isOpen, type, ext);
+		ImGui::EndPopup();
+		return result;
+	}
 
+	return DialogResult::NONE;
+}
+
+DialogResult DialogFile::ShowPopup(bool& isOpen, DialogType type, const std::string& ext) {
 	if (ImGui::Button(" ^ ")) {
 		if (!s_Data.currentDirectory.empty()) {
 			s_Data.currentDirectory = s_Data.currentDirectory.parent_path();
@@ -112,8 +121,6 @@ DialogResult DialogFile::Show(bool& isOpen, DialogType type, const std::string& 
 	
 		strcpy(filePathBuffer, "");
 		isOpen = false;
-	
-		ImGui::End();
 		return DialogResult::CANCEL;
 	}
 
@@ -137,44 +144,40 @@ DialogResult DialogFile::Show(bool& isOpen, DialogType type, const std::string& 
 		EN_CORE_TRACE("Dialog File: selected path '{0}'", s_Data.selectedPath);
 		
 		ImGui::EndDisabled();
-		ImGui::End();
 		return DialogResult::ACCEPT;
 	}
 	ImGui::EndDisabled();
 
-	ImGui::End();
 	return DialogResult::NONE;
 }
-
 
 void DialogFile::ShowDirectoriesTable(char* filePathBuffer) {
 	// Calculate available content height
 	float availableHeight = ImGui::GetContentRegionAvail().y - ImGui::GetStyle().ItemSpacing.y*5.0f - ImGui::GetTextLineHeightWithSpacing();
 	ImGui::BeginChild("ScrollableTable", ImVec2(0, availableHeight), true, ImGuiWindowFlags_HorizontalScrollbar);
 
-	ImGui::BeginTable("Directory", 1);
+	if (ImGui::BeginTable("Directory", 1)) {
+		for (const auto& entry : s_Data.entries) {
+			const auto& path = entry.path();
+			const std::string fileName = path.filename().string();
 
-	for (const auto& entry : s_Data.entries) {
-		const auto& path = entry.path();
-		const std::string fileName = path.filename().string();
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0);
 
-		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0);
-
-		if (ImGui::Selectable(fileName.c_str())) {
-			if (fs::is_directory(path)) {
-				s_Data.currentDirectory = path;
-				strcpy(filePathBuffer, ""); // Clear the file path buffer when changing directory
-				s_Data.hasSearched = false;
-			}
-			else {
-				s_Data.selectedPath = path.string();
-				strcpy(filePathBuffer, s_Data.selectedPath.c_str());
+			if (ImGui::Selectable(fileName.c_str())) {
+				if (fs::is_directory(path)) {
+					s_Data.currentDirectory = path;
+					strcpy(filePathBuffer, ""); // Clear the file path buffer when changing directory
+					s_Data.hasSearched = false;
+				}
+				else {
+					s_Data.selectedPath = path.string();
+					strcpy(filePathBuffer, s_Data.selectedPath.c_str());
+				}
 			}
 		}
+		ImGui::EndTable();
 	}
-
-	ImGui::EndTable();
 	ImGui::EndChild();
 }
 
