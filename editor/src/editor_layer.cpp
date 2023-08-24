@@ -286,6 +286,25 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 		ImGui::Image(reinterpret_cast<void*>(static_cast<uintptr_t>(textureID)), 
 			ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0,1), ImVec2(1,0));
 		
+
+		/* Drag drop target */ {
+			if (ImGui::BeginDragDropTarget()) {
+				// draw rect to show it can be draggable
+				ImVec2 drawStart = ImVec2(m_ViewportBounds[0].x+2, m_ViewportBounds[0].y+2);
+				ImVec2 drawEnd =   ImVec2(m_ViewportBounds[1].x-2, m_ViewportBounds[1].y-2);
+				ImGui::GetWindowDrawList()->AddRect(drawStart, drawEnd, IM_COL32(240, 240, 10, 240), 0.0f, ImDrawCornerFlags_All, 3.0f);
+				
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_FILE_PATH")) {
+					if (payload->IsDelivery()) { 
+						const char* droppedFilePath = static_cast<const char*>(payload->Data);
+						CreateNewScene();
+						LoadScene(std::string(droppedFilePath));
+					}
+				}
+				ImGui::EndDragDropTarget();
+			}
+		}
+
 		ImGui::End();
 	}
 

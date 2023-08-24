@@ -86,6 +86,16 @@ void FileSystemPanel::ShowDirectoriesTable() {
 				else {
 				}
 			}
+			
+			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_AcceptBeforeDelivery)) {
+				// Set payload to carry the index of our item (could be anything)
+				ImGui::SetDragDropPayload("DND_FILE_PATH", path.string().c_str(), path.string().length() + 1);
+
+				// Display preview (could be anything, e.g. when dragging an image we could decide to display
+				// the filename and a small preview of the image, etc.)
+				ImGui::Text(fileName.c_str());
+				ImGui::EndDragDropSource();
+			}
 		}
 		ImGui::EndTable();
 	}
