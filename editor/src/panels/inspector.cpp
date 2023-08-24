@@ -117,6 +117,13 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			ImVec4 tint_col = ImVec4(sprite.Color.r,sprite.Color.g,sprite.Color.b,sprite.Color.a);
 			ImVec4 border_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
 			ImVec2 avail = ImGui::GetContentRegionAvail();
+
+			// to not crash in line 245, at ImGui::TreePop();
+			if (avail.x < 0 or avail.y < -10.0f) {
+				ImGui::Button("##TooSmallToShowTexture");
+				return;
+			}
+			
 			avail.y = (avail.y < 128) ? avail.y : 128;
 			avail.x -= GImGui->Style.FramePadding.x;
 
@@ -231,6 +238,7 @@ void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity
 
 		lambda();
 		
+		// FIXME: if inspector panel is too small this crashed the program
 		ImGui::TreePop();
 	}
 
