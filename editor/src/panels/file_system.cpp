@@ -87,7 +87,7 @@ void FileSystemPanel::ShowDirectoriesTable() {
 				}
 			}
 			
-			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_AcceptBeforeDelivery)) {
+			if (ImGui::BeginDragDropSource()) {
 				// Set payload to carry the index of our item (could be anything)
 				ImGui::SetDragDropPayload("DND_FILE_PATH", path.string().c_str(), path.string().length() + 1);
 
