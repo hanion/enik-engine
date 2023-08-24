@@ -289,12 +289,12 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 
 		/* Drag drop target */ {
 			if (ImGui::BeginDragDropTarget()) {
-				// draw rect to show it can be draggable
-				ImVec2 drawStart = ImVec2(m_ViewportBounds[0].x+2, m_ViewportBounds[0].y+2);
-				ImVec2 drawEnd =   ImVec2(m_ViewportBounds[1].x-2, m_ViewportBounds[1].y-2);
-				ImGui::GetWindowDrawList()->AddRect(drawStart, drawEnd, IM_COL32(240, 240, 10, 240), 0.0f, ImDrawCornerFlags_All, 3.0f);
-				
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_FILE_PATH")) {
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_FILE_PATH",ImGuiDragDropFlags_AcceptBeforeDelivery)) {
+					// draw rect to show it can be draggable
+					ImVec2 drawStart = ImVec2(m_ViewportBounds[0].x+2, m_ViewportBounds[0].y+2);
+					ImVec2 drawEnd =   ImVec2(m_ViewportBounds[1].x-2, m_ViewportBounds[1].y-2);
+					ImGui::GetWindowDrawList()->AddRect(drawStart, drawEnd, IM_COL32(240, 240, 10, 240), 0.0f, ImDrawCornerFlags_All, 3.0f);
+					
 					if (payload->IsDelivery()) { 
 						const char* droppedFilePath = static_cast<const char*>(payload->Data);
 						CreateNewScene();
