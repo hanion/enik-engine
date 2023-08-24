@@ -392,7 +392,9 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 
 	switch (event.GetKeyCode()) {
 		case Key::N:
-			CreateNewScene();
+			if (control) { 
+				CreateNewScene();
+			}
 			break;
 
 		case Key::O:

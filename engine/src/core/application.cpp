@@ -114,9 +114,11 @@ bool Application::OnWindowResize(WindowResizeEvent& e){
 }
 
 bool Application::OnKeyPressed(KeyPressedEvent& e) {
-	if (e.GetKeyCode() == Key::P) {
+	bool control = Input::IsKeyPressed(Key::LeftControl) or Input::IsKeyPressed(Key::RightControl);
+	
+	if (control and e.GetKeyCode() == Key::P) {
 		m_Minimized = !m_Minimized;
-		EN_CORE_WARN("Paused Render (P)");
+		EN_CORE_WARN("Paused Render (Ctrl+P)");
 	}
 	return false;
 }
