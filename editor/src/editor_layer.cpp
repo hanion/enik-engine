@@ -366,7 +366,7 @@ void EditorLayer::CreateNewScene() {
 	m_FileSystemPanel.SetContext(m_ActiveScene);
 }
 
-void EditorLayer::LoadScene(const std::string& path) {
+void EditorLayer::LoadScene(const std::filesystem::path& path) {
 	m_ActiveScenePath = path;
 	SceneSerializer serializer = SceneSerializer(m_ActiveScene);
 	serializer.Deserialize(m_ActiveScenePath);

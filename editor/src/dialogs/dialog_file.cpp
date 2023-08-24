@@ -8,7 +8,7 @@ namespace Enik {
 
 static DialogFileData s_Data;
 
-const std::string& DialogFile::GetSelectedPath() {
+const std::filesystem::path& DialogFile::GetSelectedPath() {
 	return s_Data.selectedPath;
 }
 

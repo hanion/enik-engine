@@ -10,7 +10,7 @@ struct DialogFileData {
 
 	// fs::path currentDirectory = fs::current_path();
 	fs::path currentDirectory = fs::canonical("../../");
-	std::string selectedPath;
+	std::filesystem::path selectedPath;
 
 	std::vector<fs::directory_entry> entries;
 };
@@ -29,7 +29,7 @@ class DialogFile {
 public:
 	static DialogResult Show(bool& isOpen, DialogType type, const std::string& ext = ".escn");
 
-	static const std::string& GetSelectedPath();
+	static const std::filesystem::path& GetSelectedPath();
 
 private:
 	static DialogResult ShowPopup(bool& isOpen, DialogType type, const std::string& ext);

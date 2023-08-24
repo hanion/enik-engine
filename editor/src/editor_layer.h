@@ -25,7 +25,7 @@ public:
 
 private:
 	void CreateNewScene();
-	void LoadScene(const std::string& path);
+	void LoadScene(const std::filesystem::path& path);
 	void SaveScene();
 
 	bool OnKeyPressed(KeyPressedEvent& event);
@@ -59,7 +59,7 @@ private:
 	InspectorPanel m_InspectorPanel;
 	FileSystemPanel m_FileSystemPanel;
 
-	std::string m_ActiveScenePath;
+	std::filesystem::path m_ActiveScenePath;
 
 	DialogType m_ShowFileDialogAs = DialogType::OPEN_FILE;
 	bool m_IsDialogOpen = false;
