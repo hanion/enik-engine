@@ -109,6 +109,7 @@ void EditorLayer::OnAttach() {
 
 	m_SceneTreePanel.SetContext(m_ActiveScene);
 	m_InspectorPanel.SetContext(m_ActiveScene, &m_SceneTreePanel);
+	m_FileSystemPanel.SetContext(m_ActiveScene);
 
 }
 
@@ -249,6 +250,7 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 
 	m_SceneTreePanel.OnImGuiRender();
 	m_InspectorPanel.OnImGuiRender();
+	m_FileSystemPanel.OnImGuiRender();
 
 	/*Viewport*/ {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -342,6 +344,7 @@ void EditorLayer::CreateNewScene() {
 	m_ActiveScene = CreateRef<Scene>();
 	m_SceneTreePanel.SetContext(m_ActiveScene);
 	m_InspectorPanel.SetContext(m_ActiveScene, &m_SceneTreePanel);
+	m_FileSystemPanel.SetContext(m_ActiveScene);
 }
 
 void EditorLayer::LoadScene(const std::string& path) {

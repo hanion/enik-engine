@@ -2,6 +2,7 @@
 #include <Enik.h>
 #include "panels/scene_tree.h"
 #include "panels/inspector.h"
+#include "panels/file_system.h"
 #include "renderer/ortho_camera_controller.h"
 #include "dialogs/dialog_file.h"
 
@@ -56,6 +57,7 @@ private:
 
 	SceneTreePanel m_SceneTreePanel;
 	InspectorPanel m_InspectorPanel;
+	FileSystemPanel m_FileSystemPanel;
 
 	std::string m_ActiveScenePath;
 
