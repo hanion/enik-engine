@@ -18,6 +18,7 @@ void FileSystemPanel::OnImGuiRender() {
 	ImGui::SetNextWindowSize(ImVec2(200, 500), ImGuiCond_FirstUseEver);
 
 	if (!ImGui::Begin("File System")) {
+		ImGui::End();
 		return;
 	}
 
