@@ -111,6 +111,9 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		ImGui::ColorEdit4("##Sprite Color", glm::value_ptr(sprite.Color));
 		// ImGui::ColorEdit3("Sprite Color", glm::value_ptr(sprite.Color));
 		
+		LabelPrefix("Tile Scale");
+		ImGui::DragFloat("##Tile Scale", &sprite.TileScale, 0.01f);
+
 		/* Texture */ {
 			LabelPrefix("Texture");		
 			// ImVec4 tint_col = ImGui::GetStyleColorVec4(ImGuiCol_Text);
