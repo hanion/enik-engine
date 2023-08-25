@@ -20,6 +20,9 @@ void EditorLayer::OnAttach() {
 	spec.Attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::Depth };
 	m_FrameBuffer = FrameBuffer::Create(spec);
 
+	m_TexturePlay = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/play_button.png"));
+	m_TextureStop = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/stop_button.png"));
+
 
 	m_ActiveScene = CreateRef<Scene>();
 
@@ -137,12 +140,22 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 
 	RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
 	RenderCommand::Clear();
-
 	m_FrameBuffer->ClearAttachment(1, -1);
 
-	m_ActiveScene->OnUpdateEditor(m_Timestep, m_EditorCameraController);
+	switch (m_ScenState) {
+		case SceneState::Edit:
+			m_ActiveScene->OnUpdateEditor(m_Timestep, m_EditorCameraController);
+			if (m_ViewportHovered and m_ViewportFocused) {
+				HandlePickEntityWithMouse();
+			}
+			break;
+		case SceneState::Play:
+			m_ActiveScene->OnUpdateRuntime(m_Timestep);
+			break;
+	}
 
-	HandlePickEntityWithMouse();
+
+	
 
 	m_FrameBuffer->Unbind();
 }
@@ -360,6 +373,7 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 	}
 
 
+	ShowToolbar();
 }
 
 
@@ -457,4 +471,67 @@ void EditorLayer::HandlePickEntityWithMouse() {
 	}
 
 	m_PickEntityWithMouse = false;
+}
+
+
+
+void EditorLayer::ShowToolbar() {
+	static const float toolbarMinSize = 32.0f;
+	static const float padding = 4.0f;
+	static float toolbarWindowWidth = 0.0f;
+	ImVec2 pos;
+	pos.x = m_ViewportBounds[1].x - toolbarWindowWidth - padding;
+	pos.y = m_ViewportBounds[0].y + padding;
+	ImGui::SetNextWindowPos(pos);
+	ImGui::SetNextWindowBgAlpha(0.65f);
+
+	
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize,    ImVec2(toolbarMinSize,toolbarMinSize));
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding,    ImVec2(2 ,2));
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing,      ImVec2(0 ,0));
+	ImGui::PushStyleVar(ImGuiStyleVar_ItemInnerSpacing, ImVec2(0 ,0));
+	ImGui::PushStyleColor(ImGuiCol_Button,        ImVec4(0, 0, 0, 0));
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive,  ImVec4(0.1f, 0.1f, 0.1f, 0.5f));
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, 0.5f));
+
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_AlwaysAutoResize;
+	flags |=  ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDecoration;
+
+	if (not ImGui::Begin("##Toolbar",nullptr, flags)) {
+		ImGui::End();
+		ImGui::PopStyleVar(4);
+		ImGui::PopStyleColor(3);
+		return;
+	}
+	
+	toolbarWindowWidth = ImGui::GetWindowSize().x;
+
+	float size = ImGui::GetWindowHeight() - 4.0f;
+	Ref<Texture2D> texture = (m_ScenState == SceneState::Edit) ? m_TexturePlay : m_TextureStop;
+	auto textureID = reinterpret_cast<void*>(static_cast<uintptr_t>(texture->GetRendererID()));
+	if (ImGui::ImageButton(textureID, ImVec2(size,size), ImVec2(0,1), ImVec2(1,0),0)) {
+		if (m_ScenState == SceneState::Edit) {
+			OnScenePlay();
+		}
+		else if (m_ScenState == SceneState::Play) {
+			OnSceneStop();
+		}
+
+	}
+
+	
+	
+
+
+	ImGui::End();
+	ImGui::PopStyleVar(4);
+	ImGui::PopStyleColor(3);
+}
+
+void EditorLayer::OnScenePlay() {
+	m_ScenState = SceneState::Play;
+}
+
+void EditorLayer::OnSceneStop() {
+	m_ScenState = SceneState::Edit;
 }

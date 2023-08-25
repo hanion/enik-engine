@@ -5,6 +5,7 @@
 #include "panels/file_system.h"
 #include "renderer/ortho_camera_controller.h"
 #include "dialogs/dialog_file.h"
+#include "renderer/texture.h"
 
 
 using namespace Enik;
@@ -33,6 +34,10 @@ private:
 
 	void HandlePickEntityWithMouse();
 
+	void ShowToolbar();
+	void OnScenePlay();
+	void OnSceneStop();
+
 private:
 	Ref<FrameBuffer> m_FrameBuffer;
 
@@ -53,6 +58,8 @@ private:
 	Entity m_Tile;
 	Entity m_CameraEntity;
 
+	Ref<Texture2D> m_TexturePlay, m_TextureStop;
+
 	Timestep m_Timestep;
 
 	SceneTreePanel m_SceneTreePanel;
@@ -63,4 +70,9 @@ private:
 
 	DialogType m_ShowFileDialogAs = DialogType::OPEN_FILE;
 	bool m_IsDialogOpen = false;
+
+	enum class SceneState {
+		Edit = 0, Play = 1
+	};
+	SceneState m_ScenState = SceneState::Edit;
 };
