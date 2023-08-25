@@ -74,5 +74,5 @@ private:
 	enum class SceneState {
 		Edit = 0, Play = 1
 	};
-	SceneState m_ScenState = SceneState::Edit;
+	SceneState m_SceneState = SceneState::Edit;
 };

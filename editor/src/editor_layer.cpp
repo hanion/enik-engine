@@ -57,9 +57,9 @@ void EditorLayer::OnAttach() {
 	}
 
 	/* Create a test native script */ {
-		class CameraContoller : public ScriptableEntity {
+		class CameraController : public ScriptableEntity {
 		public:
-			CameraContoller() 
+			CameraController() 
 				: m_Transform(nullptr) {}
 
 			virtual void OnCreate() override final {
@@ -87,8 +87,8 @@ void EditorLayer::OnAttach() {
 			Component::Transform* m_Transform;
 		};
 
-		//m_CameraEntity.AddScript<CameraContoller>();
-		m_CameraEntity.Add<Component::NativeScript>().Bind<CameraContoller>();
+		//m_CameraEntity.AddScript<CameraController>();
+		m_CameraEntity.Add<Component::NativeScript>().Bind<CameraController>();
 
 	}
 
@@ -142,7 +142,7 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 	RenderCommand::Clear();
 	m_FrameBuffer->ClearAttachment(1, -1);
 
-	switch (m_ScenState) {
+	switch (m_SceneState) {
 		case SceneState::Edit:
 			m_ActiveScene->OnUpdateEditor(m_Timestep, m_EditorCameraController);
 			if (m_ViewportHovered and m_ViewportFocused) {
@@ -359,7 +359,7 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 		pos.y = 130 + m_ViewportBounds[0].y;
 
 		ImGui::SetNextWindowPos(pos);
-		if (ImGui::Begin("Rednerer2D Stats", nullptr, window_flags))
+		if (ImGui::Begin("Renderer2D Stats", nullptr, window_flags))
 		{
 			auto stats = Renderer2D::GetStats();
 
@@ -507,13 +507,13 @@ void EditorLayer::ShowToolbar() {
 	toolbarWindowWidth = ImGui::GetWindowSize().x;
 
 	float size = ImGui::GetWindowHeight() - 4.0f;
-	Ref<Texture2D> texture = (m_ScenState == SceneState::Edit) ? m_TexturePlay : m_TextureStop;
+	Ref<Texture2D> texture = (m_SceneState == SceneState::Edit) ? m_TexturePlay : m_TextureStop;
 	auto textureID = reinterpret_cast<void*>(static_cast<uintptr_t>(texture->GetRendererID()));
 	if (ImGui::ImageButton(textureID, ImVec2(size,size), ImVec2(0,1), ImVec2(1,0),0)) {
-		if (m_ScenState == SceneState::Edit) {
+		if (m_SceneState == SceneState::Edit) {
 			OnScenePlay();
 		}
-		else if (m_ScenState == SceneState::Play) {
+		else if (m_SceneState == SceneState::Play) {
 			OnSceneStop();
 		}
 
@@ -529,9 +529,9 @@ void EditorLayer::ShowToolbar() {
 }
 
 void EditorLayer::OnScenePlay() {
-	m_ScenState = SceneState::Play;
+	m_SceneState = SceneState::Play;
 }
 
 void EditorLayer::OnSceneStop() {
-	m_ScenState = SceneState::Edit;
+	m_SceneState = SceneState::Edit;
 }
