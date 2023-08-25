@@ -151,6 +151,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 				tex_size.y = avail.y;
 			}
 
+			tex_size = ImVec2(glm::max(32.0f, tex_size.x), glm::max(32.0f, tex_size.y)); 
 			ImVec2 childSize = ImVec2(tex_size.x + GImGui->Style.FramePadding.x, tex_size.y + GImGui->Style.FramePadding.y);
 			if (ImGui::BeginChild("TextureChild", childSize, false, ImGuiWindowFlags_NoScrollbar)) {
 				ImGui::Image(tex_id, tex_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), tint_col, border_col);
