@@ -154,6 +154,18 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			ImVec2 childSize = ImVec2(tex_size.x + GImGui->Style.FramePadding.x, tex_size.y + GImGui->Style.FramePadding.y);
 			if (ImGui::BeginChild("TextureChild", childSize, false, ImGuiWindowFlags_NoScrollbar)) {
 				ImGui::Image(tex_id, tex_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), tint_col, border_col);
+				
+				/* Drag drop target */ {
+					if (ImGui::BeginDragDropTarget()) {
+						if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_FILE_PATH")) {
+							std::filesystem::path path = std::filesystem::path(static_cast<const char*>(payload->Data));
+							if (std::filesystem::exists(path) and path.extension() == ".png") {								
+								sprite.Texture = Texture2D::Create(path);
+							}
+						}
+						ImGui::EndDragDropTarget();
+					}
+				}
 				ImGui::EndChild();
 			}
 		}
