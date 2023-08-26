@@ -20,7 +20,7 @@ void SceneTreePanel::SetSelectedEntity(const Entity& entity) {
 }
 
 void SceneTreePanel::OnImGuiRender() {
-	ImGui::SetNextWindowSize(ImVec2(200, 500), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
 	if (!ImGui::Begin("Scene Tree")) {
 		ImGui::End();
