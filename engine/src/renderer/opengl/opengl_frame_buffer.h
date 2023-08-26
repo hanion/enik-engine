@@ -8,16 +8,15 @@ public:
 	OpenGLFrameBuffer(const FrameBufferSpecification& spec);
 	virtual ~OpenGLFrameBuffer();
 
-	virtual void Bind()   override final;
+	virtual void Bind() override final;
 	virtual void Unbind() override final;
 
 	virtual void Resize(uint32_t width, uint32_t height) override final;
-	virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) override final;
+	virtual int ReadPixel(uint32_t attachment_index, int x, int y) override final;
 
-	virtual void ClearAttachment(uint32_t attachmentIndex, int value) override final;
+	virtual void ClearAttachment(uint32_t attachment_index, int value) override final;
 
-
-	virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const override final { 
+	virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const override final {
 		EN_CORE_ASSERT(index < m_ColorAttachments.size());
 		return m_ColorAttachments[index];
 	}
@@ -35,7 +34,6 @@ private:
 
 	std::vector<uint32_t> m_ColorAttachments;
 	uint32_t m_DepthAttachment;
-
 };
 
 }

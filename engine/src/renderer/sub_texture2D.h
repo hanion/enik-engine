@@ -5,10 +5,10 @@
 
 namespace Enik {
 
-class SubTexture2D  {
+class SubTexture2D {
 public:
-	SubTexture2D(const Ref<Texture2D>& texture, const glm::vec2& cellSize, const glm::vec2& tileIndex, const glm::vec2& spriteSep = glm::vec2(0));
-	static Ref<SubTexture2D> CreateFromTileIndex(const Ref<Texture2D> texture, const glm::vec2& cellSize, const glm::vec2& tileIndex, const glm::vec2& spriteSep = glm::vec2(0));
+	SubTexture2D(const Ref<Texture2D>& texture, const glm::vec2& cell_size, const glm::vec2& tile_index, const glm::vec2& sprite_sep = glm::vec2(0));
+	static Ref<SubTexture2D> CreateFromTileIndex(const Ref<Texture2D> texture, const glm::vec2& cell_size, const glm::vec2& tile_index, const glm::vec2& sprite_sep = glm::vec2(0));
 
 	const Ref<Texture2D> GetTexture() const { return m_Texture; }
 	const glm::vec2* GetTextureCoords() const { return m_TextureCoords; }

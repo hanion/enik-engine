@@ -1,8 +1,9 @@
 #include "scene.h"
 
 #include <glm/glm.hpp>
-#include "scene/components.h"
+
 #include "renderer/renderer2D.h"
+#include "scene/components.h"
 #include "scene/entity.h"
 
 namespace Enik {
@@ -12,7 +13,7 @@ Scene::Scene() {
 
 Scene::~Scene() {
 	/* Destroy Scripts */ {
-		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns){
+		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
 			if (ns.Instance) {
 				ns.Instance->OnDestroy();
 				ns.DestroyScript(&ns);
@@ -68,7 +69,7 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 
 	// TODO do this On Editor Play
 	/* Update Scripts */ {
-		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns){
+		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
 			if (!ns.Instance) {
 				ns.Instance = ns.InstantiateScript();
 				ns.Instance->m_Entity = Entity(entity, this);
@@ -89,15 +90,19 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 		for (auto entity : view) {
 			Component::Transform& transform = view.get<Component::Transform>  (entity);
 			Component::Camera& camera       = view.get<Component::Camera>     (entity);
-			
-			if (not camera.Primary) { continue; }
-			
+
+			if (not camera.Primary) {
+				continue;
+			}
+
 			mainCamera = &camera.Cam;
 			mainCameraTransform = transform.GetTransform();
 		}
 	}
 
-	if (not mainCamera) { return; }
+	if (not mainCamera) {
+		return;
+	}
 
 	Renderer2D::BeginScene(*mainCamera, mainCameraTransform);
 
@@ -110,12 +115,10 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 			Component::SpriteRenderer& sprite = group.get<Component::SpriteRenderer>(entity);
 
 			Renderer2D::DrawQuad(transform, sprite);
-
 		}
 	}
 
 	Renderer2D::EndScene();
-
 }
 
 void Scene::OnViewportResize(uint32_t width, uint32_t height) {

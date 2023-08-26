@@ -1,7 +1,8 @@
 #pragma once
 #include <base.h>
-#include "scene/scene.h"
+
 #include "scene/entity.h"
+#include "scene/scene.h"
 
 namespace Enik {
 
@@ -26,6 +27,5 @@ private:
 
 	Entity m_SelectionContext;
 };
-
 
 }

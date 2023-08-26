@@ -7,7 +7,7 @@
 namespace Enik {
 class OpenGLContext : public GraphicsContext {
 public:
-	OpenGLContext(GLFWwindow* windowHandle);
+	OpenGLContext(GLFWwindow* window_handle);
 	~OpenGLContext();
 
 	virtual void Init() override;

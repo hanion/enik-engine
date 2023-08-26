@@ -3,12 +3,11 @@
 #include "renderer/renderer.h"
 #include "renderer/opengl/opengl_frame_buffer.h"
 
-
 namespace Enik {
 
 
 Ref<FrameBuffer> FrameBuffer::Create(const FrameBufferSpecification& spec) {
-    switch (Renderer::GetAPI()) {
+	switch (Renderer::GetAPI()) {
 		case RendererAPI::API::OpenGL:
 			return CreateRef<OpenGLFrameBuffer>(spec);
 

@@ -1,13 +1,12 @@
-#include <pch.h>
 #include "file_system.h"
-#include <imgui/imgui.h>
 
+#include <imgui/imgui.h>
+#include <pch.h>
 
 namespace Enik {
 
-
 FileSystemPanel::FileSystemPanel(const Ref<Scene> context) {
-	SetContext(context);	
+	SetContext(context);
 }
 
 void FileSystemPanel::SetContext(const Ref<Scene>& context) {
@@ -22,11 +21,9 @@ void FileSystemPanel::OnImGuiRender() {
 		return;
 	}
 
-
 	if (not m_HasSearched) {
 		SearchDirectory();
 	}
-
 
 	ImGui::BeginDisabled(m_CurrentPath == m_AssetsPath);
 	if (ImGui::Button(" ^ ")) {
@@ -40,12 +37,10 @@ void FileSystemPanel::OnImGuiRender() {
 	ImGui::SameLine();
 	std::filesystem::path relativePath = std::filesystem::relative(m_CurrentPath, m_AssetsPath);
 	ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "%s", relativePath.string().c_str());
-	
 
 	ImGui::Spacing();
 	ImGui::Separator();
 	ImGui::Spacing();
-
 
 	ShowDirectoriesTable();
 
@@ -59,7 +54,7 @@ void FileSystemPanel::SearchDirectory() {
 	for (const auto& entry : std::filesystem::directory_iterator(m_CurrentPath)) {
 		m_Entries.push_back(entry);
 	}
-	std::sort(m_Entries.begin(), m_Entries.end(), 
+	std::sort(m_Entries.begin(), m_Entries.end(),
 		[](const std::filesystem::directory_entry& a, const std::filesystem::directory_entry& b) {
 			return a.path().filename().string() < b.path().filename().string();
 	});
@@ -68,7 +63,7 @@ void FileSystemPanel::SearchDirectory() {
 }
 
 void FileSystemPanel::ShowDirectoriesTable() {
-	ImGui::BeginChild("ScrollableTable", ImVec2(0,0), true);
+	ImGui::BeginChild("ScrollableTable", ImVec2(0, 0), true);
 
 	if (ImGui::BeginTable("Directory", 1)) {
 		for (const auto& entry : m_Entries) {
@@ -78,7 +73,7 @@ void FileSystemPanel::ShowDirectoriesTable() {
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 
-			if (entry.is_directory()){
+			if (entry.is_directory()) {
 				fileName = fileName + "/";
 			}
 
@@ -90,7 +85,7 @@ void FileSystemPanel::ShowDirectoriesTable() {
 				else {
 				}
 			}
-			
+
 			if (entry.is_regular_file()) {
 				if (ImGui::BeginDragDropSource()) {
 					// Set payload to carry the index of our item (could be anything)

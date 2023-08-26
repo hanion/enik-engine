@@ -1,13 +1,14 @@
 #include "renderer2D.h"
+
 #include <pch.h>
-#include "renderer/vertex_array.h"
-#include "renderer/shader.h"
-#include "renderer/render_command.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace Enik {
+#include "renderer/render_command.h"
+#include "renderer/shader.h"
+#include "renderer/vertex_array.h"
 
+namespace Enik {
 
 struct QuadVertex {
 	glm::vec3 Position;
@@ -23,8 +24,8 @@ struct QuadVertex {
 struct Renderer2DData {
 	static const uint32_t MaxQuads = 10000;
 	static const uint32_t MaxVertices = MaxQuads * 4;
-	static const uint32_t MaxIndices  = MaxQuads * 6;
-	static const uint32_t MaxTextureSlots  = 16;
+	static const uint32_t MaxIndices = MaxQuads * 6;
+	static const uint32_t MaxTextureSlots = 16;
 
 	Ref<VertexArray> QuadVertexArray;
 	Ref<VertexBuffer> QuadVertexBuffer;
@@ -33,12 +34,12 @@ struct Renderer2DData {
 
 	uint32_t QuadIndexCount = 0;
 	QuadVertex* QuadVertexBufferBase = nullptr;
-	QuadVertex* QuadVertexBufferPtr  = nullptr;
+	QuadVertex* QuadVertexBufferPtr = nullptr;
 
 	static const glm::vec4 QuadVertexPositions[4];
 
-	std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;	
-	uint32_t TextureSlotIndex = 1;	
+	std::array<Ref<Texture2D>, MaxTextureSlots> TextureSlots;
+	uint32_t TextureSlotIndex = 1;
 
 	Renderer2D::Statistics Stats;
 };
@@ -46,12 +47,10 @@ struct Renderer2DData {
 static Renderer2DData s_Data;
 
 const glm::vec4 Renderer2DData::QuadVertexPositions[] = {
-    glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f),
-    glm::vec4( 0.5f, -0.5f, 0.0f, 1.0f),
-    glm::vec4( 0.5f,  0.5f, 0.0f, 1.0f),
-    glm::vec4(-0.5f,  0.5f, 0.0f, 1.0f)
-};
-
+	glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f),
+	glm::vec4(0.5f, -0.5f, 0.0f, 1.0f),
+	glm::vec4(0.5f, 0.5f, 0.0f, 1.0f),
+	glm::vec4(-0.5f, 0.5f, 0.0f, 1.0f)};
 
 void Renderer2D::Init() {
 	EN_PROFILE_SCOPE;
@@ -61,17 +60,15 @@ void Renderer2D::Init() {
 	s_Data.QuadVertexBufferBase = new QuadVertex[s_Data.MaxVertices];
 
 	s_Data.QuadVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(QuadVertex));
-	
-	
+
 	BufferLayout layout = {
 		{ShaderDataType::Float3, "a_Position"},
 		{ShaderDataType::Float4, "a_Color"},
 		{ShaderDataType::Float2, "a_TexCoord"},
-		{ShaderDataType::Float , "a_TexIndex"},
-		{ShaderDataType::Float , "a_TileScale"},
-		{ShaderDataType::Int   , "a_EntityID"}
-	};
-	
+		{ShaderDataType::Float, "a_TexIndex"},
+		{ShaderDataType::Float, "a_TileScale"},
+		{ShaderDataType::Int, "a_EntityID"}};
+
 	s_Data.QuadVertexBuffer->SetLayout(layout);
 	s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
 
@@ -86,42 +83,38 @@ void Renderer2D::Init() {
 		quadIndices[i + 3] = offset + 2;
 		quadIndices[i + 4] = offset + 3;
 		quadIndices[i + 5] = offset + 0;
-	
+
 		offset += 4;
 	}
-	
+
 	Ref<IndexBuffer> indexBuffer = IndexBuffer::Create(quadIndices, s_Data.MaxIndices);
 	s_Data.QuadVertexArray->SetIndexBuffer(indexBuffer);
 	delete[] quadIndices;
 
 	s_Data.TextureColorShader = Shader::Create(FULL_PATH("assets/shaders/texture_color.glsl"));
 
-	s_Data.WhiteTexture = Texture2D::Create(1,1);
+	s_Data.WhiteTexture = Texture2D::Create(1, 1);
 	uint32_t whiteTextureData = 0xffffffff;
 	s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
 	s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 	s_Data.TextureSlots[0]->Bind();
-	
+
 	s_Data.TextureColorShader->Bind();
 	int32_t samplers[s_Data.MaxTextureSlots];
 	for (size_t i = 0; i < s_Data.MaxTextureSlots; i++) {
 		samplers[i] = i;
 	}
 	s_Data.TextureColorShader->SetIntArray("u_Textures", samplers, s_Data.MaxTextureSlots);
-
-
 }
 
 void Renderer2D::Shutdown() {
-
 }
-
 
 void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform) {
 	EN_PROFILE_SCOPE;
 
-	glm::mat4 viewProjectionMatrix = camera.GetProjection() * glm::inverse(transform); 
+	glm::mat4 viewProjectionMatrix = camera.GetProjection() * glm::inverse(transform);
 
 	s_Data.TextureColorShader->SetMat4("u_ViewProjection", viewProjectionMatrix);
 
@@ -146,7 +139,7 @@ void Renderer2D::EndScene() {
 	EN_PROFILE_SCOPE;
 
 	uint32_t dataSize = (uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase;
-	s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);	
+	s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
 	Flush();
 }
 
@@ -156,11 +149,10 @@ void Renderer2D::Flush() {
 	for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++) {
 		s_Data.TextureSlots[i]->Bind(i);
 	}
-	
+
 	RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
 	s_Data.Stats.DrawCalls++;
 }
-
 
 void Renderer2D::FlushAndReset() {
 	EndScene();
@@ -174,13 +166,15 @@ void Renderer2D::FlushAndReset() {
 
 
 float Renderer2D::GetTextureIndex(const Ref<Texture2D>& texture) {
-    EN_PROFILE_SCOPE;
+	EN_PROFILE_SCOPE;
 
-	if (texture == nullptr) { return 0.0f; }
+	if (texture == nullptr) {
+		return 0.0f;
+	}
 
 	float textureIndex = 0.0f;
 	for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++) {
-		if (texture->eaquals(*s_Data.TextureSlots[i])) {
+		if (texture->equals(*s_Data.TextureSlots[i])) {
 			textureIndex = (float)i;
 			break;
 		}
@@ -199,10 +193,9 @@ float Renderer2D::GetTextureIndex(const Ref<Texture2D>& texture) {
 void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::SpriteRenderer& sprite, int32_t entityID) {
 	EN_PROFILE_SCOPE;
 
-
-	const glm::vec2 defaultTextureCoords[] = { {0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f} };
+	const glm::vec2 defaultTextureCoords[] = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
 	const glm::vec2* textureCoords = defaultTextureCoords;
-	
+
 	float textureIndex = 0.0f;
 
 	if (sprite.SubTexture) {
@@ -213,13 +206,9 @@ void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::Sp
 		textureIndex = GetTextureIndex(sprite.Texture);
 	}
 
-
 	if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
 		FlushAndReset();
 	}
-	
-
-	
 
 	glm::mat4 transform;
 	glm::vec3 positions[4];
@@ -228,14 +217,14 @@ void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::Sp
 		transform = trans.GetTransform();
 	}
 	else {
-		glm::vec2 half_scale = trans.Scale/2.0f;
+		glm::vec2 half_scale = trans.Scale / 2.0f;
 
-		positions[0] = { trans.Position.x - half_scale.x, trans.Position.y - half_scale.y, trans.Position.z };
-		positions[1] = { trans.Position.x + half_scale.x, trans.Position.y - half_scale.y, trans.Position.z };
-		positions[2] = { trans.Position.x + half_scale.x, trans.Position.y + half_scale.y, trans.Position.z };
-		positions[3] = { trans.Position.x - half_scale.x, trans.Position.y + half_scale.y, trans.Position.z };
+		positions[0] = {trans.Position.x - half_scale.x, trans.Position.y - half_scale.y, trans.Position.z};
+		positions[1] = {trans.Position.x + half_scale.x, trans.Position.y - half_scale.y, trans.Position.z};
+		positions[2] = {trans.Position.x + half_scale.x, trans.Position.y + half_scale.y, trans.Position.z};
+		positions[3] = {trans.Position.x - half_scale.x, trans.Position.y + half_scale.y, trans.Position.z};
 	}
-	
+
 	for (size_t i = 0; i < 4; i++) {
 		if (trans.Rotation) {
 			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
@@ -250,7 +239,7 @@ void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::Sp
 		s_Data.QuadVertexBufferPtr->a_EntityID = entityID;
 		s_Data.QuadVertexBufferPtr++;
 	}
-	
+
 	s_Data.QuadIndexCount += 6;
 
 	s_Data.Stats.QuadCount++;

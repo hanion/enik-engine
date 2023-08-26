@@ -1,34 +1,26 @@
 #include "window.h"
 
+#include "events/application_event.h"
 #include "events/event.h"
 #include "events/key_event.h"
 #include "events/mouse_event.h"
-#include "events/application_event.h"
 #include "renderer/opengl/opengl_context.h"
-
 
 namespace Enik {
 
-
-
 static bool s_GLFWInitialized = false;
 
-static void GLFWErrorCallback(int error, const char* desc){
+static void GLFWErrorCallback(int error, const char* desc) {
 	EN_CORE_ERROR("GLFW Error ({0}) : {1}", error, desc);
 }
 
-
-
-
-Window::Window(const WindowProperties& properties){
+Window::Window(const WindowProperties& properties) {
 	Init(properties);
 }
 
-
-Window::~Window(){
+Window::~Window() {
 	Shutdown();
 }
-
 
 void Window::Init(const WindowProperties& properties){
 	EN_PROFILE_SCOPE;
@@ -64,19 +56,19 @@ void Window::Init(const WindowProperties& properties){
 
 
 	// set GLFW callbacks
-	glfwSetWindowSizeCallback(m_Window, 
+	glfwSetWindowSizeCallback(m_Window,
 		[](GLFWwindow* window, int width, int height){
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			
+
 			data.Width = width;
 			data.Height = height;
-			
+
 			WindowResizeEvent event(width, height);
 			data.EventCallback(event);
 		}
 	);
 
-	glfwSetWindowCloseCallback(m_Window, 
+	glfwSetWindowCloseCallback(m_Window,
 		[](GLFWwindow* window){
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			WindowCloseEvent event;
@@ -84,10 +76,10 @@ void Window::Init(const WindowProperties& properties){
 		}
 	);
 
-	glfwSetKeyCallback(m_Window, 
+	glfwSetKeyCallback(m_Window,
 		[](GLFWwindow* window, int key, int scancode, int action, int mods){
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			
+
 			switch (action){
 				case GLFW_PRESS: {
 					KeyPressedEvent event(key, 0);
@@ -99,19 +91,19 @@ void Window::Init(const WindowProperties& properties){
 					data.EventCallback(event);
 					break;
 				}
-				
+
 				case GLFW_REPEAT:{
 					KeyPressedEvent event(key, 1);
 					data.EventCallback(event);
 					break;
 				}
-				
+
 			}
 		}
 	);
 
 
-	glfwSetCharCallback(m_Window, 
+	glfwSetCharCallback(m_Window,
 		[](GLFWwindow* window, unsigned int keycode){
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			KeyTypedEvent event(keycode);
@@ -120,10 +112,10 @@ void Window::Init(const WindowProperties& properties){
 	);
 
 
-	glfwSetMouseButtonCallback(m_Window, 
+	glfwSetMouseButtonCallback(m_Window,
 		[](GLFWwindow* window, int button, int action, int mods){
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			
+
 			switch (action) {
 				case GLFW_PRESS: {
 					MouseButtonPressedEvent event(button);
@@ -140,7 +132,7 @@ void Window::Init(const WindowProperties& properties){
 	);
 
 
-	glfwSetScrollCallback(m_Window, 
+	glfwSetScrollCallback(m_Window,
 		[](GLFWwindow* window, double xOffset, double yOffset){
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			MouseScrolledEvent event((float)xOffset, (float)yOffset);
@@ -148,16 +140,16 @@ void Window::Init(const WindowProperties& properties){
 		}
 	);
 
-	glfwSetCursorPosCallback(m_Window, 
+	glfwSetCursorPosCallback(m_Window,
 		[](GLFWwindow* window, double xPos, double yPos){
 			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 			MouseMovedEvent event((float)xPos, (float)yPos);
 			data.EventCallback(event);
 		}
 	);
-	
 
-	
+
+
 }
 
 void Window::Shutdown() {
@@ -166,14 +158,12 @@ void Window::Shutdown() {
 	glfwDestroyWindow(m_Window);
 }
 
-
 void Window::OnUpdate() {
 	EN_PROFILE_SCOPE;
-	
+
 	glfwPollEvents();
 	m_Context->SwapBuffers();
 }
-
 
 void Window::SetVsync(bool enabled) {
 	if (enabled) {
@@ -186,16 +176,12 @@ void Window::SetVsync(bool enabled) {
 	m_Data.VSync = enabled;
 }
 
-
 bool Window::IsVSync() const {
 	return m_Data.VSync;
 }
-
 
 GLFWwindow* Window::GetNativeWindow() {
 	return m_Window;
 }
 
-
-
-}  // namespace Enik
+}

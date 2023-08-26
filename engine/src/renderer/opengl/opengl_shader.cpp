@@ -1,12 +1,13 @@
 #include "opengl_shader.h"
+
+#include <glad/glad.h>
 #include <pch.h>
-#include "core/log.h"
 
 #include <filesystem>
 #include <fstream>
-#include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "core/log.h"
 
 namespace Enik {
 
@@ -17,7 +18,7 @@ static GLenum ShaderTypeFromString(const std::string& type) {
 	else if (type == "fragment") {
 		return GL_FRAGMENT_SHADER;
 	}
-	
+
 	EN_CORE_ASSERT(false, "Unknown shader type!");
 	return 0;
 }
@@ -27,8 +28,8 @@ OpenGLShader::OpenGLShader(const std::string& filepath) {
 	EN_PROFILE_SCOPE;
 
 	std::string source = ReadFile(filepath);
-	auto shaderSources = PreProcess(source);
-	Compile(shaderSources);
+	auto shader_sources = PreProcess(source);
+	Compile(shader_sources);
 
 	auto lastSlash = filepath.find_last_of("/\\");
 	lastSlash = (lastSlash == std::string::npos) ? 0 : lastSlash + 1;
@@ -36,17 +37,15 @@ OpenGLShader::OpenGLShader(const std::string& filepath) {
 
 	auto count = (lastDot == std::string::npos) ? filepath.size() - lastSlash : lastDot - lastSlash;
 	m_Name = filepath.substr(lastSlash, count);
-
 }
 
-OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertexSource, const std::string& fragmentSource) 
+OpenGLShader::OpenGLShader(const std::string& name, const std::string& vertex_source, const std::string& fragment_source)
 	: m_Name(name) {
-
 	EN_PROFILE_SCOPE;
 
 	std::unordered_map<GLenum, std::string> sources;
-	sources[GL_VERTEX_SHADER] = vertexSource;
-	sources[GL_FRAGMENT_SHADER] = fragmentSource;
+	sources[GL_VERTEX_SHADER] = vertex_source;
+	sources[GL_FRAGMENT_SHADER] = fragment_source;
 	Compile(sources);
 }
 
@@ -56,12 +55,10 @@ OpenGLShader::~OpenGLShader() {
 	glDeleteProgram(m_RendererID);
 }
 
-
-
 std::string OpenGLShader::ReadFile(const std::string& filepath) {
 	EN_PROFILE_SCOPE;
 
-    std::ifstream in = std::ifstream(filepath, std::ios::in | std::ios::binary);
+	std::ifstream in = std::ifstream(filepath, std::ios::in | std::ios::binary);
 	std::string result;
 
 	if (in) {
@@ -80,39 +77,38 @@ std::string OpenGLShader::ReadFile(const std::string& filepath) {
 std::unordered_map<GLenum, std::string> OpenGLShader::PreProcess(const std::string& source) {
 	EN_PROFILE_SCOPE;
 
-	std::unordered_map<GLenum, std::string> shaderSources;
+	std::unordered_map<GLenum, std::string> shader_sources;
 	const char* typeToken = "#type";
 	size_t typeTokenLength = strlen(typeToken);
 	size_t pos = source.find(typeToken, 0);
-	
+
 	while (pos != std::string::npos) {
-		size_t eol = source.find_first_of("\r\n",pos);
+		size_t eol = source.find_first_of("\r\n", pos);
 		EN_CORE_ASSERT(eol != std::string::npos, "Syntax error");
 		size_t begin = pos + typeTokenLength + 1;
 		std::string type = source.substr(begin, eol - begin);
 		EN_CORE_ASSERT(ShaderTypeFromString(type), "Invalid shader type!");
 
 		size_t nextLinePos = source.find_first_not_of("\r\n", eol);
-		pos = source.find(typeToken,nextLinePos);
+		pos = source.find(typeToken, nextLinePos);
 
 		size_t until = pos - (nextLinePos == std::string::npos ? source.size() - 1 : nextLinePos);
-		shaderSources[ShaderTypeFromString(type)] = source.substr(nextLinePos, until);
+		shader_sources[ShaderTypeFromString(type)] = source.substr(nextLinePos, until);
 	}
 
-	return shaderSources;
+	return shader_sources;
 }
 
-void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shaderSources) {
+void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shader_sources) {
 	EN_PROFILE_SCOPE;
 
-	
 	GLuint program = glCreateProgram();
 
-	EN_CORE_ASSERT(shaderSources.size() <= 2, "Only 2 shaders supported for now!");
+	EN_CORE_ASSERT(shader_sources.size() <= 2, "Only 2 shaders supported for now!");
 	std::array<GLenum, 2> glShaderIDs;
 	int glShaderIDIndex = 0;
 
-	for (auto kv : shaderSources) {
+	for (auto kv : shader_sources) {
 		GLenum type = kv.first;
 		std::string& source = kv.second;
 
@@ -120,7 +116,7 @@ void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shader
 
 		// Send the vertex shader source code to GL
 		// Note that std::string's .c_str is NULL character terminated.
-		const GLchar *sourceCStr = source.c_str();
+		const GLchar* sourceCStr = source.c_str();
 		glShaderSource(shader, 1, &sourceCStr, 0);
 
 		// Compile the vertex shader
@@ -128,15 +124,14 @@ void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shader
 
 		GLint isCompiled = 0;
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
-		if(isCompiled == GL_FALSE)
-		{
+		if (isCompiled == GL_FALSE) {
 			GLint maxLength = 0;
 			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
 
 			// The maxLength includes the NULL character
 			std::vector<GLchar> infoLog(maxLength);
 			glGetShaderInfoLog(shader, maxLength, &maxLength, &infoLog[0]);
-			
+
 			// We don't need the shader anymore.
 			glDeleteShader(shader);
 
@@ -154,16 +149,15 @@ void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shader
 
 	// Note the different functions here: glGetProgram* instead of glGetShader*.
 	GLint isLinked = 0;
-	glGetProgramiv(program, GL_LINK_STATUS, (int *)&isLinked);
-	if (isLinked == GL_FALSE)
-	{
+	glGetProgramiv(program, GL_LINK_STATUS, (int*)&isLinked);
+	if (isLinked == GL_FALSE) {
 		GLint maxLength = 0;
 		glGetProgramiv(program, GL_INFO_LOG_LENGTH, &maxLength);
 
 		// The maxLength includes the NULL character
 		std::vector<GLchar> infoLog(maxLength);
 		glGetProgramInfoLog(program, maxLength, &maxLength, &infoLog[0]);
-		
+
 		// We don't need the program anymore.
 		glDeleteProgram(program);
 		// Don't leak shaders either.
@@ -180,7 +174,7 @@ void OpenGLShader::Compile(const std::unordered_map<GLenum, std::string>& shader
 		glDetachShader(program, id);
 		glDeleteShader(id);
 	}
-	
+
 	m_RendererID = program;
 }
 

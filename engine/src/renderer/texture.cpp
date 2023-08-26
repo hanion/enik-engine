@@ -5,7 +5,7 @@
 
 namespace Enik {
 Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height) {
-    switch (Renderer::GetAPI()) {
+	switch (Renderer::GetAPI()) {
 		case RendererAPI::API::OpenGL:
 			return CreateRef<OpenGLTexture2D>(width, height);
 
@@ -19,10 +19,10 @@ Ref<Texture2D> Texture2D::Create(uint32_t width, uint32_t height) {
 	}
 }
 
-Ref<Texture2D> Enik::Texture2D::Create(const std::string& path) {
+Ref<Texture2D> Enik::Texture2D::Create(const std::string& path, bool mag_filter_linear) {
 	switch (Renderer::GetAPI()) {
 		case RendererAPI::API::OpenGL:
-			return CreateRef<OpenGLTexture2D>(path);
+			return CreateRef<OpenGLTexture2D>(path, mag_filter_linear);
 
 		case RendererAPI::API::None:
 			EN_CORE_ASSERT(false, "RendererAPI::None is currently not supported");

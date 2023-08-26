@@ -7,7 +7,7 @@
 
 namespace Enik {
 
-class LayerStack {	
+class LayerStack {
 public:
 	LayerStack();
 	~LayerStack();
@@ -24,5 +24,5 @@ private:
 	std::vector<Layer*> m_Layers;
 	unsigned int m_LayerInsertIndex = 0;
 };
-	
+
 }

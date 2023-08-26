@@ -1,12 +1,11 @@
 #pragma once
 #include <base.h>
 #include <pch.h>
-#include "events/event.h"
-#include "log.h"
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "events/event.h"
+#include "log.h"
 #include "renderer/graphics_context.h"
 
 namespace Enik {
@@ -23,11 +22,10 @@ struct WindowProperties {
 	}
 };
 
-
 class Window {
-   public:
+public:
 	using EventCallbackFn = std::function<void(Event&)>;
-	
+
 	Window(const WindowProperties& properties);
 	~Window();
 
@@ -43,17 +41,15 @@ class Window {
 
 	GLFWwindow* GetNativeWindow();
 
-	//static Window* Create(const WindowProperties& properties = WindowProperties());
-
 private:
 	virtual void Init(const WindowProperties& properties);
 	virtual void Shutdown();
+
 private:
 	GLFWwindow* m_Window;
 	Scope<GraphicsContext> m_Context;
 
-	struct WindowData
-	{
+	struct WindowData {
 		std::string Title;
 		unsigned int Width, Height;
 		bool VSync;
@@ -63,11 +59,6 @@ private:
 
 	WindowData m_Data;
 
-	// static Scope<Window> Create(const WindowProperties& properties = WindowProperties());
-	// static std::unique_ptr<Window>* Create(const WindowProperties& properties = WindowProperties());
-	
-	
-	
 };
 
 }

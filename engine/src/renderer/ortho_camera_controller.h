@@ -9,7 +9,7 @@ namespace Enik {
 
 class OrthographicCameraController {
 public:
-	OrthographicCameraController(float aspectRatio, bool rotation = false);
+	OrthographicCameraController(float aspect_ratio, bool rotation = false);
 
 	void OnUpdate(Timestep timestep);
 	void OnEvent(Event& e);
@@ -35,7 +35,7 @@ private:
 	bool m_Rotation;
 	glm::vec3 m_CameraPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 m_CameraRotation = glm::vec3(0.0f, 0.0f, 0.0f);
-	
+
 	float m_CameraMoveSpeed = 1.0f;
 	float m_CameraRotationSpeed = 50.0f;
 

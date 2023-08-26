@@ -1,7 +1,8 @@
 #include "application.h"
-#include "core/input.h"
+
 #include <imgui/imgui.h>
 
+#include "core/input.h"
 #include "renderer/renderer.h"
 
 namespace Enik {
@@ -9,16 +10,15 @@ namespace Enik {
 // make application static
 Application* Application::s_Instance = nullptr;
 
-
 Application::Application(const std::string& name) {
 	EN_PROFILE_SCOPE;
 
 	EN_CORE_ASSERT(!s_Instance, "Application already exists!");
 	s_Instance = this;
 
-	m_Window = CreateScope<Window>(WindowProperties(name,1280,600));
+	m_Window = CreateScope<Window>(WindowProperties(name, 1280, 600));
 	m_Window->SetEventCallback(EN_BIND_EVENT_FN(Application::OnEvent));
-	m_Window->SetVsync(false);
+	m_Window->SetVsync(true);
 
 	Renderer::Init();
 
@@ -27,9 +27,7 @@ Application::Application(const std::string& name) {
 }
 
 Application::~Application() {
-
 }
-
 
 void Application::PushLayer(Layer* layer) {
 	EN_PROFILE_SCOPE;
@@ -44,7 +42,6 @@ void Application::PushOverlay(Layer* overlay) {
 	m_LayerStack.PushOverlay(overlay);
 	overlay->OnAttach();
 }
-
 
 void Application::Run() {
 	while (m_Running) {
@@ -72,7 +69,6 @@ void Application::Run() {
 	}
 }
 
-
 void Application::OnEvent(Event& e) {
 	EN_PROFILE_SCOPE;
 
@@ -81,28 +77,27 @@ void Application::OnEvent(Event& e) {
 	dispatcher.Dispatch<WindowResizeEvent>(EN_BIND_EVENT_FN(Application::OnWindowResize));
 	dispatcher.Dispatch<KeyPressedEvent>(EN_BIND_EVENT_FN(Application::OnKeyPressed));
 
-	for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); ) {
+	for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();) {
 		(*--it)->OnEvent(e);
 		if (e.Handled) {
 			break;
 		}
 	}
-	
 }
 
 void Application::Close() {
 	m_Running = false;
 }
 
-bool Application::OnWindowClose(WindowCloseEvent& e){
+bool Application::OnWindowClose(WindowCloseEvent& e) {
 	Close();
 	return true;
 }
 
-bool Application::OnWindowResize(WindowResizeEvent& e){
+bool Application::OnWindowResize(WindowResizeEvent& e) {
 	EN_PROFILE_SCOPE;
 
-	if (e.GetWidth() == 0 ||  e.GetHeight() == 0) {
+	if (e.GetWidth() == 0 || e.GetHeight() == 0) {
 		m_Minimized = true;
 		return false;
 	}
@@ -115,7 +110,7 @@ bool Application::OnWindowResize(WindowResizeEvent& e){
 
 bool Application::OnKeyPressed(KeyPressedEvent& e) {
 	bool control = Input::IsKeyPressed(Key::LeftControl) or Input::IsKeyPressed(Key::RightControl);
-	
+
 	if (control and e.GetKeyCode() == Key::P) {
 		m_Minimized = !m_Minimized;
 		EN_CORE_WARN("Paused Render (Ctrl+P)");

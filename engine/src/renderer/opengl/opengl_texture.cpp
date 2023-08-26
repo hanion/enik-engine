@@ -5,14 +5,12 @@
 
 namespace Enik {
 
-OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height) 
+OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
 	: m_Width(width), m_Height(height) {
-
 	EN_PROFILE_SCOPE;
 
 	m_InternalFormat = GL_RGBA8;
 	m_DataFormat = GL_RGBA;
-
 
 	glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID);
 	glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
@@ -23,14 +21,12 @@ OpenGLTexture2D::OpenGLTexture2D(uint32_t width, uint32_t height)
 	glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 }
 
-OpenGLTexture2D::OpenGLTexture2D(const std::string& path) 
+OpenGLTexture2D::OpenGLTexture2D(const std::string& path, bool mag_filter_linear)
 	: m_Path(path) {
-	
 	EN_PROFILE_SCOPE;
-	
+
 	int width, height, channels;
 	stbi_set_flip_vertically_on_load(1);
-
 
 	stbi_uc* data = nullptr;
 	{
@@ -44,11 +40,10 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
 		data = stbi_load(FULL_PATH("assets/textures/error.png").c_str(), &width, &height, &channels, 0);
 	}
 
-	
 	m_Width = width;
 	m_Height = height;
 
-	if(channels == 4) {
+	if (channels == 4) {
 		m_InternalFormat = GL_RGBA8;
 		m_DataFormat = GL_RGBA;
 	}
@@ -62,7 +57,7 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string& path)
 	glTextureStorage2D(m_RendererID, 1, m_InternalFormat, m_Width, m_Height);
 
 	glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, mag_filter_linear ? GL_LINEAR : GL_NEAREST);
 	glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
@@ -93,4 +88,4 @@ void OpenGLTexture2D::Bind(uint32_t slot) const {
 	glBindTextureUnit(slot, m_RendererID);
 }
 
-} 
+}

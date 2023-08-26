@@ -1,6 +1,8 @@
 #include "scene_tree.h"
-#include "scene/components.h"
+
 #include <imgui/imgui.h>
+
+#include "scene/components.h"
 
 namespace Enik {
 
@@ -28,7 +30,7 @@ void SceneTreePanel::OnImGuiRender() {
 		ImGui::EndTable();
 		return;
 	}
-	
+
 	m_Context->m_Registry.each([&](auto entityID) {
 		Entity entity = Entity(entityID, m_Context.get());
 		DrawEntityInSceneTree(entity);
@@ -58,7 +60,7 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 	ImGui::TableNextRow();
 	ImGui::TableSetColumnIndex(0);
 	ImGui::AlignTextToFramePadding();
-	
+
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_OpenOnDoubleClick;
 	if (m_SelectionContext == entity) {
 		flags |= ImGuiTreeNodeFlags_Selected;
@@ -70,17 +72,15 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 	if (ImGui::IsItemClicked()) {
 		SetSelectedEntity(entity);
 	}
-	
 
-	bool entityDeleted = false;
+	bool delete_entity = false;
 	if (ImGui::BeginPopupContextItem()) {
 		if (ImGui::MenuItem("Delete Entity")) {
-			entityDeleted = true;
+			delete_entity = true;
 		}
 		ImGui::EndPopup();
 	}
-	
-	
+
 	if (node_open) {
 		ImGui::TextColored(ImVec4(0.1f, 0.5f, 0.1f, 1.0f), "Entity %d, ID %lu", (uint32_t)entity, (uint64_t)entity.Get<Component::ID>());
 		ImGui::TreePop();
@@ -88,13 +88,12 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 
 	ImGui::PopID();
 
-	if (entityDeleted) {
+	if (delete_entity) {
 		m_Context->DestroyEntity(entity);
 		if (m_SelectionContext == entity) {
 			m_SelectionContext = {};
 		}
 	}
 }
-
 
 }

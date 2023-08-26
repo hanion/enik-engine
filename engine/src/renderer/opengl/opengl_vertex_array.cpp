@@ -57,16 +57,16 @@ void OpenGLVertexArray::Unbind() const {
 }
 
 
-void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) {
+void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertex_buffer) {
 	EN_PROFILE_SCOPE;
 
-	EN_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");
+	EN_CORE_ASSERT(vertex_buffer->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");
 
 	glBindVertexArray(m_RendererID);
-	vertexBuffer->Bind();
+	vertex_buffer->Bind();
 
 	uint32_t index = 0;
-	const BufferLayout& layout = vertexBuffer->GetLayout();
+	const BufferLayout& layout = vertex_buffer->GetLayout();
 	for (const auto& element : layout) {
 		switch (element.Type) {
 			case ShaderDataType::Float:
@@ -77,11 +77,11 @@ void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) {
 			case ShaderDataType::Mat4: {
 				glEnableVertexAttribArray(index);
 				glVertexAttribPointer(
-					index, 
-					element.GetComponentCount(), 
-					ShaderDataTypeToOpenGLBaseType(element.Type), 
-					element.Normalized ? GL_TRUE : GL_FALSE, 
-					layout.GetStride(), 
+					index,
+					element.GetComponentCount(),
+					ShaderDataTypeToOpenGLBaseType(element.Type),
+					element.Normalized ? GL_TRUE : GL_FALSE,
+					layout.GetStride(),
 					(const void*)element.Offset
 					);
 				index++;
@@ -94,30 +94,30 @@ void OpenGLVertexArray::AddVertexBuffer(const Ref<VertexBuffer>& vertexBuffer) {
 			case ShaderDataType::Bool: {
 				glEnableVertexAttribArray(index);
 				glVertexAttribIPointer(
-					index, 
-					element.GetComponentCount(), 
+					index,
+					element.GetComponentCount(),
 					ShaderDataTypeToOpenGLBaseType(element.Type),
-					layout.GetStride(), 
+					layout.GetStride(),
 					(const void*)element.Offset
 					);
 				index++;
 				break;
 			}
-			
+
 			default: break;
 		}
 	}
-	
-	m_VertexBuffers.push_back(vertexBuffer);
+
+	m_VertexBuffers.push_back(vertex_buffer);
 }
 
-void OpenGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& indexBuffer) {
+void OpenGLVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& index_buffer) {
 	EN_PROFILE_SCOPE;
 
 	glBindVertexArray(m_RendererID);
-	indexBuffer->Bind();
+	index_buffer->Bind();
 
-	m_IndexBuffer = indexBuffer;
+	m_IndexBuffer = index_buffer;
 }
 
 

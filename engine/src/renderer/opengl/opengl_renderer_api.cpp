@@ -24,8 +24,8 @@ void OpenGLRendererAPI::Clear() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount) {
-	uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
+void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertex_array, uint32_t index_count) {
+	uint32_t count = index_count ? index_count : vertex_array->GetIndexBuffer()->GetCount();
 	glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 
 }

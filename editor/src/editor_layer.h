@@ -1,10 +1,11 @@
 #pragma once
 #include <Enik.h>
-#include "panels/scene_tree.h"
-#include "panels/inspector.h"
-#include "panels/file_system.h"
-#include "renderer/ortho_camera_controller.h"
+
 #include "dialogs/dialog_file.h"
+#include "panels/file_system.h"
+#include "panels/inspector.h"
+#include "panels/scene_tree.h"
+#include "renderer/ortho_camera_controller.h"
 #include "renderer/texture.h"
 
 
@@ -19,18 +20,18 @@ public:
 	virtual void OnDetach() override final;
 
 	virtual void OnUpdate(Timestep timestep) override final;
-	virtual void OnEvent(Event& event) override final;
+	virtual void OnEvent(Event &event) override final;
 	virtual void OnImGuiRender() override final;
 
 	void OnImGuiDockSpaceRender();
 
 private:
 	void CreateNewScene();
-	void LoadScene(const std::filesystem::path& path);
+	void LoadScene(const std::filesystem::path &path);
 	void SaveScene();
 
-	bool OnKeyPressed(KeyPressedEvent& event);
-	bool OnMouseButtonReleased(MouseButtonReleasedEvent& event);
+	bool OnKeyPressed(KeyPressedEvent &event);
+	bool OnMouseButtonReleased(MouseButtonReleasedEvent &event);
 
 	void HandlePickEntityWithMouse();
 
@@ -75,7 +76,8 @@ private:
 	bool m_IsDialogOpen = false;
 
 	enum class SceneState {
-		Edit = 0, Play = 1
+		Edit = 0,
+		Play = 1
 	};
 	SceneState m_SceneState = SceneState::Edit;
 };

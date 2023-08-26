@@ -1,9 +1,7 @@
 #pragma once
 #include "core/log.h"
 
-
 namespace Enik {
-
 
 enum class ShaderDataType {
 	None = 0, Float, Float2, Float3, Float4, Mat3, Mat4, Int, Int2, Int3, Int4, Bool
@@ -36,7 +34,7 @@ struct BufferElement {
 	uint64_t Offset;
 	bool Normalized;
 
-	BufferElement(){}
+	BufferElement() {}
 
 	BufferElement(ShaderDataType type, const std::string& name, bool normalized = false)
 		: Type(type), Name(name), Size(ShaderDataTypeSize(type)), Offset(0), Normalized(normalized) {
@@ -60,8 +58,6 @@ struct BufferElement {
 		EN_CORE_ASSERT(false, "Unknown ShaderDataType!");
 		return 0;
 	}
-
-
 };
 
 
@@ -71,7 +67,7 @@ class BufferLayout {
 public:
 	BufferLayout() {}
 
-	BufferLayout(const std::initializer_list<BufferElement>& elements) 
+	BufferLayout(const std::initializer_list<BufferElement>& elements)
 		: m_Elements(elements) {
 		CalculateOffsetAndStride();
 	}
@@ -115,7 +111,6 @@ public:
 
 	static Ref<VertexBuffer> Create(uint32_t size);
 	static Ref<VertexBuffer> Create(float* vertices, uint32_t size);
-
 };
 
 

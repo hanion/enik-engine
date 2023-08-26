@@ -5,9 +5,9 @@
 
 namespace Enik {
 
-OpenGLContext::OpenGLContext(GLFWwindow* windowHandle)
-	: m_WindowHandle(windowHandle) {
-	EN_CORE_ASSERT(windowHandle, "window handle is null !");
+OpenGLContext::OpenGLContext(GLFWwindow* window_handle)
+	: m_WindowHandle(window_handle) {
+	EN_CORE_ASSERT(window_handle, "window handle is null !");
 }
 
 OpenGLContext::~OpenGLContext() {

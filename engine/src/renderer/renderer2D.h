@@ -2,7 +2,6 @@
 #include "renderer/orthographic_camera.h"
 #include "renderer/texture.h"
 #include "renderer/sub_texture2D.h"
-
 #include "scene/components.h"
 
 namespace Enik {
@@ -19,14 +18,12 @@ public:
 
 	static void DrawQuad(const Component::Transform& transform, const Component::SpriteRenderer& sprite, int32_t entityID = -1);
 
-
 	struct Statistics {
 		uint32_t DrawCalls = 0;
 		uint32_t QuadCount = 0;
 
 		uint32_t GetTotalVertexCount() { return QuadCount * 4; }
 		uint32_t GetTotalIndexCount()  { return QuadCount * 6; }
-
 	};
 
 	static void ResetStats();
@@ -36,8 +33,6 @@ private:
 	static void FlushAndReset();
 
 	static float GetTextureIndex(const Ref<Texture2D>& texture);
-
 };
-
 
 }

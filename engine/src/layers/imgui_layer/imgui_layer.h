@@ -1,13 +1,12 @@
 #pragma once
 
 #include <base.h>
-#include "layers/layer.h"
 
+#include "events/application_event.h"
 #include "events/event.h"
 #include "events/key_event.h"
 #include "events/mouse_event.h"
-#include "events/application_event.h"
-
+#include "layers/layer.h"
 
 namespace Enik {
 
@@ -28,9 +27,6 @@ public:
 
 private:
 	bool m_BlockEvents = true;
-
 };
-
-
 
 }

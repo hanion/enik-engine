@@ -1,10 +1,11 @@
-#include <pch.h>
 #include "scene_serializer.h"
+
+#include <pch.h>
+
 #include "scene/components.h"
 
-
 namespace YAML {
-template<>
+template <>
 struct convert<glm::vec2> {
 	static Node encode(const glm::vec2& vec) {
 		Node node;
@@ -24,7 +25,7 @@ struct convert<glm::vec2> {
 	}
 };
 
-template<>
+template <>
 struct convert<glm::vec3> {
 	static Node encode(const glm::vec3& vec) {
 		Node node;
@@ -46,7 +47,7 @@ struct convert<glm::vec3> {
 	}
 };
 
-template<>
+template <>
 struct convert<glm::vec4> {
 	static Node encode(const glm::vec4& vec) {
 		Node node;
@@ -93,22 +94,20 @@ YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec4& vec) {
 
 namespace Enik {
 
-SceneSerializer::SceneSerializer(const Ref<Scene>& scene) 
+SceneSerializer::SceneSerializer(const Ref<Scene>& scene)
 	: m_Scene(scene) {
-	
 }
-
 
 void SceneSerializer::Serialize(const std::string& filepath) {
 	EN_CORE_TRACE("Serializing scene   '{0}'", filepath);
 	YAML::Emitter out;
 	out << YAML::BeginMap;
-	
+
 	out << YAML::Key << "Scene" << YAML::Value << "Untitled Scene";
 
 	out << YAML::Key << "Entities";
 	out << YAML::Value << YAML::BeginSeq;
-	
+
 	m_Scene->m_Registry.each([&](auto entityID) {
 		Entity entity = Entity(entityID, m_Scene.get());
 		if (not entity) {
@@ -122,7 +121,6 @@ void SceneSerializer::Serialize(const std::string& filepath) {
 
 	std::ofstream fout(filepath);
 	fout << out.c_str();
-
 }
 
 void SceneSerializer::SerializeRuntime(const std::string& filepath) {
@@ -148,12 +146,12 @@ bool SceneSerializer::Deserialize(const std::string& filepath) {
 			if (tag) {
 				name = tag["Text"].as<std::string>();
 			}
-			
+
 			DeserializeEntity(entity, uuid, name);
 			// EN_CORE_TRACE("Deserialized entity {0}, with name '{1}'", uuid, name);
 		}
 	}
-	
+
 	return true;
 }
 
@@ -161,8 +159,6 @@ bool SceneSerializer::DeserializeRuntime(const std::string& filepath) {
 	EN_CORE_ASSERT(false);
 	return false;
 }
-
-
 
 void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 	out << YAML::BeginMap; // Entity
@@ -201,12 +197,12 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::BeginMap; // Camera
 		out << YAML::Key << "Size" << YAML::Value << cam.Cam.GetSize();
 		out << YAML::Key << "Near" << YAML::Value << cam.Cam.GetNear();
-		out << YAML::Key << "Far"  << YAML::Value << cam.Cam.GetFar ();
+		out << YAML::Key << "Far"  << YAML::Value << cam.Cam.GetFar();
 		out << YAML::EndMap; // Camera
 
 		out << YAML::Key << "Primary" << YAML::Value << cam.Primary;
 		out << YAML::Key << "FixedAspectRatio" << YAML::Value << cam.FixedAspectRatio;
-		
+
 		out << YAML::EndMap;
 	}
 
@@ -221,9 +217,7 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::EndMap;
 	}
 
-
 	out << YAML::EndMap;
-
 }
 
 void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::string& name) {
@@ -234,7 +228,7 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 		auto& trans = deserializedEntity.Get<Component::Transform>();
 		trans.Position = transform["Position"].as<glm::vec3>();
 		trans.Rotation = transform["Rotation"].as<float>();
-		trans.Scale    = transform["Scale"].as<glm::vec2>();
+		trans.Scale = transform["Scale"].as<glm::vec2>();
 	}
 
 	auto spriteRenderer = entity["Component::SpriteRenderer"];
@@ -257,6 +251,5 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 	}
 
 }
-
 
 }

@@ -3,7 +3,7 @@
 
 extern Enik::Application* Enik::CreateApplication();
 
-int main(int argc, char** argv){
+int main(int argc, char** argv) {
 	Enik::Log::Init();
 	EN_CORE_INFO("	>>> Enik Engine <<< ");
 	EN_CORE_INFO("	>>>   Started   <<< ");
@@ -12,4 +12,3 @@ int main(int argc, char** argv){
 	app->Run();
 	delete app;
 }
-

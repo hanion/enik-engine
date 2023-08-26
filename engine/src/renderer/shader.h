@@ -1,4 +1,4 @@
-#pragma	once
+#pragma once
 #include <string>
 #include <unordered_map>
 #include <base.h>
@@ -23,7 +23,7 @@ public:
 	virtual const std::string& GetName() const = 0;
 
 	static Ref<Shader> Create(const std::string& filepath);
-	static Ref<Shader> Create(const std::string& name, const std::string& vertexSource, const std::string& fragmentSource);
+	static Ref<Shader> Create(const std::string& name, const std::string& vertex_source, const std::string& fragment_source);
 };
 
 class ShaderLibrary {
@@ -37,7 +37,6 @@ public:
 
 private:
 	std::unordered_map<std::string, Ref<Shader>> m_Shaders;
-
 };
 
 }

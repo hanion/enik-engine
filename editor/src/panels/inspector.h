@@ -13,13 +13,13 @@ public:
 	InspectorPanel(const Ref<Scene>& context);
 	~InspectorPanel() {}
 
-	void SetContext(const Ref<Scene>& context, SceneTreePanel* sceneTreePanel = nullptr);
+	void SetContext(const Ref<Scene>& context, SceneTreePanel* scene_tree_panel = nullptr);
 
 	void OnImGuiRender();
 
 private:
 	void DrawEntityInInspector(Entity entity);
-	
+
 	enum ItemLabelFlag {
 		Left = 1u << 0u,
 		Right = 1u << 1u,
@@ -28,10 +28,11 @@ private:
 	void LabelPrefix(std::string_view title, InspectorPanel::ItemLabelFlag flags = InspectorPanel::ItemLabelFlag::Default);
 
 	template <typename T>
-	void DisplayComponentInInspector(const std::string& name, Entity& entity, const bool canDelete, const std::function<void()>& lambda);
+	void DisplayComponentInInspector(const std::string& name, Entity& entity, const bool can_delete, const std::function<void()>& lambda);
 
 	template <typename T>
 	void DisplayComponentInPopup(const std::string& name);
+
 private:
 	Ref<Scene> m_Context;
 

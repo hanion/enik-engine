@@ -8,7 +8,7 @@ namespace Enik {
 class OpenGLShader : public Shader {
 public:
 	OpenGLShader(const std::string& filepath);
-	OpenGLShader(const std::string& name, const std::string& vertexSource, const std::string& fragmentSource);
+	OpenGLShader(const std::string& name, const std::string& vertex_source, const std::string& fragment_source);
 	virtual ~OpenGLShader();
 
 	virtual void Bind() const override;
@@ -32,7 +32,7 @@ public:
 private:
 	std::string ReadFile(const std::string& filepath);
 	std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
-	void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
+	void Compile(const std::unordered_map<GLenum, std::string>& shader_sources);
 
 private:
 	uint32_t m_RendererID;

@@ -1,5 +1,6 @@
-#pragma once 
+#pragma once
 #include <base.h>
+
 #include <functional>
 
 namespace Enik {
@@ -18,14 +19,11 @@ private:
 
 }
 
-
-
-
 namespace std {
-	template<>
-	struct hash<Enik::UUID> {
-		size_t operator()(const Enik::UUID& uuid) const {
-			return hash<uint64_t>()((uint64_t)uuid);
-		}
-	};
+template <>
+struct hash<Enik::UUID> {
+	size_t operator()(const Enik::UUID& uuid) const {
+		return hash<uint64_t>()((uint64_t)uuid);
+	}
+};
 }

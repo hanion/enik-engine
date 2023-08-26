@@ -15,7 +15,7 @@ enum class FrameBufferTextureFormat {
 struct FrameBufferTextureSpecification {
 	FrameBufferTextureSpecification() = default;
 	FrameBufferTextureSpecification(FrameBufferTextureFormat format)
-		: TextureFormat(format) { 	
+		: TextureFormat(format) {
 	}
 
 	FrameBufferTextureFormat TextureFormat = FrameBufferTextureFormat::None;
@@ -30,20 +30,15 @@ struct FrameBufferAttachmentSpecification {
 	std::vector<FrameBufferTextureSpecification> Attachments;
 };
 
-
-
-
 struct FrameBufferSpecification {
 	uint32_t Width = 32;
 	uint32_t Height = 32;
 
 	FrameBufferAttachmentSpecification Attachments;
 
-	uint32_t Samles = 1;
+	uint32_t Samples = 1;
 	bool SwapChainTarget = false;
 };
-
-
 
 class FrameBuffer {
 public:
@@ -53,17 +48,15 @@ public:
 	virtual void Unbind() = 0;
 
 	virtual void Resize(uint32_t width, uint32_t height) = 0;
-	virtual int ReadPixel(uint32_t attachmentIndex, int x, int y) = 0;
+	virtual int ReadPixel(uint32_t attachment_index, int x, int y) = 0;
 
-	virtual void ClearAttachment(uint32_t attachmentIndex, int value) = 0;
+	virtual void ClearAttachment(uint32_t attachment_index, int value) = 0;
 
 	virtual uint32_t GetColorAttachmentRendererID(uint32_t index = 0) const = 0;
 
 	virtual const FrameBufferSpecification& GetSpecification() const = 0;
 
 	static Ref<FrameBuffer> Create(const FrameBufferSpecification& spec);
-
-
 };
 
 }

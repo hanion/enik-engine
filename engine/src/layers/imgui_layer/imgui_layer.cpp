@@ -1,28 +1,28 @@
 #include "imgui_layer.h"
+
+#include <base.h>
+
+#include "core/application.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
-#include "core/application.h"
 #include "imgui_themes.h"
-#include <base.h>
 
 namespace Enik {
 
-ImGuiLayer::ImGuiLayer() 
+ImGuiLayer::ImGuiLayer()
 	: Layer("imgui layer") {
-
 }
 
 ImGuiLayer::~ImGuiLayer() {
-
 }
 
 
 void ImGuiLayer::OnAttach() {
 	EN_PROFILE_SCOPE;
 
-  IMGUI_CHECKVERSION();
+	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-  
+
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
@@ -32,14 +32,12 @@ void ImGuiLayer::OnAttach() {
 
 	ImGui::StyleColorsDark();
 	ImGuiTheme::Gray();
-	
+
 	Application& app = Application::Get();
 	GLFWwindow* window = app.GetWindow().GetNativeWindow();
 
-	
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 410");
-	
 }
 
 
@@ -75,7 +73,7 @@ void ImGuiLayer::End() {
 	ImGuiIO& io = ImGui::GetIO();
 	Application& app = Application::Get();
 	io.DisplaySize = ImVec2(app.GetWindow().GetWidth(), app.GetWindow().GetHeight());
-	
+
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -85,8 +83,6 @@ void ImGuiLayer::End() {
 		ImGui::RenderPlatformWindowsDefault();
 		glfwMakeContextCurrent(backup_current_context);
 	}
-	
-
 }
 
 }
