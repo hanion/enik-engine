@@ -297,8 +297,10 @@ void EditorLayer::LoadScene(const std::filesystem::path& path) {
 }
 
 void EditorLayer::SaveScene() {
-	SceneSerializer serializer = SceneSerializer(m_ActiveScene);
-	serializer.Serialize(m_ActiveScenePath);
+	if (m_SceneState == SceneState::Edit) {
+		SceneSerializer serializer = SceneSerializer(m_ActiveScene);
+		serializer.Serialize(m_ActiveScenePath);
+	}
 }
 
 bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
