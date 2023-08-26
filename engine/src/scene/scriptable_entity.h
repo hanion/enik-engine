@@ -5,7 +5,6 @@
 
 namespace Enik {
 
-class Entity;
 
 class ScriptableEntity {
 public:
