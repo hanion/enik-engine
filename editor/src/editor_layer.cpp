@@ -23,97 +23,9 @@ void EditorLayer::OnAttach() {
 	m_TexturePlay = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/play_button.png"));
 	m_TextureStop = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/stop_button.png"));
 
+	CreateNewScene();
 
-	m_ActiveScene = CreateRef<Scene>();
-
-	/* Creating Tile */{
-		Ref<Texture2D> tileset = Texture2D::Create(FULL_PATH("assets/textures/tiles.png"));
-		Ref<SubTexture2D> subTexture = SubTexture2D::CreateFromTileIndex(tileset, glm::vec2(18), glm::vec2(0,8), glm::vec2(2));
-		
-		m_Tile = m_ActiveScene->CreateEntity("Grass Tile");
-		m_Tile.Add<Component::SpriteRenderer>().SubTexture = subTexture;
-		m_Tile.Get<Component::Transform>().Position = glm::vec3(0.0f, 0.0f, 0.9f);
-	}
-
-	/* Creating Background Entity */{
-		Ref<Texture2D> backgroundTexture = Texture2D::Create(FULL_PATH("assets/textures/checkerboard.png"));
-
-		Entity backgroundEntity = m_ActiveScene->CreateEntity("Background");
-
-		Component::Transform& trans = backgroundEntity.Get<Component::Transform>();
-		trans.Position.z = -0.9f;
-		trans.Scale = glm::vec2(200.0f);
-		
-		Component::SpriteRenderer& sprite = backgroundEntity.Add<Component::SpriteRenderer>();
-		sprite.Texture = backgroundTexture;
-		sprite.Color = glm::vec4(0.2f,0.4f,0.4f,0.5f);
-		sprite.TileScale = 100.0f;
-
-	}
-
-	/* Create Camera Entity */{
-		m_CameraEntity = m_ActiveScene->CreateEntity("Camera Entity");
-		m_CameraEntity.Add<Component::Camera>();
-	}
-
-	/* Create a test native script */ {
-		class CameraController : public ScriptableEntity {
-		public:
-			CameraController() 
-				: m_Transform(nullptr) {}
-
-			virtual void OnCreate() override final {
-				m_Transform = &Get<Component::Transform>();
-			}
-			
-			virtual void OnUpdate(Timestep ts) override final {
-				if (Input::IsKeyPressed(Key::A)) {
-					m_Transform->Position.x -= m_Speed * ts;
-				}
-				if (Input::IsKeyPressed(Key::D)) {
-					m_Transform->Position.x += m_Speed * ts;
-				}
-				
-				if (Input::IsKeyPressed(Key::W)) {
-					m_Transform->Position.y += m_Speed * ts;
-				}
-				if (Input::IsKeyPressed(Key::S)) {
-					m_Transform->Position.y -= m_Speed * ts;
-				}
-			}
-		private:
-			const glm::vec3 start_pos = glm::vec3(0.0f);
-			float m_Speed = 5.0f;
-			Component::Transform* m_Transform;
-		};
-
-		//m_CameraEntity.AddScript<CameraController>();
-		m_CameraEntity.Add<Component::NativeScript>().Bind<CameraController>();
-
-	}
-
-	/* Create a tile rotator native script */ {
-		class TileRotator : public ScriptableEntity {
-		public:
-			virtual void OnCreate() override final {
-				m_Transform = &Get<Component::Transform>();
-			}
-			
-			virtual void OnUpdate(Timestep ts) override final {
-				m_Transform->Rotation += glm::radians(15.0f) * ts.GetSeconds();
-			}
-		private:
-			float m_Speed = 5.0f;
-			Component::Transform* m_Transform = nullptr;
-		};
-
-		m_Tile.Add<Component::NativeScript>().Bind<TileRotator>();
-	}
-
-	m_SceneTreePanel.SetContext(m_ActiveScene);
-	m_InspectorPanel.SetContext(m_ActiveScene, &m_SceneTreePanel);
-	m_FileSystemPanel.SetContext(m_ActiveScene);
-
+	SetPanelsContext();
 }
 
 void EditorLayer::OnDetach() {
@@ -247,7 +159,6 @@ void EditorLayer::OnImGuiRender() {
 
 	if (DialogFile::Show(m_IsDialogOpen, m_ShowFileDialogAs) == DialogResult::ACCEPT) {
 		if (m_ShowFileDialogAs == DialogType::OPEN_FILE) {
-			CreateNewScene();
 			LoadScene(DialogFile::GetSelectedPath());
 		}
 		else if (m_ShowFileDialogAs == DialogType::SAVE_FILE) {
@@ -313,7 +224,6 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 						ImGui::GetWindowDrawList()->AddRect(drawStart, drawEnd, IM_COL32(240, 240, 10, 240), 0.0f, ImDrawCornerFlags_All, 3.0f);
 						
 						if (payload->IsDelivery()) { 
-							CreateNewScene();
 							LoadScene(path);
 						}
 					}
@@ -379,16 +289,30 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 
 void EditorLayer::CreateNewScene() {
 	m_ActiveScene = CreateRef<Scene>();
-	m_SceneTreePanel.SetContext(m_ActiveScene);
-	m_InspectorPanel.SetContext(m_ActiveScene, &m_SceneTreePanel);
-	m_FileSystemPanel.SetContext(m_ActiveScene);
+	SetPanelsContext();
+
+	// create a new random path, 
+	// maybe this is too much random ?
+	std::ostringstream oss;
+	oss << std::setfill('0') << std::setw(20) << (uint64_t)UUID() << ".escn";
+	m_ActiveScenePath = m_ActiveScenePath.parent_path() / std::filesystem::path(oss.str());
 }
 
 void EditorLayer::LoadScene(const std::filesystem::path& path) {
+	if (m_SceneState != SceneState::Edit) {
+		// TODO popup a confirmation dialog
+		OnSceneStop();
+	}
+
+	Ref<Scene> newScene = CreateRef<Scene>();
 	m_ActiveScenePath = path;
-	SceneSerializer serializer = SceneSerializer(m_ActiveScene);
-	serializer.Deserialize(m_ActiveScenePath);
-	m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+	SceneSerializer serializer = SceneSerializer(newScene);
+	if (serializer.Deserialize(m_ActiveScenePath)) {
+		m_EditorScene = newScene;
+		m_ActiveScene = m_EditorScene;
+		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		SetPanelsContext();
+	}
 }
 
 void EditorLayer::SaveScene() {
@@ -530,8 +454,27 @@ void EditorLayer::ShowToolbar() {
 
 void EditorLayer::OnScenePlay() {
 	m_SceneState = SceneState::Play;
+
+	/* Copy Current Editor Scene */ {
+		SaveScene();
+		Ref<Scene> newScene = CreateRef<Scene>();
+		SceneSerializer serializer = SceneSerializer(newScene);
+		if (serializer.Deserialize(m_ActiveScenePath)) {
+			m_ActiveScene = newScene;
+			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			SetPanelsContext();
+		}
+	}
 }
 
 void EditorLayer::OnSceneStop() {
 	m_SceneState = SceneState::Edit;
+	m_ActiveScene = m_EditorScene;
+	SetPanelsContext();
+}
+
+void EditorLayer::SetPanelsContext() {
+	m_SceneTreePanel.SetContext(m_ActiveScene);
+	m_InspectorPanel.SetContext(m_ActiveScene, &m_SceneTreePanel);
+	m_FileSystemPanel.SetContext(m_ActiveScene);
 }

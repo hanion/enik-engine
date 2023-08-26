@@ -38,10 +38,13 @@ private:
 	void OnScenePlay();
 	void OnSceneStop();
 
+	void SetPanelsContext();
+
 private:
 	Ref<FrameBuffer> m_FrameBuffer;
 
 	Ref<Scene> m_ActiveScene;
+	Ref<Scene> m_EditorScene;
 
 	OrthographicCameraController m_EditorCameraController;
 
@@ -66,7 +69,7 @@ private:
 	InspectorPanel m_InspectorPanel;
 	FileSystemPanel m_FileSystemPanel;
 
-	std::filesystem::path m_ActiveScenePath;
+	std::filesystem::path m_ActiveScenePath = std::filesystem::canonical(".");
 
 	DialogType m_ShowFileDialogAs = DialogType::OPEN_FILE;
 	bool m_IsDialogOpen = false;
