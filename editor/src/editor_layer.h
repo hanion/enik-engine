@@ -32,6 +32,7 @@ private:
 
 	bool OnKeyPressed(KeyPressedEvent &event);
 	bool OnMouseButtonReleased(MouseButtonReleasedEvent &event);
+	bool OnMouseButtonPressed (MouseButtonPressedEvent  &event);
 
 	void HandlePickEntityWithMouse();
 

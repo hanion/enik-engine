@@ -71,6 +71,7 @@ void EditorLayer::OnEvent(Event& event) {
 	EventDispatcher dispatcher = EventDispatcher(event);
 	dispatcher.Dispatch<KeyPressedEvent>(std::bind(&EditorLayer::OnKeyPressed, this, std::placeholders::_1));
 	dispatcher.Dispatch<MouseButtonReleasedEvent>(std::bind(&EditorLayer::OnMouseButtonReleased, this, std::placeholders::_1));
+	dispatcher.Dispatch<MouseButtonPressedEvent> (std::bind(&EditorLayer::OnMouseButtonPressed, this, std::placeholders::_1));
 }
 
 void EditorLayer::OnImGuiRender() {
@@ -351,6 +352,10 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 }
 
 bool EditorLayer::OnMouseButtonReleased(MouseButtonReleasedEvent& event) {
+	return false;
+}
+
+bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& event) {
 	if (event.GetMouseButton() == Mouse::ButtonLeft) {
 		m_PickEntityWithMouse = true;
 	}
