@@ -441,10 +441,10 @@ void EditorLayer::ShowToolbar() {
 }
 
 void EditorLayer::OnScenePlay() {
+	SaveScene();
 	m_SceneState = SceneState::Play;
 
 	/* Copy Current Editor Scene */ {
-		SaveScene();
 		Ref<Scene> new_scene = CreateRef<Scene>();
 		SceneSerializer serializer = SceneSerializer(new_scene);
 		if (serializer.Deserialize(m_ActiveScenePath)) {
