@@ -31,10 +31,36 @@ void SceneTreePanel::OnImGuiRender() {
 		return;
 	}
 
-	m_Context->m_Registry.each([&](auto entityID) {
-		Entity entity = Entity(entityID, m_Context.get());
-		DrawEntityInSceneTree(entity);
-	});
+
+
+	static char buffer[256];
+	memset(buffer, 0, sizeof(buffer));
+	strcpy(buffer, m_Context->GetName().c_str());
+
+	ImGui::TableNextRow();
+	ImGui::TableSetColumnIndex(0);
+	ImGui::AlignTextToFramePadding();
+
+	static const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen;
+	bool scene_node_open = ImGui::TreeNodeEx("##SceneNameTreeNode", flags);
+	ImGui::SameLine();
+	ImGuiUtils::PrefixLabel("Scene");
+	ImGui::PushItemWidth(-1); // Set item width to available width
+	if (ImGui::InputText("##SceneName", buffer, sizeof(buffer))) {
+		m_Context->SetName(buffer);
+	}
+	ImGui::PopItemWidth();
+
+	if (scene_node_open) {
+		m_Context->m_Registry.each([&](auto entityID) {
+			Entity entity = Entity(entityID, m_Context.get());
+			DrawEntityInSceneTree(entity);
+		});
+
+		ImGui::TreePop();
+	}
+
+
 
 	if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
 		m_SelectionContext = {};

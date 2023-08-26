@@ -1,16 +1,56 @@
-Scene: Untitled Scene
+Scene: scene_platform_player_test
 Entities:
-  - Entity: 1111111111
+  - Entity: 13954908816794272308
     Component::Tag:
-      Text: bg
+      Text: player duplicate duplicate
     Component::Transform:
-      Position: [0, 0, -0.790000021]
+      Position: [0.200000003, -3.58999991, 0]
       Rotation: 0
-      Scale: [20, 7]
+      Scale: [1, 1]
     Component::SpriteRenderer:
-      Color: [0.2236287, 0.198152021, 0.198152021, 1]
+      Color: [0.0786911026, 0.640684962, 0.932489455, 1]
       TileScale: 1
-  - Entity: 1111111111
+  - Entity: 14447090671612808220
+    Component::Tag:
+      Text: player duplicate
+    Component::Transform:
+      Position: [-1.20000005, -3.58999991, 0]
+      Rotation: 0
+      Scale: [1, 1]
+    Component::SpriteRenderer:
+      Color: [0.0786911026, 0.640684962, 0.932489455, 1]
+      TileScale: 1
+  - Entity: 2795475270516056060
+    Component::Tag:
+      Text: empty entity
+    Component::Transform:
+      Position: [0, -0.600000024, 0]
+      Rotation: 0
+      Scale: [1, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 1]
+      TileScale: 1
+  - Entity: 9899651951913271238
+    Component::Tag:
+      Text: player
+    Component::Transform:
+      Position: [-4.03000021, -3.58999991, 0]
+      Rotation: 0
+      Scale: [1, 1]
+    Component::SpriteRenderer:
+      Color: [0.0786911026, 0.640684962, 0.932489455, 1]
+      TileScale: 1
+  - Entity: 5085587486501858400
+    Component::Tag:
+      Text: platform
+    Component::Transform:
+      Position: [0.850000024, -1.74000001, 0]
+      Rotation: 0
+      Scale: [5.4000001, 0.649999976]
+    Component::SpriteRenderer:
+      Color: [0.945147693, 0.446652055, 0.0518435314, 1]
+      TileScale: 1
+  - Entity: 2449498040799814160
     Component::Tag:
       Text: camera
     Component::Transform:
@@ -24,23 +64,13 @@ Entities:
         Far: 1
       Primary: true
       FixedAspectRatio: false
-  - Entity: 1111111111
+  - Entity: 16667454421768150840
     Component::Tag:
-      Text: platform
+      Text: ground
     Component::Transform:
-      Position: [1.52999997, -1.27999997, 0]
+      Position: [0, -7.59000015, -0.330000013]
       Rotation: 0
-      Scale: [5.4000001, 0.649999976]
+      Scale: [39.0200005, 7]
     Component::SpriteRenderer:
-      Color: [0.25316453, 1, 0, 1]
-      TileScale: 1
-  - Entity: 1111111111
-    Component::Tag:
-      Text: player
-    Component::Transform:
-      Position: [-4.03000021, -2.99000001, 0]
-      Rotation: 0
-      Scale: [1, 1]
-    Component::SpriteRenderer:
-      Color: [0.932489455, 0.20838201, 0.0786911026, 1]
+      Color: [0.2236287, 0.198152021, 0.198152021, 1]
       TileScale: 1

@@ -99,11 +99,11 @@ SceneSerializer::SceneSerializer(const Ref<Scene>& scene)
 }
 
 void SceneSerializer::Serialize(const std::string& filepath) {
-	EN_CORE_TRACE("Serializing scene   '{0}'", filepath);
+	EN_CORE_TRACE("Serializing scene   '{0}'", m_Scene->GetName());
 	YAML::Emitter out;
 	out << YAML::BeginMap;
 
-	out << YAML::Key << "Scene" << YAML::Value << "Untitled Scene";
+	out << YAML::Key << "Scene" << YAML::Value << m_Scene->GetName();
 
 	out << YAML::Key << "Entities";
 	out << YAML::Value << YAML::BeginSeq;
@@ -133,9 +133,10 @@ bool SceneSerializer::Deserialize(const std::string& filepath) {
 		return false;
 	}
 
-	std::string sceneName = data["Scene"].as<std::string>();
-	// EN_CORE_TRACE("Deserializing scene '{0}'", sceneName);
-	EN_CORE_TRACE("Deserializing scene '{0}'", filepath); // TODO have scene names
+	std::string scene_name = data["Scene"].as<std::string>();
+	m_Scene->SetName(scene_name);
+	EN_CORE_TRACE("Deserializing scene '{0}'", scene_name);
+
 
 	auto entities = data["Entities"];
 	if (entities) {
@@ -143,7 +144,7 @@ bool SceneSerializer::Deserialize(const std::string& filepath) {
 		for (std::size_t i = entities.size(); i > 0; --i) {
 			auto entity = entities[i - 1];
 
-			uint64_t uuid = entity["Entity"].as<uint64_t>(); // TODO: id's
+			uint64_t uuid = entity["Entity"].as<uint64_t>();
 			std::string name;
 			auto tag = entity["Component::Tag"];
 			if (tag) {

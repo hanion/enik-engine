@@ -24,12 +24,17 @@ public:
 	void OnUpdateRuntime(Timestep ts);
 	void OnViewportResize(uint32_t width, uint32_t height);
 
+	const std::string& GetName() const { return m_SceneName; }
+	const void SetName(const std::string& name) { m_SceneName = name; }
+
 
 private:
 	entt::registry m_Registry;
 
 	uint32_t m_ViewportWidth;
 	uint32_t m_ViewportHeight;
+
+	std::string m_SceneName = "untitled";
 
 	friend class Entity;
 	friend class SceneTreePanel;
