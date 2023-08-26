@@ -333,6 +333,14 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 			}
 			break;
 
+		case Key::D:
+			if (control) {
+				SaveScene();
+				SceneSerializer serializer = SceneSerializer(m_ActiveScene);
+				serializer.DuplicateEntity(m_ActiveScenePath, m_SceneTreePanel.GetSelectedEntity().Get<Component::ID>().uuid);
+			}
+			break;
+
 		default:
 			break;
 	}
