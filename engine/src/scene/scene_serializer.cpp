@@ -139,7 +139,10 @@ bool SceneSerializer::Deserialize(const std::string& filepath) {
 
 	auto entities = data["Entities"];
 	if (entities) {
-		for (auto entity : entities) {
+		// iterate reversed to not change entity indexes
+		for (std::size_t i = entities.size(); i > 0; --i) {
+			auto entity = entities[i - 1];
+
 			uint64_t uuid = entity["Entity"].as<uint64_t>(); // TODO: id's
 			std::string name;
 			auto tag = entity["Component::Tag"];
