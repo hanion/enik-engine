@@ -1,7 +1,6 @@
 #include "inspector.h"
 
 #include <imgui/imgui.h>
-#include <imgui/imgui_internal.h>
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -60,7 +59,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		char buffer[256];
 		memset(buffer, 0, sizeof(buffer));
 		strcpy(buffer, text.c_str());
-		LabelPrefix("Text");
+		ImGuiUtils::PrefixLabel("Text");
 		if (ImGui::InputText("##Tag", buffer, sizeof(buffer))) {
 			text = std::string(buffer);
 		}
@@ -68,16 +67,16 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 
 	DisplayComponentInInspector<Component::Transform>("Transform", entity, false, [&]() {
 		auto& transform = entity.Get<Component::Transform>();
-		LabelPrefix("Position");
+		ImGuiUtils::PrefixLabel("Position");
 		ImGui::DragFloat3("##Position", glm::value_ptr(transform.Position), 0.01f);
 
-		LabelPrefix("Rotation");
+		ImGuiUtils::PrefixLabel("Rotation");
 		float rot = glm::degrees(transform.Rotation);
 		if (ImGui::DragFloat("##Rotation", &rot, 0.1f)) {
 			transform.Rotation = glm::radians(rot);
 		}
 
-		LabelPrefix("Scale");
+		ImGuiUtils::PrefixLabel("Scale");
 		ImGui::DragFloat2("##Scale", glm::value_ptr(transform.Scale), 0.01f);
 	});
 
@@ -86,7 +85,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		ImGui::Checkbox("Primary", &cam.Primary);
 
 		static float size = cam.Cam.GetSize();
-		LabelPrefix("Size");
+		ImGuiUtils::PrefixLabel("Size");
 		if (ImGui::DragFloat("##Size", &size, 0.01f, 0.01f)) {
 			cam.Cam.SetSize(size);
 		}
@@ -96,7 +95,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		}
 		if (cam.FixedAspectRatio) {
 			static float ratio = cam.Cam.GetAspectRatio();
-			LabelPrefix("Aspect Ratio");
+			ImGuiUtils::PrefixLabel("Aspect Ratio");
 			if (ImGui::DragFloat("##Aspect Ratio", &ratio, 0.01f, 0.001f)) {
 				cam.Cam.SetAspectRatio(ratio);
 			}
@@ -106,15 +105,15 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	DisplayComponentInInspector<Component::SpriteRenderer>("Sprite Renderer", entity, true, [&]() {
 		auto& sprite = entity.Get<Component::SpriteRenderer>();
 
-		LabelPrefix("Color");
+		ImGuiUtils::PrefixLabel("Color");
 		ImGui::ColorEdit4("##Sprite Color", glm::value_ptr(sprite.Color));
 		// ImGui::ColorEdit3("Sprite Color", glm::value_ptr(sprite.Color));
 
-		LabelPrefix("Tile Scale");
+		ImGuiUtils::PrefixLabel("Tile Scale");
 		ImGui::DragFloat("##Tile Scale", &sprite.TileScale, 0.01f);
 
 		/* Texture */ {
-			LabelPrefix("Texture");
+			ImGuiUtils::PrefixLabel("Texture");
 			// ImVec4 tint_col = ImGui::GetStyleColorVec4(ImGuiCol_Text);
 			ImVec4 tint_col = ImVec4(sprite.Color.r, sprite.Color.g, sprite.Color.b, sprite.Color.a);
 			ImVec4 border_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
@@ -176,45 +175,6 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	});
 }
 
-void InspectorPanel::LabelPrefix(std::string_view title, InspectorPanel::ItemLabelFlag flag) {
-	ImGuiWindow* window = ImGui::GetCurrentWindow();
-	const ImVec2 lineStart = ImGui::GetCursorScreenPos();
-	const ImGuiStyle& style = ImGui::GetStyle();
-	float fullWidth = ImGui::GetContentRegionAvail().x;
-	float itemWidth = ImGui::CalcItemWidth() + style.ItemSpacing.x;
-	ImVec2 textSize = ImGui::CalcTextSize(title.begin(), title.end());
-	ImRect textRect;
-	textRect.Min = ImGui::GetCursorScreenPos();
-	if (flag & ItemLabelFlag::Right)
-		textRect.Min.x = textRect.Min.x + itemWidth;
-	textRect.Max = textRect.Min;
-	textRect.Max.x += fullWidth - itemWidth;
-	textRect.Max.y += textSize.y;
-
-	ImGui::SetCursorScreenPos(textRect.Min);
-
-	ImGui::AlignTextToFramePadding();
-	// Adjust text rect manually because we render it directly into a drawlist instead of using public functions.
-	textRect.Min.y += window->DC.CurrLineTextBaseOffset;
-	textRect.Max.y += window->DC.CurrLineTextBaseOffset + 1; // +1 so there is no letters bottom clip
-
-	ImGui::ItemSize(textRect);
-	if (ImGui::ItemAdd(textRect, window->GetID(title.data(), title.data() + title.size()))) {
-		ImGui::RenderTextEllipsis(ImGui::GetWindowDrawList(), textRect.Min, textRect.Max, textRect.Max.x,
-			textRect.Max.x, title.data(), title.data() + title.size(), &textSize);
-
-		if (textRect.GetWidth() < textSize.x && ImGui::IsItemHovered()) {
-			ImGui::SetTooltip("%.*s", (int)title.size(), title.data());
-		}
-	}
-	if (flag & ItemLabelFlag::Left) {
-		ImGui::SetCursorScreenPos(ImVec2(textRect.Max.x, textRect.Max.y - (textSize.y + window->DC.CurrLineTextBaseOffset)));
-		ImGui::SameLine();
-	}
-	else if (flag & ItemLabelFlag::Right) {
-		ImGui::SetCursorScreenPos(lineStart);
-	}
-}
 
 template <typename T>
 void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity& entity, const bool can_delete, const std::function<void()>& lambda) {

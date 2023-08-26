@@ -3,6 +3,8 @@
 
 #include "scene/entity.h"
 #include "scene/scene.h"
+#include "imgui_utils.h"
+
 
 namespace Enik {
 

@@ -20,12 +20,6 @@ public:
 private:
 	void DrawEntityInInspector(Entity entity);
 
-	enum ItemLabelFlag {
-		Left = 1u << 0u,
-		Right = 1u << 1u,
-		Default = Left,
-	};
-	void LabelPrefix(std::string_view title, InspectorPanel::ItemLabelFlag flags = InspectorPanel::ItemLabelFlag::Default);
 
 	template <typename T>
 	void DisplayComponentInInspector(const std::string& name, Entity& entity, const bool can_delete, const std::function<void()>& lambda);
