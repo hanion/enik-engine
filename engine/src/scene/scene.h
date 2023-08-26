@@ -2,6 +2,7 @@
 
 #include "core/timestep.h"
 #include "renderer/ortho_camera_controller.h"
+#include "core/uuid.h"
 #include <entt/entt.hpp>
 
 namespace Enik {
@@ -14,6 +15,7 @@ public:
 	~Scene();
 
 	Entity CreateEntity(const std::string& name = std::string());
+	Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
 	void DestroyEntity(const Entity& entity);
 
 	entt::registry& Reg() { return m_Registry; }

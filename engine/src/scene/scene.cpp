@@ -23,6 +23,16 @@ Scene::~Scene() {
 
 Entity Scene::CreateEntity(const std::string& name) {
 	Entity entity = Entity(m_Registry.create(), this);
+	entity.Add<Component::ID>();
+	entity.Add<Component::Transform>();
+	auto& tag = entity.Add<Component::Tag>();
+	tag.Text = name.empty() ? "Empty Entity" : name;
+	return entity;
+}
+
+Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name) {
+	Entity entity = Entity(m_Registry.create(), this);
+	entity.Add<Component::ID>(uuid);
 	entity.Add<Component::Transform>();
 	auto& tag = entity.Add<Component::Tag>();
 	tag.Text = name.empty() ? "Empty Entity" : name;

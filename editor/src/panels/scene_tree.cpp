@@ -82,8 +82,7 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 	
 	
 	if (node_open) {
-		// Temp
-		ImGui::TextColored(ImVec4(0.1f, 0.6f, 0.1f, 1.0f), "Entity %d", (uint32_t)entity);
+		ImGui::TextColored(ImVec4(0.1f, 0.5f, 0.1f, 1.0f), "Entity %d, ID %lu", (uint32_t)entity, (uint64_t)entity.Get<Component::ID>());
 		ImGui::TreePop();
 	}
 

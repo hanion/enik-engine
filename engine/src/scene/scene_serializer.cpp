@@ -166,7 +166,7 @@ bool SceneSerializer::DeserializeRuntime(const std::string& filepath) {
 void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 	out << YAML::BeginMap; // Entity
 
-	out << YAML::Key << "Entity" << YAML::Value << (uint64_t)1111111111; // TODO: entity id
+	out << YAML::Key << "Entity" << YAML::Value << (uint64_t)entity.Get<Component::ID>();
 
 	if (entity.Has<Component::Tag>()) {
 		out << YAML::Key << "Component::Tag";
@@ -226,7 +226,7 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 }
 
 void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::string& name) {
-	Entity deserializedEntity = m_Scene->CreateEntity(name);
+	Entity deserializedEntity = m_Scene->CreateEntityWithUUID(uuid, name);
 
 	auto transform = entity["Component::Transform"];
 	if (transform) {

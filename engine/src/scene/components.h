@@ -1,14 +1,26 @@
 #pragma once
 
-#include <glm/glm.hpp>
 #include "renderer/sub_texture2D.h"
 #include "scene/scene_camera.h"
 #include "scene/scriptable_entity.h"
+#include "core/uuid.h"
+
+#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace Enik {
 namespace Component {
 
+struct ID {
+	UUID uuid;
+
+	ID() = default;
+	ID(const ID&) = default;
+	ID(const UUID& id) 
+		: uuid(id) {}
+	
+	operator uint64_t () { return (uint64_t)uuid; }
+};
 
 struct Tag {
 	std::string Text;
