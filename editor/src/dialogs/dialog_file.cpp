@@ -8,36 +8,42 @@ namespace Enik {
 
 static DialogFileData s_Data;
 
+void DialogFile::OpenDialog(DialogType type, const std::string& ext) {
+	s_Data.type = type;
+	s_Data.ext = ext;
+	s_Data.is_open = true;
+}
+
 const std::filesystem::path& DialogFile::GetSelectedPath() {
 	return s_Data.selected_path;
 }
 
-DialogResult DialogFile::Show(bool& is_open, DialogType type, const std::string& ext) {
-	if (not is_open) {
-		return DialogResult::NONE;
+DialogFileResult DialogFile::Show() {
+	if (not s_Data.is_open) {
+		return DialogFileResult::NONE;
 	}
 
 	ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
 	std::string widnow_name;
 
-	if (type == DialogType::OPEN_FILE) {
-		widnow_name = ("Open File (" + ext + ")");
+	if (s_Data.type == DialogType::OPEN_FILE) {
+		widnow_name = ("Open File (" + s_Data.ext + ")");
 	}
-	else if (type == DialogType::SAVE_FILE) {
-		widnow_name = ("Save File (" + ext + ")");
+	else if (s_Data.type == DialogType::SAVE_FILE) {
+		widnow_name = ("Save File (" + s_Data.ext + ")");
 	}
 
 	ImGui::OpenPopup(widnow_name.c_str());
-	if (ImGui::BeginPopupModal(widnow_name.c_str(), &is_open)) {
-		DialogResult result = ShowPopup(is_open, type, ext);
+	if (ImGui::BeginPopupModal(widnow_name.c_str(), &s_Data.is_open)) {
+		DialogFileResult result = ShowPopup();
 		ImGui::EndPopup();
 		return result;
 	}
 
-	return DialogResult::NONE;
+	return DialogFileResult::NONE;
 }
 
-DialogResult DialogFile::ShowPopup(bool& is_open, DialogType type, const std::string& ext) {
+DialogFileResult DialogFile::ShowPopup() {
 	if (ImGui::Button(" ^ ")) {
 		if (!s_Data.current_directory.empty()) {
 			s_Data.current_directory = s_Data.current_directory.parent_path();
@@ -60,7 +66,7 @@ DialogResult DialogFile::ShowPopup(bool& is_open, DialogType type, const std::st
 		s_Data.entries.clear();
 
 		for (const auto& entry : fs::directory_iterator(s_Data.current_directory)) {
-			if (entry.is_regular_file() && entry.path().extension() != ext) {
+			if (entry.is_regular_file() && entry.path().extension() != s_Data.ext) {
 				continue;
 			}
 			s_Data.entries.push_back(entry);
@@ -82,33 +88,33 @@ DialogResult DialogFile::ShowPopup(bool& is_open, DialogType type, const std::st
 	ImGui::Spacing();
 
 	/* Show Input Field */ {
-		const float buttonsWidth = ImGui::CalcTextSize(((std::string)(ext + "CancelOpen")).c_str()).x + ImGui::GetStyle().ItemSpacing.x * 4.0f;
+		const float buttonsWidth = ImGui::CalcTextSize(((std::string)(s_Data.ext + "CancelOpen")).c_str()).x + ImGui::GetStyle().ItemSpacing.x * 4.0f;
 		float inputTextWidth = ImGui::GetContentRegionAvail().x - buttonsWidth - ImGui::GetStyle().ItemSpacing.x;
 
 		ImGui::PushItemWidth(inputTextWidth);
-		ImGui::BeginDisabled(type == DialogType::OPEN_FILE);
+		ImGui::BeginDisabled(s_Data.type == DialogType::OPEN_FILE);
 
-		ImGuiInputTextFlags flag = (type == DialogType::OPEN_FILE) ? ImGuiInputTextFlags_ReadOnly : ImGuiInputTextFlags_None;
+		ImGuiInputTextFlags flag = (s_Data.type == DialogType::OPEN_FILE) ? ImGuiInputTextFlags_ReadOnly : ImGuiInputTextFlags_None;
 		ImGui::InputText("##File Path", file_path_buffer, sizeof(file_path_buffer), flag);
 
 		ImGui::EndDisabled();
 		ImGui::PopItemWidth();
 	}
 
-	if (type == DialogType::SAVE_FILE) {
+	if (s_Data.type == DialogType::SAVE_FILE) {
 		s_Data.selected_path = file_path_buffer;
 	}
 
 	ImGui::SameLine();
-	ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 0.5f), ext.c_str());
+	ImGui::TextColored(ImVec4(0.5f, 0.5f, 0.5f, 0.5f), s_Data.ext.c_str());
 
 	ImGui::SameLine();
 	if (ImGui::Button("Cancel")) {
 		s_Data.has_searched = false;
 
 		strcpy(file_path_buffer, "");
-		is_open = false;
-		return DialogResult::CANCEL;
+		s_Data.is_open = false;
+		return DialogFileResult::CANCEL;
 	}
 
 	// TODO: currently we are not checking the save file extension
@@ -117,25 +123,31 @@ DialogResult DialogFile::ShowPopup(bool& is_open, DialogType type, const std::st
 	ImGui::BeginDisabled(s_Data.selected_path.empty() || (not is_valid));
 
 	ImGui::SameLine();
-	if (ImGui::Button((type == DialogType::OPEN_FILE) ? "Open" : "Save")) {
+	if (ImGui::Button((s_Data.type == DialogType::OPEN_FILE) ? "Open" : "Save")) {
 		s_Data.has_searched = false;
 
-		if (type == DialogType::SAVE_FILE) {
+		if (s_Data.type == DialogType::SAVE_FILE) {
 			s_Data.selected_path = file_path_buffer;
 		}
 
 		strcpy(file_path_buffer, "");
 
-		is_open = false;
+		s_Data.is_open = false;
 
 		EN_CORE_TRACE("Dialog File: selected path '{0}'", s_Data.selected_path);
 
 		ImGui::EndDisabled();
-		return DialogResult::ACCEPT;
+
+		if (s_Data.type == DialogType::SAVE_FILE) {
+			return DialogFileResult::ACCEPT_SAVE;
+		}
+		else {
+			return DialogFileResult::ACCEPT_OPEN;
+		}
 	}
 	ImGui::EndDisabled();
 
-	return DialogResult::NONE;
+	return DialogFileResult::NONE;
 }
 
 void DialogFile::ShowDirectoriesTable(char* file_path_buffer) {

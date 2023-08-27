@@ -73,9 +73,6 @@ private:
 
 	std::filesystem::path m_ActiveScenePath = std::filesystem::canonical(".");
 
-	DialogType m_ShowFileDialogAs = DialogType::OPEN_FILE;
-	bool m_IsDialogOpen = false;
-
 	enum class SceneState {
 		Edit = 0,
 		Play = 1

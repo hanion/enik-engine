@@ -109,22 +109,19 @@ void EditorLayer::OnImGuiRender() {
 				}
 
 				if (ImGui::MenuItem("Open File")) {
-					m_ShowFileDialogAs = DialogType::OPEN_FILE;
-					m_IsDialogOpen = true;
+					DialogFile::OpenDialog(DialogType::OPEN_FILE);
 				}
 
 				if (ImGui::MenuItem("Save")) {
 					if (m_ActiveScenePath.empty()) {
-						m_ShowFileDialogAs = DialogType::SAVE_FILE;
-						m_IsDialogOpen = true;
+						DialogFile::OpenDialog(DialogType::SAVE_FILE);
 					}
 					else {
 						SaveScene();
 					}
 				}
 				if (ImGui::MenuItem("Save As")) {
-					m_ShowFileDialogAs = DialogType::SAVE_FILE;
-					m_IsDialogOpen = true;
+					DialogFile::OpenDialog(DialogType::SAVE_FILE);
 				}
 
 				if (ImGui::MenuItem("Exit")) {
@@ -148,14 +145,13 @@ void EditorLayer::OnImGuiRender() {
 		ImGui::End();
 	}
 
-	if (DialogFile::Show(m_IsDialogOpen, m_ShowFileDialogAs) == DialogResult::ACCEPT) {
-		if (m_ShowFileDialogAs == DialogType::OPEN_FILE) {
-			LoadScene(DialogFile::GetSelectedPath());
-		}
-		else if (m_ShowFileDialogAs == DialogType::SAVE_FILE) {
-			m_ActiveScenePath = DialogFile::GetSelectedPath();
-			SaveScene();
-		}
+	DialogFileResult result = DialogFile::Show();
+	if (result == DialogFileResult::ACCEPT_SAVE) {
+		m_ActiveScenePath = DialogFile::GetSelectedPath();
+		SaveScene();
+	}
+	else if (result == DialogFileResult::ACCEPT_OPEN) {
+		LoadScene(DialogFile::GetSelectedPath());
 	}
 }
 
@@ -270,14 +266,12 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 }
 
 void EditorLayer::CreateNewScene() {
-	m_ActiveScene = CreateRef<Scene>();
+	m_EditorScene = CreateRef<Scene>();
+	m_ActiveScene = m_EditorScene;
 	SetPanelsContext();
 
-	// create a new random path,
-	// maybe this is too much random ?
-	std::ostringstream oss;
-	oss << std::setfill('0') << std::setw(20) << (uint64_t)UUID() << ".escn";
-	m_ActiveScenePath = m_ActiveScenePath.parent_path() / std::filesystem::path(oss.str());
+	m_ActiveScenePath = std::filesystem::path();
+
 }
 
 void EditorLayer::LoadScene(const std::filesystem::path& path) {
@@ -299,6 +293,12 @@ void EditorLayer::LoadScene(const std::filesystem::path& path) {
 
 void EditorLayer::SaveScene() {
 	if (m_SceneState == SceneState::Edit) {
+		// ? has no path, need to select
+		if (m_ActiveScenePath.empty()) {
+			DialogFile::OpenDialog(DialogType::SAVE_FILE);
+			return;
+		}
+
 		SceneSerializer serializer = SceneSerializer(m_ActiveScene);
 		serializer.Serialize(m_ActiveScenePath);
 	}
@@ -321,15 +321,13 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 
 		case Key::O:
 			if (control) {
-				m_ShowFileDialogAs = DialogType::OPEN_FILE;
-				m_IsDialogOpen = true;
+				DialogFile::OpenDialog(DialogType::OPEN_FILE);
 			}
 			break;
 
 		case Key::S:
 			if (control and shift) {
-				m_ShowFileDialogAs = DialogType::SAVE_FILE;
-				m_IsDialogOpen = true;
+				DialogFile::OpenDialog(DialogType::SAVE_FILE);
 			}
 			else if (control) {
 				SaveScene();

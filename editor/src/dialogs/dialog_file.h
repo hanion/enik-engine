@@ -5,6 +5,11 @@ namespace fs = std::filesystem;
 
 namespace Enik {
 
+enum DialogType {
+	OPEN_FILE = 1,
+	SAVE_FILE = 2
+};
+
 struct DialogFileData {
 	bool has_searched = false;
 
@@ -13,27 +18,29 @@ struct DialogFileData {
 	std::filesystem::path selected_path;
 
 	std::vector<fs::directory_entry> entries;
+
+	bool is_open = false;
+	DialogType type = DialogType::OPEN_FILE;
+	std::string ext = ".escn";
 };
 
-enum DialogType {
-	OPEN_FILE = 1,
-	SAVE_FILE = 2
-};
-
-enum DialogResult {
+enum DialogFileResult {
 	NONE = 0,
-	CANCEL = 1,
-	ACCEPT = 2
+	CANCEL,
+	ACCEPT_SAVE,
+	ACCEPT_OPEN
 };
 
 class DialogFile {
 public:
-	static DialogResult Show(bool& is_open, DialogType type, const std::string& ext = ".escn");
+	static void OpenDialog(DialogType type, const std::string& ext = ".escn");
+
+	static DialogFileResult Show();
 
 	static const std::filesystem::path& GetSelectedPath();
 
 private:
-	static DialogResult ShowPopup(bool& is_open, DialogType type, const std::string& ext);
+	static DialogFileResult ShowPopup();
 	static void ShowDirectoriesTable(char* file_path_buffer);
 	static bool isValidSelection();
 };
