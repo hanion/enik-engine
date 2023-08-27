@@ -45,7 +45,13 @@ void OrthographicCameraController::OnUpdate(Timestep timestep) {
 		}
 	}
 }
-void OrthographicCameraController::OnEvent(Event& e) {
+void OrthographicCameraController::OnEvent(Event& e, bool is_viewport_hovered) {
+	if (not is_viewport_hovered) {
+		m_IsMoving = false;
+		m_StartedMoving = false;
+		return;
+	}
+
 	EventDispatcher dispatcher = EventDispatcher(e);
 	dispatcher.Dispatch<MouseScrolledEvent>(EN_BIND_EVENT_FN(OrthographicCameraController::OnMouseScrolled));
 	dispatcher.Dispatch<WindowResizeEvent> (EN_BIND_EVENT_FN(OrthographicCameraController::OnWindowResized));

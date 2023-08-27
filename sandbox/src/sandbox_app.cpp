@@ -25,30 +25,30 @@ public:
 
 		Ref<VertexBuffer> vertexBuffer;
 		vertexBuffer = VertexBuffer::Create(vertices, sizeof(vertices));
-		
-		
+
+
 		BufferLayout layout = {
 			{ShaderDataType::Float3, "a_Position"},
 			{ShaderDataType::Float4, "a_Color"},
 			{ShaderDataType::Float2, "a_TexCoord"}
 		};
-		
+
 		vertexBuffer->SetLayout(layout);
 		m_VertexArray->AddVertexBuffer(vertexBuffer);
 
 		uint32_t indices[6] = { 0, 1, 2, 2, 3, 0 };
-		
+
 		Ref<IndexBuffer> indexBuffer;
 		indexBuffer = IndexBuffer::Create(indices, sizeof(indices)/sizeof(uint32_t));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
-		/*Create shader sources*/{			
+		/*Create shader sources*/{
 			m_ShaderLibrary.Load("colorful", FULL_PATH("assets/shaders/colorful.glsl"));
 
 			auto textureShader = m_ShaderLibrary.Load("texture", FULL_PATH("assets/shaders/texture2.glsl"));
-			
+
 			std::dynamic_pointer_cast<OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
-			
+
 			m_Texture2D = Texture2D::Create(FULL_PATH("assets/textures/checkerboard.png"));
 			m_TransparentTexture2D = Texture2D::Create(FULL_PATH("assets/textures/tablordia_banner.png"));
 		}
@@ -78,26 +78,26 @@ public:
 
 		glm::mat4 transform = glm::mat4(1.0f);
 		transform = glm::translate(transform, m_TexturePosition);
-		
+
 		m_Texture2D->Bind();
 		auto textureShader = m_ShaderLibrary.Get("texture");
 		Renderer::Submit(textureShader, m_VertexArray, glm::mat4(1.0f));
-		
+
 		m_TransparentTexture2D->Bind();
 		Renderer::Submit(textureShader, m_VertexArray, glm::scale(transform, m_TextureScale));
 
-		Renderer::EndScene(); 
+		Renderer::EndScene();
 	}
 
 	void OnEvent(Event& event) override {
-		m_CameraController.OnEvent(event);
+		m_CameraController.OnEvent(event, true); // ? on sandbox, there is no ui, so we do not care about any event blocking
 	}
 
 	virtual void OnImGuiRender() override {
 		/*ShowPerformance*/ {
 			ImGuiWindowFlags window_flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav;
 			window_flags |=  ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
-			
+
 			ImGui::SetNextWindowBgAlpha(0.35f);
 			if (ImGui::Begin("Performance", nullptr, window_flags))
 			{
@@ -115,7 +115,7 @@ public:
 				ImGui::Text("Translation");
 				ImGui::DragFloat("X",&m_TexturePosition.x, 0.02f, -10.0f, 10.0f, "%.2f");
 				ImGui::DragFloat("Y",&m_TexturePosition.y, 0.02f, -10.0f, 10.0f, "%.2f");
-			
+
 				ImGui::Text("Scale");
 				ImGui::DragFloat("x",&m_TextureScale.x, 0.02f, -10.0f, 10.0f, "%.2f");
 				ImGui::DragFloat("y",&m_TextureScale.y, 0.02f, -10.0f, 10.0f, "%.2f");

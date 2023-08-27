@@ -66,7 +66,7 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 }
 
 void EditorLayer::OnEvent(Event& event) {
-	m_EditorCameraController.OnEvent(event);
+	m_EditorCameraController.OnEvent(event, m_ViewportHovered);
 
 	EventDispatcher dispatcher = EventDispatcher(event);
 	dispatcher.Dispatch<KeyPressedEvent>(std::bind(&EditorLayer::OnKeyPressed, this, std::placeholders::_1));

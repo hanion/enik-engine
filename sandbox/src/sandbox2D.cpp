@@ -6,7 +6,7 @@
 
 Sandbox2D::Sandbox2D()
 	: Layer("Sandbox2D"), m_CameraController(1.6f/0.75f, true) {
-	
+
 }
 
 void Sandbox2D::OnAttach() {
@@ -39,7 +39,7 @@ void Sandbox2D::OnUpdate(Timestep timestep) {
 }
 
 void Sandbox2D::OnEvent(Event& event) {
-	m_CameraController.OnEvent(event);
+	m_CameraController.OnEvent(event, true); // ? on sandbox, there is no ui, so we do not care about any event blocking
 }
 
 void Sandbox2D::OnImGuiRender() {
@@ -47,7 +47,7 @@ void Sandbox2D::OnImGuiRender() {
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav;
 		window_flags |=  ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
 		window_flags |=  ImGuiWindowFlags_NoDecoration;
-		
+
 		ImGui::SetNextWindowBgAlpha(0.65f);
 		ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y), ImGuiCond_Appearing);
 		if (ImGui::Begin("Performance", nullptr, window_flags))
@@ -62,7 +62,7 @@ void Sandbox2D::OnImGuiRender() {
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav;
 		window_flags |=  ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
 		window_flags |=  ImGuiWindowFlags_NoDecoration;
-		
+
 		ImGui::SetNextWindowBgAlpha(0.65f);
 		ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowPos().x,ImGui::GetWindowPos().y + 70), ImGuiCond_Appearing);
 		if (ImGui::Begin("Rednerer2D Stats", nullptr, window_flags))

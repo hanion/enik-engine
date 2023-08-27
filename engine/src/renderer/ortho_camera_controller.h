@@ -12,7 +12,7 @@ public:
 	OrthographicCameraController(float aspect_ratio, bool rotation = false);
 
 	void OnUpdate(Timestep timestep);
-	void OnEvent(Event& e);
+	void OnEvent(Event& e, bool is_viewport_hovered);
 
 	void OnResize(float width, float height);
 
@@ -28,7 +28,7 @@ private:
 
 private:
 	float m_AspectRatio = 1.6f/0.9f;
-	float m_ZoomLevel = 1.0f;
+	float m_ZoomLevel = 10.0f;
 
 	OrthographicCamera m_Camera;
 

@@ -52,6 +52,7 @@ void ImGuiLayer::OnDetach() {
 
 void ImGuiLayer::OnEvent(Event& e) {
 	if (m_BlockEvents) {
+		return; // ? can not use shortcuts if we block events, so not blocking for now
 		ImGuiIO& io = ImGui::GetIO();
 		e.Handled |= e.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
 		e.Handled |= e.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
