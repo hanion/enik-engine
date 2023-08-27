@@ -41,7 +41,9 @@ Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name) {
 }
 
 void Scene::DestroyEntity(const Entity& entity) {
-	m_Registry.destroy(entity);
+	if (m_Registry.valid(entity)) {
+		m_Registry.destroy(entity);
+	}
 }
 
 void Scene::OnUpdateEditor(Timestep ts, OrthographicCameraController& camera) {
