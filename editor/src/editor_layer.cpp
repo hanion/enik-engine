@@ -8,7 +8,7 @@
 #include "scene/scene_serializer.h"
 
 EditorLayer::EditorLayer()
-	: Layer("EditorLayer"), m_EditorCameraController(1280.0f / 600.0f) {
+	: Layer("EditorLayer"), m_EditorCameraController(0,1280,0,600) {
 }
 
 void EditorLayer::OnAttach() {
@@ -63,6 +63,8 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 
 	m_ToolbarPanel.OnUpdate();
 	m_FrameBuffer->Unbind();
+
+	m_EditorCameraController.OnUpdate(m_Timestep);
 }
 
 void EditorLayer::OnEvent(Event& event) {

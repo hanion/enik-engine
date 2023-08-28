@@ -11,47 +11,17 @@ OrthographicCameraController::OrthographicCameraController(float aspect_ratio, b
 	: m_AspectRatio(aspect_ratio), m_Camera(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel), m_Rotation(rotation) {
 }
 
+OrthographicCameraController::OrthographicCameraController(float left, float right, float bottom, float top, bool rotation)
+	: m_AspectRatio((right-left)/(bottom-top)), m_Camera(left, right, bottom, top), m_Rotation(rotation) {
+}
+
 void OrthographicCameraController::OnUpdate(Timestep timestep) {
 	EN_PROFILE_SCOPE;
 
-	float deltaTime = timestep.GetSeconds();
-
-	if (Input::IsKeyPressed(Key::A)) {
-		m_CameraPosition -= glm::vec3(1, 0, 0) * m_CameraMoveSpeed * deltaTime;
-		m_Camera.SetPosition(m_CameraPosition);
-	}
-	else if (Input::IsKeyPressed(Key::D)) {
-		m_CameraPosition += glm::vec3(1, 0, 0) * m_CameraMoveSpeed * deltaTime;
-		m_Camera.SetPosition(m_CameraPosition);
-	}
-
-	if (Input::IsKeyPressed(Key::W)) {
-		m_CameraPosition += glm::vec3(0, 1, 0) * m_CameraMoveSpeed * deltaTime;
-		m_Camera.SetPosition(m_CameraPosition);
-	}
-	else if (Input::IsKeyPressed(Key::S)) {
-		m_CameraPosition -= glm::vec3(0, 1, 0) * m_CameraMoveSpeed * deltaTime;
-		m_Camera.SetPosition(m_CameraPosition);
-	}
-
-	if (m_Rotation) {
-		if (Input::IsKeyPressed(Key::Q)) {
-			m_CameraRotation += glm::vec3(0, 0, 1) * m_CameraRotationSpeed * deltaTime;
-			m_Camera.SetRotation(m_CameraRotation);
-		}
-		else if (Input::IsKeyPressed(Key::E)) {
-			m_CameraRotation -= glm::vec3(0, 0, 1) * m_CameraRotationSpeed * deltaTime;
-			m_Camera.SetRotation(m_CameraRotation);
-		}
-	}
+	Moving();
 }
 void OrthographicCameraController::OnEvent(Event& e, bool is_viewport_hovered) {
-	if (not is_viewport_hovered) {
-		m_IsMoving = false;
-		m_StartedMoving = false;
-		return;
-	}
-
+	m_ViewportHovered = is_viewport_hovered;
 	EventDispatcher dispatcher = EventDispatcher(e);
 	dispatcher.Dispatch<MouseScrolledEvent>(EN_BIND_EVENT_FN(OrthographicCameraController::OnMouseScrolled));
 	dispatcher.Dispatch<WindowResizeEvent> (EN_BIND_EVENT_FN(OrthographicCameraController::OnWindowResized));
@@ -69,7 +39,7 @@ void OrthographicCameraController::OnResize(float width, float height) {
 
 bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e) {
 	m_ZoomLevel -= e.GetYOffset() * 0.1f;
-	m_ZoomLevel = glm::clamp(m_ZoomLevel, 0.05f, 10.0f);
+	m_ZoomLevel = glm::clamp(m_ZoomLevel, 0.05f, 100.0f);
 
 	m_Camera.SetProjection(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 
@@ -83,32 +53,44 @@ bool OrthographicCameraController::OnWindowResized(WindowResizeEvent& e) {
 
 bool OrthographicCameraController::OnMouseButtonPressed(MouseButtonPressedEvent& e) {
 	if (e.GetMouseButton() == 1) {
-		m_IsMoving = true;
+		m_StartMoving = true;
+		m_Moving = true;
+		e.Handled = true;
 	}
 	return false;
 }
 
 bool OrthographicCameraController::OnMouseButtonReleased(MouseButtonReleasedEvent& e) {
 	if (e.GetMouseButton() == 1) {
-		m_IsMoving = false;
-		m_StartedMoving = false;
+		m_Moving = false;
+		m_StartMoving = false;
+		e.Handled = true;
 	}
 	return false;
 }
 
 bool OrthographicCameraController::OnMouseMoved(MouseMovedEvent& e) {
-	if (m_IsMoving && !m_StartedMoving) {
+	if (m_StartMoving) {
 		m_MouseStartPos = glm::vec2(e.GetX(), e.GetY());
-		m_StartedMoving = true;
+		m_StartMoving = false;
 	}
-	else if (m_IsMoving && m_StartedMoving) {
-		// this is arbitrary, switch to calculating camera with pixels
-		glm::vec3 diff = glm::vec3(m_MouseStartPos.x - e.GetX(), e.GetY() - m_MouseStartPos.y, 0.0f);
-		m_CameraPosition += diff / 170.0f * m_ZoomLevel;
-		m_Camera.SetPosition(m_CameraPosition);
-		m_StartedMoving = false;
+	return false;
+}
+void OrthographicCameraController::Moving() {
+	if (not m_Moving or m_StartMoving or not m_ViewportHovered) {
+		return;
 	}
 
-	return false;
+	auto [x, y] =Input::GetMousePosition();
+	glm::vec2 current_pos = glm::vec2(x, y);
+	glm::vec2 diff = current_pos - m_MouseStartPos;
+	m_MouseStartPos = current_pos;
+
+	diff *= m_ZoomLevel * 0.0035f;
+
+	m_CameraPosition.x -= diff.x;
+	m_CameraPosition.y += diff.y;
+	m_Camera.SetPosition(m_CameraPosition);
+
 }
 }

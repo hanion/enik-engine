@@ -10,6 +10,7 @@ namespace Enik {
 class OrthographicCameraController {
 public:
 	OrthographicCameraController(float aspect_ratio, bool rotation = false);
+	OrthographicCameraController(float left, float right, float bottom, float top, bool rotation = false);
 
 	void OnUpdate(Timestep timestep);
 	void OnEvent(Event& e, bool is_viewport_hovered);
@@ -19,12 +20,17 @@ public:
 	OrthographicCamera& GetCamera() { return m_Camera; }
 	const OrthographicCamera& GetCamera() const { return m_Camera; }
 
+	float GetZoomLevel  () const { return m_ZoomLevel; }
+	float GetAspectRatio() const { return m_AspectRatio; }
+
 private:
 	bool OnMouseScrolled(MouseScrolledEvent& e);
 	bool OnWindowResized(WindowResizeEvent& e);
 	bool OnMouseButtonPressed (MouseButtonPressedEvent& e);
 	bool OnMouseButtonReleased(MouseButtonReleasedEvent& e);
 	bool OnMouseMoved(MouseMovedEvent& e);
+
+	void Moving();
 
 private:
 	float m_AspectRatio = 1.6f/0.9f;
@@ -39,8 +45,10 @@ private:
 	float m_CameraMoveSpeed = 1.0f;
 	float m_CameraRotationSpeed = 50.0f;
 
-	bool m_IsMoving = false;
-	bool m_StartedMoving = false;
+	bool m_ViewportHovered = false;
+
+	bool m_Moving = false;
+	bool m_StartMoving = false;
 	glm::vec2 m_MouseStartPos;
 
 };
