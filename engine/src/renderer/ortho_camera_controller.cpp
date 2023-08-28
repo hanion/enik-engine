@@ -38,6 +38,10 @@ void OrthographicCameraController::OnResize(float width, float height) {
 }
 
 bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e) {
+	if (not m_ViewportHovered) {
+		return false;
+	}
+
 	m_ZoomLevel -= e.GetYOffset() * 0.1f;
 	m_ZoomLevel = glm::clamp(m_ZoomLevel, 0.05f, 100.0f);
 
