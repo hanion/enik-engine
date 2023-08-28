@@ -114,19 +114,30 @@ void EditorLayer::OnImGuiRender() {
 				}
 
 				if (ImGui::MenuItem("Open File")) {
-					DialogFile::OpenDialog(DialogType::OPEN_FILE);
+					DialogFile::OpenDialog(DialogType::OPEN_FILE,
+						[&](){
+							LoadScene(DialogFile::GetSelectedPath());
+						});
 				}
 
 				if (ImGui::MenuItem("Save")) {
 					if (m_ActiveScenePath.empty()) {
-						DialogFile::OpenDialog(DialogType::SAVE_FILE);
+						DialogFile::OpenDialog(DialogType::SAVE_FILE,
+							[&](){
+								m_ActiveScenePath = DialogFile::GetSelectedPath();
+								SaveScene();
+							});
 					}
 					else {
 						SaveScene();
 					}
 				}
 				if (ImGui::MenuItem("Save As")) {
-					DialogFile::OpenDialog(DialogType::SAVE_FILE);
+					DialogFile::OpenDialog(DialogType::SAVE_FILE,
+						[&](){
+							m_ActiveScenePath = DialogFile::GetSelectedPath();
+							SaveScene();
+						});
 				}
 
 				if (ImGui::MenuItem("Exit")) {
@@ -150,15 +161,7 @@ void EditorLayer::OnImGuiRender() {
 		ImGui::End();
 	}
 
-	DialogFileResult result = DialogFile::Show();
-	if (result == DialogFileResult::ACCEPT_SAVE) {
-		m_ActiveScenePath = DialogFile::GetSelectedPath();
-		SaveScene();
-	}
-	else if (result == DialogFileResult::ACCEPT_OPEN) {
-		LoadScene(DialogFile::GetSelectedPath());
-	}
-
+	DialogFile::Show();
 	DialogConfirm::Show();
 }
 
@@ -303,7 +306,11 @@ void EditorLayer::SaveScene() {
 	if (m_SceneState == SceneState::Edit) {
 		// ? has no path, need to select
 		if (m_ActiveScenePath.empty()) {
-			DialogFile::OpenDialog(DialogType::SAVE_FILE);
+			DialogFile::OpenDialog(DialogType::SAVE_FILE,
+				[&](){
+					m_ActiveScenePath = DialogFile::GetSelectedPath();
+					SaveScene();
+				});
 			return;
 		}
 
@@ -329,13 +336,20 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 
 		case Key::O:
 			if (control) {
-				DialogFile::OpenDialog(DialogType::OPEN_FILE);
+				DialogFile::OpenDialog(DialogType::OPEN_FILE,
+					[&](){
+						LoadScene(DialogFile::GetSelectedPath());
+					});
 			}
 			break;
 
 		case Key::S:
 			if (control and shift) {
-				DialogFile::OpenDialog(DialogType::SAVE_FILE);
+				DialogFile::OpenDialog(DialogType::SAVE_FILE,
+					[&](){
+						m_ActiveScenePath = DialogFile::GetSelectedPath();
+						SaveScene();
+					});
 			}
 			else if (control) {
 				SaveScene();

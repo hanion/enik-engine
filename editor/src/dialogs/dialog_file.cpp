@@ -8,10 +8,11 @@ namespace Enik {
 
 static DialogFileData s_Data;
 
-void DialogFile::OpenDialog(DialogType type, const std::string& ext) {
+void DialogFile::OpenDialog(DialogType type, const std::function<void()>& call_when_confirmed, const std::string& ext) {
 	s_Data.type = type;
 	s_Data.ext = ext;
 	s_Data.is_open = true;
+	s_Data.call_function = call_when_confirmed;
 }
 
 const std::filesystem::path& DialogFile::GetSelectedPath() {
@@ -139,9 +140,11 @@ DialogFileResult DialogFile::ShowPopup() {
 		ImGui::EndDisabled();
 
 		if (s_Data.type == DialogType::SAVE_FILE) {
+			s_Data.call_function();
 			return DialogFileResult::ACCEPT_SAVE;
 		}
 		else {
+			s_Data.call_function();
 			return DialogFileResult::ACCEPT_OPEN;
 		}
 	}

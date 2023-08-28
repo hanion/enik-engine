@@ -13,15 +13,16 @@ enum DialogType {
 struct DialogFileData {
 	bool has_searched = false;
 
-	// fs::path current_directory = fs::current_path();
 	fs::path current_directory = fs::canonical("../../");
-	std::filesystem::path selected_path;
+	fs::path selected_path;
 
 	std::vector<fs::directory_entry> entries;
 
 	bool is_open = false;
 	DialogType type = DialogType::OPEN_FILE;
 	std::string ext = ".escn";
+
+	std::function<void()> call_function;
 };
 
 enum DialogFileResult {
@@ -33,7 +34,7 @@ enum DialogFileResult {
 
 class DialogFile {
 public:
-	static void OpenDialog(DialogType type, const std::string& ext = ".escn");
+	static void OpenDialog(DialogType type, const std::function<void()>& call_when_confirmed, const std::string& ext = ".escn");
 
 	static DialogFileResult Show();
 
