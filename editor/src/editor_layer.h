@@ -5,6 +5,7 @@
 #include "panels/file_system.h"
 #include "panels/inspector.h"
 #include "panels/scene_tree.h"
+#include "panels/toolbar.h"
 #include "renderer/ortho_camera_controller.h"
 #include "renderer/texture.h"
 
@@ -34,9 +35,8 @@ private:
 	bool OnMouseButtonReleased(MouseButtonReleasedEvent &event);
 	bool OnMouseButtonPressed (MouseButtonPressedEvent  &event);
 
-	void HandlePickEntityWithMouse();
 
-	void ShowToolbar();
+	void ShowToolbarPlayPause();
 	void OnScenePlay();
 	void OnSceneStop();
 
@@ -58,7 +58,7 @@ private:
 	bool m_PickEntityWithMouse = false;
 
 	bool m_ShowRendererStats = false;
-	bool m_ShowPerformance   = true;
+	bool m_ShowPerformance   = false;
 
 	Entity m_Tile;
 	Entity m_CameraEntity;
@@ -70,6 +70,7 @@ private:
 	SceneTreePanel m_SceneTreePanel;
 	InspectorPanel m_InspectorPanel;
 	FileSystemPanel m_FileSystemPanel;
+	ToolbarPanel m_ToolbarPanel;
 
 	std::filesystem::path m_ActiveScenePath = std::filesystem::canonical(".");
 

@@ -23,6 +23,7 @@ void EditorLayer::OnAttach() {
 
 	CreateNewScene();
 
+	m_ToolbarPanel.InitValues(m_FrameBuffer, m_EditorCameraController, m_ViewportHovered);
 	SetPanelsContext();
 }
 
@@ -53,20 +54,20 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 	switch (m_SceneState) {
 		case SceneState::Edit:
 			m_ActiveScene->OnUpdateEditor(m_Timestep, m_EditorCameraController);
-			if (m_ViewportHovered and m_ViewportFocused) {
-				HandlePickEntityWithMouse();
-			}
 			break;
 		case SceneState::Play:
 			m_ActiveScene->OnUpdateRuntime(m_Timestep);
 			break;
 	}
 
+
+	m_ToolbarPanel.OnUpdate();
 	m_FrameBuffer->Unbind();
 }
 
 void EditorLayer::OnEvent(Event& event) {
 	m_EditorCameraController.OnEvent(event, m_ViewportHovered);
+	m_ToolbarPanel.OnEvent(event);
 
 	EventDispatcher dispatcher = EventDispatcher(event);
 	dispatcher.Dispatch<KeyPressedEvent>(std::bind(&EditorLayer::OnKeyPressed, this, std::placeholders::_1));
@@ -161,6 +162,7 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 	m_SceneTreePanel.OnImGuiRender();
 	m_InspectorPanel.OnImGuiRender();
 	m_FileSystemPanel.OnImGuiRender();
+	m_ToolbarPanel.OnImGuiRender(m_ViewportBounds[0], m_ViewportBounds[1]);
 
 	/*Viewport*/ {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
@@ -262,7 +264,7 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 		ImGui::End();
 	}
 
-	ShowToolbar();
+	ShowToolbarPlayPause();
 }
 
 void EditorLayer::CreateNewScene() {
@@ -365,38 +367,9 @@ bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& event) {
 	return false;
 }
 
-void EditorLayer::HandlePickEntityWithMouse() {
-	if (not m_PickEntityWithMouse) {
-		return;
-	}
 
-	EN_PROFILE_SCOPE;
-
-	ImVec2 mouse_pos = ImGui::GetMousePos();
-	mouse_pos.x -= m_ViewportBounds[0].x;
-	mouse_pos.y -= m_ViewportBounds[0].y;
-
-	glm::vec2 viewport_size = m_ViewportBounds[1] - m_ViewportBounds[0];
-
-	mouse_pos.y = viewport_size.y - mouse_pos.y;
-
-	int mouse_x = (int)mouse_pos.x;
-	int mouse_y = (int)mouse_pos.y;
-
-	if (mouse_x >= 0 and mouse_y >= 0 and mouse_x < (int)viewport_size.x and mouse_y < (int)viewport_size.y) {
-		int pixel_data = m_FrameBuffer->ReadPixel(1, mouse_x, mouse_y);
-		if (pixel_data == -1) {
-			m_SceneTreePanel.SetSelectedEntity(Entity());
-		}
-		else {
-			m_SceneTreePanel.SetSelectedEntity(Entity((entt::entity)pixel_data, m_ActiveScene.get()));
-		}
-	}
-
-	m_PickEntityWithMouse = false;
-}
-
-void EditorLayer::ShowToolbar() {
+// ? play pause stop buttons
+void EditorLayer::ShowToolbarPlayPause() {
 	static const float toolbar_min_size = 32.0f;
 	static const float padding = 4.0f;
 	static float toolbar_window_width = 0.0f;
@@ -417,7 +390,7 @@ void EditorLayer::ShowToolbar() {
 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_AlwaysAutoResize;
 	flags |= ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDecoration;
 
-	if (not ImGui::Begin("##Toolbar", nullptr, flags)) {
+	if (not ImGui::Begin("##ToolbarPlayPause", nullptr, flags)) {
 		ImGui::End();
 		ImGui::PopStyleVar(4);
 		ImGui::PopStyleColor(3);
@@ -468,4 +441,5 @@ void EditorLayer::SetPanelsContext() {
 	m_SceneTreePanel.SetContext(m_ActiveScene);
 	m_InspectorPanel.SetContext(m_ActiveScene, &m_SceneTreePanel);
 	m_FileSystemPanel.SetContext(m_ActiveScene);
+	m_ToolbarPanel.SetContext(m_ActiveScene, &m_SceneTreePanel);
 }
