@@ -2,6 +2,7 @@
 #include <Enik.h>
 
 #include "dialogs/dialog_file.h"
+#include "dialogs/dialog_confirm.h"
 #include "panels/file_system.h"
 #include "panels/inspector.h"
 #include "panels/scene_tree.h"

@@ -7,6 +7,9 @@
 #include "renderer/opengl/opengl_shader.h"
 #include "scene/scene_serializer.h"
 
+
+#define EDITOR_BIND_FUNC(fn) std::bind(&EditorLayer::fn, this)
+
 EditorLayer::EditorLayer()
 	: Layer("EditorLayer"), m_EditorCameraController(0,1280,0,600) {
 }
@@ -107,8 +110,7 @@ void EditorLayer::OnImGuiRender() {
 		if (ImGui::BeginMenuBar()) {
 			if (ImGui::BeginMenu("File")) {
 				if (ImGui::MenuItem("New")) {
-					// TODO: prompt dialog confirm
-					CreateNewScene();
+					DialogConfirm::OpenDialog("Create New Scene ?", EDITOR_BIND_FUNC(CreateNewScene));
 				}
 
 				if (ImGui::MenuItem("Open File")) {
@@ -156,6 +158,8 @@ void EditorLayer::OnImGuiRender() {
 	else if (result == DialogFileResult::ACCEPT_OPEN) {
 		LoadScene(DialogFile::GetSelectedPath());
 	}
+
+	DialogConfirm::Show();
 }
 
 void EditorLayer::OnImGuiDockSpaceRender() {
@@ -319,7 +323,7 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 	switch (event.GetKeyCode()) {
 		case Key::N:
 			if (control) {
-				CreateNewScene();
+				DialogConfirm::OpenDialog("Create New Scene ?", EDITOR_BIND_FUNC(CreateNewScene));
 			}
 			break;
 
@@ -420,6 +424,11 @@ void EditorLayer::ShowToolbarPlayPause() {
 
 void EditorLayer::OnScenePlay() {
 	SaveScene();
+
+	if (m_ActiveScenePath.empty()) {
+		return;
+	}
+
 	m_SceneState = SceneState::Play;
 
 	/* Copy Current Editor Scene */ {
