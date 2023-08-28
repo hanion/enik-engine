@@ -99,7 +99,7 @@ SceneSerializer::SceneSerializer(const Ref<Scene>& scene)
 }
 
 void SceneSerializer::Serialize(const std::string& filepath) {
-	EN_CORE_TRACE("Serializing scene   '{0}'", m_Scene->GetName());
+	EN_CORE_INFO("Serializing scene   '{0}', in '{1}'", m_Scene->GetName(), filepath);
 	YAML::Emitter out;
 	out << YAML::BeginMap;
 
@@ -135,7 +135,7 @@ bool SceneSerializer::Deserialize(const std::string& filepath) {
 
 	std::string scene_name = data["Scene"].as<std::string>();
 	m_Scene->SetName(scene_name);
-	EN_CORE_TRACE("Deserializing scene '{0}'", scene_name);
+	EN_CORE_INFO("Deserializing scene '{0}', in '{1}'", scene_name, filepath);
 
 
 	auto entities = data["Entities"];
