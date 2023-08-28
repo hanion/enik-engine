@@ -96,6 +96,7 @@ namespace Enik {
 
 SceneSerializer::SceneSerializer(const Ref<Scene>& scene)
 	: m_Scene(scene) {
+	m_ErrorTexture = Texture2D::Create(FULL_PATH_EDITOR("assets/textures/error.png"), false);
 }
 
 void SceneSerializer::Serialize(const std::string& filepath) {
@@ -244,6 +245,7 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		auto& sprite = entity.Get<Component::SpriteRenderer>();
 		out << YAML::Key << "Color" << YAML::Value << sprite.Color;
 		out << YAML::Key << "TileScale" << YAML::Value << sprite.TileScale;
+		out << YAML::Key << "TexturePath" << YAML::Value << sprite.TexturePath.string(); // TODO asset manager
 
 		out << YAML::EndMap;
 	}
@@ -267,6 +269,22 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 		auto& sprite = deserializedEntity.Add<Component::SpriteRenderer>();
 		sprite.Color = spriteRenderer["Color"].as<glm::vec4>();
 		sprite.TileScale = spriteRenderer["TileScale"].as<float>();
+
+		auto path = std::filesystem::path(spriteRenderer["TexturePath"].as<std::string>());
+		if (not path.empty()) {
+			sprite.TexturePath = path;
+		}
+
+		if (not sprite.TexturePath.empty()) {
+			// TODO do not deal with paths like this ...
+			if (std::filesystem::exists(FULL_PATH_EDITOR(sprite.TexturePath))) {
+				sprite.Texture = Texture2D::Create(FULL_PATH_EDITOR(sprite.TexturePath));
+			}
+			else {
+				sprite.Texture = m_ErrorTexture;
+			}
+		}
+
 	}
 
 	auto camera = entity["Component::Camera"];

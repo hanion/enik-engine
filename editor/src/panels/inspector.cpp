@@ -4,7 +4,7 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include "scene/components.h"
+#include "../dialogs/dialog_file.h"
 
 namespace Enik {
 
@@ -112,69 +112,13 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		ImGuiUtils::PrefixLabel("Tile Scale");
 		ImGui::DragFloat("##Tile Scale", &sprite.TileScale, 0.01f);
 
-		/* Texture */ {
-			ImGuiUtils::PrefixLabel("Texture");
-			// ImVec4 tint_col = ImGui::GetStyleColorVec4(ImGuiCol_Text);
-			ImVec4 tint_col = ImVec4(sprite.Color.r, sprite.Color.g, sprite.Color.b, sprite.Color.a);
-			ImVec4 border_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
-			ImVec2 avail = ImGui::GetContentRegionAvail();
-
-			// to not crash in line 245, at ImGui::TreePop();
-			if (avail.x < 0 or avail.y < -10.0f) {
-				ImGui::Button("##TooSmallToShowTexture");
-				return;
-			}
-
-			avail.y = (avail.y < 128) ? avail.y : 128;
-			avail.x -= GImGui->Style.FramePadding.x;
-
-			ImTextureID tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(0));
-			ImVec2 tex_size = ImVec2(0, 0);
-
-			if (sprite.Texture) {
-				tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(sprite.Texture->GetRendererID()));
-				tex_size = ImVec2(sprite.Texture->GetWidth(), sprite.Texture->GetHeight());
-			}
-			else if (sprite.SubTexture) {
-				tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(sprite.SubTexture->GetTexture()->GetRendererID()));
-				tex_size = ImVec2(sprite.SubTexture->GetTexture()->GetWidth(), sprite.SubTexture->GetTexture()->GetHeight());
-			}
-
-			if (tex_size.x > avail.x) {
-				tex_size.y = tex_size.y - ((tex_size.x - avail.x) * (tex_size.y / tex_size.x));
-				tex_size.x = avail.x;
-			}
-			if (tex_size.y > avail.y) {
-				tex_size.x = tex_size.x - ((tex_size.y - avail.y) * (tex_size.x / tex_size.y));
-				tex_size.y = avail.y;
-			}
-
-			tex_size = ImVec2(glm::max(32.0f, tex_size.x), glm::max(32.0f, tex_size.y));
-			ImVec2 childSize = ImVec2(tex_size.x + GImGui->Style.FramePadding.x, tex_size.y + GImGui->Style.FramePadding.y);
-			if (ImGui::BeginChild("TextureChild", childSize, false, ImGuiWindowFlags_NoScrollbar)) {
-				ImGui::Image(tex_id, tex_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), tint_col, border_col);
-
-				/* Drag drop target */ {
-					if (ImGui::BeginDragDropTarget()) {
-						if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_FILE_PATH")) {
-							std::filesystem::path path = std::filesystem::path(static_cast<const char*>(payload->Data));
-							if (std::filesystem::exists(path) and path.extension() == ".png") {
-								sprite.Texture = Texture2D::Create(path);
-							}
-						}
-						ImGui::EndDragDropTarget();
-					}
-				}
-				ImGui::EndChild();
-			}
-		}
+		DisplaySpriteTexture(sprite);
 	});
 
 	DisplayComponentInInspector<Component::NativeScript>("Native Script", entity, true, [&]() {
 		ImGui::TextColored(ImVec4(0.4f, 0.7f, 0.2f, 1.0f), "Has Script");
 	});
 }
-
 
 template <typename T>
 void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity& entity, const bool can_delete, const std::function<void()>& lambda) {
@@ -232,4 +176,98 @@ void InspectorPanel::DisplayComponentInPopup(const std::string& name) {
 
 	ImGui::EndDisabled();
 }
+
+
+
+
+
+void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
+	std::function<void()> BeDragDropTargetTexture = [&]() {
+		if (ImGui::BeginDragDropTarget()) {
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_FILE_PATH")) {
+				std::filesystem::path path = std::filesystem::path(static_cast<const char*>(payload->Data));
+				if (std::filesystem::exists(path) and path.extension() == ".png") {
+					sprite.Texture = Texture2D::Create(path);
+					auto relative = std::filesystem::relative(path,std::filesystem::canonical(FULL_PATH_EDITOR("")));
+					sprite.TexturePath = relative;
+				}
+			}
+			ImGui::EndDragDropTarget();
+		}
+    };
+
+	ImGuiUtils::PrefixLabel("Texture");
+
+	if (sprite.TexturePath.empty()) {
+		if (ImGui::Button("Add Texture")) {
+			DialogFile::OpenDialog(DialogType::OPEN_FILE,
+				[&](){
+					auto relative = std::filesystem::relative(DialogFile::GetSelectedPath(),std::filesystem::canonical(FULL_PATH_EDITOR("")));
+					sprite.TexturePath = relative;
+					sprite.Texture = Texture2D::Create(DialogFile::GetSelectedPath());
+				}, ".png");
+		}
+		BeDragDropTargetTexture();
+		return;
+	}
+
+	ImVec4 tint_col = ImVec4(sprite.Color.r, sprite.Color.g, sprite.Color.b, sprite.Color.a);
+	ImVec4 border_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
+	ImVec2 avail = ImGui::GetContentRegionAvail();
+
+	// ! to not crash at ImGui::TreePop();
+	if (avail.x < 0 or avail.y < -10.0f) {
+		ImGui::Button("##TooSmallToShowTexture");
+		return;
+	}
+
+	avail.y = (avail.y < 128) ? avail.y : 128;
+	avail.x -= GImGui->Style.FramePadding.x;
+
+	ImTextureID tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(0));
+	ImVec2 tex_size = ImVec2(0, 0);
+
+	if (sprite.Texture) {
+		tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(sprite.Texture->GetRendererID()));
+		tex_size = ImVec2(sprite.Texture->GetWidth(), sprite.Texture->GetHeight());
+	}
+	else if (sprite.SubTexture) {
+		tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(sprite.SubTexture->GetTexture()->GetRendererID()));
+		tex_size = ImVec2(sprite.SubTexture->GetTexture()->GetWidth(), sprite.SubTexture->GetTexture()->GetHeight());
+	}
+
+	if (tex_size.x > avail.x) {
+		tex_size.y = tex_size.y - ((tex_size.x - avail.x) * (tex_size.y / tex_size.x));
+		tex_size.x = avail.x;
+	}
+	if (tex_size.y > avail.y) {
+		tex_size.x = tex_size.x - ((tex_size.y - avail.y) * (tex_size.x / tex_size.y));
+		tex_size.y = avail.y;
+	}
+
+	tex_size = ImVec2(glm::max(32.0f, tex_size.x), glm::max(32.0f, tex_size.y));
+	ImVec2 childSize = ImVec2(tex_size.x + GImGui->Style.FramePadding.x, tex_size.y + GImGui->Style.FramePadding.y);
+	if (ImGui::BeginChild("TextureChild", childSize, false, ImGuiWindowFlags_NoScrollbar)) {
+		ImGui::Image(tex_id, tex_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), tint_col, border_col);
+
+		if (ImGui::IsItemHovered() and not sprite.TexturePath.empty()) {
+			ImGui::SetTooltip("%s", sprite.TexturePath.c_str());
+		}
+
+		if (ImGui::IsMouseDown(1) && ImGui::IsWindowHovered()) {
+			ImGui::OpenPopup("popup_remove_texture");
+		}
+		if (ImGui::BeginPopup("popup_remove_texture")) {
+			if (ImGui::MenuItem("Remove Texture")) {
+				sprite.TexturePath.clear();
+				sprite.Texture = nullptr;
+			}
+			ImGui::EndPopup();
+		}
+
+		BeDragDropTargetTexture();
+		ImGui::EndChild();
+	}
+}
+
 }

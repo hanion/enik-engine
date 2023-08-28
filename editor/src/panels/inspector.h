@@ -4,6 +4,7 @@
 #include "scene/entity.h"
 #include "scene/scene.h"
 #include "scene_tree.h"
+#include "scene/components.h"
 
 namespace Enik {
 
@@ -26,6 +27,8 @@ private:
 
 	template <typename T>
 	void DisplayComponentInPopup(const std::string& name);
+
+	void DisplaySpriteTexture(Component::SpriteRenderer& sprite);
 
 private:
 	Ref<Scene> m_Context;

@@ -3,6 +3,7 @@
 #include <yaml-cpp/yaml.h>
 
 #include "scene/scene.h"
+#include "renderer/texture.h"
 
 namespace Enik {
 
@@ -24,6 +25,8 @@ private:
 
 private:
 	Ref<Scene> m_Scene;
+
+	Ref<Texture2D> m_ErrorTexture;
 };
 
 }

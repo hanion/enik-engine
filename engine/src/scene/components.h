@@ -5,6 +5,7 @@
 #include "scene/scriptable_entity.h"
 #include "core/uuid.h"
 
+#include <filesystem>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -58,6 +59,9 @@ struct SpriteRenderer {
 	Ref<Texture2D> Texture = nullptr;
 	Ref<SubTexture2D> SubTexture = nullptr;
 	float TileScale = 1.0f;
+
+	// ? relative path
+	std::filesystem::path TexturePath;
 
 	SpriteRenderer() = default;
 	SpriteRenderer(const SpriteRenderer&) = default;
