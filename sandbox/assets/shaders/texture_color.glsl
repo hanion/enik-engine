@@ -42,28 +42,31 @@ in flat int v_EntityID;
 uniform sampler2D u_Textures[16];
 
 void main() {
-	vec4 l_Texture;
-	int l_TexIndex = int(v_TexIndex);
+	vec4 texture_color = v_Color;
 
-	switch (l_TexIndex) {
-		case 0:  l_Texture = texture(u_Textures[0],  v_TexCoord * v_TileScale); break;
-		case 1:  l_Texture = texture(u_Textures[1],  v_TexCoord * v_TileScale); break;
-		case 2:  l_Texture = texture(u_Textures[2],  v_TexCoord * v_TileScale); break;
-		case 3:  l_Texture = texture(u_Textures[3],  v_TexCoord * v_TileScale); break;
-		case 4:  l_Texture = texture(u_Textures[4],  v_TexCoord * v_TileScale); break;
-		case 5:  l_Texture = texture(u_Textures[5],  v_TexCoord * v_TileScale); break;
-		case 6:  l_Texture = texture(u_Textures[6],  v_TexCoord * v_TileScale); break;
-		case 7:  l_Texture = texture(u_Textures[7],  v_TexCoord * v_TileScale); break;
-		case 8:  l_Texture = texture(u_Textures[8],  v_TexCoord * v_TileScale); break;
-		case 9:  l_Texture = texture(u_Textures[9],  v_TexCoord * v_TileScale); break;
-		case 10: l_Texture = texture(u_Textures[10], v_TexCoord * v_TileScale); break;
-		case 11: l_Texture = texture(u_Textures[11], v_TexCoord * v_TileScale); break;
-		case 12: l_Texture = texture(u_Textures[12], v_TexCoord * v_TileScale); break;
-		case 13: l_Texture = texture(u_Textures[13], v_TexCoord * v_TileScale); break;
-		case 14: l_Texture = texture(u_Textures[14], v_TexCoord * v_TileScale); break;
-		case 15: l_Texture = texture(u_Textures[15], v_TexCoord * v_TileScale); break;
+	switch (int(v_TexIndex)) {
+		case 0:  texture_color *= texture(u_Textures[0],  v_TexCoord * v_TileScale); break;
+		case 1:  texture_color *= texture(u_Textures[1],  v_TexCoord * v_TileScale); break;
+		case 2:  texture_color *= texture(u_Textures[2],  v_TexCoord * v_TileScale); break;
+		case 3:  texture_color *= texture(u_Textures[3],  v_TexCoord * v_TileScale); break;
+		case 4:  texture_color *= texture(u_Textures[4],  v_TexCoord * v_TileScale); break;
+		case 5:  texture_color *= texture(u_Textures[5],  v_TexCoord * v_TileScale); break;
+		case 6:  texture_color *= texture(u_Textures[6],  v_TexCoord * v_TileScale); break;
+		case 7:  texture_color *= texture(u_Textures[7],  v_TexCoord * v_TileScale); break;
+		case 8:  texture_color *= texture(u_Textures[8],  v_TexCoord * v_TileScale); break;
+		case 9:  texture_color *= texture(u_Textures[9],  v_TexCoord * v_TileScale); break;
+		case 10: texture_color *= texture(u_Textures[10], v_TexCoord * v_TileScale); break;
+		case 11: texture_color *= texture(u_Textures[11], v_TexCoord * v_TileScale); break;
+		case 12: texture_color *= texture(u_Textures[12], v_TexCoord * v_TileScale); break;
+		case 13: texture_color *= texture(u_Textures[13], v_TexCoord * v_TileScale); break;
+		case 14: texture_color *= texture(u_Textures[14], v_TexCoord * v_TileScale); break;
+		case 15: texture_color *= texture(u_Textures[15], v_TexCoord * v_TileScale); break;
 	}
 
-	color = l_Texture * v_Color;
+	if (texture_color.a == 0.0) {
+		discard;
+	}
+
+	color = texture_color;
 	entityID = v_EntityID;
 }
