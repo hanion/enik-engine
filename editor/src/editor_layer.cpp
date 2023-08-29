@@ -71,7 +71,9 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 }
 
 void EditorLayer::OnEvent(Event& event) {
-	m_EditorCameraController.OnEvent(event, m_ViewportHovered);
+	if (m_SceneState == SceneState::Edit and m_ViewportHovered) {
+		m_EditorCameraController.OnEvent(event);
+	}
 	m_ToolbarPanel.OnEvent(event);
 
 	EventDispatcher dispatcher = EventDispatcher(event);

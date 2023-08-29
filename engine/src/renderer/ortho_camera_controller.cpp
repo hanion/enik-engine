@@ -20,8 +20,7 @@ void OrthographicCameraController::OnUpdate(Timestep timestep) {
 
 	Moving();
 }
-void OrthographicCameraController::OnEvent(Event& e, bool is_viewport_hovered) {
-	m_ViewportHovered = is_viewport_hovered;
+void OrthographicCameraController::OnEvent(Event& e) {
 	EventDispatcher dispatcher = EventDispatcher(e);
 	dispatcher.Dispatch<MouseScrolledEvent>(EN_BIND_EVENT_FN(OrthographicCameraController::OnMouseScrolled));
 	dispatcher.Dispatch<WindowResizeEvent> (EN_BIND_EVENT_FN(OrthographicCameraController::OnWindowResized));
@@ -38,10 +37,6 @@ void OrthographicCameraController::OnResize(float width, float height) {
 }
 
 bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e) {
-	if (not m_ViewportHovered) {
-		return false;
-	}
-
 	m_ZoomLevel -= e.GetYOffset() * 0.1f;
 	m_ZoomLevel = glm::clamp(m_ZoomLevel, 0.05f, 100.0f);
 
@@ -81,7 +76,7 @@ bool OrthographicCameraController::OnMouseMoved(MouseMovedEvent& e) {
 	return false;
 }
 void OrthographicCameraController::Moving() {
-	if (not m_Moving or m_StartMoving or not m_ViewportHovered) {
+	if (not m_Moving or m_StartMoving) {
 		return;
 	}
 

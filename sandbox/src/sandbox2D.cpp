@@ -39,7 +39,7 @@ void Sandbox2D::OnUpdate(Timestep timestep) {
 }
 
 void Sandbox2D::OnEvent(Event& event) {
-	m_CameraController.OnEvent(event, true); // ? on sandbox, there is no ui, so we do not care about any event blocking
+	m_CameraController.OnEvent(event); // ? on sandbox, there is no ui, so we do not care about any event blocking
 }
 
 void Sandbox2D::OnImGuiRender() {
