@@ -129,7 +129,15 @@ void SceneSerializer::SerializeRuntime(const std::string& filepath) {
 }
 
 bool SceneSerializer::Deserialize(const std::string& filepath) {
-	YAML::Node data = YAML::LoadFile(filepath);
+	YAML::Node data;
+	try {
+		data = YAML::LoadFile(filepath);
+	}
+	catch (const YAML::ParserException& e) {
+		EN_CORE_ERROR("Failed to load .escn file '{0}'\n	{1}", filepath, e.what());
+		return false;
+	}
+
 	if (not data["Scene"]) {
 		return false;
 	}
