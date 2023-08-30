@@ -15,8 +15,24 @@ void SceneTreePanel::SetContext(const Ref<Scene>& context) {
 	m_SelectionContext = {};
 }
 
+UUID SceneTreePanel::GetSelectedEntityUUID() {
+	if (m_SelectionContext and m_SelectionContext.Has<Component::ID>()) {
+		return m_SelectionContext.Get<Component::ID>().uuid;
+	}
+	return -1;
+}
+
 void SceneTreePanel::SetSelectedEntity(const Entity& entity) {
 	m_SelectionContext = entity;
+}
+
+void SceneTreePanel::SetSelectedEntityWithUUID(const UUID& uuid) {
+	m_Context->m_Registry.view<Component::ID>().each([=](auto entity, auto& id) {
+		if (id == uuid) {
+			SetSelectedEntity(Entity(entity, m_Context.get()));
+			return;
+		}
+	});
 }
 
 void SceneTreePanel::OnImGuiRender() {

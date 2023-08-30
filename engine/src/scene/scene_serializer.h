@@ -17,7 +17,7 @@ public:
 	bool Deserialize(const std::string& filepath);
 	bool DeserializeRuntime(const std::string& filepath);
 
-	void DuplicateEntity(const std::string& filepath, UUID uuid);
+	const UUID DuplicateEntity(const std::string& filepath, UUID uuid);
 
 private:
 	void SerializeEntity(YAML::Emitter& out, Entity& entity);

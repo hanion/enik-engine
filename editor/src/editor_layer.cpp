@@ -362,7 +362,10 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 			if (control) {
 				SaveScene();
 				SceneSerializer serializer = SceneSerializer(m_ActiveScene);
-				serializer.DuplicateEntity(m_ActiveScenePath, m_SceneTreePanel.GetSelectedEntity().Get<Component::ID>().uuid);
+
+				auto& id = serializer.DuplicateEntity(m_ActiveScenePath, m_SceneTreePanel.GetSelectedEntity().Get<Component::ID>().uuid);
+				m_SceneTreePanel.SetSelectedEntityWithUUID(id);
+
 			}
 			break;
 
@@ -445,6 +448,8 @@ void EditorLayer::OnScenePlay() {
 		return;
 	}
 
+	UUID current_selected_entity = m_SceneTreePanel.GetSelectedEntityUUID();
+
 	m_SceneState = SceneState::Play;
 
 	/* Copy Current Editor Scene */ {
@@ -456,12 +461,19 @@ void EditorLayer::OnScenePlay() {
 			SetPanelsContext();
 		}
 	}
+
+	m_SceneTreePanel.SetSelectedEntityWithUUID(current_selected_entity);
+
 }
 
 void EditorLayer::OnSceneStop() {
+	UUID current_selected_entity = m_SceneTreePanel.GetSelectedEntityUUID();
+
 	m_SceneState = SceneState::Edit;
 	m_ActiveScene = m_EditorScene;
 	SetPanelsContext();
+
+	m_SceneTreePanel.SetSelectedEntityWithUUID(current_selected_entity);
 }
 
 void EditorLayer::SetPanelsContext() {

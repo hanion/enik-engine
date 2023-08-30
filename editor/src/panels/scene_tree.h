@@ -19,7 +19,9 @@ public:
 	bool IsSelectedEntityValid() const { return m_Context->m_Registry.valid(m_SelectionContext); }
 
 	Entity GetSelectedEntity() const { return m_SelectionContext; }
+	UUID GetSelectedEntityUUID();
 	void SetSelectedEntity(const Entity& entity);
+	void SetSelectedEntityWithUUID(const UUID& uuid);
 
 	void OnImGuiRender();
 

@@ -173,10 +173,10 @@ bool SceneSerializer::DeserializeRuntime(const std::string& filepath) {
 	return false;
 }
 
-void SceneSerializer::DuplicateEntity(const std::string& filepath, UUID uuid) {
+const UUID SceneSerializer::DuplicateEntity(const std::string& filepath, UUID uuid) {
 	YAML::Node data = YAML::LoadFile(filepath);
 	if (not data["Scene"]) {
-		return;
+		return -1;
 	}
 
 	auto entities = data["Entities"];
@@ -192,12 +192,14 @@ void SceneSerializer::DuplicateEntity(const std::string& filepath, UUID uuid) {
 				}
 				name += " duplicate";
 
-				DeserializeEntity(entity, UUID(), name);
-				return;
+				auto new_id = UUID();
+				DeserializeEntity(entity, new_id, name);
+				return new_id;
 			}
 
 		}
 	}
+	return -1;
 }
 
 void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
