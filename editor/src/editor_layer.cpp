@@ -6,6 +6,7 @@
 
 #include "renderer/opengl/opengl_shader.h"
 #include "scene/scene_serializer.h"
+#include <imgui/imgui_internal.h>
 
 
 #define EDITOR_BIND_FUNC(fn) std::bind(&EditorLayer::fn, this)
@@ -276,7 +277,34 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 	}
 
 	ShowToolbarPlayPause();
+
+	InitDockSpace();
 }
+
+void EditorLayer::InitDockSpace() {
+	if (m_DockSpaceInitialized) {
+		return;
+	}
+
+	ImGuiID dockspace_id = ImGui::GetID("DockSpaceID");
+	ImGui::DockBuilderRemoveNode(dockspace_id); // Clear out existing layout
+	ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace); // Add empty node
+	ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->Size);
+
+	ImGuiID dock_id_main = dockspace_id;
+	ImGuiID dock_id_1 = ImGui::DockBuilderSplitNode(dock_id_main, ImGuiDir_Left,  0.42f, NULL, &dock_id_main);
+	ImGuiID dock_id_2 = ImGui::DockBuilderSplitNode(dock_id_1,    ImGuiDir_Right, 0.52f, NULL, &dock_id_1);
+	ImGuiID dock_id_3 = ImGui::DockBuilderSplitNode(dock_id_1,    ImGuiDir_Down,  0.45f, NULL, &dock_id_1);
+
+	ImGui::DockBuilderDockWindow("Viewport",    dock_id_main);
+	ImGui::DockBuilderDockWindow("Scene Tree",  dock_id_1);
+	ImGui::DockBuilderDockWindow("Inspector",   dock_id_2);
+	ImGui::DockBuilderDockWindow("File System", dock_id_3);
+	ImGui::DockBuilderFinish(dockspace_id);
+
+	m_DockSpaceInitialized = true;
+}
+
 
 void EditorLayer::CreateNewScene() {
 	m_EditorScene = CreateRef<Scene>();

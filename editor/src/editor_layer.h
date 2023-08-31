@@ -28,6 +28,8 @@ public:
 	void OnImGuiDockSpaceRender();
 
 private:
+	void InitDockSpace();
+
 	void CreateNewScene();
 	void LoadScene(const std::filesystem::path &path);
 	void SaveScene();
@@ -56,7 +58,7 @@ private:
 	glm::vec2 m_ViewportSize = glm::vec2(0);
 	glm::vec2 m_ViewportBounds[2];
 
-	bool m_PickEntityWithMouse = false;
+	bool m_DockSpaceInitialized = false;
 
 	bool m_ShowRendererStats = false;
 	bool m_ShowPerformance   = false;
