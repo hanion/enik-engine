@@ -392,8 +392,9 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 				SaveScene();
 				SceneSerializer serializer = SceneSerializer(m_ActiveScene);
 
-				auto& id = serializer.DuplicateEntity(m_ActiveScenePath, m_SceneTreePanel.GetSelectedEntity().Get<Component::ID>().uuid);
-				m_SceneTreePanel.SetSelectedEntityWithUUID(id);
+				auto& id = m_SceneTreePanel.GetSelectedEntity().Get<Component::ID>().uuid;
+				auto& new_id = serializer.DuplicateEntity(m_ActiveScenePath, id);
+				m_SceneTreePanel.SetSelectedEntityWithUUID(new_id);
 
 			}
 			break;
