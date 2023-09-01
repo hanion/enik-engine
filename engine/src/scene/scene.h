@@ -30,6 +30,8 @@ public:
 	bool IsPaused() const { return m_IsPaused; }
 	void SetPaused(bool is_paused) { m_IsPaused = is_paused; }
 
+	void Step(int frames = 1) { m_StepFrames = frames; }
+
 private:
 	entt::registry m_Registry;
 
@@ -39,6 +41,7 @@ private:
 	std::string m_SceneName = "untitled";
 
 	bool m_IsPaused = false;
+	int m_StepFrames = 0;
 
 	friend class Entity;
 	friend class SceneTreePanel;

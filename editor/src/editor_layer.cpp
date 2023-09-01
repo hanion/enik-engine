@@ -25,6 +25,7 @@ void EditorLayer::OnAttach() {
 	m_TexturePlay = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/play_button.png"));
 	m_TextureStop = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/stop_button.png"));
 	m_TexturePause = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/pause_button.png"));
+	m_TextureStep  = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/step_button.png"));
 
 	CreateNewScene();
 
@@ -454,6 +455,14 @@ void EditorLayer::ShowToolbarPlayPause() {
 	float size = ImGui::GetWindowHeight() - 4.0f;
 
 	if (m_SceneState == SceneState::Play) {
+		if (m_ActiveScene->IsPaused()) {
+			auto texture_id_step = reinterpret_cast<void*>(static_cast<uintptr_t>(m_TextureStep->GetRendererID()));
+			if (ImGui::ImageButton(texture_id_step, ImVec2(size, size), ImVec2(0, 1), ImVec2(1, 0), 0)) {
+				m_ActiveScene->Step();
+			}
+			ImGui::SameLine();
+		}
+
 		ImVec4 tint_color = ImVec4(1, 1, 1, 1);
 		if (m_ActiveScene->IsPaused()) {
 			tint_color = ImVec4(0.5f, 0.5f, 0.9f, 1.0f);
@@ -464,11 +473,6 @@ void EditorLayer::ShowToolbarPlayPause() {
 			OnScenePause(not m_ActiveScene->IsPaused());
 		}
 		ImGui::SameLine();
-
-		toolbar_window_width = size * 2 + padding;
-	}
-	else {
-		toolbar_window_width = size * 1 + padding;
 	}
 
 
@@ -481,6 +485,15 @@ void EditorLayer::ShowToolbarPlayPause() {
 		}
 		else if (m_SceneState == SceneState::Play) {
 			OnSceneStop();
+		}
+	}
+
+
+	toolbar_window_width = size + padding;
+	if (m_SceneState == SceneState::Play) {
+		toolbar_window_width += size;
+		if (m_ActiveScene->IsPaused()) {
+			toolbar_window_width += size;
 		}
 	}
 

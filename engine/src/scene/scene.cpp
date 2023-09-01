@@ -69,7 +69,7 @@ void Scene::OnUpdateEditor(Timestep ts, OrthographicCameraController& camera) {
 void Scene::OnUpdateRuntime(Timestep ts) {
 	EN_PROFILE_SECTION("Scene::OnUpdateRuntime");
 
-	if (not m_IsPaused) {
+	if (not m_IsPaused or m_StepFrames-- > 0) {
 		/* Update Scripts */ {
 			m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
 				if (!ns.Instance) {
