@@ -6,6 +6,7 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include "imgui_themes.h"
+#include <imgui/imgui_internal.h>
 
 namespace Enik {
 
@@ -86,4 +87,7 @@ void ImGuiLayer::End() {
 	}
 }
 
+uint32_t ImGuiLayer::GetActiveWidgetID() {
+	return GImGui->ActiveId;
+}
 }

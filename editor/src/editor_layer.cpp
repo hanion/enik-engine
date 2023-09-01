@@ -398,7 +398,9 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 			break;
 
 		case Key::Delete:
-			m_ActiveScene->DestroyEntity(m_SceneTreePanel.GetSelectedEntity());
+			if (Application::Get().GetImGuiLayer()->GetActiveWidgetID() == 0) {
+				m_ActiveScene->DestroyEntity(m_SceneTreePanel.GetSelectedEntity());
+			}
 			break;
 
 

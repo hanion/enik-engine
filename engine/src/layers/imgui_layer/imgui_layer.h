@@ -25,6 +25,8 @@ public:
 
 	void BlockEvents(bool block) { m_BlockEvents = block; }
 
+	uint32_t GetActiveWidgetID();
+
 private:
 	bool m_BlockEvents = true;
 };
