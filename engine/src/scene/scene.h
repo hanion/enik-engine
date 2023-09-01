@@ -27,6 +27,8 @@ public:
 	const std::string& GetName() const { return m_SceneName; }
 	const void SetName(const std::string& name) { m_SceneName = name; }
 
+	bool IsPaused() const { return m_IsPaused; }
+	void SetPaused(bool is_paused) { m_IsPaused = is_paused; }
 
 private:
 	entt::registry m_Registry;
@@ -35,6 +37,8 @@ private:
 	uint32_t m_ViewportHeight;
 
 	std::string m_SceneName = "untitled";
+
+	bool m_IsPaused = false;
 
 	friend class Entity;
 	friend class SceneTreePanel;

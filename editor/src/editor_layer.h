@@ -42,6 +42,7 @@ private:
 	void ShowToolbarPlayPause();
 	void OnScenePlay();
 	void OnSceneStop();
+	void OnScenePause(bool is_paused = false);
 
 	void SetPanelsContext();
 
@@ -66,7 +67,7 @@ private:
 	Entity m_Tile;
 	Entity m_CameraEntity;
 
-	Ref<Texture2D> m_TexturePlay, m_TextureStop;
+	Ref<Texture2D> m_TexturePlay, m_TextureStop, m_TexturePause;
 
 	Timestep m_Timestep;
 

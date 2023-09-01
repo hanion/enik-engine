@@ -69,16 +69,17 @@ void Scene::OnUpdateEditor(Timestep ts, OrthographicCameraController& camera) {
 void Scene::OnUpdateRuntime(Timestep ts) {
 	EN_PROFILE_SECTION("Scene::OnUpdateRuntime");
 
-	// TODO do this On Editor Play
-	/* Update Scripts */ {
-		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
-			if (!ns.Instance) {
-				ns.Instance = ns.InstantiateScript();
-				ns.Instance->m_Entity = Entity(entity, this);
-				ns.Instance->OnCreate();
-			}
-			ns.Instance->OnUpdate(ts);
-		});
+	if (not m_IsPaused) {
+		/* Update Scripts */ {
+			m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
+				if (!ns.Instance) {
+					ns.Instance = ns.InstantiateScript();
+					ns.Instance->m_Entity = Entity(entity, this);
+					ns.Instance->OnCreate();
+				}
+				ns.Instance->OnUpdate(ts);
+			});
+		}
 	}
 
 

@@ -24,6 +24,7 @@ void EditorLayer::OnAttach() {
 
 	m_TexturePlay = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/play_button.png"));
 	m_TextureStop = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/stop_button.png"));
+	m_TexturePause = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/pause_button.png"));
 
 	CreateNewScene();
 
@@ -424,7 +425,7 @@ bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& event) {
 void EditorLayer::ShowToolbarPlayPause() {
 	static const float toolbar_min_size = 32.0f;
 	static const float padding = 4.0f;
-	static float toolbar_window_width = 0.0f;
+	static float toolbar_window_width = toolbar_min_size + padding;
 	ImVec2 pos;
 	pos.x = m_ViewportBounds[1].x - toolbar_window_width - padding;
 	pos.y = m_ViewportBounds[0].y + padding;
@@ -449,9 +450,28 @@ void EditorLayer::ShowToolbarPlayPause() {
 		return;
 	}
 
-	toolbar_window_width = ImGui::GetWindowSize().x;
-
 	float size = ImGui::GetWindowHeight() - 4.0f;
+
+	if (m_SceneState == SceneState::Play) {
+		ImVec4 tint_color = ImVec4(1, 1, 1, 1);
+		if (m_ActiveScene->IsPaused()) {
+			tint_color = ImVec4(0.5f, 0.5f, 0.9f, 1.0f);
+		}
+
+		auto texture_id_pause = reinterpret_cast<void*>(static_cast<uintptr_t>(m_TexturePause->GetRendererID()));
+		if (ImGui::ImageButton(texture_id_pause, ImVec2(size, size), ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0, 0, 0, 0), tint_color)) {
+			OnScenePause(not m_ActiveScene->IsPaused());
+		}
+		ImGui::SameLine();
+
+		toolbar_window_width = size * 2 + padding;
+	}
+	else {
+		toolbar_window_width = size * 1 + padding;
+	}
+
+
+
 	Ref<Texture2D> texture = (m_SceneState == SceneState::Edit) ? m_TexturePlay : m_TextureStop;
 	auto texture_id = reinterpret_cast<void*>(static_cast<uintptr_t>(texture->GetRendererID()));
 	if (ImGui::ImageButton(texture_id, ImVec2(size, size), ImVec2(0, 1), ImVec2(1, 0), 0)) {
@@ -469,6 +489,7 @@ void EditorLayer::ShowToolbarPlayPause() {
 }
 
 void EditorLayer::OnScenePlay() {
+	OnScenePause(false);
 	SaveScene();
 
 	if (m_ActiveScenePath.empty()) {
@@ -494,6 +515,7 @@ void EditorLayer::OnScenePlay() {
 }
 
 void EditorLayer::OnSceneStop() {
+	OnScenePause(false);
 	UUID current_selected_entity = m_SceneTreePanel.GetSelectedEntityUUID();
 
 	m_SceneState = SceneState::Edit;
@@ -501,6 +523,13 @@ void EditorLayer::OnSceneStop() {
 	SetPanelsContext();
 
 	m_SceneTreePanel.SetSelectedEntityWithUUID(current_selected_entity);
+}
+
+void EditorLayer::OnScenePause(bool is_paused) {
+	if (m_SceneState == SceneState::Edit) {
+		return;
+	}
+	m_ActiveScene->SetPaused(is_paused);
 }
 
 void EditorLayer::SetPanelsContext() {
