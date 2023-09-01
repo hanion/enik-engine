@@ -1,10 +1,7 @@
 #include <Enik.h>
 
-#include <glm/gtc/matrix_transform.hpp>
-
 #include "core/entry_point.h"
 #include "editor_layer.h"
-#include "renderer/opengl/opengl_shader.h"
 
 namespace Enik {
 

@@ -416,9 +416,6 @@ bool EditorLayer::OnMouseButtonReleased(MouseButtonReleasedEvent& event) {
 }
 
 bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& event) {
-	if (event.GetMouseButton() == Mouse::ButtonLeft) {
-		m_PickEntityWithMouse = true;
-	}
 	return false;
 }
 
