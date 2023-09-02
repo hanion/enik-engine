@@ -42,8 +42,9 @@ void SceneTreePanel::OnImGuiRender() {
 		ImGui::End();
 		return;
 	}
-	if (!ImGui::BeginTable("SceneTreeTable", 1)) {
+	if (!ImGui::BeginTable("SceneTreeTable", 1) or m_Context == nullptr) {
 		ImGui::EndTable();
+		ImGui::End();
 		return;
 	}
 

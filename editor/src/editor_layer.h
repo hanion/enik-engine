@@ -34,6 +34,10 @@ private:
 	void LoadScene(const std::filesystem::path &path);
 	void SaveScene();
 
+	void CreateNewProject();
+	void LoadProject(const std::filesystem::path &path);
+	void SaveProject();
+
 	bool OnKeyPressed(KeyPressedEvent &event);
 	bool OnMouseButtonReleased(MouseButtonReleasedEvent &event);
 	bool OnMouseButtonPressed (MouseButtonPressedEvent  &event);

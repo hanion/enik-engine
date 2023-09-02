@@ -27,7 +27,11 @@ void EditorLayer::OnAttach() {
 	m_TexturePause = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/pause_button.png"));
 	m_TextureStep  = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/step_button.png"));
 
-	CreateNewScene();
+	// TODO prompt user to select a name and a directory
+	// CreateNewProject();
+	std::filesystem::path proj(FULL_PATH_EDITOR("project.enik"));
+	LoadProject(proj);
+
 
 	m_ToolbarPanel.InitValues(m_FrameBuffer, m_EditorCameraController, m_ViewportHovered);
 	SetPanelsContext();
@@ -39,6 +43,10 @@ void EditorLayer::OnDetach() {
 
 void EditorLayer::OnUpdate(Timestep timestep) {
 	EN_PROFILE_SCOPE;
+
+	if (m_ActiveScene == nullptr) {
+		return;
+	}
 
 	m_Timestep = timestep;
 
@@ -172,6 +180,10 @@ void EditorLayer::OnImGuiRender() {
 
 void EditorLayer::OnImGuiDockSpaceRender() {
 	EN_PROFILE_SCOPE;
+
+	if (m_ActiveScene == nullptr) {
+		return;
+	}
 
 	m_SceneTreePanel.OnImGuiRender();
 	m_InspectorPanel.OnImGuiRender();
@@ -349,6 +361,29 @@ void EditorLayer::SaveScene() {
 		SceneSerializer serializer = SceneSerializer(m_ActiveScene);
 		serializer.Serialize(m_ActiveScenePath);
 	}
+}
+
+void EditorLayer::CreateNewProject() {
+	Project::New();
+	DialogFile::OpenDialog(DialogType::SAVE_FILE,
+		[&](){
+			// TODO this
+			EN_CORE_WARN("TODO Create a new project here. (EditorLayer::CreateNewProject)");
+			std::filesystem::path proj(FULL_PATH_EDITOR("project.enik"));
+			LoadProject(proj);
+
+		}, ".enik");
+}
+
+void EditorLayer::LoadProject(const std::filesystem::path& path) {
+	if (Project::Load(path)) {
+		auto start_scene_path = Project::GetAbsolutePath(Project::GetActive()->GetConfig().start_scene);
+		LoadScene(start_scene_path);
+	}
+}
+
+void EditorLayer::SaveProject() {
+	// Project::Save();
 }
 
 bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {

@@ -3,6 +3,8 @@
 #include <imgui/imgui.h>
 #include <pch.h>
 
+#include "project/project.h"
+
 namespace Enik {
 
 FileSystemPanel::FileSystemPanel(const Ref<Scene> context) {
@@ -11,12 +13,15 @@ FileSystemPanel::FileSystemPanel(const Ref<Scene> context) {
 
 void FileSystemPanel::SetContext(const Ref<Scene>& context) {
 	m_Context = context;
+	if (m_CurrentDirectory.empty()) {
+		m_CurrentDirectory = Project::GetProjectDirectory();
+	}
 }
 
 void FileSystemPanel::OnImGuiRender() {
 	ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
-	if (!ImGui::Begin("File System")) {
+	if (!ImGui::Begin("File System") or m_Context == nullptr or m_CurrentDirectory.empty()) {
 		ImGui::End();
 		return;
 	}
@@ -25,17 +30,17 @@ void FileSystemPanel::OnImGuiRender() {
 		SearchDirectory();
 	}
 
-	ImGui::BeginDisabled(m_CurrentPath == m_AssetsPath);
+	ImGui::BeginDisabled(m_CurrentDirectory == Project::GetProjectDirectory());
 	if (ImGui::Button(" ^ ")) {
-		if (!m_CurrentPath.empty()) {
-			m_CurrentPath = m_CurrentPath.parent_path();
+		if (!m_CurrentDirectory.empty()) {
+			m_CurrentDirectory = m_CurrentDirectory.parent_path();
 			m_HasSearched = false;
 		}
 	}
 	ImGui::EndDisabled();
 
 	ImGui::SameLine();
-	std::filesystem::path relativePath = std::filesystem::relative(m_CurrentPath, m_AssetsPath);
+	std::filesystem::path relativePath = std::filesystem::relative(m_CurrentDirectory, Project::GetProjectDirectory());
 	ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "%s", relativePath.string().c_str());
 
 	ImGui::Spacing();
@@ -51,7 +56,7 @@ void FileSystemPanel::OnImGuiRender() {
 void FileSystemPanel::SearchDirectory() {
 	m_Entries.clear();
 
-	for (const auto& entry : std::filesystem::directory_iterator(m_CurrentPath)) {
+	for (const auto& entry : std::filesystem::directory_iterator(m_CurrentDirectory)) {
 		m_Entries.push_back(entry);
 	}
 	std::sort(m_Entries.begin(), m_Entries.end(),
@@ -79,7 +84,7 @@ void FileSystemPanel::ShowDirectoriesTable() {
 
 			if (ImGui::Selectable(fileName.c_str())) {
 				if (std::filesystem::is_directory(path)) {
-					m_CurrentPath = path;
+					m_CurrentDirectory = path;
 					m_HasSearched = false;
 				}
 				else {

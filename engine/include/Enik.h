@@ -12,6 +12,8 @@
 #include "scene/scriptable_entity.h"
 #include "scene/scene.h"
 
+#include "project/project.h"
+
 #include "renderer/renderer.h"
 #include "renderer/renderer2D.h"
 #include "renderer/render_command.h"

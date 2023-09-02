@@ -24,9 +24,7 @@ private:
 private:
 	Ref<Scene> m_Context;
 
-	// does not go further up than this path, do not change
-	std::filesystem::path m_AssetsPath = std::filesystem::canonical("../../");
-	std::filesystem::path m_CurrentPath = m_AssetsPath / "editor/assets";
+	std::filesystem::path m_CurrentDirectory;
 
 	std::vector<std::filesystem::directory_entry> m_Entries;
 

@@ -3,6 +3,8 @@
 #include <pch.h>
 
 #include "scene/components.h"
+#include "project/project.h"
+
 
 namespace YAML {
 template <>
@@ -286,9 +288,9 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 		}
 
 		if (not sprite.TexturePath.empty()) {
-			// TODO do not deal with paths like this ...
-			if (std::filesystem::exists(FULL_PATH_EDITOR(sprite.TexturePath))) {
-				sprite.Texture = Texture2D::Create(FULL_PATH_EDITOR(sprite.TexturePath));
+			auto path = Project::GetAbsolutePath(sprite.TexturePath);
+			if (std::filesystem::exists(path)) {
+				sprite.Texture = Texture2D::Create(path);
 			}
 			else {
 				sprite.Texture = m_ErrorTexture;

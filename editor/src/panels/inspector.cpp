@@ -5,6 +5,8 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "../dialogs/dialog_file.h"
+#include "project/project.h"
+
 
 namespace Enik {
 
@@ -188,7 +190,7 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 				std::filesystem::path path = std::filesystem::path(static_cast<const char*>(payload->Data));
 				if (std::filesystem::exists(path) and path.extension() == ".png") {
 					sprite.Texture = Texture2D::Create(path);
-					auto relative = std::filesystem::relative(path,std::filesystem::canonical(FULL_PATH_EDITOR("")));
+					auto relative = std::filesystem::relative(path, Project::GetProjectDirectory());
 					sprite.TexturePath = relative;
 				}
 			}
@@ -202,7 +204,7 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 		if (ImGui::Button("Add Texture")) {
 			DialogFile::OpenDialog(DialogType::OPEN_FILE,
 				[&](){
-					auto relative = std::filesystem::relative(DialogFile::GetSelectedPath(),std::filesystem::canonical(FULL_PATH_EDITOR("")));
+					auto relative = std::filesystem::relative(DialogFile::GetSelectedPath(), Project::GetProjectDirectory());
 					sprite.TexturePath = relative;
 					sprite.Texture = Texture2D::Create(DialogFile::GetSelectedPath());
 				}, ".png");

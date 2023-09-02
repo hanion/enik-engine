@@ -10,8 +10,8 @@ set (CMAKE_CXX_STANDARD 17)
 
 set(source_dir "${PROJECT_SOURCE_DIR}/src/")
 
-file(GLOB source_files 
-	"${source_dir}/*.cpp" 
+file(GLOB source_files
+	"${source_dir}/*.cpp"
 	"${source_dir}/core/*.cpp"
 	"${source_dir}/layers/*.cpp"
 	"${source_dir}/layers/imgui_layer/*.cpp"
@@ -20,8 +20,9 @@ file(GLOB source_files
 	"${PROJECT_SOURCE_DIR}/external/stb_image/*.cpp"
 	"${PROJECT_SOURCE_DIR}/external/entt/*.hpp"
 	"${source_dir}/scene/*.cpp"
+	"${source_dir}/project/*.cpp"
 )
-file(GLOB include_files 
+file(GLOB include_files
 	"${PROJECT_SOURCE_DIR}/include/*.h"
 	"${source_dir}/core/*.h"
 	"${source_dir}/events/*.h"
@@ -32,6 +33,7 @@ file(GLOB include_files
 	"${PROJECT_SOURCE_DIR}/external/stb_image/*.h"
 	"${PROJECT_SOURCE_DIR}/external/entt/*.hpp"
 	"${source_dir}/scene/*.h"
+	"${source_dir}/project/*.h"
 )
 
 
