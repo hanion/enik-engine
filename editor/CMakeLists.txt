@@ -9,16 +9,18 @@ set (CMAKE_CXX_STANDARD 17)
 
 set(source_dir "${PROJECT_SOURCE_DIR}/src/")
 
-file(GLOB source_files  
+file(GLOB source_files
 	"${source_dir}/*.cpp"
 	"${source_dir}/panels/*.cpp"
 	"${source_dir}/dialogs/*.cpp"
+	"${source_dir}/utils/*.cpp"
 )
 
-file(GLOB include_files 
+file(GLOB include_files
 	"${source_dir}/*h"
 	"${source_dir}/panels/*.h"
 	"${source_dir}/dialogs/*.h"
+	"${source_dir}/utils/*.h"
 )
 
 add_executable(${PROJECT_NAME} ${source_files} ${include_files})

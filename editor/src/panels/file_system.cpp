@@ -4,6 +4,8 @@
 #include <pch.h>
 
 #include "project/project.h"
+#include "../utils/sort.h"
+
 
 namespace Enik {
 
@@ -59,10 +61,8 @@ void FileSystemPanel::SearchDirectory() {
 	for (const auto& entry : std::filesystem::directory_iterator(m_CurrentDirectory)) {
 		m_Entries.push_back(entry);
 	}
-	std::sort(m_Entries.begin(), m_Entries.end(),
-		[](const std::filesystem::directory_entry& a, const std::filesystem::directory_entry& b) {
-			return a.path().filename().string() < b.path().filename().string();
-	});
+
+	Utils::SortDirectoryEntries(m_Entries);
 
 	m_HasSearched = true;
 }

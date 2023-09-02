@@ -3,6 +3,7 @@
 
 #include <base.h>
 #include <imgui/imgui.h>
+#include "../utils/sort.h"
 
 namespace Enik {
 
@@ -72,10 +73,8 @@ DialogFileResult DialogFile::ShowPopup() {
 			}
 			s_Data.entries.push_back(entry);
 		}
-		std::sort(s_Data.entries.begin(), s_Data.entries.end(),
-				  [](const fs::directory_entry& a, const fs::directory_entry& b) {
-					  return a.path().filename().string() < b.path().filename().string();
-				  });
+
+		Utils::SortDirectoryEntries(s_Data.entries);
 
 		s_Data.has_searched = true;
 		strcpy(file_path_buffer, s_Data.current_directory.string().c_str());
