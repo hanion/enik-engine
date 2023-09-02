@@ -122,35 +122,49 @@ void EditorLayer::OnImGuiRender() {
 
 		if (ImGui::BeginMenuBar()) {
 			if (ImGui::BeginMenu("File")) {
-				if (ImGui::MenuItem("New")) {
-					DialogConfirm::OpenDialog("Create New Scene ?", EDITOR_BIND_FUNC(CreateNewScene));
+
+				if (ImGui::BeginMenu("Project")) {
+					if (ImGui::MenuItem("Open Project")) {
+						DialogFile::OpenDialog(DialogType::OPEN_FILE,
+							[&](){
+								LoadProject(DialogFile::GetSelectedPath());
+							}, ".enik");
+					}
+					ImGui::EndMenu();
 				}
 
-				if (ImGui::MenuItem("Open File")) {
-					DialogFile::OpenDialog(DialogType::OPEN_FILE,
-						[&](){
-							LoadScene(DialogFile::GetSelectedPath());
-						});
-				}
+				if (m_ActiveScene != nullptr and ImGui::BeginMenu("Scene")) {
+					if (ImGui::MenuItem("New Scene")) {
+						DialogConfirm::OpenDialog("Create New Scene ?", EDITOR_BIND_FUNC(CreateNewScene));
+					}
 
-				if (ImGui::MenuItem("Save")) {
-					if (m_ActiveScenePath.empty()) {
+					if (ImGui::MenuItem("Open Scene")) {
+						DialogFile::OpenDialog(DialogType::OPEN_FILE,
+							[&](){
+								LoadScene(DialogFile::GetSelectedPath());
+							});
+					}
+
+					if (ImGui::MenuItem("Save Scene")) {
+						if (m_ActiveScenePath.empty()) {
+							DialogFile::OpenDialog(DialogType::SAVE_FILE,
+								[&](){
+									m_ActiveScenePath = DialogFile::GetSelectedPath();
+									SaveScene();
+								});
+						}
+						else {
+							SaveScene();
+						}
+					}
+					if (ImGui::MenuItem("Save Scene As")) {
 						DialogFile::OpenDialog(DialogType::SAVE_FILE,
 							[&](){
 								m_ActiveScenePath = DialogFile::GetSelectedPath();
 								SaveScene();
 							});
 					}
-					else {
-						SaveScene();
-					}
-				}
-				if (ImGui::MenuItem("Save As")) {
-					DialogFile::OpenDialog(DialogType::SAVE_FILE,
-						[&](){
-							m_ActiveScenePath = DialogFile::GetSelectedPath();
-							SaveScene();
-						});
+					ImGui::EndMenu();
 				}
 
 				if (ImGui::MenuItem("Exit")) {
