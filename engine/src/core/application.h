@@ -32,6 +32,8 @@ public:
 
 	void Close();
 
+	inline static void SetWindowTitle(const std::string& title) { Get().m_Window->SetWindowTitle(title); }
+
 private:
 	bool OnWindowClose(WindowCloseEvent& e);
 	bool OnWindowResize(WindowResizeEvent& e);

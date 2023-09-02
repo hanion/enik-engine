@@ -50,6 +50,8 @@ private:
 
 	void SetPanelsContext();
 
+	void UpdateWindowTitle();
+
 private:
 	Ref<FrameBuffer> m_FrameBuffer;
 

@@ -341,6 +341,7 @@ void EditorLayer::CreateNewScene() {
 
 	m_ActiveScenePath = std::filesystem::path();
 
+	UpdateWindowTitle();
 }
 
 void EditorLayer::LoadScene(const std::filesystem::path& path) {
@@ -357,6 +358,7 @@ void EditorLayer::LoadScene(const std::filesystem::path& path) {
 		m_ActiveScene = m_EditorScene;
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		SetPanelsContext();
+		UpdateWindowTitle();
 	}
 }
 
@@ -374,6 +376,7 @@ void EditorLayer::SaveScene() {
 
 		SceneSerializer serializer = SceneSerializer(m_ActiveScene);
 		serializer.Serialize(m_ActiveScenePath);
+		UpdateWindowTitle();
 	}
 }
 
@@ -601,4 +604,19 @@ void EditorLayer::SetPanelsContext() {
 	m_InspectorPanel.SetContext(m_ActiveScene, &m_SceneTreePanel);
 	m_FileSystemPanel.SetContext(m_ActiveScene);
 	m_ToolbarPanel.SetContext(m_ActiveScene, &m_SceneTreePanel);
+}
+
+void EditorLayer::UpdateWindowTitle() {
+	std::string window_title;
+
+	if (m_ActiveScenePath.empty()) {
+		window_title += "(*)";
+	}
+	else {
+		window_title += m_ActiveScenePath.filename().string();
+	}
+
+	window_title += " - " + Project::GetActive()->GetConfig().project_name + " - enik engine";
+
+	Application::SetWindowTitle(window_title);
 }

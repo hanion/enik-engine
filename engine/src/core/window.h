@@ -41,6 +41,8 @@ public:
 
 	GLFWwindow* GetNativeWindow();
 
+	inline void SetWindowTitle(const std::string& title) { glfwSetWindowTitle(m_Window, title.c_str()); }
+
 private:
 	virtual void Init(const WindowProperties& properties);
 	virtual void Shutdown();
