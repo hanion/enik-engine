@@ -82,8 +82,8 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 }
 
 void EditorLayer::OnEvent(Event& event) {
-	if (m_SceneState == SceneState::Edit and m_ViewportHovered) {
-		m_EditorCameraController.OnEvent(event);
+	if (m_SceneState == SceneState::Edit) {
+		m_EditorCameraController.OnEvent(event, m_ViewportHovered);
 	}
 	m_ToolbarPanel.OnEvent(event);
 

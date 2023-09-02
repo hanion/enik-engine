@@ -13,7 +13,7 @@ public:
 	OrthographicCameraController(float left, float right, float bottom, float top, bool rotation = false);
 
 	void OnUpdate(Timestep timestep);
-	void OnEvent(Event& e);
+	void OnEvent(Event& e, bool is_viewport_hovered = true);
 
 	void OnResize(float width, float height);
 
