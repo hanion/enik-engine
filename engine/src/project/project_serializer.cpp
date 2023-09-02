@@ -30,6 +30,11 @@ void ProjectSerializer::Serialize(std::filesystem::path path) {
 	fout << out.c_str();
 }
 bool ProjectSerializer::Deserialize(std::filesystem::path path) {
+	if (not path.has_extension() or path.extension() != ".enik") {
+		EN_CORE_ERROR("Can not load file '{0}'\n	{1}", path, "It needs to be a project.enik file!");
+		return false;
+	}
+
 	YAML::Node data;
 	try {
 		data = YAML::LoadFile(path);
