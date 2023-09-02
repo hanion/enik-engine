@@ -117,7 +117,7 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 			Component::Transform& transform   = group.get<Component::Transform>     (entity);
 			Component::SpriteRenderer& sprite = group.get<Component::SpriteRenderer>(entity);
 
-			Renderer2D::DrawQuad(transform, sprite);
+			Renderer2D::DrawQuad(transform, sprite, (int32_t)entity);
 		}
 	}
 
