@@ -91,7 +91,7 @@ void Renderer2D::Init() {
 	s_Data.QuadVertexArray->SetIndexBuffer(indexBuffer);
 	delete[] quadIndices;
 
-	s_Data.TextureColorShader = Shader::Create(FULL_PATH("assets/shaders/texture_color.glsl"));
+	s_Data.TextureColorShader = Shader::Create(FULL_PATH_EDITOR("assets/shaders/texture_color.glsl"));
 
 	s_Data.WhiteTexture = Texture2D::Create(1, 1);
 	uint32_t whiteTextureData = 0xffffffff;

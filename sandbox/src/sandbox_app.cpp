@@ -43,10 +43,9 @@ public:
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
 		/*Create shader sources*/{
-			m_ShaderLibrary.Load("colorful", FULL_PATH("assets/shaders/colorful.glsl"));
+			m_ShaderLibrary.Load("colorful", FULL_PATH_EDITOR("assets/shaders/texture_color.glsl"));
 
-			auto textureShader = m_ShaderLibrary.Load("texture", FULL_PATH("assets/shaders/texture2.glsl"));
-
+			auto textureShader = m_ShaderLibrary.Load("texture", FULL_PATH_EDITOR("assets/shaders/texture_color.glsl"));
 			std::dynamic_pointer_cast<OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
 
 			m_Texture2D = Texture2D::Create(FULL_PATH("assets/textures/checkerboard.png"));
