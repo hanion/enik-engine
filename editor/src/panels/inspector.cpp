@@ -270,6 +270,10 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 		BeDragDropTargetTexture();
 		ImGui::EndChild();
 	}
+
+	if (ImGui::Checkbox("Filter", &sprite.mag_filter_linear)) {
+		sprite.Texture = Texture2D::Create(Project::GetAbsolutePath(sprite.TexturePath), sprite.mag_filter_linear);
+	}
 }
 
 }

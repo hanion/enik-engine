@@ -258,6 +258,7 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::Key << "Color" << YAML::Value << sprite.Color;
 		out << YAML::Key << "TileScale" << YAML::Value << sprite.TileScale;
 		out << YAML::Key << "TexturePath" << YAML::Value << sprite.TexturePath.string(); // TODO asset manager
+		out << YAML::Key << "mag_filter_linear" << YAML::Value << sprite.mag_filter_linear;
 
 		out << YAML::EndMap;
 	}
@@ -281,6 +282,9 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 		auto& sprite = deserializedEntity.Add<Component::SpriteRenderer>();
 		sprite.Color = spriteRenderer["Color"].as<glm::vec4>();
 		sprite.TileScale = spriteRenderer["TileScale"].as<float>();
+		if (spriteRenderer["mag_filter_linear"]) {
+			sprite.mag_filter_linear = spriteRenderer["mag_filter_linear"].as<bool>();
+		}
 
 		auto path = std::filesystem::path(spriteRenderer["TexturePath"].as<std::string>());
 		if (not path.empty()) {
@@ -290,7 +294,7 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 		if (not sprite.TexturePath.empty()) {
 			auto path = Project::GetAbsolutePath(sprite.TexturePath);
 			if (std::filesystem::exists(path)) {
-				sprite.Texture = Texture2D::Create(path);
+				sprite.Texture = Texture2D::Create(path, sprite.mag_filter_linear);
 			}
 			else {
 				sprite.Texture = m_ErrorTexture;

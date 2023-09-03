@@ -60,6 +60,8 @@ struct SpriteRenderer {
 	Ref<SubTexture2D> SubTexture = nullptr;
 	float TileScale = 1.0f;
 
+	bool mag_filter_linear = true;
+
 	// ? relative path
 	std::filesystem::path TexturePath;
 
