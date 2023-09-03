@@ -134,6 +134,15 @@ DialogFileResult DialogFile::ShowPopup() {
 
 		s_Data.is_open = false;
 
+		if (s_Data.selected_path.has_extension()) {
+			if (s_Data.selected_path.extension() != s_Data.ext) {
+				s_Data.selected_path = (s_Data.selected_path.parent_path() / s_Data.selected_path.stem()).string() + s_Data.ext;
+			}
+		}
+		else {
+			s_Data.selected_path += s_Data.ext;
+		}
+
 		EN_CORE_TRACE("Dialog File: selected path '{0}'", s_Data.selected_path);
 
 		ImGui::EndDisabled();
@@ -195,7 +204,16 @@ bool DialogFile::isValidSelection() {
 		}
 
 		if ((fs::status(path.parent_path()).permissions() & fs::perms::owner_write) != fs::perms::none) {
-			return true;
+			if (path.has_extension()) {
+				// has the correct extension
+				if (path.extension() == s_Data.ext) {
+					return true;
+				}
+			}
+			else {
+				// has no extention, we will append
+				return true;
+			}
 		}
 	}
 
