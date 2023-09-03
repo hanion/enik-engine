@@ -83,8 +83,8 @@ struct Camera {
 struct NativeScript {
 	ScriptableEntity* Instance = nullptr;
 
-	ScriptableEntity* (*InstantiateScript)();
-	void (*DestroyScript)(NativeScript*);
+	std::function<ScriptableEntity*()> InstantiateScript;
+	std::function<void(NativeScript*)> DestroyScript;
 
 	template <typename T>
 	void Bind() {
