@@ -5,13 +5,14 @@
 			"includePath": [
 				"${workspaceFolder}/engine/include/**",
 				"${workspaceFolder}/engine/src/**",
-				
+
 				"${workspaceFolder}/engine/external",
 				"${workspaceFolder}/engine/external/glad/include/**",
 				"${workspaceFolder}/engine/external/glfw/include/**",
 				"${workspaceFolder}/engine/external/glm",
 				"${workspaceFolder}/engine/external/spdlog/include/**",
-				
+				"${workspaceFolder}/engine/external/tracy/public/tracy",
+
 				"${workspaceFolder}/editor/**",
 				"${workspaceFolder}/sandbox/**"
 			],
@@ -25,13 +26,14 @@
 				"path": [
 					"${workspaceFolder}/engine/include",
 					"${workspaceFolder}/engine/src",
-					
+
 					"${workspaceFolder}/engine/external/*",
 					"${workspaceFolder}/engine/external/glad/include",
 					"${workspaceFolder}/engine/external/glfw/include",
 					"${workspaceFolder}/engine/external/glm/glm",
 					"${workspaceFolder}/engine/external/spdlog/include",
-					
+					"${workspaceFolder}/engine/external/tracy/public/tracy",
+
 					"${workspaceFolder}/editor",
 					"${workspaceFolder}/sandbox"
 				],

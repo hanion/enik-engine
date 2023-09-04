@@ -50,7 +50,7 @@ constexpr Ref<T> CreateRef(Args&& ... args) {
 
 
 #ifdef EN_DEBUG
-#include "tracy/public/tracy/Tracy.hpp"
+#include "Tracy.hpp"
 #define EN_PROFILE_FRAME(x) FrameMark
 #define EN_PROFILE_SCOPE ZoneScoped
 #define EN_PROFILE_SECTION(x) ZoneScopedN(x)

@@ -40,6 +40,10 @@ file(GLOB include_files
 
 add_library(${PROJECT_NAME} SHARED ${source_files} ${include_files})
 
+set(BUILD_SHARED_LIBS OFF)
+set(YAML_BUILD_SHARED_LIBS OFF)
+
+
 add_subdirectory(external/spdlog)
 add_subdirectory(external/glfw)
 add_subdirectory(external/glad)
@@ -68,9 +72,12 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:EN_DEBUG> $<
 
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+	cmake_policy(SET CMP0077 NEW)
+	set(TRACY_STATIC ON)
 	add_subdirectory(external/tracy)
-	target_include_directories(${PROJECT_NAME} PUBLIC external/tracy/pubic/tracy)
-	target_link_libraries(${PROJECT_NAME} PUBLIC tracy)
+	target_include_directories(${PROJECT_NAME} PUBLIC external/tracy/public/tracy)
+	target_link_libraries(${PROJECT_NAME} PUBLIC TracyClient)
+	set_property(TARGET TracyClient PROPERTY POSITION_INDEPENDENT_CODE ON)
 endif()
 
 
