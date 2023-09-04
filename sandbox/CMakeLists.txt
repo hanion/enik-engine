@@ -13,5 +13,5 @@ file(GLOB include_files "${source_dir}/*h")
 
 add_executable(${PROJECT_NAME} ${source_files} ${include_files})
 
-target_link_libraries(${PROJECT_NAME} engine)
-target_include_directories(${PROJECT_NAME} PRIVATE engine)
+target_link_libraries(${PROJECT_NAME} enik-engine)
+target_include_directories(${PROJECT_NAME} PRIVATE enik-engine)

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26.4)
 
 
-project(engine)
+project(enik-engine)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall") #-Werror ")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -DTRACY_ENABLE -Itracy/")
