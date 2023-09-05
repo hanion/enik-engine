@@ -1,5 +1,6 @@
 {
 	"files.associations": {
+		"*.escn": "yaml",
 		"bit": "cpp",
 		"array": "cpp",
 		"fstream": "cpp",
@@ -78,6 +79,7 @@
 		"variant": "cpp",
 		"complex": "cpp",
 		"any": "cpp",
-		"filesystem": "cpp"
+		"filesystem": "cpp",
+		"shared_mutex": "cpp"
 	}
 }
