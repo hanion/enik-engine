@@ -30,6 +30,8 @@ private:
 
 	void DisplaySpriteTexture(Component::SpriteRenderer& sprite);
 
+	void DisplayNativeScriptsInPopup();
+
 private:
 	Ref<Scene> m_Context;
 

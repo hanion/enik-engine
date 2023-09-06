@@ -99,6 +99,17 @@ struct NativeScript {
 			ns->Instance = nullptr;
 		};
 	}
+
+	void Bind(const std::string& script_name, const std::function<ScriptableEntity*()>& inst) {
+		ScriptName = script_name;
+
+		InstantiateScript = inst;
+
+		DestroyScript = [](NativeScript* ns) {
+			delete ns->Instance;
+			ns->Instance = nullptr;
+		};
+	}
 };
 
 }

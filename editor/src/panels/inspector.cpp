@@ -6,6 +6,7 @@
 
 #include "../dialogs/dialog_file.h"
 #include "project/project.h"
+#include "script_system/script_system.h"
 
 
 namespace Enik {
@@ -46,6 +47,7 @@ void InspectorPanel::OnImGuiRender() {
 		if (ImGui::BeginPopup("AddComponent")) {
 			DisplayComponentInPopup<Component::Camera>("Camera");
 			DisplayComponentInPopup<Component::SpriteRenderer>("Sprite Renderer");
+			DisplayNativeScriptsInPopup();
 			ImGui::EndPopup();
 		}
 	}
@@ -273,6 +275,22 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 
 	if (ImGui::Checkbox("Filter", &sprite.mag_filter_linear)) {
 		sprite.Texture = Texture2D::Create(Project::GetAbsolutePath(sprite.TexturePath), sprite.mag_filter_linear);
+	}
+}
+
+void InspectorPanel::DisplayNativeScriptsInPopup() {
+	if (ImGui::BeginMenu("Native Script")) {
+
+		ImGui::BeginDisabled(m_SceneTreePanel->GetSelectedEntity().Has<Component::NativeScript>());
+		for (auto& pair : ScriptRegistry::GetRegistry()) {
+			if (ImGui::MenuItem(pair.first.c_str())) {
+				m_SceneTreePanel->GetSelectedEntity().Add<Component::NativeScript>().Bind(pair.first, pair.second);
+				ImGui::CloseCurrentPopup();
+			}
+		}
+		ImGui::EndDisabled();
+
+		ImGui::EndMenu();
 	}
 }
 
