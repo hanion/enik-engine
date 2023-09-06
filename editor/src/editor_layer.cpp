@@ -397,6 +397,7 @@ void EditorLayer::LoadProject(const std::filesystem::path& path) {
 		auto start_scene_path = Project::GetAbsolutePath(Project::GetActive()->GetConfig().start_scene);
 		LoadScene(start_scene_path);
 		m_FileSystemPanel.SetCurrentDirectory(Project::GetProjectDirectory());
+		ScriptSystem::LoadScriptModule();
 	}
 }
 
