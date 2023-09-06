@@ -9,6 +9,7 @@ namespace Enik {
 struct ProjectConfig {
 	std::string project_name = "untitled project";
 	std::filesystem::path start_scene;
+	std::filesystem::path script_module_path;
 };
 
 class Project {

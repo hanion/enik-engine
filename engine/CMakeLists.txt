@@ -21,6 +21,7 @@ file(GLOB source_files
 	"${PROJECT_SOURCE_DIR}/external/entt/*.hpp"
 	"${source_dir}/scene/*.cpp"
 	"${source_dir}/project/*.cpp"
+	"${source_dir}/script_system/*.cpp"
 )
 file(GLOB include_files
 	"${PROJECT_SOURCE_DIR}/include/*.h"
@@ -34,6 +35,7 @@ file(GLOB include_files
 	"${PROJECT_SOURCE_DIR}/external/entt/*.hpp"
 	"${source_dir}/scene/*.h"
 	"${source_dir}/project/*.h"
+	"${source_dir}/script_system/*.h"
 )
 
 

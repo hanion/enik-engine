@@ -23,6 +23,7 @@ void ProjectSerializer::Serialize(std::filesystem::path path) {
 
 	out << YAML::Key << "Project" << YAML::Value << config.project_name;
 	out << YAML::Key << "StartScene" << YAML::Value << config.start_scene.string();
+	out << YAML::Key << "ScriptModule" << YAML::Value << config.script_module_path.string();
 
 	out << YAML::EndMap;
 
@@ -52,6 +53,10 @@ bool ProjectSerializer::Deserialize(std::filesystem::path path) {
 
 	config.project_name = data["Project"].as<std::string>();
 	config.start_scene  = data["StartScene"].as<std::string>();
+
+	if (data["ScriptModule"]) {
+		config.script_module_path  = data["ScriptModule"].as<std::string>();
+	}
 
 	EN_CORE_INFO("Deserializing project '{0}', in '{1}'", config.project_name, path);
 
