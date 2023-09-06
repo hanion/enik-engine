@@ -23,10 +23,16 @@ public:
 	}
 
 	static const std::filesystem::path GetAbsolutePath(std::filesystem::path& path) {
-		auto absolute_path = std::filesystem::canonical(GetProjectDirectory() / path);
-		if (std::filesystem::exists(absolute_path)) {
-			return absolute_path;
+		try {
+			std::filesystem::path absolute_path = std::filesystem::canonical(GetProjectDirectory() / path);
+			if (std::filesystem::exists(absolute_path)) {
+				return absolute_path;
+			}
 		}
+		catch(const std::exception& e) {
+			EN_CORE_ERROR("Could not GetAbsolutePath of {0}:\n        {1}", path, e.what());
+		}
+
 		return std::filesystem::path();
 	}
 
