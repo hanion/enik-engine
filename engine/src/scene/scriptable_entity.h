@@ -6,11 +6,12 @@ namespace Enik {
 
 class ScriptableEntity {
 public:
+	ScriptableEntity() {}
 	virtual ~ScriptableEntity() {}
 
 	template <typename T>
 	T& Get() {
-		return m_Entity.template Get<T>();
+		return m_Entity.Get<T>();
 	}
 
 protected:
