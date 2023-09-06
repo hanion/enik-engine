@@ -118,7 +118,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	});
 
 	DisplayComponentInInspector<Component::NativeScript>("Native Script", entity, true, [&]() {
-		ImGui::TextColored(ImVec4(0.4f, 0.7f, 0.2f, 1.0f), "Has Script");
+		ImGui::TextColored(ImVec4(0.4f, 0.7f, 0.2f, 1.0f), entity.Get<Component::NativeScript>().ScriptName.c_str());
 	});
 }
 

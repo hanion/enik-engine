@@ -86,6 +86,8 @@ struct NativeScript {
 	std::function<ScriptableEntity*()> InstantiateScript;
 	std::function<void(NativeScript*)> DestroyScript;
 
+	std::string ScriptName;
+
 	template <typename T>
 	void Bind() {
 		InstantiateScript = []() {
