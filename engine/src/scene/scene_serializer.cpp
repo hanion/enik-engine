@@ -4,6 +4,7 @@
 
 #include "scene/components.h"
 #include "project/project.h"
+#include "script_system/script_registry.h"
 
 
 namespace YAML {
@@ -263,6 +264,16 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::EndMap;
 	}
 
+	if (entity.Has<Component::NativeScript>()) {
+		out << YAML::Key << "Component::NativeScript";
+		out << YAML::BeginMap;
+
+		auto& script = entity.Get<Component::NativeScript>();
+		out << YAML::Key << "ScriptName" << YAML::Value << script.ScriptName;
+
+		out << YAML::EndMap;
+	}
+
 	out << YAML::EndMap;
 }
 
@@ -313,6 +324,18 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 
 		cam.Primary = camera["Primary"].as<bool>();
 		cam.FixedAspectRatio = camera["FixedAspectRatio"].as<bool>();
+	}
+
+	auto native_script = entity["Component::NativeScript"];
+	if (native_script and native_script["ScriptName"]) {
+		auto& script = deserializedEntity.Add<Component::NativeScript>();
+		auto script_name = native_script["ScriptName"].as<std::string>();
+		for (auto& pair : ScriptRegistry::GetRegistry()) {
+			if (pair.first == script_name) {
+				script.Bind(pair.first, pair.second);
+				break;
+			}
+		}
 	}
 
 }
