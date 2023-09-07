@@ -23,6 +23,8 @@ private:
 	void SerializeEntity(YAML::Emitter& out, Entity& entity);
 	void DeserializeEntity(YAML::Node& data, uint64_t uuid, std::string& name);
 
+	void DeserializeNativeScript(YAML::Node& node, Entity& entity);
+
 private:
 	Ref<Scene> m_Scene;
 

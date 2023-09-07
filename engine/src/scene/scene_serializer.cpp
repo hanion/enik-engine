@@ -278,11 +278,11 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 }
 
 void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::string& name) {
-	Entity deserializedEntity = m_Scene->CreateEntityWithUUID(uuid, name);
+	Entity deserialized_entity = m_Scene->CreateEntityWithUUID(uuid, name);
 
 	auto transform = entity["Component::Transform"];
 	if (transform) {
-		auto& trans = deserializedEntity.Get<Component::Transform>();
+		auto& trans = deserialized_entity.Get<Component::Transform>();
 		trans.Position = transform["Position"].as<glm::vec3>();
 		trans.Rotation = transform["Rotation"].as<float>();
 		trans.Scale = transform["Scale"].as<glm::vec2>();
@@ -290,7 +290,7 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 
 	auto spriteRenderer = entity["Component::SpriteRenderer"];
 	if (spriteRenderer) {
-		auto& sprite = deserializedEntity.Add<Component::SpriteRenderer>();
+		auto& sprite = deserialized_entity.Add<Component::SpriteRenderer>();
 		sprite.Color = spriteRenderer["Color"].as<glm::vec4>();
 		sprite.TileScale = spriteRenderer["TileScale"].as<float>();
 		if (spriteRenderer["mag_filter_linear"]) {
@@ -316,7 +316,7 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 
 	auto camera = entity["Component::Camera"];
 	if (camera) {
-		auto& cam = deserializedEntity.Add<Component::Camera>();
+		auto& cam = deserialized_entity.Add<Component::Camera>();
 
 		cam.Cam.SetSize(camera["Camera"]["Size"].as<float>());
 		cam.Cam.SetNear(camera["Camera"]["Near"].as<float>());
@@ -326,18 +326,26 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 		cam.FixedAspectRatio = camera["FixedAspectRatio"].as<bool>();
 	}
 
-	auto native_script = entity["Component::NativeScript"];
-	if (native_script and native_script["ScriptName"]) {
-		auto& script = deserializedEntity.Add<Component::NativeScript>();
-		auto script_name = native_script["ScriptName"].as<std::string>();
-		for (auto& pair : ScriptRegistry::GetRegistry()) {
-			if (pair.first == script_name) {
-				script.Bind(pair.first, pair.second);
-				break;
-			}
+	DeserializeNativeScript(entity, deserialized_entity);
+
+}
+
+void SceneSerializer::DeserializeNativeScript(YAML::Node& node, Entity& entity) {
+	auto native_script = node["Component::NativeScript"];
+	if (not native_script or not native_script["ScriptName"]) {
+		return;
+	}
+
+	auto script_name = native_script["ScriptName"].as<std::string>();
+
+	for (auto& pair : ScriptRegistry::GetRegistry()) {
+		if (pair.first == script_name) {
+			entity.Add<Component::NativeScript>().Bind(pair.first, pair.second);
+			return;
 		}
 	}
 
+	EN_ERROR("Couldn't find NativeScript '{0}' for entity '{1}'", script_name, entity.Get<Component::Tag>().Text);
 }
 
 }
