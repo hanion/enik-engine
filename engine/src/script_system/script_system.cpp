@@ -1,25 +1,49 @@
 #include "script_system.h"
+#include "core/application.h"
 
 namespace Enik {
+
+static ScriptSystem::ScriptSystemData s_Data;
 
 // same signature as in the script module lib
 typedef void (*register_all_fn)();
 static register_all_fn register_all;
 static void* script_module_handle;
 
-void ScriptSystem::LoadScriptModule() {
-	UnloadScriptModule();
-	ScriptRegistry::ClearRegistry();
+void ScriptSystem::LoadScriptModuleFirstTime() {
+	if (s_Data.file_watcher == nullptr) {
+		s_Data.reload_pending = true;
+		ReloadScriptModule();
 
-	auto lib = Project::GetAbsolutePath(Project::GetActive()->GetConfig().script_module_path);
+		auto sm_path = Project::GetAbsolutePath(Project::GetActive()->GetConfig().script_module_path);
+		s_Data.file_watcher = CreateScope<filewatch::FileWatch<std::string>>(sm_path, OnFileWatcherEvent);
+	}
+}
 
-	if (lib.empty() or not std::filesystem::exists(lib)) {
-		EN_CORE_ERROR("Error while opening script module: Invalid Path\n    '{0}'", lib.c_str());
+void ScriptSystem::ReloadScriptModule() {
+	if (s_Data.reload_pending) {
+		auto new_script_module_path = CopyScriptModule();
+		if (not new_script_module_path.empty()) {
+			UnloadScriptModule();
+			ScriptRegistry::ClearRegistry();
+
+			LoadScriptModule(new_script_module_path);
+			s_Data.reload_pending = false;
+		}
+	}
+}
+
+
+
+void ScriptSystem::LoadScriptModule(const std::filesystem::path& script_module_path) {
+
+	if (script_module_path.empty() or not std::filesystem::exists(script_module_path)) {
+		EN_CORE_ERROR("Error while opening script module: Invalid Path\n    '{0}'", script_module_path.c_str());
 		return;
 	}
 
 	// open the library
-	script_module_handle = dlopen(lib.c_str(), RTLD_LAZY);
+	script_module_handle = dlopen(script_module_path.c_str(), RTLD_LAZY);
 
 	const char* dl_error = dlerror();
 	if (not script_module_handle or script_module_handle == nullptr or dl_error) {
@@ -42,7 +66,8 @@ void ScriptSystem::LoadScriptModule() {
 		if (register_all and register_all != nullptr) {
 			register_all();
 		}
-		EN_CORE_INFO("Loaded script module '{0}'", lib.c_str());
+		s_Data.current_script_module_path = script_module_path;
+		EN_CORE_INFO("Loaded script module '{0}'", script_module_path.c_str());
 	}
 }
 
@@ -59,8 +84,45 @@ void ScriptSystem::UnloadScriptModule() {
 		script_module_handle = nullptr;
 		register_all = nullptr;
 
-		EN_CORE_INFO("Unloaded script module");
+		if (not s_Data.current_script_module_path.empty() and std::filesystem::exists(s_Data.current_script_module_path)) {
+			std::filesystem::remove(s_Data.current_script_module_path);
+		}
 	}
+}
+
+void ScriptSystem::OnFileWatcherEvent(const std::string& path, const filewatch::Event change_type) {
+	switch (change_type) {
+		case filewatch::Event::modified:
+			if (not s_Data.reload_pending) {
+				s_Data.reload_pending = true;
+				Application::Get().SubmitToMainThread([](){
+					ReloadScriptModule();
+				});
+			}
+			break;
+		case filewatch::Event::removed:
+			if (not s_Data.reload_pending) {
+				Application::Get().SubmitToMainThread([](){
+					UnloadScriptModule();
+				});
+			}
+			break;
+		default:
+			break;
+	}
+}
+
+std::filesystem::path ScriptSystem::CopyScriptModule() {
+	auto new_path = std::filesystem::temp_directory_path() / ("enik_script_module_" + std::to_string(UUID()));
+
+	std::error_code error_code;
+	if (std::filesystem::copy_file(Project::GetAbsolutePath(Project::GetActive()->GetConfig().script_module_path), new_path, error_code)) {
+		return new_path;
+	}
+
+	EN_CORE_ERROR("Error while copying script module {0}", error_code.message());
+
+    return std::filesystem::path();
 }
 
 }
