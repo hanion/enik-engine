@@ -88,18 +88,6 @@ struct NativeScript {
 
 	std::string ScriptName;
 
-	template <typename T>
-	void Bind() {
-		InstantiateScript = []() {
-			return static_cast<ScriptableEntity*>(new T());
-		};
-
-		DestroyScript = [](NativeScript* ns) {
-			delete ns->Instance;
-			ns->Instance = nullptr;
-		};
-	}
-
 	void Bind(const std::string& script_name, const std::function<ScriptableEntity*()>& inst) {
 		ScriptName = script_name;
 
