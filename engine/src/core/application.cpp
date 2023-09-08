@@ -49,6 +49,8 @@ void Application::Run() {
 		Timestep timestep = time - m_LastFrameTime;
 		m_LastFrameTime = time;
 
+		ExecuteMainThreadQueue();
+
 		if (!m_Minimized) {
 			for (Layer* layer : m_LayerStack) {
 				EN_PROFILE_SECTION("layers OnUpdate");
@@ -89,6 +91,11 @@ void Application::Close() {
 	m_Running = false;
 }
 
+void Application::SubmitToMainThread(const std::function<void()>& function) {
+	std::scoped_lock<std::mutex> lock(m_MainThreadQueueMutex);
+	m_MainThreadQueue.emplace_back(function);
+}
+
 bool Application::OnWindowClose(WindowCloseEvent& e) {
 	Close();
 	return true;
@@ -117,4 +124,13 @@ bool Application::OnKeyPressed(KeyPressedEvent& e) {
 	}
 	return false;
 }
+
+void Application::ExecuteMainThreadQueue() {
+	std::scoped_lock<std::mutex> lock(m_MainThreadQueueMutex);
+	for(auto& function : m_MainThreadQueue) {
+		function();
+	}
+	m_MainThreadQueue.clear();
+}
+
 }
