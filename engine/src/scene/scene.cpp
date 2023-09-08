@@ -100,7 +100,6 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 	}
 
 	/* Update Scripts */
-	EN_CORE_TRACE(m_StepFrames);
 	if (not m_IsPaused or m_StepFrames-- > 0) {
 		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
 			if (not ns.Instance or ns.Instance == nullptr) {
