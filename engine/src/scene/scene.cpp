@@ -139,4 +139,10 @@ void Scene::DestroyScriptableEntities() {
 	});
 }
 
+void Scene::ClearNativeScripts() {
+	m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
+		ns.InstantiateScript = nullptr;
+		ns.DestroyScript(&ns);
+	});
+}
 }

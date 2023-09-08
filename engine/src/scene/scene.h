@@ -33,6 +33,7 @@ public:
 	void Step(int frames = 1) { m_StepFrames = frames; }
 
 	void DestroyScriptableEntities();
+	void ClearNativeScripts();
 
 private:
 	entt::registry m_Registry;
