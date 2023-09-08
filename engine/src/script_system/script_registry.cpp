@@ -12,4 +12,7 @@ std::unordered_map<std::string, ScriptableEntity* (*)()>& ScriptRegistry::GetReg
 	return s_ScriptRegistry;
 }
 
+void ScriptRegistry::ClearRegistry() {
+	s_ScriptRegistry.clear();
+}
 }
