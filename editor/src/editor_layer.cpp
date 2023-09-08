@@ -39,6 +39,9 @@ void EditorLayer::OnAttach() {
 
 void EditorLayer::OnDetach() {
 	EN_PROFILE_SCOPE;
+
+	m_ActiveScene->ClearNativeScripts();
+	ScriptSystem::UnloadScriptModule();
 }
 
 void EditorLayer::OnUpdate(Timestep timestep) {
