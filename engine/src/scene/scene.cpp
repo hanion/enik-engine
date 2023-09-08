@@ -12,14 +12,7 @@ Scene::Scene() {
 }
 
 Scene::~Scene() {
-	/* Destroy Scripts */ {
-		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
-			if (ns.Instance) {
-				ns.Instance->OnDestroy();
-				ns.DestroyScript(&ns);
-			}
-		});
-	}
+	DestroyScriptableEntities();
 }
 
 Entity Scene::CreateEntity(const std::string& name) {
@@ -135,6 +128,15 @@ void Scene::OnViewportResize(uint32_t width, uint32_t height) {
 			camera.Cam.SetViewportSize(width, height);
 		}
 	}
+}
+
+void Scene::DestroyScriptableEntities() {
+	m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
+		if (ns.Instance) {
+			ns.Instance->OnDestroy();
+			ns.DestroyScript(&ns);
+		}
+	});
 }
 
 }

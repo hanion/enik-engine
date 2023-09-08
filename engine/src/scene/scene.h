@@ -32,6 +32,8 @@ public:
 
 	void Step(int frames = 1) { m_StepFrames = frames; }
 
+	void DestroyScriptableEntities();
+
 private:
 	entt::registry m_Registry;
 
