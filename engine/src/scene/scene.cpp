@@ -148,4 +148,28 @@ void Scene::ClearNativeScripts() {
 		ns.DestroyScript(&ns);
 	});
 }
+
+
+Entity Scene::FindEntityByUUID(UUID uuid) {
+	auto view = m_Registry.view<Component::ID>();
+	for (auto entity_handle : view) {
+		const Component::ID& id = view.get<Component::ID>(entity_handle);
+		if (id.uuid == uuid) {
+			return Entity(entity_handle, this);
+		}
+	}
+	return Entity();
+}
+
+Entity Scene::FindEntityByName(const std::string& name) {
+	auto view = m_Registry.view<Component::Tag>();
+	for (auto entity_handle : view) {
+		const Component::Tag& tag = view.get<Component::Tag>(entity_handle);
+		if (tag.Text == name) {
+			return Entity(entity_handle, this);
+		}
+	}
+	return Entity();
+}
+
 }

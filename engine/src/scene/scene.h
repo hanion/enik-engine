@@ -35,6 +35,9 @@ public:
 	void DestroyScriptableEntities();
 	void ClearNativeScripts();
 
+	Entity FindEntityByUUID(UUID uuid);
+	Entity FindEntityByName(const std::string& name);
+
 private:
 	entt::registry m_Registry;
 
