@@ -8,4 +8,9 @@ extern "C" Entity FindEntityByUUID(UUID uuid);
 
 extern "C" Entity FindEntityByName(const std::string& name);
 
+template <typename T>
+T* GetScriptInstance(Entity entity) {
+	return (T*)entity.Get<Component::NativeScript>().Instance;
+}
+
 }
