@@ -90,6 +90,13 @@ void ScriptSystem::UnloadScriptModule() {
 	}
 }
 
+void ScriptSystem::SetSceneContext(Scene* scene) {
+	s_Data.scene_context = scene;
+}
+Scene* ScriptSystem::GetSceneContext() {
+    return s_Data.scene_context;
+}
+
 void ScriptSystem::OnFileWatcherEvent(const std::string& path, const filewatch::Event change_type) {
 	switch (change_type) {
 		case filewatch::Event::modified:

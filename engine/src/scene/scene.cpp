@@ -5,10 +5,12 @@
 #include "renderer/renderer2D.h"
 #include "scene/components.h"
 #include "scene/entity.h"
+#include "script_system/script_system.h"
 
 namespace Enik {
 
 Scene::Scene() {
+	ScriptSystem::SetSceneContext(this);
 }
 
 Scene::~Scene() {

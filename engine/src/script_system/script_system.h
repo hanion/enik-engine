@@ -5,6 +5,7 @@
 #include "script_system/script_registry.h"
 #include "project/project.h"
 #include "filewatch/FileWatch.hpp"
+#include "scene/scene.h"
 
 namespace Enik {
 
@@ -15,10 +16,15 @@ public:
 	static void ReloadScriptModule();
 	static void UnloadScriptModule();
 
+	static void SetSceneContext(Scene* scene);
+	static Scene* GetSceneContext();
+
 	struct ScriptSystemData {
 		Scope<filewatch::FileWatch<std::string>> file_watcher;
 		std::filesystem::path current_script_module_path;
 		bool reload_pending = false;
+
+		Scene* scene_context;
 	};
 
 private:
