@@ -42,8 +42,15 @@ void FileSystemPanel::OnImGuiRender() {
 	ImGui::EndDisabled();
 
 	ImGui::SameLine();
-	std::filesystem::path relativePath = std::filesystem::relative(m_CurrentDirectory, Project::GetProjectDirectory());
-	ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "%s", relativePath.string().c_str());
+
+	std::string directory = std::filesystem::relative(m_CurrentDirectory, Project::GetProjectDirectory()).string();
+	if (directory == ".") {
+		directory = "res://";
+	}
+	else {
+		directory = "res://" + directory + "/";
+	}
+	ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "%s", directory.c_str());
 
 	ImGui::Spacing();
 	ImGui::Separator();
