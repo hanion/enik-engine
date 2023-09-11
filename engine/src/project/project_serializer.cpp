@@ -15,8 +15,6 @@ ProjectSerializer::ProjectSerializer(Ref<Project>& project)
 void ProjectSerializer::Serialize(std::filesystem::path path) {
 	const auto& config = m_Project->GetConfig();
 
-
-	EN_CORE_INFO("Serializing project   '{0}', in '{1}'", config.project_name, path);
 	YAML::Emitter out;
 
 	out << YAML::BeginMap;
@@ -29,6 +27,7 @@ void ProjectSerializer::Serialize(std::filesystem::path path) {
 
 	std::ofstream fout(path);
 	fout << out.c_str();
+	EN_CORE_INFO("Serialized project   '{0}', in '{1}'", config.project_name, path);
 }
 bool ProjectSerializer::Deserialize(std::filesystem::path path) {
 	if (not path.has_extension() or path.extension() != ".enik") {
@@ -58,7 +57,7 @@ bool ProjectSerializer::Deserialize(std::filesystem::path path) {
 		config.script_module_path  = data["ScriptModule"].as<std::string>();
 	}
 
-	EN_CORE_INFO("Deserializing project '{0}', in '{1}'", config.project_name, path);
+	EN_CORE_INFO("Deserialized project '{0}', in '{1}'", config.project_name, path);
 
 	return true;
 }
