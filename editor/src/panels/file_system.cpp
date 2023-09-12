@@ -117,6 +117,12 @@ void FileSystemPanel::ChangeDirectory(const std::filesystem::path& directory) {
 	else {
 		m_CurrentDirectoryText = "res://" + m_CurrentDirectoryText + "/";
 	}
+
+	m_FileWatcher = CreateScope<filewatch::FileWatch<std::string>>(m_CurrentDirectory,
+		[&](const std::string& path, const filewatch::Event change_type) {
+			m_HasSearched = false;
+		}
+	);
 }
 
 }

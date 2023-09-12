@@ -2,6 +2,7 @@
 #include <base.h>
 
 #include <filesystem>
+#include "filewatch/FileWatch.hpp"
 
 #include "scene/scene.h"
 
@@ -31,6 +32,7 @@ private:
 	std::string m_CurrentDirectoryText;
 
 	std::vector<std::filesystem::directory_entry> m_Entries;
+	Scope<filewatch::FileWatch<std::string>> m_FileWatcher;
 
 	bool m_HasSearched = false;
 
