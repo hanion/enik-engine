@@ -14,6 +14,8 @@ public:
 		return m_Entity.Get<T>();
 	}
 
+	virtual void OnInspectorRender() {}
+
 protected:
 	virtual void OnCreate() {}
 	virtual void OnDestroy() {}
