@@ -88,7 +88,9 @@ void EditorLayer::OnEvent(Event& event) {
 	if (m_SceneState == SceneState::Edit) {
 		m_EditorCameraController.OnEvent(event, m_ViewportHovered);
 	}
-	m_ToolbarPanel.OnEvent(event);
+	if (m_SceneState == SceneState::Edit or m_ActiveScene->IsPaused()) {
+		m_ToolbarPanel.OnEvent(event);
+	}
 
 	EventDispatcher dispatcher = EventDispatcher(event);
 	dispatcher.Dispatch<KeyPressedEvent>(std::bind(&EditorLayer::OnKeyPressed, this, std::placeholders::_1));
@@ -205,7 +207,10 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 	m_SceneTreePanel.OnImGuiRender();
 	m_InspectorPanel.OnImGuiRender();
 	m_FileSystemPanel.OnImGuiRender();
-	m_ToolbarPanel.OnImGuiRender(m_ViewportBounds[0], m_ViewportBounds[1]);
+
+	if (m_SceneState == SceneState::Edit or m_ActiveScene->IsPaused()) {
+		m_ToolbarPanel.OnImGuiRender(m_ViewportBounds[0], m_ViewportBounds[1]);
+	}
 
 	/*Viewport*/ {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
