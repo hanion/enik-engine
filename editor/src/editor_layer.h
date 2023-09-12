@@ -70,9 +70,6 @@ private:
 	bool m_ShowRendererStats = false;
 	bool m_ShowPerformance   = false;
 
-	Entity m_Tile;
-	Entity m_CameraEntity;
-
 	Ref<Texture2D> m_TexturePlay, m_TextureStop, m_TexturePause, m_TextureStep;
 
 	Timestep m_Timestep;
