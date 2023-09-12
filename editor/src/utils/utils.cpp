@@ -25,5 +25,39 @@ void SortDirectoryEntries(std::vector<std::filesystem::directory_entry>& entries
 		});
 }
 
+bool FolderContainsFilesWithExtensions(const std::filesystem::path& directory, const std::vector<std::string>& extensions) {
+	for (const auto& entry : std::filesystem::directory_iterator(directory)) {
+		if (entry.is_regular_file()) {
+			const std::string extension = entry.path().extension().string();
+			if (std::find(extensions.begin(), extensions.end(), extension) != extensions.end()) {
+				return true;
+			}
+		}
+		else if (entry.is_directory()) {
+			// recursively check subdirectories
+			if (FolderContainsFilesWithExtensions(entry.path(), extensions)) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void FilterFiles(std::vector<std::filesystem::directory_entry>& entries, const std::vector<std::string>& filters, const bool remove_folders) {
+	entries.erase(
+		std::remove_if(entries.begin(), entries.end(), [&](const std::filesystem::directory_entry& entry) {
+			if (entry.is_directory()) {
+				if (remove_folders) {
+					return not FolderContainsFilesWithExtensions(entry.path(), filters);
+				}
+				return false;
+			}
+			return std::find(filters.begin(), filters.end(), entry.path().extension().string()) == filters.end();
+		}),
+		entries.end()
+	);
+}
+
+
 }
 }

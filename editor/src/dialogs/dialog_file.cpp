@@ -14,6 +14,7 @@ void DialogFile::OpenDialog(DialogType type, const std::function<void()>& call_w
 	s_Data.ext = ext;
 	s_Data.is_open = true;
 	s_Data.call_function = call_when_confirmed;
+	s_Data.has_searched = false;
 }
 
 const std::filesystem::path& DialogFile::GetSelectedPath() {
@@ -75,6 +76,9 @@ DialogFileResult DialogFile::ShowPopup() {
 		}
 
 		Utils::SortDirectoryEntries(s_Data.entries);
+
+		std::vector<std::string> filters = {s_Data.ext};
+		Utils::FilterFiles(s_Data.entries, filters, s_Data.type == DialogType::OPEN_FILE);
 
 		s_Data.has_searched = true;
 		strcpy(file_path_buffer, s_Data.current_directory.string().c_str());

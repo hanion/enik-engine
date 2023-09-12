@@ -30,6 +30,8 @@ void FileSystemPanel::OnImGuiRender() {
 
 	if (not m_HasSearched) {
 		SearchDirectory();
+		Utils::SortDirectoryEntries(m_Entries);
+		Utils::FilterFiles(m_Entries, m_Filters);
 	}
 
 	ImGui::BeginDisabled(m_CurrentDirectory == Project::GetProjectDirectory());
@@ -53,15 +55,13 @@ void FileSystemPanel::OnImGuiRender() {
 	ImGui::End();
 }
 
-// Search directory and sort entries
+// Search directory
 void FileSystemPanel::SearchDirectory() {
 	m_Entries.clear();
 
 	for (const auto& entry : std::filesystem::directory_iterator(m_CurrentDirectory)) {
 		m_Entries.push_back(entry);
 	}
-
-	Utils::SortDirectoryEntries(m_Entries);
 
 	m_HasSearched = true;
 }

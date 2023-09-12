@@ -33,6 +33,8 @@ private:
 	std::vector<std::filesystem::directory_entry> m_Entries;
 
 	bool m_HasSearched = false;
+
+	const std::vector<std::string> m_Filters = {".escn", ".png", ".enik"};
 };
 
 }
