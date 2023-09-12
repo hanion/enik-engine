@@ -16,7 +16,7 @@ FileSystemPanel::FileSystemPanel(const Ref<Scene> context) {
 void FileSystemPanel::SetContext(const Ref<Scene>& context) {
 	m_Context = context;
 	if (m_CurrentDirectory.empty()) {
-		m_CurrentDirectory = Project::GetProjectDirectory();
+		ChangeDirectory(Project::GetProjectDirectory());
 	}
 }
 
@@ -35,22 +35,14 @@ void FileSystemPanel::OnImGuiRender() {
 	ImGui::BeginDisabled(m_CurrentDirectory == Project::GetProjectDirectory());
 	if (ImGui::Button(" ^ ")) {
 		if (!m_CurrentDirectory.empty()) {
-			m_CurrentDirectory = m_CurrentDirectory.parent_path();
-			m_HasSearched = false;
+			ChangeDirectory(m_CurrentDirectory.parent_path());
 		}
 	}
 	ImGui::EndDisabled();
 
 	ImGui::SameLine();
 
-	std::string directory = std::filesystem::relative(m_CurrentDirectory, Project::GetProjectDirectory()).string();
-	if (directory == ".") {
-		directory = "res://";
-	}
-	else {
-		directory = "res://" + directory + "/";
-	}
-	ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "%s", directory.c_str());
+	ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "%s", m_CurrentDirectoryText.c_str());
 
 	ImGui::Spacing();
 	ImGui::Separator();
@@ -91,8 +83,7 @@ void FileSystemPanel::ShowDirectoriesTable() {
 
 			if (ImGui::Selectable(fileName.c_str())) {
 				if (std::filesystem::is_directory(path)) {
-					m_CurrentDirectory = path;
-					m_HasSearched = false;
+					ChangeDirectory(path);
 				}
 				else {
 				}
@@ -114,4 +105,18 @@ void FileSystemPanel::ShowDirectoriesTable() {
 	}
 	ImGui::EndChild();
 }
+
+void FileSystemPanel::ChangeDirectory(const std::filesystem::path& directory) {
+	m_CurrentDirectory = directory;
+	m_HasSearched = false;
+
+	m_CurrentDirectoryText = std::filesystem::relative(m_CurrentDirectory, Project::GetProjectDirectory()).string();
+	if (m_CurrentDirectoryText == ".") {
+		m_CurrentDirectoryText = "res://";
+	}
+	else {
+		m_CurrentDirectoryText = "res://" + m_CurrentDirectoryText + "/";
+	}
+}
+
 }

@@ -22,10 +22,13 @@ private:
 	void SearchDirectory();
 	void ShowDirectoriesTable();
 
+	void ChangeDirectory(const std::filesystem::path& directory);
+
 private:
 	Ref<Scene> m_Context;
 
 	std::filesystem::path m_CurrentDirectory;
+	std::string m_CurrentDirectoryText;
 
 	std::vector<std::filesystem::directory_entry> m_Entries;
 
