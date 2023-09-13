@@ -25,7 +25,11 @@ void SortDirectoryEntries(std::vector<std::filesystem::directory_entry>& entries
 		});
 }
 
-bool FolderContainsFilesWithExtensions(const std::filesystem::path& directory, const std::vector<std::string>& extensions) {
+bool FolderContainsFilesWithExtensions(const std::filesystem::path& directory, const std::vector<std::string>& extensions, int depth) {
+	if (depth == 0) {
+		return true;
+	}
+
 	for (const auto& entry : std::filesystem::directory_iterator(directory)) {
 		if (entry.is_regular_file()) {
 			const std::string extension = entry.path().extension().string();
@@ -35,7 +39,7 @@ bool FolderContainsFilesWithExtensions(const std::filesystem::path& directory, c
 		}
 		else if (entry.is_directory()) {
 			// recursively check subdirectories
-			if (FolderContainsFilesWithExtensions(entry.path(), extensions)) {
+			if (FolderContainsFilesWithExtensions(entry.path(), extensions, --depth)) {
 				return true;
 			}
 		}
