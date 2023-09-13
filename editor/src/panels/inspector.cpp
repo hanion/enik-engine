@@ -113,10 +113,9 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		ImGui::ColorEdit4("##Sprite Color", glm::value_ptr(sprite.Color));
 		// ImGui::ColorEdit3("Sprite Color", glm::value_ptr(sprite.Color));
 
-		ImGuiUtils::PrefixLabel("Tile Scale");
-		ImGui::DragFloat("##Tile Scale", &sprite.TileScale, 0.01f);
-
 		DisplaySpriteTexture(sprite);
+
+		DisplaySubTexture(sprite);
 	});
 
 	DisplayComponentInInspector<Component::NativeScript>("Native Script", entity, true, [&]() {
@@ -136,7 +135,7 @@ void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity
 		return;
 	}
 
-	ImGuiTreeNodeFlags tree_node_flags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
+	static ImGuiTreeNodeFlags tree_node_flags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
 	tree_node_flags |= ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen;
 	tree_node_flags |= ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_AllowItemOverlap;
 
@@ -204,18 +203,20 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 			}
 			ImGui::EndDragDropTarget();
 		}
-    };
+	};
 
 	ImGuiUtils::PrefixLabel("Texture");
 
 	if (sprite.TexturePath.empty()) {
 		if (ImGui::Button("Add Texture")) {
-			DialogFile::OpenDialog(DialogType::OPEN_FILE,
-				[&](){
+			DialogFile::OpenDialog(
+				DialogType::OPEN_FILE,
+				[&]() {
 					auto relative = std::filesystem::relative(DialogFile::GetSelectedPath(), Project::GetProjectDirectory());
 					sprite.TexturePath = relative;
 					sprite.Texture = Texture2D::Create(DialogFile::GetSelectedPath());
-				}, ".png");
+				},
+				".png");
 		}
 		BeDragDropTargetTexture();
 		return;
@@ -279,8 +280,65 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 		ImGui::EndChild();
 	}
 
+	if (sprite.Texture != nullptr) {
+		ImGuiUtils::PrefixLabel("Tile Scale");
+		ImGui::DragFloat("##Tile Scale", &sprite.TileScale, 0.01f);
+	}
+
 	if (ImGui::Checkbox("Filter", &sprite.mag_filter_linear)) {
 		sprite.Texture = Texture2D::Create(Project::GetAbsolutePath(sprite.TexturePath), sprite.mag_filter_linear);
+	}
+}
+
+void InspectorPanel::DisplaySubTexture(Component::SpriteRenderer& sprite) {
+	if (sprite.SubTexture == nullptr) {
+		if (ImGui::Button("Create Sub Texture")) {
+			sprite.SubTexture = SubTexture2D::CreateFromTileIndex(
+				sprite.Texture, glm::vec2(18), glm::vec2(0), glm::vec2(2));
+		}
+		return;
+	}
+
+	static ImGuiTreeNodeFlags tree_node_flags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
+	tree_node_flags |= ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen;
+	tree_node_flags |= ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_AllowItemOverlap;
+
+	ImGui::TableNextRow();
+	ImGui::TableSetColumnIndex(0);
+
+	bool remove_sub_texture = false;
+
+	if (ImGui::TreeNodeEx("##DisplaySubTexture", tree_node_flags, "Sub Texture")) {
+		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+		ImGui::SameLine(ImGui::GetContentRegionAvail().x - GImGui->Style.FramePadding.x);
+		if (ImGui::Button("...", ImVec2(lineHeight, lineHeight))) {
+			ImGui::OpenPopup("SubTextureSettings");
+		}
+		if (ImGui::BeginPopup("SubTextureSettings")) {
+			if (ImGui::MenuItem("Delete SubTexture")) {
+				remove_sub_texture = true;
+			}
+			ImGui::EndPopup();
+		}
+
+		ImGuiUtils::PrefixLabel("Tile Size");
+		if (ImGui::DragFloat2("##TileSize", glm::value_ptr(sprite.SubTexture->GetTileSize()), 0.01f)) {
+			sprite.SubTexture->UpdateSubTexture2D();
+		}
+		ImGuiUtils::PrefixLabel("Tile Index");
+		if (ImGui::DragFloat2("##TileIndex", glm::value_ptr(sprite.SubTexture->GetTileIndex()), 0.01f)) {
+			sprite.SubTexture->UpdateSubTexture2D();
+		}
+		ImGuiUtils::PrefixLabel("Tile Separation");
+		if (ImGui::DragFloat2("##TileSeparation", glm::value_ptr(sprite.SubTexture->GetTileSeparation()), 0.01f)) {
+			sprite.SubTexture->UpdateSubTexture2D();
+		}
+
+		ImGui::TreePop();
+	}
+
+	if (remove_sub_texture) {
+		sprite.SubTexture.reset();
 	}
 }
 

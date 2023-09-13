@@ -29,6 +29,7 @@ private:
 	void DisplayComponentInPopup(const std::string& name);
 
 	void DisplaySpriteTexture(Component::SpriteRenderer& sprite);
+	void DisplaySubTexture(Component::SpriteRenderer& sprite);
 
 	void DisplayNativeScriptsInPopup();
 

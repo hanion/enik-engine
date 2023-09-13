@@ -3,20 +3,24 @@
 
 namespace Enik {
 
-SubTexture2D::SubTexture2D(const Ref<Texture2D>& texture, const glm::vec2& cell_size, const glm::vec2& tile_index,  const glm::vec2& sprite_sep)
-	: m_Texture(texture) {
+SubTexture2D::SubTexture2D(const Ref<Texture2D>& texture, const glm::vec2& tile_size, const glm::vec2& tile_index,  const glm::vec2& tile_sep)
+	: m_Texture(texture), m_TileSize(tile_size), m_TileIndex(tile_index), m_TileSeparation(tile_sep) {
+	UpdateSubTexture2D();
+}
 
-	glm::vec2 atlasSize = glm::vec2(texture->GetWidth(), texture->GetHeight());
-	glm::vec2 sep = tile_index * sprite_sep;
+Ref<SubTexture2D> SubTexture2D::CreateFromTileIndex(const Ref<Texture2D> texture, const glm::vec2& tile_size, const glm::vec2& tile_index, const glm::vec2& tile_sep) {
+	return CreateRef<SubTexture2D>(texture, tile_size, tile_index, tile_sep);
+}
 
-	m_TextureCoords[0] = {( tile_index.x      * cell_size.x + sep.x) / atlasSize.x, ( tile_index.y      * cell_size.y + sep.y) / atlasSize.y};
-	m_TextureCoords[1] = {((tile_index.x + 1) * cell_size.x + sep.x) / atlasSize.x, ( tile_index.y      * cell_size.y + sep.y) / atlasSize.y};
-	m_TextureCoords[2] = {((tile_index.x + 1) * cell_size.x + sep.x) / atlasSize.x, ((tile_index.y + 1) * cell_size.y + sep.y) / atlasSize.y};
-	m_TextureCoords[3] = {( tile_index.x      * cell_size.x + sep.x) / atlasSize.x, ((tile_index.y + 1) * cell_size.y + sep.y) / atlasSize.y};
+void SubTexture2D::UpdateSubTexture2D() {
+	glm::vec2 atlas_size = glm::vec2(m_Texture->GetWidth(), m_Texture->GetHeight());
+	glm::vec2 sep = m_TileIndex * m_TileSeparation;
+
+	m_TextureCoords[0] = {( m_TileIndex.x      * m_TileSize.x + sep.x) / atlas_size.x, ( m_TileIndex.y      * m_TileSize.y + sep.y) / atlas_size.y};
+	m_TextureCoords[1] = {((m_TileIndex.x + 1) * m_TileSize.x + sep.x) / atlas_size.x, ( m_TileIndex.y      * m_TileSize.y + sep.y) / atlas_size.y};
+	m_TextureCoords[2] = {((m_TileIndex.x + 1) * m_TileSize.x + sep.x) / atlas_size.x, ((m_TileIndex.y + 1) * m_TileSize.y + sep.y) / atlas_size.y};
+	m_TextureCoords[3] = {( m_TileIndex.x      * m_TileSize.x + sep.x) / atlas_size.x, ((m_TileIndex.y + 1) * m_TileSize.y + sep.y) / atlas_size.y};
 
 }
 
-Ref<SubTexture2D> SubTexture2D::CreateFromTileIndex(const Ref<Texture2D> texture, const glm::vec2& cell_size, const glm::vec2& tile_index, const glm::vec2& sprite_sep) {
-	return CreateRef<SubTexture2D>(texture, cell_size, tile_index, sprite_sep);
-}
 }
