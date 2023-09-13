@@ -261,6 +261,17 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::Key << "TexturePath" << YAML::Value << sprite.TexturePath.string(); // TODO asset manager
 		out << YAML::Key << "mag_filter_linear" << YAML::Value << sprite.mag_filter_linear;
 
+		if (sprite.SubTexture != nullptr) {
+			out << YAML::Key << "SubTexture";
+			out << YAML::BeginMap;
+
+			out << YAML::Key << "TileSize" << YAML::Value << sprite.SubTexture->GetTileSize();
+			out << YAML::Key << "TileIndex" << YAML::Value << sprite.SubTexture->GetTileIndex();
+			out << YAML::Key << "TileSeparation" << YAML::Value << sprite.SubTexture->GetTileSeparation();
+
+			out << YAML::EndMap;
+		}
+
 		out << YAML::EndMap;
 	}
 
@@ -310,6 +321,15 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 			else {
 				sprite.Texture = m_ErrorTexture;
 			}
+		}
+
+		if (spriteRenderer["SubTexture"]) {
+			glm::vec2 tile_size = spriteRenderer["SubTexture"]["TileSize"].as<glm::vec2>();
+			glm::vec2 tile_index = spriteRenderer["SubTexture"]["TileIndex"].as<glm::vec2>();
+			glm::vec2 tile_separation = spriteRenderer["SubTexture"]["TileSeparation"].as<glm::vec2>();
+
+			sprite.SubTexture = SubTexture2D::CreateFromTileIndex(
+				sprite.Texture, tile_size, tile_index, tile_separation);
 		}
 
 	}
