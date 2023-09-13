@@ -11,13 +11,11 @@ static register_all_fn register_all;
 static void* script_module_handle;
 
 void ScriptSystem::LoadScriptModuleFirstTime() {
-	if (s_Data.file_watcher == nullptr) {
-		s_Data.reload_pending = true;
-		ReloadScriptModule();
+	s_Data.reload_pending = true;
+	ReloadScriptModule();
 
-		auto sm_path = Project::GetAbsolutePath(Project::GetActive()->GetConfig().script_module_path);
-		s_Data.file_watcher = CreateScope<filewatch::FileWatch<std::string>>(sm_path, OnFileWatcherEvent);
-	}
+	auto sm_path = Project::GetAbsolutePath(Project::GetActive()->GetConfig().script_module_path);
+	s_Data.file_watcher = CreateScope<filewatch::FileWatch<std::string>>(sm_path, OnFileWatcherEvent);
 }
 
 void ScriptSystem::ReloadScriptModule() {
