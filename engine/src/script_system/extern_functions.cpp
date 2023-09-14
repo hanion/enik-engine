@@ -29,4 +29,12 @@ void InspectorExportFloat3(const std::string& text, float v[3], float v_speed, f
 	ImGui::DragFloat3(("##"+text).c_str(), v, v_speed, v_min, v_max, format);
 }
 
+void InspectorExportButton(const std::string& text, const std::function<void()>& lambda) {
+	static float line_height = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+	ImVec2 full_width = ImVec2(ImGui::GetContentRegionAvail().x, line_height);
+	if (ImGui::Button(text.c_str(), full_width)) {
+		lambda();
+	}
+}
+
 }
