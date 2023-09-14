@@ -107,6 +107,10 @@ void FileSystemPanel::ShowDirectoriesTable() {
 }
 
 void FileSystemPanel::ChangeDirectory(const std::filesystem::path& directory) {
+	if (directory.empty() or not std::filesystem::exists(directory)) {
+		return;
+	}
+
 	m_CurrentDirectory = directory;
 	m_HasSearched = false;
 
