@@ -1,6 +1,12 @@
 #include "script_system.h"
 #include "core/application.h"
 
+#ifdef EN_PLATFORM_LINUX
+#include <dlfcn.h>
+#elif defined(EN_PLATFORM_WINDOWS)
+#include <windows.h>
+#endif
+
 namespace Enik {
 
 static ScriptSystem::ScriptSystemData s_Data;
@@ -41,6 +47,7 @@ void ScriptSystem::LoadScriptModule(const std::filesystem::path& script_module_p
 	}
 
 	// open the library
+#ifdef EN_PLATFORM_LINUX
 	script_module_handle = dlopen(script_module_path.c_str(), RTLD_LAZY);
 
 	const char* dl_error = dlerror();
@@ -48,9 +55,14 @@ void ScriptSystem::LoadScriptModule(const std::filesystem::path& script_module_p
 		EN_CORE_ERROR("Error while opening script module:\n    {0}", dl_error);
 		return;
 	}
+#elif defined(EN_PLATFORM_WINDOWS)
+	script_module_handle = LoadLibraryA(script_module_path.c_str());
+#endif
 
 	// load the symbol
-	void* symbol = dlsym(script_module_handle, "RegisterAllScripts");
+	void* symbol;
+#ifdef EN_PLATFORM_LINUX
+	symbol = dlsym(script_module_handle, "RegisterAllScripts");
 
 	const char* dlsym_error = dlerror();
 	if (dlsym_error) {
@@ -58,6 +70,9 @@ void ScriptSystem::LoadScriptModule(const std::filesystem::path& script_module_p
 		dlclose(script_module_handle);
 		return;
 	}
+#elif defined(EN_PLATFORM_WINDOWS)
+	symbol = GetProcAddress(script_module_handle, "RegisterAllScripts");
+#endif
 
 	if (symbol and symbol != nullptr) {
 		register_all = reinterpret_cast<register_all_fn>(symbol);
@@ -72,12 +87,16 @@ void ScriptSystem::LoadScriptModule(const std::filesystem::path& script_module_p
 void ScriptSystem::UnloadScriptModule() {
 	// close the library
 	if (script_module_handle and script_module_handle != nullptr) {
+#ifdef EN_PLATFORM_LINUX
 		if (dlclose(script_module_handle) != 0) {
 			const char* dlclose_error = dlerror();
 			if (dlclose_error) {
 				EN_CORE_ERROR("Error while unloading script module:\n    {0}", dlclose_error);
 			}
 		}
+#elif defined(EN_PLATFORM_WINDOWS)
+		FreeLibrary(script_module_handle);
+#endif
 
 		script_module_handle = nullptr;
 		register_all = nullptr;
