@@ -25,5 +25,8 @@ file(GLOB include_files
 
 add_executable(${PROJECT_NAME} ${source_files} ${include_files})
 
+# This tells the executable to search for libraries in its own directory.
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath='$ORIGIN'")
+
 target_link_libraries(${PROJECT_NAME} enik-engine)
 target_include_directories(${PROJECT_NAME} PRIVATE enik-engine editor)
