@@ -23,6 +23,7 @@ file(GLOB source_files
 	"${source_dir}/scene/*.cpp"
 	"${source_dir}/project/*.cpp"
 	"${source_dir}/script_system/*.cpp"
+	"${source_dir}/physics/*.cpp"
 )
 file(GLOB include_files
 	"${PROJECT_SOURCE_DIR}/include/*.h"
@@ -38,6 +39,7 @@ file(GLOB include_files
 	"${source_dir}/scene/*.h"
 	"${source_dir}/project/*.h"
 	"${source_dir}/script_system/*.h"
+	"${source_dir}/physics/*.h"
 )
 
 

@@ -115,6 +115,9 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 				ns.Instance->OnUpdate(ts);
 			}
 		});
+
+		// TODO do this in OnFixedUpdate
+		m_PhysicsWorld.Step(ts, m_Registry);
 	}
 
 	Renderer2D::EndScene();

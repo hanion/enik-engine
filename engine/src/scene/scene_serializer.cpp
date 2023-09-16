@@ -285,6 +285,28 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::EndMap;
 	}
 
+	if (entity.Has<Component::RigidBody>()) {
+		out << YAML::Key << "Component::RigidBody";
+		out << YAML::BeginMap;
+
+		auto& rigid_body = entity.Get<Component::RigidBody>();
+		out << YAML::Key << "Mass" << YAML::Value << rigid_body.Mass;
+
+		out << YAML::EndMap;
+	}
+
+	if (entity.Has<Component::Collider>()) {
+		out << YAML::Key << "Component::Collider";
+		out << YAML::BeginMap;
+
+		auto& collider = entity.Get<Component::Collider>();
+		out << YAML::Key << "Shape" << YAML::Value << collider.Shape;
+		out << YAML::Key << "flat" << YAML::Value << collider.flat;
+		out << YAML::Key << "vector" << YAML::Value << collider.vector;
+
+		out << YAML::EndMap;
+	}
+
 	out << YAML::EndMap;
 }
 
@@ -347,6 +369,20 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 	}
 
 	DeserializeNativeScript(entity, deserialized_entity);
+
+	auto rigid_body = entity["Component::RigidBody"];
+	if (rigid_body) {
+		auto& body = deserialized_entity.Add<Component::RigidBody>();
+		body.Mass = rigid_body["Mass"].as<float>();
+	}
+
+	auto collider = entity["Component::Collider"];
+	if (collider) {
+		auto& col = deserialized_entity.Add<Component::Collider>();
+		col.Shape = (Component::ColliderShape)collider["Shape"].as<int>();
+		col.flat = collider["flat"].as<float>();
+		col.vector = collider["vector"].as<glm::vec3>();
+	}
 
 }
 

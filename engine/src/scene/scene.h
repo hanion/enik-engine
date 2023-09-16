@@ -4,6 +4,7 @@
 #include "renderer/ortho_camera_controller.h"
 #include "core/uuid.h"
 #include <entt/entt.hpp>
+#include "physics/physics_world.h"
 
 namespace Enik {
 
@@ -48,6 +49,8 @@ private:
 
 	bool m_IsPaused = false;
 	int m_StepFrames = 0;
+
+	PhysicsWorld m_PhysicsWorld;
 
 	friend class Entity;
 	friend class SceneTreePanel;

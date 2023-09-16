@@ -100,6 +100,24 @@ struct NativeScript {
 	}
 };
 
+
+struct RigidBody {
+	glm::vec3 Velocity;
+	glm::vec3 Force;
+	float Mass;
+};
+
+
+
+enum ColliderShape {
+	SPHERE, PLANE
+};
+struct Collider {
+	ColliderShape Shape = ColliderShape::SPHERE;
+	glm::vec3 vector = glm::vec3(0,1,0);
+	float flat = 1.0f;
+};
+
 }
 
 }

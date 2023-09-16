@@ -47,6 +47,8 @@ void InspectorPanel::OnImGuiRender() {
 		if (ImGui::BeginPopup("AddComponent")) {
 			DisplayComponentInPopup<Component::Camera>("Camera");
 			DisplayComponentInPopup<Component::SpriteRenderer>("Sprite Renderer");
+			DisplayComponentInPopup<Component::RigidBody>("Rigid Body");
+			DisplayComponentInPopup<Component::Collider>("Collider");
 			DisplayNativeScriptsInPopup();
 			ImGui::EndPopup();
 		}
@@ -126,6 +128,38 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			script.Instance = script.InstantiateScript();
 		}
 		script.Instance->OnInspectorRender();
+	});
+
+	DisplayComponentInInspector<Component::RigidBody>("Rigid Body", entity, true, [&]() {
+		auto& rigid_body = entity.Get<Component::RigidBody>();
+
+		glm::vec3& velocity = rigid_body.Velocity;
+		ImGuiUtils::PrefixLabel("Velocity");
+		ImGui::DragFloat3("##Velocity", glm::value_ptr(velocity), 0.01f, 0.01f);
+
+		glm::vec3& force = rigid_body.Force;
+		ImGuiUtils::PrefixLabel("Force");
+		ImGui::DragFloat3("##Force", glm::value_ptr(force), 0.01f, 0.01f);
+
+		float& mass = rigid_body.Mass;
+		ImGuiUtils::PrefixLabel("Mass");
+		ImGui::DragFloat("##Mass", &mass, 0.01f, 0.01f);
+	});
+
+	DisplayComponentInInspector<Component::Collider>("Collider", entity, true, [&]() {
+		auto& collider = entity.Get<Component::Collider>();
+
+		std::string text = collider.Shape == (Component::ColliderShape::SPHERE) ? "Sphere" : "Plane";
+		if (ImGui::Button(text.c_str())) {
+			collider.Shape = (collider.Shape == Component::ColliderShape::SPHERE) ?
+				Component::ColliderShape::PLANE : Component::ColliderShape::SPHERE;
+		}
+
+		ImGuiUtils::PrefixLabel("Radius");
+		ImGui::DragFloat("##Radius", &collider.flat, 0.01f);
+
+		ImGuiUtils::PrefixLabel("Center");
+		ImGui::DragFloat3("##Center", glm::value_ptr(collider.vector), 0.01f);
 	});
 }
 
