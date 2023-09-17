@@ -281,6 +281,10 @@ void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::Sp
 	s_Data.Stats.QuadCount++;
 }
 
+void Renderer2D::DrawLine(const glm::vec2& p0, const glm::vec2& p1, const glm::vec4& color) {
+	DrawLine(glm::vec3(p0.x, p0.y, 0.99f), glm::vec3(p1.x, p1.y, 0.99f), color);
+}
+
 void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color) {
 	s_Data.LineVertexBufferPtr->Position = p0;
 	s_Data.LineVertexBufferPtr->Color = color;
@@ -291,6 +295,39 @@ void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::v
 	s_Data.LineVertexBufferPtr++;
 
 	s_Data.LineVertexCount += 2;
+}
+
+void Renderer2D::DrawRect(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color) {
+	DrawRect(glm::vec3(position.x, position.y, 0.99f), size, color);
+}
+
+void Renderer2D::DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color) {
+    glm::vec3 p0 = glm::vec3(position.x - size.x * 0.5f, position.y - size.y * 0.5f, position.z);
+    glm::vec3 p1 = glm::vec3(position.x + size.x * 0.5f, position.y - size.y * 0.5f, position.z);
+    glm::vec3 p2 = glm::vec3(position.x + size.x * 0.5f, position.y + size.y * 0.5f, position.z);
+    glm::vec3 p3 = glm::vec3(position.x - size.x * 0.5f, position.y + size.y * 0.5f, position.z);
+
+    DrawLine(p0, p1, color);
+    DrawLine(p1, p2, color);
+    DrawLine(p2, p3, color);
+    DrawLine(p3, p0, color);
+}
+
+void Renderer2D::DrawRect(const glm::mat4& transform, const glm::vec4& color) {
+	glm::vec3 line_vertices[4];
+
+	for (size_t i = 0; i < 4; i++) {
+		line_vertices[i] = transform * s_Data.QuadVertexPositions[i];
+	}
+
+	DrawLine(line_vertices[0], line_vertices[1], color);
+	DrawLine(line_vertices[1], line_vertices[2], color);
+	DrawLine(line_vertices[2], line_vertices[3], color);
+	DrawLine(line_vertices[3], line_vertices[0], color);
+}
+
+void Renderer2D::DrawRect(const Component::Transform& transform, const glm::vec4& color) {
+	DrawRect(transform.GetTransform(), color);
 }
 
 void Renderer2D::ResetStats() {
