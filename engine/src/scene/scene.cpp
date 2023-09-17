@@ -88,30 +88,15 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 
 	// Rendering
 
-	Camera* mainCamera = nullptr;
-	glm::mat4 mainCameraTransform;
-	/* Get Camera */ {
-		EN_PROFILE_SECTION("Get Camera");
-
-		auto view = m_Registry.view<Component::Transform, Component::Camera>();
-		for (auto entity : view) {
-			Component::Transform& transform = view.get<Component::Transform>  (entity);
-			Component::Camera& camera       = view.get<Component::Camera>     (entity);
-
-			if (not camera.Primary) {
-				continue;
-			}
-
-			mainCamera = &camera.Cam;
-			mainCameraTransform = transform.GetTransform();
-		}
-	}
-
-	if (not mainCamera) {
+	auto primary_camera = GetPrimaryCameraEntity();
+	if (not primary_camera) {
 		return;
 	}
 
-	Renderer2D::BeginScene(*mainCamera, mainCameraTransform);
+	Renderer2D::BeginScene(
+		primary_camera.Get<Component::Camera>().Cam,
+		primary_camera.Get<Component::Transform>().GetTransform()
+	);
 
 	/* Get Sprites */ {
 		EN_PROFILE_SECTION("Get Sprites");
@@ -157,6 +142,19 @@ void Scene::ClearNativeScripts() {
 	});
 }
 
+Entity Scene::GetPrimaryCameraEntity() {
+	EN_PROFILE_SECTION("GetPrimaryCameraEntity");
+
+	auto view = m_Registry.view<Component::Transform, Component::Camera>();
+	for (auto entity : view) {
+		Component::Camera& camera = view.get<Component::Camera>(entity);
+		if (camera.Primary) {
+			return Entity(entity, this);
+		}
+	}
+
+	return Entity();
+}
 
 Entity Scene::FindEntityByUUID(UUID uuid) {
 	auto view = m_Registry.view<Component::ID>();

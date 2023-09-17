@@ -36,6 +36,8 @@ public:
 	void DestroyScriptableEntities();
 	void ClearNativeScripts();
 
+	Entity GetPrimaryCameraEntity();
+
 	Entity FindEntityByUUID(UUID uuid);
 	Entity FindEntityByName(const std::string& name);
 
