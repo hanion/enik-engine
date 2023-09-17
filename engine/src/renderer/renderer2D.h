@@ -27,6 +27,8 @@ public:
 	static void DrawRect(const glm::mat4& transform, const glm::vec4& color);
 	static void DrawRect(const Component::Transform& transform, const glm::vec4& color);
 
+	static void DrawCircle(const glm::vec2& position, float radius, int segments, const glm::vec4& color);
+
 	struct Statistics {
 		uint32_t DrawCalls = 0;
 		uint32_t QuadCount = 0;

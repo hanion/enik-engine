@@ -330,6 +330,24 @@ void Renderer2D::DrawRect(const Component::Transform& transform, const glm::vec4
 	DrawRect(transform.GetTransform(), color);
 }
 
+void Renderer2D::DrawCircle(const glm::vec2& position, float radius, int segments, const glm::vec4& color) {
+	float angle_increment = 2.0f * glm::pi<float>() / static_cast<float>(segments);
+	glm::vec2 p0, p1;
+
+	for (int i = 0; i < segments; i++) {
+		float angle0 = i       * angle_increment;
+		float angle1 = (i + 1) * angle_increment;
+
+		p0.x = position.x + radius * glm::cos(angle0);
+		p0.y = position.y + radius * glm::sin(angle0);
+
+		p1.x = position.x + radius * glm::cos(angle1);
+		p1.y = position.y + radius * glm::sin(angle1);
+
+		DrawLine(p0, p1, color);
+	}
+}
+
 void Renderer2D::ResetStats() {
 	s_Data.Stats.DrawCalls = 0;
 	s_Data.Stats.QuadCount = 0;
