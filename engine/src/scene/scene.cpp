@@ -64,6 +64,30 @@ void Scene::OnUpdateEditor(Timestep ts, OrthographicCameraController& camera) {
 void Scene::OnUpdateRuntime(Timestep ts) {
 	EN_PROFILE_SECTION("Scene::OnUpdateRuntime");
 
+
+	/* Update Scripts */
+	if (not m_IsPaused or m_StepFrames-- > 0) {
+		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
+			if (not ns.Instance or ns.Instance == nullptr) {
+				if (ns.InstantiateScript and ns.InstantiateScript != nullptr) {
+					ns.Instance = ns.InstantiateScript();
+					ns.Instance->m_Entity = Entity(entity, this);
+					ns.Instance->OnCreate();
+				}
+			}
+			else {
+				ns.Instance->OnUpdate(ts);
+			}
+		});
+
+		// TODO do this in OnFixedUpdate
+		m_PhysicsWorld.Step(ts, m_Registry);
+	}
+
+
+
+	// Rendering
+
 	Camera* mainCamera = nullptr;
 	glm::mat4 mainCameraTransform;
 	/* Get Camera */ {
@@ -99,25 +123,6 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 
 			Renderer2D::DrawQuad(transform, sprite, (int32_t)entity);
 		}
-	}
-
-	/* Update Scripts */
-	if (not m_IsPaused or m_StepFrames-- > 0) {
-		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
-			if (not ns.Instance or ns.Instance == nullptr) {
-				if (ns.InstantiateScript and ns.InstantiateScript != nullptr) {
-					ns.Instance = ns.InstantiateScript();
-					ns.Instance->m_Entity = Entity(entity, this);
-					ns.Instance->OnCreate();
-				}
-			}
-			else {
-				ns.Instance->OnUpdate(ts);
-			}
-		});
-
-		// TODO do this in OnFixedUpdate
-		m_PhysicsWorld.Step(ts, m_Registry);
 	}
 
 	Renderer2D::EndScene();
