@@ -155,11 +155,21 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 				Component::ColliderShape::PLANE : Component::ColliderShape::SPHERE;
 		}
 
-		ImGuiUtils::PrefixLabel("Radius");
-		ImGui::DragFloat("##Radius", &collider.flat, 0.01f);
+		if (collider.Shape == Component::ColliderShape::SPHERE) {
+			ImGuiUtils::PrefixLabel("Radius");
+			ImGui::DragFloat("##Radius", &collider.flat, 0.01f);
 
-		ImGuiUtils::PrefixLabel("Center");
-		ImGui::DragFloat3("##Center", glm::value_ptr(collider.vector), 0.01f);
+			ImGuiUtils::PrefixLabel("Center");
+			ImGui::DragFloat3("##Center", glm::value_ptr(collider.vector), 0.01f);
+		}
+		else {
+			ImGuiUtils::PrefixLabel("Thickness");
+			ImGui::DragFloat("##Thickness", &collider.flat, 0.01f);
+
+			ImGuiUtils::PrefixLabel("Normal");
+			ImGui::DragFloat3("##Normal", glm::value_ptr(collider.vector), 0.01f);
+		}
+
 	});
 }
 
