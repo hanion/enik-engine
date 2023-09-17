@@ -118,10 +118,7 @@ void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform) {
 
 	s_Data.TextureColorShader->SetMat4("u_ViewProjection", viewProjectionMatrix);
 
-	s_Data.QuadIndexCount = 0;
-	s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-
-	s_Data.TextureSlotIndex = 1;
+	StartBatch();
 }
 
 void Renderer2D::BeginScene(const OrthographicCamera& camera) {
@@ -129,38 +126,38 @@ void Renderer2D::BeginScene(const OrthographicCamera& camera) {
 
 	s_Data.TextureColorShader->SetMat4("u_ViewProjection", camera.GetViewProjectionMatrix());
 
-	s_Data.QuadIndexCount = 0;
-	s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-
-	s_Data.TextureSlotIndex = 1;
+	StartBatch();
 }
 
 void Renderer2D::EndScene() {
 	EN_PROFILE_SCOPE;
 
-	uint32_t dataSize = (uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase;
-	s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
 	Flush();
+}
+
+void Renderer2D::StartBatch() {
+	s_Data.QuadIndexCount = 0;
+	s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
+
+	s_Data.TextureSlotIndex = 1;
 }
 
 void Renderer2D::Flush() {
 	EN_PROFILE_SCOPE;
 
-	for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++) {
-		s_Data.TextureSlots[i]->Bind(i);
+	if (s_Data.QuadIndexCount) {
+		uint32_t dataSize = (uint8_t*)s_Data.QuadVertexBufferPtr - (uint8_t*)s_Data.QuadVertexBufferBase;
+		s_Data.QuadVertexBuffer->SetData(s_Data.QuadVertexBufferBase, dataSize);
+
+		for (uint32_t i = 0; i < s_Data.TextureSlotIndex; i++) {
+			s_Data.TextureSlots[i]->Bind(i);
+		}
+
+		RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
+		s_Data.Stats.DrawCalls++;
 	}
 
-	RenderCommand::DrawIndexed(s_Data.QuadVertexArray, s_Data.QuadIndexCount);
-	s_Data.Stats.DrawCalls++;
-}
 
-void Renderer2D::FlushAndReset() {
-	EndScene();
-
-	s_Data.QuadIndexCount = 0;
-	s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
-
-	s_Data.TextureSlotIndex = 1;
 }
 
 
@@ -207,7 +204,8 @@ void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::Sp
 	}
 
 	if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
-		FlushAndReset();
+		Flush();
+		StartBatch();
 	}
 
 	glm::mat4 transform;

@@ -14,6 +14,7 @@ public:
 	static void BeginScene(const Camera& camera, const glm::mat4& transform);
 	static void BeginScene(const OrthographicCamera& camera);
 	static void EndScene();
+	static void StartBatch();
 	static void Flush();
 
 	static void DrawQuad(const Component::Transform& transform, const Component::SpriteRenderer& sprite, int32_t entityID = -1);
@@ -30,8 +31,6 @@ public:
 	static Statistics GetStats();
 
 private:
-	static void FlushAndReset();
-
 	static float GetTextureIndex(const Ref<Texture2D>& texture);
 };
 
