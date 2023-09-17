@@ -49,7 +49,7 @@ void Scene::OnUpdateEditor(Timestep ts, OrthographicCameraController& camera) {
 	/* Get Sprites */ {
 		EN_PROFILE_SECTION("Get Sprites");
 
-		auto group = m_Registry.group<Component::Transform>(entt::get<Component::SpriteRenderer>);
+		auto group = m_Registry.group<Component::SpriteRenderer>(entt::get<Component::Transform>);
 		for (auto entity : group) {
 			Component::Transform& transform   = group.get<Component::Transform>     (entity);
 			Component::SpriteRenderer& sprite = group.get<Component::SpriteRenderer>(entity);
@@ -116,7 +116,7 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 	/* Get Sprites */ {
 		EN_PROFILE_SECTION("Get Sprites");
 
-		auto group = m_Registry.group<Component::Transform>(entt::get<Component::SpriteRenderer>);
+		auto group = m_Registry.group<Component::SpriteRenderer>(entt::get<Component::Transform>);
 		for (auto entity : group) {
 			Component::Transform& transform   = group.get<Component::Transform>     (entity);
 			Component::SpriteRenderer& sprite = group.get<Component::SpriteRenderer>(entity);
