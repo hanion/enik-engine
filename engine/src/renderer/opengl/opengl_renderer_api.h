@@ -12,6 +12,7 @@ public:
 	virtual void Clear() override final;
 
 	virtual void DrawIndexed(const Ref<VertexArray>& vertex_array, uint32_t index_count) override final;
+	virtual void DrawLine(const Ref<VertexArray>& vertex_array, uint32_t vertex_count) override final;
 };
 
 

@@ -24,6 +24,10 @@ public:
 	inline static void DrawIndexed(const Ref<VertexArray>& vertex_array, uint32_t index_count = 0) {
 		s_RendererAPI->DrawIndexed(vertex_array, index_count);
 	}
+	inline static void DrawLine(const Ref<VertexArray>& vertex_array, uint32_t vertex_count = 0) {
+		s_RendererAPI->DrawLine(vertex_array, vertex_count);
+	}
+
 
 private:
 	static Scope<RendererAPI> s_RendererAPI;

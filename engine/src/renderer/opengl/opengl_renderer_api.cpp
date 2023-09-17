@@ -10,6 +10,9 @@ void OpenGLRendererAPI::Init() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_DEPTH_TEST);
+
+	// glEnable(GL_LINE_SMOOTH);
+	// glLineWidth(1.0f);
 }
 
 void OpenGLRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height) {
@@ -29,6 +32,11 @@ void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertex_array, uint32
 	uint32_t count = index_count ? index_count : vertex_array->GetIndexBuffer()->GetCount();
 	glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 
+}
+
+void OpenGLRendererAPI::DrawLine(const Ref<VertexArray>& vertex_array, uint32_t vertex_count) {
+	vertex_array->Bind();
+	glDrawArrays(GL_LINES, 0, vertex_count);
 }
 
 }

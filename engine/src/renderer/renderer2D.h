@@ -18,6 +18,7 @@ public:
 	static void Flush();
 
 	static void DrawQuad(const Component::Transform& transform, const Component::SpriteRenderer& sprite, int32_t entityID = -1);
+	static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color);
 
 	struct Statistics {
 		uint32_t DrawCalls = 0;

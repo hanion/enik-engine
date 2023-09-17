@@ -22,6 +22,7 @@ public:
 	virtual void Clear() = 0;
 
 	virtual void DrawIndexed(const Ref<VertexArray>& vertex_array, uint32_t index_count) = 0;
+	virtual void DrawLine(const Ref<VertexArray>& vertex_array, uint32_t vertex_count) = 0;
 
 	static inline API GetAPI() { return s_API; }
 

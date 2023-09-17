@@ -21,6 +21,12 @@ struct QuadVertex {
 	int a_EntityID;
 };
 
+struct LineVertex {
+	glm::vec3 Position;
+	glm::vec4 Color;
+};
+
+
 struct Renderer2DData {
 	static const uint32_t MaxQuads = 10000;
 	static const uint32_t MaxVertices = MaxQuads * 4;
@@ -32,9 +38,17 @@ struct Renderer2DData {
 	Ref<Shader> TextureColorShader;
 	Ref<Texture2D> WhiteTexture;
 
+	Ref<VertexArray> LineVertexArray;
+	Ref<VertexBuffer> LineVertexBuffer;
+	Ref<Shader> LineShader;
+
 	uint32_t QuadIndexCount = 0;
 	QuadVertex* QuadVertexBufferBase = nullptr;
 	QuadVertex* QuadVertexBufferPtr = nullptr;
+
+	uint32_t LineVertexCount = 0;
+	LineVertex* LineVertexBufferBase = nullptr;
+	LineVertex* LineVertexBufferPtr = nullptr;
 
 	static const glm::vec4 QuadVertexPositions[4];
 
@@ -91,6 +105,21 @@ void Renderer2D::Init() {
 	s_Data.QuadVertexArray->SetIndexBuffer(indexBuffer);
 	delete[] quadIndices;
 
+
+	// Lines
+	s_Data.LineVertexArray = VertexArray::Create();
+	s_Data.LineVertexBufferBase = new LineVertex[s_Data.MaxVertices];
+	s_Data.LineVertexBuffer = VertexBuffer::Create(s_Data.MaxVertices * sizeof(LineVertex));
+	BufferLayout line_layout = {
+		{ShaderDataType::Float3, "a_Position"},
+		{ShaderDataType::Float4, "a_Color"}};
+	s_Data.LineVertexBuffer->SetLayout(line_layout);
+	s_Data.LineVertexArray->AddVertexBuffer(s_Data.LineVertexBuffer);
+
+	s_Data.LineShader = Shader::Create(FULL_PATH_EDITOR("assets/shaders/line_shader.glsl"));
+	s_Data.LineShader->Bind();
+
+
 	s_Data.TextureColorShader = Shader::Create(FULL_PATH_EDITOR("assets/shaders/texture_color.glsl"));
 
 	s_Data.WhiteTexture = Texture2D::Create(1, 1);
@@ -139,6 +168,9 @@ void Renderer2D::StartBatch() {
 	s_Data.QuadIndexCount = 0;
 	s_Data.QuadVertexBufferPtr = s_Data.QuadVertexBufferBase;
 
+	s_Data.LineVertexCount = 0;
+	s_Data.LineVertexBufferPtr = s_Data.LineVertexBufferBase;
+
 	s_Data.TextureSlotIndex = 1;
 }
 
@@ -157,6 +189,12 @@ void Renderer2D::Flush() {
 		s_Data.Stats.DrawCalls++;
 	}
 
+	if (s_Data.LineVertexCount) {
+		uint32_t data_size = (uint32_t)((uint8_t*)s_Data.LineVertexBufferPtr - (uint8_t*)s_Data.LineVertexBufferBase);
+		s_Data.LineVertexBuffer->SetData(s_Data.LineVertexBufferBase, data_size);
+		RenderCommand::DrawLine(s_Data.LineVertexArray, s_Data.LineVertexCount);
+		s_Data.Stats.DrawCalls++;
+	}
 
 }
 
@@ -241,6 +279,18 @@ void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::Sp
 	s_Data.QuadIndexCount += 6;
 
 	s_Data.Stats.QuadCount++;
+}
+
+void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color) {
+	s_Data.LineVertexBufferPtr->Position = p0;
+	s_Data.LineVertexBufferPtr->Color = color;
+	s_Data.LineVertexBufferPtr++;
+
+	s_Data.LineVertexBufferPtr->Position = p1;
+	s_Data.LineVertexBufferPtr->Color = color;
+	s_Data.LineVertexBufferPtr++;
+
+	s_Data.LineVertexCount += 2;
 }
 
 void Renderer2D::ResetStats() {
