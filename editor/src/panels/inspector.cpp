@@ -336,6 +336,9 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 }
 
 void InspectorPanel::DisplaySubTexture(Component::SpriteRenderer& sprite) {
+	if (sprite.Texture == nullptr) {
+		return;
+	}
 	if (sprite.SubTexture == nullptr) {
 		if (ImGui::Button("Create Sub Texture")) {
 			sprite.SubTexture = SubTexture2D::CreateFromTileIndex(
