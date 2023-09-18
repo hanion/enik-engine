@@ -52,6 +52,8 @@ private:
 
 	void UpdateWindowTitle();
 
+	void OnOverlayRender();
+
 private:
 	Ref<FrameBuffer> m_FrameBuffer;
 
@@ -69,6 +71,7 @@ private:
 
 	bool m_ShowRendererStats = false;
 	bool m_ShowPerformance   = false;
+	bool m_ShowColliders     = true;
 
 	Ref<Texture2D> m_TexturePlay, m_TextureStop, m_TexturePause, m_TextureStep;
 

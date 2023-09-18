@@ -80,6 +80,7 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 			break;
 	}
 
+	OnOverlayRender();
 
 	m_ToolbarPanel.OnUpdate();
 	m_FrameBuffer->Unbind();
@@ -184,6 +185,7 @@ void EditorLayer::OnImGuiRender() {
 			if (ImGui::BeginMenu("View")) {
 				ImGui::Checkbox("Show Performance", &m_ShowPerformance);
 				ImGui::Checkbox("Show Renderer Stats", &m_ShowRendererStats);
+				ImGui::Checkbox("Show Colliders", &m_ShowColliders);
 
 				ImGui::EndMenu();
 			}
@@ -631,4 +633,54 @@ void EditorLayer::UpdateWindowTitle() {
 	window_title += " - " + Project::GetActive()->GetConfig().project_name + " - enik engine";
 
 	Application::SetWindowTitle(window_title);
+}
+
+void EditorLayer::OnOverlayRender() {
+
+	if (m_SceneState == SceneState::Edit) {
+		Renderer2D::BeginScene(m_EditorCameraController.GetCamera());
+	}
+	else {
+		Entity camera = m_ActiveScene->GetPrimaryCameraEntity();
+		Renderer2D::BeginScene(
+			camera.Get<Component::Camera>().Cam,
+			camera.Get<Component::Transform>().GetTransform()
+		);
+	}
+
+	if (m_ShowColliders) {
+		auto view = m_ActiveScene->Reg().view<Component::Collider, Component::Transform>();
+		for(auto& entity : view) {
+			auto [transform, collider] = view.get<Component::Transform, Component::Collider>(entity);
+
+			if (collider.Shape == Component::ColliderShape::CIRCLE) {
+				Renderer2D::DrawCircle(
+					// transform.Position + collider.vector,
+					glm::vec3(
+						transform.Position.x + collider.vector.x,
+						transform.Position.y + collider.vector.y,
+						0.999f),
+					transform.Scale.x * collider.flat,
+					32,
+					glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
+			}
+			else if (collider.Shape == Component::ColliderShape::PLANE) {
+				Component::Transform trans;
+				trans.Position = transform.Position;
+				trans.Rotation = transform.Rotation;
+				trans.Scale = transform.Scale * collider.flat * 2.0f;
+				trans.Position.z = 0.999f;
+				Renderer2D::DrawRect(trans, glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
+				Renderer2D::DrawLine(
+					trans.Position,
+					trans.Position + glm::vec3(collider.vector.x, collider.vector.y, 0),
+					glm::vec4(0.8f, 0.3f, 0.3f, 1.0f));
+			}
+
+		}
+
+	}
+
+
+	Renderer2D::EndScene();
 }
