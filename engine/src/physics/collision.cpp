@@ -18,6 +18,11 @@ CollisionPoints TestCollision(
 	// colliders so it's a Sphere vs Plane
 	bool swap = b->Shape < a->Shape;
 
+	if (b->Shape == a->Shape and b->Shape == Component::ColliderShape::PLANE) {
+		CollisionPoints null;
+		return null;
+	}
+
 	if (swap) {
 		std::swap(a, b);
 		std::swap(at, bt);
