@@ -37,7 +37,6 @@ struct Tag {
 
 struct Transform {
 	glm::vec3 Position = glm::vec3(0.0f);
-	// glm::vec3 Rotation = glm::vec3(0.0f); // TODO use Quaternions
 	float Rotation = 0.0f;
 	glm::vec2 Scale = glm::vec2(1.0f);
 
@@ -48,7 +47,9 @@ struct Transform {
 
 	glm::mat4 GetTransform() const {
 		glm::mat4 transform = glm::mat4(1.0f);
-		transform = glm::translate(transform, Position) * glm::rotate(transform, Rotation, glm::vec3(0.0f, 0.0f, 1.0f)) * glm::scale(transform, glm::vec3(Scale.x, Scale.y, 1.0f));
+		transform = glm::translate(transform, Position);
+		transform = glm::rotate(transform, Rotation, glm::vec3(0.0f, 0.0f, 1.0f));
+		transform = glm::scale(transform, glm::vec3(Scale.x, Scale.y, 1.0f));
 		return transform;
 	}
 };
