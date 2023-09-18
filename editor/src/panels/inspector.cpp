@@ -316,6 +316,7 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 			if (ImGui::MenuItem("Remove Texture")) {
 				sprite.TexturePath.clear();
 				sprite.Texture = nullptr;
+				sprite.SubTexture = nullptr;
 			}
 			ImGui::EndPopup();
 		}
