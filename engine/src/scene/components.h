@@ -104,18 +104,24 @@ struct NativeScript {
 struct RigidBody {
 	glm::vec3 Velocity;
 	glm::vec3 Force;
-	float Mass;
+	float Mass = 1.0f;
+
+	RigidBody() = default;
+	RigidBody(const RigidBody&) = default;
 };
 
 
 
 enum ColliderShape {
-	SPHERE, PLANE
+	CIRCLE, PLANE
 };
 struct Collider {
-	ColliderShape Shape = ColliderShape::SPHERE;
+	ColliderShape Shape = ColliderShape::CIRCLE;
 	glm::vec3 vector = glm::vec3(0,1,0);
-	float flat = 1.0f;
+	float flat = 0.5f;
+
+	Collider() = default;
+	Collider(const Collider&) = default;
 };
 
 }
