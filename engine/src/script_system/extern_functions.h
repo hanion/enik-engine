@@ -4,6 +4,8 @@
 
 namespace Enik {
 
+extern "C" const float GetFixedUpdateRate();
+
 extern "C" Entity FindEntityByUUID(UUID uuid);
 
 extern "C" Entity FindEntityByName(const std::string& name);

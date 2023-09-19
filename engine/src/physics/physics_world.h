@@ -6,16 +6,23 @@
 
 
 namespace Enik {
-class Entity;
+
+static const double physics_update_rate = (1.0/288.0);
+static const float  physics_update_rate_float = (float)physics_update_rate;
 
 class PhysicsWorld {
 public:
-	void Step(Timestep ts, entt::registry& reg);
-	void ResolveCollisions(Timestep ts, entt::registry& reg);
+	static void InitPhysicsWorld(entt::registry* registry);
 
-private:
-	glm::vec3 m_Gravity = glm::vec3(0.0f, -9.81f, 0.0f);
+	static void Step();
+	static void ResolveCollisions();
 
+	static const float GetFixedUpdateRate() { return physics_update_rate_float; }
+
+	struct Data {
+		entt::registry* Registry;
+		glm::vec3 Gravity = glm::vec3(0.0f, -9.81f, 0.0f);
+	};
 };
 
 }

@@ -6,11 +6,13 @@
 #include "scene/components.h"
 #include "scene/entity.h"
 #include "script_system/script_system.h"
+#include "physics/physics_world.h"
 
 namespace Enik {
 
 Scene::Scene() {
 	ScriptSystem::SetSceneContext(this);
+	PhysicsWorld::InitPhysicsWorld(&m_Registry);
 }
 
 Scene::~Scene() {
@@ -79,9 +81,6 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 				ns.Instance->OnUpdate(ts);
 			}
 		});
-
-		// TODO do this in OnFixedUpdate
-		m_PhysicsWorld.Step(ts, m_Registry);
 	}
 
 
@@ -111,6 +110,25 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 	}
 
 	Renderer2D::EndScene();
+}
+
+void Scene::OnFixedUpdate() {
+	if (not m_IsPaused or m_StepFrames-- > 0) {
+		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
+			if (not ns.Instance or ns.Instance == nullptr) {
+				if (ns.InstantiateScript and ns.InstantiateScript != nullptr) {
+					ns.Instance = ns.InstantiateScript();
+					ns.Instance->m_Entity = Entity(entity, this);
+					ns.Instance->OnCreate();
+				}
+			}
+			else {
+				ns.Instance->OnFixedUpdate();
+			}
+		});
+
+		PhysicsWorld::Step();
+	}
 }
 
 void Scene::OnViewportResize(uint32_t width, uint32_t height) {

@@ -88,6 +88,12 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 	m_EditorCameraController.OnUpdate(m_Timestep);
 }
 
+void EditorLayer::OnFixedUpdate() {
+	if (m_SceneState == SceneState::Play) {
+		m_ActiveScene->OnFixedUpdate();
+	}
+}
+
 void EditorLayer::OnEvent(Event& event) {
 	if (m_SceneState == SceneState::Edit) {
 		m_EditorCameraController.OnEvent(event, m_ViewportHovered);

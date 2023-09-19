@@ -4,7 +4,6 @@
 #include "renderer/ortho_camera_controller.h"
 #include "core/uuid.h"
 #include <entt/entt.hpp>
-#include "physics/physics_world.h"
 
 namespace Enik {
 
@@ -23,6 +22,7 @@ public:
 
 	void OnUpdateEditor (Timestep ts, OrthographicCameraController& camera);
 	void OnUpdateRuntime(Timestep ts);
+	void OnFixedUpdate  ();
 	void OnViewportResize(uint32_t width, uint32_t height);
 
 	const std::string& GetName() const { return m_SceneName; }
@@ -51,8 +51,6 @@ private:
 
 	bool m_IsPaused = false;
 	int m_StepFrames = 0;
-
-	PhysicsWorld m_PhysicsWorld;
 
 	friend class Entity;
 	friend class SceneTreePanel;

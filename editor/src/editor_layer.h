@@ -22,6 +22,7 @@ public:
 	virtual void OnDetach() override final;
 
 	virtual void OnUpdate(Timestep timestep) override final;
+	virtual void OnFixedUpdate() override final;
 	virtual void OnEvent(Event &event) override final;
 	virtual void OnImGuiRender() override final;
 

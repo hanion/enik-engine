@@ -5,32 +5,39 @@
 
 namespace Enik {
 
-void PhysicsWorld::Step(Timestep ts, entt::registry& reg) {
+static PhysicsWorld::Data s_Data;
 
-	ResolveCollisions(ts, reg);
+void PhysicsWorld::InitPhysicsWorld(entt::registry* registry) {
+	s_Data.Registry = registry;
+}
 
-	auto group = reg.group<Component::RigidBody>(entt::get<Component::Transform>);
+void PhysicsWorld::Step() {
+	if (s_Data.Registry == nullptr) {
+		return;
+	}
+	ResolveCollisions();
+
+	auto group = s_Data.Registry->group<Component::RigidBody>(entt::get<Component::Transform>);
 	for (auto entity : group) {
-		Component::Transform& transform  = group.get<Component::Transform>(entity);
+		Component::Transform& transform = group.get<Component::Transform>(entity);
 		Component::RigidBody& rigid_body = group.get<Component::RigidBody>(entity);
 
 		// gravity
-		rigid_body.Force += rigid_body.Mass * m_Gravity;
+		rigid_body.Force.y += rigid_body.Mass * s_Data.Gravity.y;
 
-		rigid_body.Velocity += rigid_body.Force / rigid_body.Mass * ts.GetSeconds();
-		transform.Position += rigid_body.Velocity * ts.GetSeconds();
+		rigid_body.Velocity += rigid_body.Force / rigid_body.Mass * GetFixedUpdateRate();
+		transform.Position += rigid_body.Velocity * GetFixedUpdateRate();
 
 		// reset force
 		rigid_body.Force = glm::vec3(0);
 
-		// TODO damping
 	}
 }
 
-void PhysicsWorld::ResolveCollisions(Timestep ts, entt::registry& reg) {
+void PhysicsWorld::ResolveCollisions() {
 	std::vector<Collision> collisions;
 
-	auto group = reg.group<Component::Collider>(entt::get<Component::Transform>);
+	auto group = s_Data.Registry->group<Component::Collider>(entt::get<Component::Transform>);
 	for (auto a : group) {
 		for (auto b : group) {
 			if (a == b) {
@@ -68,11 +75,6 @@ void PhysicsWorld::ResolveCollisions(Timestep ts, entt::registry& reg) {
 		CollisionPoints& points = collision.Points;
 
 
-		// ? temp debug
-		auto& a_text = a.Get<Component::Tag>().Text;
-		if (a_text != "platform") {
-			EN_CORE_WARN("collision {0} {1}", a_text, b.Get<Component::Tag>().Text);
-		}
 
 		// Calculate the separation vector
 		glm::vec3 separation = points.Normal * points.Depth;

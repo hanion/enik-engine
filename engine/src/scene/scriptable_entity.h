@@ -20,6 +20,7 @@ protected:
 	virtual void OnCreate() {}
 	virtual void OnDestroy() {}
 	virtual void OnUpdate(Timestep ts) {}
+	virtual void OnFixedUpdate() {}
 
 private:
 	Entity m_Entity;

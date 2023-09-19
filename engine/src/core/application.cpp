@@ -4,6 +4,7 @@
 
 #include "core/input.h"
 #include "renderer/renderer.h"
+#include "physics/physics_world.h"
 
 namespace Enik {
 
@@ -44,6 +45,9 @@ void Application::PushOverlay(Layer* overlay) {
 }
 
 void Application::Run() {
+	const double dt = physics_update_rate;
+	double accumulator = 0.0;
+
 	while (m_Running) {
 		float time = (float)glfwGetTime();
 		Timestep timestep = time - m_LastFrameTime;
@@ -52,6 +56,15 @@ void Application::Run() {
 		ExecuteMainThreadQueue();
 
 		if (!m_Minimized) {
+			accumulator += timestep.GetSeconds();
+			while ( accumulator >= dt ) {
+				for (Layer* layer : m_LayerStack) {
+					EN_PROFILE_SECTION("layers OnFixedUpdate");
+					layer->OnFixedUpdate();
+				}
+				accumulator -= dt;
+			}
+
 			for (Layer* layer : m_LayerStack) {
 				EN_PROFILE_SECTION("layers OnUpdate");
 				layer->OnUpdate(timestep);
