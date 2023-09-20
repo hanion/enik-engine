@@ -149,10 +149,19 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	DisplayComponentInInspector<Component::Collider>("Collider", entity, true, [&]() {
 		auto& collider = entity.Get<Component::Collider>();
 
-		std::string text = collider.Shape == (Component::ColliderShape::CIRCLE) ? "Circle" : "Plane";
-		if (ImGui::Button(text.c_str())) {
-			collider.Shape = (collider.Shape == Component::ColliderShape::CIRCLE) ?
-				Component::ColliderShape::PLANE : Component::ColliderShape::CIRCLE;
+		std::string text = (collider.Shape == Component::ColliderShape::CIRCLE) ? "Circle" : "Plane";
+
+		ImGuiUtils::PrefixLabel("Shape");
+		if (ImGui::BeginCombo("##ColliderShape", text.c_str())) {
+			if (ImGui::Selectable("Circle",
+				collider.Shape == Component::ColliderShape::CIRCLE)) {
+				collider.Shape =  Component::ColliderShape::CIRCLE;
+			}
+			if (ImGui::Selectable("Plane",
+				collider.Shape == Component::ColliderShape::PLANE)) {
+				collider.Shape =  Component::ColliderShape::PLANE;
+			}
+			ImGui::EndCombo();
 		}
 
 		if (collider.Shape == Component::ColliderShape::CIRCLE) {
