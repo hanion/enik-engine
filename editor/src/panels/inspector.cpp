@@ -285,7 +285,7 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 		return;
 	}
 
-	avail.y = (avail.y < 128) ? avail.y : 128;
+	avail.y = (avail.y < 32) ? avail.y : 32;
 	avail.x -= GImGui->Style.FramePadding.x;
 
 	ImTextureID tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(0));
