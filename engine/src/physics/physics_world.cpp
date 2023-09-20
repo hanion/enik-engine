@@ -25,8 +25,10 @@ void PhysicsWorld::Step() {
 		// gravity
 		rigid_body.Force.y += rigid_body.Mass * s_Data.Gravity.y;
 
-		rigid_body.Velocity += rigid_body.Force / rigid_body.Mass * GetFixedUpdateRate();
+		auto half_acceleration = (rigid_body.Force / rigid_body.Mass) * GetFixedUpdateRate() * 0.5f;
+		rigid_body.Velocity += half_acceleration;
 		transform.Position += rigid_body.Velocity * GetFixedUpdateRate();
+		rigid_body.Velocity += half_acceleration;
 
 		// reset force
 		rigid_body.Force = glm::vec3(0);
