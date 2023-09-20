@@ -314,8 +314,13 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 	if (ImGui::BeginChild("TextureChild", childSize, false, ImGuiWindowFlags_NoScrollbar)) {
 		ImGui::Image(tex_id, tex_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), tint_col, border_col);
 
-		if (ImGui::IsItemHovered() and not sprite.TexturePath.empty()) {
-			ImGui::SetTooltip("%s", sprite.TexturePath.c_str());
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal) and not sprite.TexturePath.empty()) {
+			if (ImGui::BeginTooltip()) {
+				ImGui::Text(sprite.TexturePath.c_str());
+				ImVec2 texture_tooltip_size = ImVec2(tex_size.x*8.0f, tex_size.y*8.0f);
+				ImGui::Image(tex_id, texture_tooltip_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+				ImGui::EndTooltip();
+			}
 		}
 
 		if (ImGui::IsMouseDown(1) && ImGui::IsWindowHovered()) {
