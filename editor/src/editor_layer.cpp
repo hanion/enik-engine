@@ -707,6 +707,17 @@ void EditorLayer::OnOverlayRender() {
 						glm::vec4(0.8f, 0.3f, 0.3f, 1.0f));
 					break;
 				}
+				case Component::ColliderShape::BOX: {
+					Component::Transform trans;
+					trans.Position = glm::vec3(
+							transform.Position.x + collider.Vector.x,
+							transform.Position.y + collider.Vector.y,
+							0.999f);
+					trans.Rotation = transform.Rotation;
+					trans.Scale = transform.Scale * collider.Float * 2.0f;
+					Renderer2D::DrawRect(trans, glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
+					break;
+				}
 
 			}
 

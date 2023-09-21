@@ -35,4 +35,19 @@ CollisionPoints TestCirclePlane(
 
 
 
+CollisionPoints TestCircleBox(
+	const Component::Collider* circle, const Component::Transform* circle_transform,
+	const Component::Collider* box, const Component::Transform* box_transform);
+
+CollisionPoints TestPlaneBox(
+	const Component::Collider* plane, const Component::Transform* plane_transform,
+	const Component::Collider* box, const Component::Transform* box_transform);
+
+
+CollisionPoints TestBoxBox(
+	const Component::Collider* a, const Component::Transform* a_transform,
+	const Component::Collider* b, const Component::Transform* b_transform);
+
+
+
 }

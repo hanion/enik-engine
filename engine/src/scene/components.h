@@ -114,7 +114,7 @@ struct RigidBody {
 
 
 enum ColliderShape {
-	CIRCLE, PLANE
+	CIRCLE, PLANE, BOX
 };
 struct Collider {
 	ColliderShape Shape = ColliderShape::CIRCLE;
@@ -128,6 +128,7 @@ struct Collider {
 		switch (Shape) {
 			case ColliderShape::CIRCLE: return "Circle";
 			case ColliderShape::PLANE:  return "Plane";
+			case ColliderShape::BOX:    return "Box";
 		}
 		return std::string();
 	}

@@ -9,10 +9,11 @@ using FindContactFunc = CollisionPoints (*)(
 CollisionPoints TestCollision(
 	const Component::Collider* a, const Component::Transform* a_transform,
 	const Component::Collider* b, const Component::Transform* b_transform) {
-	static const FindContactFunc tests[2][2] = {
-		// Circle           Plane
-		{ TestCircleCircle, TestCirclePlane }, // Circle
-		{ nullptr,          nullptr         }  // Plane
+	static const FindContactFunc tests[3][3] = {
+		// Circle           Plane            Box
+		{ TestCircleCircle, TestCirclePlane, TestCircleBox }, // Circle
+		{ nullptr,          nullptr,         TestPlaneBox  }, // Plane
+		{ nullptr,          nullptr,         TestBoxBox    }, // Box
 	};
 
 	if (b->Shape == a->Shape and b->Shape == Component::ColliderShape::PLANE) {
@@ -116,4 +117,43 @@ CollisionPoints TestCirclePlane(
 	return result;
 }
 
+CollisionPoints TestCircleBox(
+	const Component::Collider* circle, const Component::Transform* circle_transform,
+	const Component::Collider* box,    const Component::Transform* box_transform) {
+
+	CollisionPoints result;
+
+	if (circle->Shape != Component::ColliderShape::CIRCLE)  { return result; }
+	if (box->Shape    != Component::ColliderShape::BOX   )  { return result; }
+
+	return result;
+}
+
+CollisionPoints TestPlaneBox(
+	const Component::Collider* plane, const Component::Transform* plane_transform,
+	const Component::Collider* box,   const Component::Transform* box_transform) {
+
+	CollisionPoints result;
+
+	if (plane->Shape != Component::ColliderShape::PLANE)  { return result; }
+	if (box->Shape   != Component::ColliderShape::BOX  )  { return result; }
+
+
+
+	return result;
+}
+
+
+CollisionPoints TestBoxBox(
+	const Component::Collider* a, const Component::Transform* a_transform,
+	const Component::Collider* b, const Component::Transform* b_transform) {
+
+	CollisionPoints result;
+
+	if (a->Shape != Component::ColliderShape::BOX)  { return result; }
+	if (b->Shape != Component::ColliderShape::BOX)  { return result; }
+
+
+	return result;
+}
 }

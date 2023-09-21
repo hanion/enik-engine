@@ -161,6 +161,10 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 				collider.Shape == Component::ColliderShape::PLANE)) {
 				collider.Shape =  Component::ColliderShape::PLANE;
 			}
+			if (ImGui::Selectable("Box",
+				collider.Shape == Component::ColliderShape::BOX)) {
+				collider.Shape =  Component::ColliderShape::BOX;
+			}
 			ImGui::EndCombo();
 		}
 
@@ -179,6 +183,11 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 
 				ImGuiUtils::PrefixLabel("Normal");
 				ImGui::DragFloat3("##Normal", glm::value_ptr(collider.Vector), 0.01f);
+				break;
+			}
+			case Component::ColliderShape::BOX: {
+				ImGuiUtils::PrefixLabel("Center");
+				ImGui::DragFloat3("##Center", glm::value_ptr(collider.Vector), 0.01f);
 				break;
 			}
 		}
