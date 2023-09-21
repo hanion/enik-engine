@@ -7,28 +7,31 @@ using FindContactFunc = CollisionPoints (*)(
 	const Component::Collider*, const Component::Transform*);
 
 CollisionPoints TestCollision(
-	const Component::Collider* a, const Component::Transform* at,
-	const Component::Collider* b, const Component::Transform* bt) {
+	const Component::Collider* a, const Component::Transform* a_transform,
+	const Component::Collider* b, const Component::Transform* b_transform) {
 	static const FindContactFunc tests[2][2] = {
-		// Sphere             Plane
-		{Test_Sphere_Sphere, Test_Sphere_Plane},  // Sphere
-		{nullptr, nullptr}                        // Plane
+		// Circle           Plane
+		{ TestCircleCircle, TestCirclePlane }, // Circle
+		{ nullptr,          nullptr         }  // Plane
 	};
-	// If we are passed a Plane vs Sphere, swap the
-	// colliders so it's a Sphere vs Plane
-	bool swap = b->Shape < a->Shape;
 
 	if (b->Shape == a->Shape and b->Shape == Component::ColliderShape::PLANE) {
-		CollisionPoints null;
-		return null;
+		return CollisionPoints();
 	}
+
+
+	// If we are passed a Plane vs Sphere, swap the
+	// colliders so it's a Sphere vs Plane
+	bool swap = a->Shape > b->Shape;
 
 	if (swap) {
 		std::swap(a, b);
-		std::swap(at, bt);
+		std::swap(a_transform, b_transform);
 	}
 	// now we can dispatch the correct function
-	CollisionPoints points = tests[a->Shape][b->Shape](a, at, b, bt);
+	CollisionPoints points = tests[a->Shape][b->Shape](
+		a, a_transform,
+		b, b_transform);
 
 	// if we swapped the order of the colliders, to keep the
 	// results consistent, we need to swap the points
@@ -42,20 +45,25 @@ CollisionPoints TestCollision(
 
 
 
-CollisionPoints Test_Sphere_Sphere(
-	const Component::Collider* a, const Component::Transform* ta,
-	const Component::Collider* b, const Component::Transform* tb) {
-	CollisionPoints point;
+CollisionPoints TestCircleCircle(
+	const Component::Collider* a, const Component::Transform* a_transform,
+	const Component::Collider* b, const Component::Transform* b_transform) {
 
-	glm::vec3 a_center = (ta->Position + a->vector);
-	glm::vec3 b_center = (tb->Position + b->vector);
+	CollisionPoints result;
+
+	if (a->Shape != Component::ColliderShape::CIRCLE)  { return result; }
+	if (b->Shape != Component::ColliderShape::CIRCLE)  { return result; }
+
+
+	glm::vec3 a_center = (a_transform->Position + a->Vector);
+	glm::vec3 b_center = (b_transform->Position + b->Vector);
 
 	glm::vec3 diff = b_center - a_center;
 	auto distance = glm::length(diff);
 	// auto distance = (float)diff.length();
 
-	float a_radius = a->flat;
-	float b_radius = b->flat;
+	float a_radius = a->Float;
+	float b_radius = b->Float;
 
 	if (distance < a_radius + b_radius) {
 		// Spheres are colliding
@@ -67,41 +75,40 @@ CollisionPoints Test_Sphere_Sphere(
 		glm::vec3 b_point = b_center - b_radius * normal;
 
 		// Fill in the CollisionPoints structure
-		point.A = a_point;
-		point.B = b_point;
-		point.Normal = normal;
-		point.Depth = depth;
-		point.HasCollision = true;
+		result.A = a_point;
+		result.B = b_point;
+		result.Normal = normal;
+		result.Depth = depth;
+		result.HasCollision = true;
 	}
 
-	return point;
+	return result;
 }
 
 
-CollisionPoints Test_Sphere_Plane(
-	const Component::Collider* a, const Component::Transform* ta,
-	const Component::Collider* b, const Component::Transform* tb) {
+CollisionPoints TestCirclePlane(
+	const Component::Collider* circle, const Component::Transform* circle_transform,
+	const Component::Collider* plane,  const Component::Transform* plane_transform) {
+
 	CollisionPoints result;
 
-	// Extract relevant information from the sphere and plane colliders and transforms
-	glm::vec3 sphere_center = ta->Position + a->vector;
-	float sphere_radius = a->flat;
+	if (circle->Shape != Component::ColliderShape::CIRCLE)  { return result; }
+	if (plane->Shape  != Component::ColliderShape::PLANE )  { return result; }
 
-	glm::vec3 plane_normal = b->vector;
-	float plane_d = tb->Position.y + b->flat;
+	glm::vec3 circle_center = circle_transform->Position + circle->Vector;
+	float circle_radius = circle->Float;
 
-	// Calculate the signed distance from the sphere center to the plane
-	float distance = glm::dot(sphere_center, plane_normal) - plane_d;
+	glm::vec3 plane_normal = plane->Vector;
+	float plane_d = plane_transform->Position.y + plane->Float;
 
-	// Check for collision
-	if (distance < sphere_radius) {
-		// Calculate collision normal and depth
-		result.Normal = -plane_normal;  // Normal points away from the plane
-		result.Depth = sphere_radius - distance;
+	float distance = glm::dot(circle_center, plane_normal) - plane_d;
 
-		// Calculate collision points
-		result.A = sphere_center - sphere_radius * plane_normal;  // Point on sphere's surface
-		result.B = sphere_center - distance * plane_normal;       // Point on the plane
+	if (distance < circle_radius) {
+		result.Normal = -plane_normal;
+		result.Depth = circle_radius - distance;
+
+		result.A = circle_center - circle_radius * plane_normal;  // Point on circle's surface
+		result.B = circle_center - distance * plane_normal;       // Point on the plane
 
 		result.HasCollision = true;
 	}

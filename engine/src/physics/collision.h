@@ -20,18 +20,18 @@ struct Collision {
 };
 
 CollisionPoints TestCollision(
-	const Component::Collider* a, const Component::Transform* at,
-	const Component::Collider* b, const Component::Transform* bt);
+	const Component::Collider* a, const Component::Transform* a_transform,
+	const Component::Collider* b, const Component::Transform* b_transform);
 
 
 
-CollisionPoints Test_Sphere_Sphere(
-	const Component::Collider* a, const Component::Transform* ta,
-	const Component::Collider* b, const Component::Transform* tb);
+CollisionPoints TestCircleCircle(
+	const Component::Collider* a, const Component::Transform* a_transform,
+	const Component::Collider* b, const Component::Transform* b_transform);
 
-CollisionPoints Test_Sphere_Plane(
-	const Component::Collider* a, const Component::Transform* ta,
-	const Component::Collider* b, const Component::Transform* tb);
+CollisionPoints TestCirclePlane(
+	const Component::Collider* circle, const Component::Transform* circle_transform,
+	const Component::Collider* plane, const Component::Transform* plane_transform);
 
 
 

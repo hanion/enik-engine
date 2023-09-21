@@ -300,9 +300,9 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::BeginMap;
 
 		auto& collider = entity.Get<Component::Collider>();
-		out << YAML::Key << "Shape" << YAML::Value << collider.Shape;
-		out << YAML::Key << "flat" << YAML::Value << collider.flat;
-		out << YAML::Key << "vector" << YAML::Value << collider.vector;
+		out << YAML::Key << "Shape"  << YAML::Value << collider.Shape;
+		out << YAML::Key << "Float"  << YAML::Value << collider.Float;
+		out << YAML::Key << "Vector" << YAML::Value << collider.Vector;
 
 		out << YAML::EndMap;
 	}
@@ -379,9 +379,9 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 	auto collider = entity["Component::Collider"];
 	if (collider) {
 		auto& col = deserialized_entity.Add<Component::Collider>();
-		col.Shape = (Component::ColliderShape)collider["Shape"].as<int>();
-		col.flat = collider["flat"].as<float>();
-		col.vector = collider["vector"].as<glm::vec3>();
+		col.Shape  = (Component::ColliderShape)collider["Shape"].as<int>();
+		col.Float  = collider["Float"].as<float>();
+		col.Vector = collider["Vector"].as<glm::vec3>();
 	}
 
 }

@@ -149,7 +149,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	DisplayComponentInInspector<Component::Collider>("Collider", entity, true, [&]() {
 		auto& collider = entity.Get<Component::Collider>();
 
-		std::string text = (collider.Shape == Component::ColliderShape::CIRCLE) ? "Circle" : "Plane";
+		std::string text = collider.String();
 
 		ImGuiUtils::PrefixLabel("Shape");
 		if (ImGui::BeginCombo("##ColliderShape", text.c_str())) {
@@ -164,19 +164,23 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			ImGui::EndCombo();
 		}
 
-		if (collider.Shape == Component::ColliderShape::CIRCLE) {
-			ImGuiUtils::PrefixLabel("Radius");
-			ImGui::DragFloat("##Radius", &collider.flat, 0.01f);
+		switch (collider.Shape) {
+			case Component::ColliderShape::CIRCLE: {
+				ImGuiUtils::PrefixLabel("Radius");
+				ImGui::DragFloat("##Radius", &collider.Float, 0.01f);
 
-			ImGuiUtils::PrefixLabel("Center");
-			ImGui::DragFloat3("##Center", glm::value_ptr(collider.vector), 0.01f);
-		}
-		else {
-			ImGuiUtils::PrefixLabel("Thickness");
-			ImGui::DragFloat("##Thickness", &collider.flat, 0.01f);
+				ImGuiUtils::PrefixLabel("Center");
+				ImGui::DragFloat3("##Center", glm::value_ptr(collider.Vector), 0.01f);
+				break;
+			}
+			case Component::ColliderShape::PLANE: {
+				ImGuiUtils::PrefixLabel("Thickness");
+				ImGui::DragFloat("##Thickness", &collider.Float, 0.01f);
 
-			ImGuiUtils::PrefixLabel("Normal");
-			ImGui::DragFloat3("##Normal", glm::value_ptr(collider.vector), 0.01f);
+				ImGuiUtils::PrefixLabel("Normal");
+				ImGui::DragFloat3("##Normal", glm::value_ptr(collider.Vector), 0.01f);
+				break;
+			}
 		}
 
 	});

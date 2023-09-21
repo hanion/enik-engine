@@ -681,29 +681,33 @@ void EditorLayer::OnOverlayRender() {
 		auto view = m_ActiveScene->Reg().view<Component::Collider, Component::Transform>();
 		for(auto& entity : view) {
 			auto [transform, collider] = view.get<Component::Transform, Component::Collider>(entity);
+			switch (collider.Shape) {
+				case Component::ColliderShape::CIRCLE: {
+					Renderer2D::DrawCircle(
+						// transform.Position + collider.vector,
+						glm::vec3(
+							transform.Position.x + collider.Vector.x,
+							transform.Position.y + collider.Vector.y,
+							0.999f),
+						transform.Scale.x * collider.Float,
+						32,
+						glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
+					break;
+				}
+				case Component::ColliderShape::PLANE: {
+					Component::Transform trans;
+					trans.Position = transform.Position;
+					trans.Rotation = transform.Rotation;
+					trans.Scale = transform.Scale * collider.Float * 2.0f;
+					trans.Position.z = 0.999f;
+					Renderer2D::DrawRect(trans, glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
+					Renderer2D::DrawLine(
+						trans.Position,
+						trans.Position + glm::vec3(collider.Vector.x, collider.Vector.y, 0),
+						glm::vec4(0.8f, 0.3f, 0.3f, 1.0f));
+					break;
+				}
 
-			if (collider.Shape == Component::ColliderShape::CIRCLE) {
-				Renderer2D::DrawCircle(
-					// transform.Position + collider.vector,
-					glm::vec3(
-						transform.Position.x + collider.vector.x,
-						transform.Position.y + collider.vector.y,
-						0.999f),
-					transform.Scale.x * collider.flat,
-					32,
-					glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
-			}
-			else if (collider.Shape == Component::ColliderShape::PLANE) {
-				Component::Transform trans;
-				trans.Position = transform.Position;
-				trans.Rotation = transform.Rotation;
-				trans.Scale = transform.Scale * collider.flat * 2.0f;
-				trans.Position.z = 0.999f;
-				Renderer2D::DrawRect(trans, glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
-				Renderer2D::DrawLine(
-					trans.Position,
-					trans.Position + glm::vec3(collider.vector.x, collider.vector.y, 0),
-					glm::vec4(0.8f, 0.3f, 0.3f, 1.0f));
 			}
 
 		}

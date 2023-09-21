@@ -118,11 +118,19 @@ enum ColliderShape {
 };
 struct Collider {
 	ColliderShape Shape = ColliderShape::CIRCLE;
-	glm::vec3 vector = glm::vec3(0,1,0);
-	float flat = 0.5f;
+	glm::vec3 Vector = glm::vec3(0,0,0);
+	float Float = 0.5f;
 
 	Collider() = default;
 	Collider(const Collider&) = default;
+
+	const std::string String() const {
+		switch (Shape) {
+			case ColliderShape::CIRCLE: return "Circle";
+			case ColliderShape::PLANE:  return "Plane";
+		}
+		return std::string();
+	}
 };
 
 }

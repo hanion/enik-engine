@@ -19,7 +19,7 @@ void PhysicsWorld::Step() {
 
 	auto group = s_Data.Registry->group<Component::RigidBody>(entt::get<Component::Transform>);
 	for (auto entity : group) {
-		Component::Transform& transform = group.get<Component::Transform>(entity);
+		Component::Transform& transform  = group.get<Component::Transform>(entity);
 		Component::RigidBody& rigid_body = group.get<Component::RigidBody>(entity);
 
 		// gravity
