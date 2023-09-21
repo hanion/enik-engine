@@ -479,6 +479,29 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 			}
 			break;
 
+		case Key::F5:
+			if (m_SceneState == SceneState::Edit) {
+				OnScenePlay();
+			}
+			else if (m_SceneState == SceneState::Play) {
+				OnSceneStop();
+			}
+			break;
+		case Key::F7:
+			OnScenePause(not m_ActiveScene->IsPaused());
+			break;
+		case Key::F8:
+			if (m_SceneState == SceneState::Play) {
+				m_ActiveScene->Step();
+			}
+			break;
+
+		case Key::F4:
+			OnSceneStop();
+			Application::Get().Close();
+			break;
+
+
 
 		default:
 			break;
