@@ -192,6 +192,7 @@ void EditorLayer::OnImGuiRender() {
 				ImGui::Checkbox("Show Performance", &m_ShowPerformance);
 				ImGui::Checkbox("Show Renderer Stats", &m_ShowRendererStats);
 				ImGui::Checkbox("Show Colliders", &m_ShowColliders);
+				ImGui::Checkbox("Show Selection Outline", &m_ShowSelectionOutline);
 
 				ImGui::EndMenu();
 			}
@@ -723,6 +724,25 @@ void EditorLayer::OnOverlayRender() {
 
 		}
 
+	}
+
+
+	if (m_ShowSelectionOutline) {
+		if (m_SceneTreePanel.IsSelectedEntityValid()) {
+			auto transform = m_SceneTreePanel.GetSelectedEntity().Get<Component::Transform>();
+			transform.Position.z = 0.999f;
+
+			float increase_amount = 0.004f * m_EditorCameraController.GetZoomLevel();
+
+			for (int i = 0; i < m_SelectionOutlineWidth; i++) {
+				Renderer2D::DrawRect(
+					transform,
+					m_SelectionOutlineColor
+				);
+				transform.Scale.x += increase_amount;
+				transform.Scale.y += increase_amount;
+			}
+		}
 	}
 
 

@@ -90,4 +90,9 @@ private:
 		Play = 1
 	};
 	SceneState m_SceneState = SceneState::Edit;
+
+	bool m_ShowSelectionOutline = true;
+	glm::vec4 m_SelectionOutlineColor = glm::vec4(1.0f, 0.44f, 0.1f, 0.84f);
+	int m_SelectionOutlineWidth = 5;
+
 };
