@@ -672,6 +672,10 @@ void EditorLayer::OnOverlayRender() {
 	}
 	else {
 		Entity camera = m_ActiveScene->GetPrimaryCameraEntity();
+		if (not camera) {
+			return;
+		}
+
 		Renderer2D::BeginScene(
 			camera.Get<Component::Camera>().Cam,
 			camera.Get<Component::Transform>().GetTransform()
