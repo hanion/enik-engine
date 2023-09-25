@@ -2,7 +2,6 @@
 
 #include <pch.h>
 
-#include "scene/components.h"
 #include "project/project.h"
 #include "script_system/script_registry.h"
 
@@ -282,6 +281,8 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		auto& script = entity.Get<Component::NativeScript>();
 		out << YAML::Key << "ScriptName" << YAML::Value << script.ScriptName;
 
+		SerializeNativeScriptFields(out, script);
+
 		out << YAML::EndMap;
 	}
 
@@ -397,11 +398,158 @@ void SceneSerializer::DeserializeNativeScript(YAML::Node& node, Entity& entity) 
 	for (auto& pair : ScriptRegistry::GetRegistry()) {
 		if (pair.first == script_name) {
 			entity.Add<Component::NativeScript>().Bind(pair.first, pair.second);
+			DeserializeNativeScriptFields(native_script, entity);
 			return;
 		}
 	}
 
 	EN_ERROR("Couldn't find NativeScript '{0}' for entity '{1}'", script_name, entity.Get<Component::Tag>().Text);
+}
+
+
+void WriteFieldValueToFile(YAML::Emitter& out, FieldType field_type, void* field_value) {
+	switch (field_type) {
+		case FieldType::NONE:
+			EN_CORE_ERROR("WriteFieldValueToFile field_type is NONE !");
+			break;
+		case FieldType::BOOL:
+			out << *static_cast<bool*>(field_value);
+			break;
+		case FieldType::INT:
+			out << *static_cast<int*>(field_value);
+			break;
+		case FieldType::FLOAT:
+			out << *static_cast<float*>(field_value);
+			break;
+		case FieldType::DOUBLE:
+			out << *static_cast<double*>(field_value);
+			break;
+		case FieldType::VEC2:
+			out << *static_cast<glm::vec2*>(field_value);
+			break;
+		case FieldType::VEC3:
+			out << *static_cast<glm::vec3*>(field_value);
+			break;
+		case FieldType::VEC4:
+			out << *static_cast<glm::vec4*>(field_value);
+			break;
+		case FieldType::STRING:
+			out << *static_cast<std::string*>(field_value);
+			break;
+		case FieldType::ENTITY:
+			out << *static_cast<uint64_t*>(field_value);
+			break;
+	}
+}
+
+void SceneSerializer::SerializeNativeScriptFields(YAML::Emitter& out, Component::NativeScript& script) {
+	if (script.NativeScriptFields.size() == 0) {
+		return;
+	}
+
+	out << YAML::Key << "ScriptFields";
+	out << YAML::BeginMap;
+
+	for (auto& pair : script.NativeScriptFields) {
+		auto& field = pair.second;
+
+		out << YAML::Key << field.Name;
+		out << YAML::BeginMap;
+
+		out << YAML::Key << "Type"  << YAML::Value << field.TypeName();
+		out << YAML::Key << "Value" << YAML::Value;
+
+		WriteFieldValueToFile(out, field.Type, field.Value);
+
+		out << YAML::EndMap; // field.Name
+	}
+
+	out << YAML::EndMap; // ScriptFields
+}
+
+
+
+void* GetFieldValueFromNode(YAML::Node field_value, FieldType field_type) {
+	switch (field_type) {
+		case FieldType::NONE: {
+			EN_CORE_ERROR("GetFieldValueFromNode field_type is NONE !");
+			return nullptr;
+		}
+		case FieldType::BOOL: {
+			bool* val = new bool(field_value.as<bool>());
+			return static_cast<void*>(val);
+		}
+		case FieldType::INT: {
+			int* val = new int(field_value.as<int>());
+			return static_cast<void*>(val);
+		}
+		case FieldType::FLOAT: {
+			float* val = new float(field_value.as<float>());
+			return static_cast<void*>(val);
+		}
+		case FieldType::DOUBLE: {
+			double* val = new double(field_value.as<double>());
+			return static_cast<void*>(val);
+		}
+		case FieldType::VEC2: {
+			glm::vec2* val = new glm::vec2(field_value.as<glm::vec2>());
+			return static_cast<void*>(val);
+		}
+		case FieldType::VEC3: {
+			glm::vec3* val = new glm::vec3(field_value.as<glm::vec3>());
+			return static_cast<void*>(val);
+		}
+		case FieldType::VEC4: {
+			glm::vec4* val = new glm::vec4(field_value.as<glm::vec4>());
+			return static_cast<void*>(val);
+		}
+		case FieldType::STRING: {
+			std::string* val = new std::string(field_value.as<std::string>());
+			return static_cast<void*>(val);
+		}
+		case FieldType::ENTITY: {
+			uint64_t* val = new uint64_t(field_value.as<uint64_t>());
+			return static_cast<void*>(val);
+		}
+	}
+	return nullptr;
+}
+
+void SceneSerializer::DeserializeNativeScriptFields(YAML::Node& node, Entity& entity) {
+	if (not entity.Has<Component::NativeScript>()) {
+		return;
+	}
+
+	auto& script = entity.Get<Component::NativeScript>();
+
+	EN_CORE_ASSERT(
+		script.Instance == nullptr,
+		"script should never have an instance before serialization !"
+	);
+
+
+
+
+	if (not node["ScriptFields"] or not node["ScriptFields"].IsMap()) {
+		return;
+	}
+
+	for (auto field : node["ScriptFields"]) {
+		std::string field_name = field.first.as<std::string>();
+		YAML::Node& field_node = field.second;
+
+		if (not field_node["Type"] or not field_node["Value"]) {
+			continue;
+		}
+
+		const std::string& field_type_string = field_node["Type"].as<std::string>();
+		FieldType field_type = NativeScriptField::NameType(field_type_string);
+
+		void* field_value = GetFieldValueFromNode(field_node["Value"], field_type);
+
+		script.NativeScriptFields[field_name] = { field_name, field_type, field_value };
+	}
+
 }
 
 }

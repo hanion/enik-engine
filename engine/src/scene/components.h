@@ -89,6 +89,9 @@ struct NativeScript {
 
 	std::string ScriptName;
 
+	std::map<std::string, NativeScriptField> NativeScriptFields;
+	void ApplyNativeScriptFieldsToInstance();
+
 	void Bind(const std::string& script_name, const std::function<ScriptableEntity*()>& inst) {
 		ScriptName = script_name;
 

@@ -32,6 +32,7 @@ private:
 	void DisplaySubTexture(Component::SpriteRenderer& sprite);
 
 	void DisplayNativeScriptsInPopup();
+	void DisplayNativeScript(Component::NativeScript& script);
 
 private:
 	Ref<Scene> m_Context;

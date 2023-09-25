@@ -40,9 +40,8 @@ void EditorLayer::OnAttach() {
 void EditorLayer::OnDetach() {
 	EN_PROFILE_SCOPE;
 
-	m_ActiveScene->ClearNativeScripts();
 	if (m_EditorScene != m_ActiveScene) {
-		m_EditorScene->ClearNativeScripts();
+		m_ActiveScene->ClearNativeScripts();
 	}
 	ScriptSystem::UnloadScriptModule();
 }

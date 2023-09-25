@@ -124,10 +124,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		auto& script = entity.Get<Component::NativeScript>();
 		ImGui::TextColored(ImVec4(0.4f, 0.7f, 0.2f, 1.0f), script.ScriptName.c_str());
 
-		if (not script.Instance or script.Instance == nullptr) {
-			script.Instance = script.InstantiateScript();
-		}
-		script.Instance->OnInspectorRender();
+		DisplayNativeScript(script);
 	});
 
 	DisplayComponentInInspector<Component::RigidBody>("Rigid Body", entity, true, [&]() {
@@ -430,6 +427,83 @@ void InspectorPanel::DisplayNativeScriptsInPopup() {
 		ImGui::EndDisabled();
 
 		ImGui::EndMenu();
+	}
+}
+
+void InspectorPanel::DisplayNativeScript(Component::NativeScript& script) {
+	for (auto& pair : script.NativeScriptFields) {
+		auto& field = pair.second;
+
+		ImGuiUtils::PrefixLabel(field.Name);
+
+		auto label = ("##"+field.Name).c_str();
+		float speed = 0.01f;
+
+		switch (field.Type) {
+			case FieldType::NONE:
+				EN_CORE_ERROR("DisplayNativeScript field.Type is NONE !");
+				continue;
+			case FieldType::BOOL:
+				ImGui::Checkbox(label, static_cast<bool*>(field.Value));
+				continue;
+			case FieldType::INT:
+				ImGui::DragInt(label, static_cast<int*>(field.Value));
+				continue;
+			case FieldType::FLOAT:
+				ImGui::DragFloat(label, static_cast<float*>(field.Value), speed);
+				continue;
+			case FieldType::DOUBLE:
+				ImGui::DragFloat(label, (float*)static_cast<double*>(field.Value), speed);
+				continue;
+			case FieldType::VEC2:
+				ImGui::DragFloat2(label, static_cast<float*>(field.Value), speed);
+				continue;
+			case FieldType::VEC3:
+				ImGui::DragFloat3(label, static_cast<float*>(field.Value), speed);
+				continue;
+			case FieldType::VEC4:
+				ImGui::DragFloat4(label, static_cast<float*>(field.Value), speed);
+				continue;
+			case FieldType::STRING: {
+				char buffer[256];
+				memset(buffer, 0, sizeof(buffer));
+				strcpy(buffer, static_cast<std::string*>(field.Value)->c_str());
+				if (ImGui::InputText(label, buffer, sizeof(buffer))) {
+					*static_cast<std::string*>(field.Value) = std::string(buffer);
+				}
+				continue;
+			}
+			case FieldType::ENTITY: {
+				// TODO Drag-Drop entities from the scene tree
+				uint64_t* id = static_cast<uint64_t*>(field.Value);
+
+				std::string entity_name;
+
+				if (Entity entity = m_Context->FindEntityByUUID(*id)) {
+					entity_name = entity.Get<Component::Tag>().Text;
+				}
+				else {
+					entity_name = "[Entity]";
+				}
+
+				bool is_open = ImGui::Button(entity_name.c_str());
+
+				if (ImGui::IsItemHovered()){
+					ImGui::SetTooltip(std::to_string(*id).c_str());
+				}
+
+				if (is_open) {
+					ImGui::OpenPopup("select_entity");
+				}
+
+				if (ImGui::BeginPopup("select_entity")) {
+					ImGui::InputScalar(label, ImGuiDataType_U64, id);
+					ImGui::EndPopup();
+				}
+
+				continue;
+			}
+		}
 	}
 }
 

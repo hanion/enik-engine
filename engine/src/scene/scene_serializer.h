@@ -4,6 +4,7 @@
 
 #include "scene/scene.h"
 #include "renderer/texture.h"
+#include "scene/components.h"
 
 namespace Enik {
 
@@ -24,6 +25,8 @@ private:
 	void DeserializeEntity(YAML::Node& data, uint64_t uuid, std::string& name);
 
 	void DeserializeNativeScript(YAML::Node& node, Entity& entity);
+	void SerializeNativeScriptFields(YAML::Emitter& out, Component::NativeScript& script);
+	void DeserializeNativeScriptFields(YAML::Node& node, Entity& entity);
 
 private:
 	Ref<Scene> m_Scene;

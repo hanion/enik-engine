@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene/entity.h"
+#include "scene/native_script_fields.h"
 
 namespace Enik {
 
@@ -14,7 +15,9 @@ public:
 		return m_Entity.Get<T>();
 	}
 
-	virtual void OnInspectorRender() {}
+	virtual std::vector<NativeScriptField> OnEditorGetFields() {
+		return std::vector<NativeScriptField>{};
+	}
 
 protected:
 	virtual void OnCreate() {}

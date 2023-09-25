@@ -74,6 +74,7 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 				if (ns.InstantiateScript and ns.InstantiateScript != nullptr) {
 					ns.Instance = ns.InstantiateScript();
 					ns.Instance->m_Entity = Entity(entity, this);
+					ns.ApplyNativeScriptFieldsToInstance();
 					ns.Instance->OnCreate();
 				}
 			}
@@ -119,6 +120,7 @@ void Scene::OnFixedUpdate() {
 				if (ns.InstantiateScript and ns.InstantiateScript != nullptr) {
 					ns.Instance = ns.InstantiateScript();
 					ns.Instance->m_Entity = Entity(entity, this);
+					ns.ApplyNativeScriptFieldsToInstance();
 					ns.Instance->OnCreate();
 				}
 			}
