@@ -139,7 +139,7 @@ void EditorLayer::OnImGuiRender() {
 
 				if (ImGui::BeginMenu("Project")) {
 					if (ImGui::MenuItem("Reload Project")) {
-						LoadProject(Project::GetActive()->GetProjectDirectory()/"project.enik");
+						ReloadProject();
 					}
 					if (ImGui::MenuItem("Open Project")) {
 						DialogFile::OpenDialog(DialogType::OPEN_FILE,
@@ -428,6 +428,17 @@ void EditorLayer::SaveProject() {
 	// Project::Save();
 }
 
+void EditorLayer::ReloadProject() {
+	if (m_SceneTreePanel.IsSelectedEntityValid()) {
+		UUID selected_entity = m_SceneTreePanel.GetSelectedEntity().Get<Component::ID>().uuid;
+		LoadProject(Project::GetActive()->GetProjectDirectory() / "project.enik");
+		m_SceneTreePanel.SetSelectedEntityWithUUID(selected_entity);
+	}
+	else {
+		LoadProject(Project::GetActive()->GetProjectDirectory() / "project.enik");
+	}
+}
+
 bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 	if (event.IsRepeat()) {
 		return false;
@@ -453,7 +464,7 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 			break;
 		case Key::R:
 			if (control) {
-				LoadProject(Project::GetActive()->GetProjectDirectory()/"project.enik");
+				ReloadProject();
 			}
 			break;
 

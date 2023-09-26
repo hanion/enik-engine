@@ -38,6 +38,7 @@ private:
 	void CreateNewProject();
 	void LoadProject(const std::filesystem::path &path);
 	void SaveProject();
+	void ReloadProject();
 
 	bool OnKeyPressed(KeyPressedEvent &event);
 	bool OnMouseButtonReleased(MouseButtonReleasedEvent &event);
