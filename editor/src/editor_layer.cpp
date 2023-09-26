@@ -147,6 +147,9 @@ void EditorLayer::OnImGuiRender() {
 								LoadProject(DialogFile::GetSelectedPath());
 							}, ".enik");
 					}
+					if (ImGui::MenuItem("Save Project")) {
+						SaveProject();
+					}
 					ImGui::EndMenu();
 				}
 
@@ -425,7 +428,7 @@ void EditorLayer::LoadProject(const std::filesystem::path& path) {
 }
 
 void EditorLayer::SaveProject() {
-	// Project::Save();
+	Project::Save(Project::GetActive()->GetProjectDirectory() / "project.enik");
 }
 
 void EditorLayer::ReloadProject() {
