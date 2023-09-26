@@ -138,6 +138,9 @@ void EditorLayer::OnImGuiRender() {
 			if (ImGui::BeginMenu("File")) {
 
 				if (ImGui::BeginMenu("Project")) {
+					if (ImGui::MenuItem("Reload Project")) {
+						LoadProject(Project::GetActive()->GetProjectDirectory()/"project.enik");
+					}
 					if (ImGui::MenuItem("Open Project")) {
 						DialogFile::OpenDialog(DialogType::OPEN_FILE,
 							[&](){
@@ -446,6 +449,11 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 					[&](){
 						LoadScene(DialogFile::GetSelectedPath());
 					});
+			}
+			break;
+		case Key::R:
+			if (control) {
+				LoadProject(Project::GetActive()->GetProjectDirectory()/"project.enik");
 			}
 			break;
 
