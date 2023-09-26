@@ -547,6 +547,12 @@ void SceneSerializer::DeserializeNativeScriptFields(YAML::Node& node, Entity& en
 
 	for (auto field : node["ScriptFields"]) {
 		std::string field_name = field.first.as<std::string>();
+
+		// field is removed from native script, do not load
+		if (script.NativeScriptFields.find(field_name) == script.NativeScriptFields.end()) {
+			continue;
+		}
+
 		YAML::Node& field_node = field.second;
 
 		if (not field_node["Type"] or not field_node["Value"]) {
