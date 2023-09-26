@@ -129,6 +129,12 @@ bool ToolbarPanel::OnKeyPressed(KeyPressedEvent& event) {
 		return false;
 	}
 
+	bool control = Input::IsKeyPressed(Key::LeftControl) or Input::IsKeyPressed(Key::RightControl);
+	bool shift   = Input::IsKeyPressed(Key::LeftShift)   or Input::IsKeyPressed(Key::RightShift);
+	if (control or shift) {
+		return false;
+	}
+
 	switch (event.GetKeyCode()) {
 		case Key::Q:
 			m_SelectedTool = Tool::SELECT;
