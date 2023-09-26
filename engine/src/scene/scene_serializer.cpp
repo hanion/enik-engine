@@ -528,6 +528,17 @@ void SceneSerializer::DeserializeNativeScriptFields(YAML::Node& node, Entity& en
 	);
 
 
+	// retrieve new fields of the script from a temporary instance
+	ScriptableEntity* temp_instance = script.InstantiateScript();
+	for (auto field : temp_instance->OnEditorGetFields()) {
+		if (script.NativeScriptFields.find(field.Name) == script.NativeScriptFields.end()) {
+			script.NativeScriptFields[field.Name] = {
+				field.Name, field.Type, (void*)field.Value
+			};
+		}
+	}
+	delete temp_instance;
+
 
 
 	if (not node["ScriptFields"] or not node["ScriptFields"].IsMap()) {
