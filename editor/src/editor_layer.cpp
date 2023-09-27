@@ -424,6 +424,14 @@ void EditorLayer::LoadProject(const std::filesystem::path& path) {
 		ScriptSystem::LoadScriptModuleFirstTime();
 		LoadScene(start_scene_path);
 		m_FileSystemPanel.SetCurrentDirectory(Project::GetProjectDirectory());
+
+		ScriptSystem::ClearOnScriptModuleReloadEvents();
+		ScriptSystem::CallOnScriptModuleReload(
+			[&]() {
+				SceneSerializer serializer = SceneSerializer(m_ActiveScene);
+				serializer.ReloadNativeScriptFields(m_ActiveScenePath);
+			}
+		);
 	}
 }
 

@@ -204,6 +204,34 @@ const UUID SceneSerializer::DuplicateEntity(const std::string& filepath, UUID uu
 	return -1;
 }
 
+
+void SceneSerializer::ReloadNativeScriptFields(const std::string& filepath) {
+	YAML::Node data = YAML::LoadFile(filepath);
+	if (not data["Scene"]) {
+		return;
+	}
+
+	auto entities = data["Entities"];
+	if (not entities) {
+		return;
+	}
+
+	for (auto entity_node : entities) {
+		auto native_script_node = entity_node["Component::NativeScript"];
+		if (not native_script_node) {
+			continue;
+		}
+
+		uint64_t entity_id = entity_node["Entity"].as<uint64_t>();
+		Entity entity = m_Scene->FindEntityByUUID(entity_id);
+		if (entity and entity.Has<Component::NativeScript>()) {
+			entity.Remove<Component::NativeScript>();
+			DeserializeNativeScript(entity_node, entity);
+		}
+	}
+}
+
+
 void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 	out << YAML::BeginMap; // Entity
 

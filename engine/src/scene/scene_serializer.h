@@ -20,6 +20,8 @@ public:
 
 	const UUID DuplicateEntity(const std::string& filepath, UUID uuid);
 
+	void ReloadNativeScriptFields(const std::string& filepath);
+
 private:
 	void SerializeEntity(YAML::Emitter& out, Entity& entity);
 	void DeserializeEntity(YAML::Node& data, uint64_t uuid, std::string& name);

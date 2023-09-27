@@ -32,6 +32,11 @@ void ScriptSystem::ReloadScriptModule() {
 			ScriptRegistry::ClearRegistry();
 
 			LoadScriptModule(new_script_module_path);
+
+			for (auto& function : s_Data.OnScriptModuleReloadEvents) {
+				function();
+			}
+
 			s_Data.reload_pending = false;
 		}
 	}
@@ -101,10 +106,19 @@ void ScriptSystem::UnloadScriptModule() {
 		script_module_handle = nullptr;
 		register_all = nullptr;
 
-		if (not s_Data.current_script_module_path.empty() and std::filesystem::exists(s_Data.current_script_module_path)) {
+		if (not s_Data.current_script_module_path.empty() and
+			std::filesystem::exists(s_Data.current_script_module_path)) {
 			std::filesystem::remove(s_Data.current_script_module_path);
 		}
 	}
+}
+
+void ScriptSystem::ClearOnScriptModuleReloadEvents() {
+    s_Data.OnScriptModuleReloadEvents.clear();
+}
+
+void ScriptSystem::CallOnScriptModuleReload(const std::function<void()>& function) {
+    s_Data.OnScriptModuleReloadEvents.emplace_back(function);
 }
 
 void ScriptSystem::SetSceneContext(Scene* scene) {

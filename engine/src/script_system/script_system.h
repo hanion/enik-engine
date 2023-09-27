@@ -16,6 +16,9 @@ public:
 	static void ReloadScriptModule();
 	static void UnloadScriptModule();
 
+	static void ClearOnScriptModuleReloadEvents();
+	static void CallOnScriptModuleReload(const std::function<void()>& function);
+
 	static void SetSceneContext(Scene* scene);
 	static Scene* GetSceneContext();
 
@@ -25,6 +28,8 @@ public:
 		bool reload_pending = false;
 
 		Scene* scene_context;
+
+		std::vector<std::function<void ()>> OnScriptModuleReloadEvents;
 	};
 
 private:
