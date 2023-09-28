@@ -118,12 +118,12 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		DisplaySubTexture(sprite);
 	});
 
-	DisplayComponentInInspector<Component::NativeScript>("Native Script", entity, true, [&]() {
+	if (entity.Has<Component::NativeScript>()) {
 		auto& script = entity.Get<Component::NativeScript>();
-		ImGui::TextColored(ImVec4(0.4f, 0.7f, 0.2f, 1.0f), script.ScriptName.c_str());
-
-		DisplayNativeScript(script);
-	});
+		DisplayComponentInInspector<Component::NativeScript>(script.ScriptName, entity, true, [&]() {
+			DisplayNativeScript(script);
+		});
+	}
 
 	DisplayComponentInInspector<Component::RigidBody>("Rigid Body", entity, true, [&]() {
 		auto& rigid_body = entity.Get<Component::RigidBody>();
