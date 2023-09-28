@@ -7,6 +7,7 @@
 #include "../dialogs/dialog_file.h"
 #include "project/project.h"
 #include "script_system/script_system.h"
+#include "core/input.h"
 
 
 namespace Enik {
@@ -207,6 +208,10 @@ void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity
 
 	if (ImGui::TreeNodeEx((void*)typeid(T).hash_code(), tree_node_flags, name.c_str())) {
 		if (can_delete) {
+			if (Input::IsMouseButtonPressed(1) and ImGui::IsItemHovered()) {
+				ImGui::OpenPopup("ComponentSettings");
+			}
+
 			float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
 			ImGui::SameLine(ImGui::GetContentRegionAvail().x - GImGui->Style.FramePadding.x);
 			if (ImGui::Button("...", ImVec2(lineHeight, lineHeight))) {
@@ -380,6 +385,10 @@ void InspectorPanel::DisplaySubTexture(Component::SpriteRenderer& sprite) {
 	bool remove_sub_texture = false;
 
 	if (ImGui::TreeNodeEx("##DisplaySubTexture", tree_node_flags, "Sub Texture")) {
+		if (Input::IsMouseButtonPressed(1) and ImGui::IsItemHovered()) {
+			ImGui::OpenPopup("SubTextureSettings");
+		}
+
 		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
 		ImGui::SameLine(ImGui::GetContentRegionAvail().x - GImGui->Style.FramePadding.x);
 		if (ImGui::Button("...", ImVec2(lineHeight, lineHeight))) {
