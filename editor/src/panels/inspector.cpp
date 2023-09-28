@@ -37,11 +37,9 @@ void InspectorPanel::OnImGuiRender() {
 	if (selectedEntity) {
 		DrawEntityInInspector(selectedEntity);
 
-		ImVec2 buttonSize(150, GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f);
-		ImVec2 buttonPosition((ImGui::GetContentRegionAvail().x - buttonSize.x) * 0.5f, ImGui::GetCursorPosY());
-		ImGui::SetCursorPos(buttonPosition);
-
-		if (ImGui::Button("Add Component", buttonSize)) {
+		ImGui::Spacing();
+		ImVec2 fill_width = ImVec2(ImGui::GetContentRegionAvail().x, 0);
+		if (ImGui::Button("Add Component", fill_width)) {
 			ImGui::OpenPopup("AddComponent");
 		}
 		if (ImGui::BeginPopup("AddComponent")) {
@@ -364,7 +362,8 @@ void InspectorPanel::DisplaySubTexture(Component::SpriteRenderer& sprite) {
 		return;
 	}
 	if (sprite.SubTexture == nullptr) {
-		if (ImGui::Button("Create Sub Texture")) {
+		ImVec2 fill_width = ImVec2(ImGui::GetContentRegionAvail().x, 0);
+		if (ImGui::Button("Create Sub Texture", fill_width)) {
 			sprite.SubTexture = SubTexture2D::CreateFromTileIndex(
 				sprite.Texture, glm::vec2(18), glm::vec2(0), glm::vec2(2));
 		}
