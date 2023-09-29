@@ -21,7 +21,10 @@ void ProjectSerializer::Serialize(std::filesystem::path path) {
 
 	out << YAML::Key << "Project" << YAML::Value << config.project_name;
 	out << YAML::Key << "StartScene" << YAML::Value << config.start_scene.string();
-	out << YAML::Key << "ScriptModule" << YAML::Value << config.script_module_path.string();
+
+	if (not config.script_module_path.empty()) {
+		out << YAML::Key << "ScriptModule" << YAML::Value << config.script_module_path.string();
+	}
 
 	out << YAML::EndMap;
 
