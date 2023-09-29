@@ -17,6 +17,10 @@ static register_all_fn register_all;
 static void* script_module_handle;
 
 void ScriptSystem::LoadScriptModuleFirstTime() {
+	if (Project::GetActive()->GetConfig().script_module_path.empty()) {
+		return;
+	}
+
 	s_Data.reload_pending = true;
 	ReloadScriptModule();
 
