@@ -65,9 +65,12 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		memset(buffer, 0, sizeof(buffer));
 		strcpy(buffer, text.c_str());
 		ImGuiUtils::PrefixLabel("Text");
+
+		ImGui::PushID(entity.Get<Component::ID>());
 		if (ImGui::InputText("##Tag", buffer, sizeof(buffer))) {
 			text = std::string(buffer);
 		}
+		ImGui::PopID();
 	});
 
 	DisplayComponentInInspector<Component::Transform>("Transform", entity, false, [&]() {
