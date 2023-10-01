@@ -134,6 +134,13 @@ CollisionPoints TestPlaneBox(
 	if (box->Shape   != Component::ColliderShape::BOX  )  { return result; }
 
 
+	float distance = glm::dot(box_transform->Position - plane_transform->Position, plane->Vector);
+
+	if (distance <= box_transform->Scale.y) {
+		result.Depth = box_transform->Scale.y - distance;
+		result.Normal = plane->Vector;
+		result.HasCollision = true;
+	}
 
 	return result;
 }
