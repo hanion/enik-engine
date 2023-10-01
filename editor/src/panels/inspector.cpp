@@ -58,6 +58,8 @@ void InspectorPanel::OnImGuiRender() {
 }
 
 void InspectorPanel::DrawEntityInInspector(Entity entity) {
+	ImGui::PushID(entity.Get<Component::ID>());
+
 	DisplayComponentInInspector<Component::Tag>("Tag", entity, false, [&]() {
 		auto& text = entity.Get<Component::Tag>().Text;
 
@@ -65,12 +67,9 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		memset(buffer, 0, sizeof(buffer));
 		strcpy(buffer, text.c_str());
 		ImGuiUtils::PrefixLabel("Text");
-
-		ImGui::PushID(entity.Get<Component::ID>());
 		if (ImGui::InputText("##Tag", buffer, sizeof(buffer))) {
 			text = std::string(buffer);
 		}
-		ImGui::PopID();
 	});
 
 	DisplayComponentInInspector<Component::Transform>("Transform", entity, false, [&]() {
@@ -192,6 +191,8 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		}
 
 	});
+
+	ImGui::PopID();
 }
 
 template <typename T>
