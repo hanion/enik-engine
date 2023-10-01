@@ -61,21 +61,16 @@ CollisionPoints TestCircleCircle(
 
 	glm::vec3 diff = b_center - a_center;
 	auto distance = glm::length(diff);
-	// auto distance = (float)diff.length();
 
-	float a_radius = a->Float;
-	float b_radius = b->Float;
+	float a_radius = a->Float * a_transform->Scale.x;
+	float b_radius = b->Float * b_transform->Scale.x;
 
 	if (distance < a_radius + b_radius) {
-		// Spheres are colliding
-
-		// Calculate collision normal, depth, and collision points
 		glm::vec3 normal = glm::normalize(diff);
 		float depth = a_radius + b_radius - distance;
 		glm::vec3 a_point = a_center + a_radius * normal;
 		glm::vec3 b_point = b_center - b_radius * normal;
 
-		// Fill in the CollisionPoints structure
 		result.A = a_point;
 		result.B = b_point;
 		result.Normal = normal;
@@ -97,7 +92,7 @@ CollisionPoints TestCirclePlane(
 	if (plane->Shape  != Component::ColliderShape::PLANE )  { return result; }
 
 	glm::vec3 circle_center = circle_transform->Position + circle->Vector;
-	float circle_radius = circle->Float;
+	float circle_radius = circle->Float * circle_transform->Scale.x;
 
 	glm::vec3 plane_normal = plane->Vector;
 	float plane_d = plane_transform->Position.y + plane->Float;
