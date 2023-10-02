@@ -121,6 +121,27 @@ CollisionPoints TestCircleBox(
 	if (circle->Shape != Component::ColliderShape::CIRCLE)  { return result; }
 	if (box->Shape    != Component::ColliderShape::BOX   )  { return result; }
 
+	glm::vec3 box_scale = glm::vec3(box_transform->Scale.x * 0.5f, box_transform->Scale.y * 0.5f, 0);
+
+	glm::vec3 closest_point_on_box = glm::clamp(
+		circle_transform->Position,
+		box_transform->Position - box_scale,
+		box_transform->Position + box_scale
+	);
+
+	glm::vec3 circle_to_closest_point = closest_point_on_box - circle_transform->Position;
+
+	float distance = glm::length(circle_to_closest_point);
+
+	float circle_radius = circle->Float * circle_transform->Scale.x;
+
+	if (distance <= circle_radius) {
+		result.Depth = circle_radius - distance;
+		result.Normal = glm::normalize(circle_to_closest_point);
+
+		result.HasCollision = true;
+	}
+
 	return result;
 }
 
