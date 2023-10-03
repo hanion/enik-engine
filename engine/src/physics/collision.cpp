@@ -167,6 +167,43 @@ CollisionPoints TestPlaneBox(
 }
 
 
+void CalculateBoxVertices(const glm::vec3& position, const glm::vec2& half_extents,
+	float rotation_angle_radians, glm::vec2 out_vertices[4]) {
+
+	glm::mat2 rotation_matrix(
+		cos(rotation_angle_radians), -sin(rotation_angle_radians),
+		sin(rotation_angle_radians),  cos(rotation_angle_radians)
+	);
+
+	glm::vec2 local_vertices[4] = {
+		glm::vec2(-half_extents.x, -half_extents.y),
+		glm::vec2( half_extents.x, -half_extents.y),
+		glm::vec2( half_extents.x,  half_extents.y),
+		glm::vec2(-half_extents.x,  half_extents.y)
+	};
+
+	for (int i = 0; i < 4; ++i) {
+		out_vertices[i] = glm::vec2(position.x, position.y) + rotation_matrix * local_vertices[i];
+	}
+}
+
+void ProjectVerticesOntoAxis(const glm::vec2 vertices[], const glm::vec2& axis,
+	float& out_min_projection, float& out_max_projection) {
+
+	out_min_projection = out_max_projection = glm::dot(vertices[0], axis);
+
+	for (int i = 1; i < 4; ++i) {
+		float projection = glm::dot(vertices[i], axis);
+		if (projection < out_min_projection) {
+			out_min_projection = projection;
+		}
+		if (projection > out_max_projection) {
+			out_max_projection = projection;
+		}
+	}
+}
+
+
 CollisionPoints TestBoxBox(
 	const Component::Collider* a, const Component::Transform* a_transform,
 	const Component::Collider* b, const Component::Transform* b_transform) {
@@ -176,6 +213,59 @@ CollisionPoints TestBoxBox(
 	if (a->Shape != Component::ColliderShape::BOX)  { return result; }
 	if (b->Shape != Component::ColliderShape::BOX)  { return result; }
 
+
+	const glm::vec3& a_position = a_transform->Position;
+	const glm::vec3& b_position = b_transform->Position;
+
+	glm::vec2 a_half_extents = a_transform->Scale * 0.5f;
+	glm::vec2 b_half_extents = b_transform->Scale * 0.5f;
+
+	glm::vec2 a_vertices[4];
+	glm::vec2 b_vertices[4];
+
+	CalculateBoxVertices(a_position, a_half_extents, glm::radians(a_transform->Rotation), a_vertices);
+	CalculateBoxVertices(b_position, b_half_extents, glm::radians(b_transform->Rotation), b_vertices);
+
+	bool overlap_on_all_axes = true;
+
+	for (int i = 0; i < 4; ++i) {
+		glm::vec2 axis = a_vertices[(i + 1) % 4] - a_vertices[i];
+		axis = glm::normalize(glm::vec2(-axis.y, axis.x));
+
+		float a_min, a_max;
+		float b_min, b_max;
+		ProjectVerticesOntoAxis(a_vertices, axis, a_min, a_max);
+		ProjectVerticesOntoAxis(b_vertices, axis, b_min, b_max);
+
+		if (not (a_max >= b_min && b_max >= a_min)) {
+			overlap_on_all_axes = false;
+			break; // No overlap on this axis, exit early
+		}
+	}
+
+	if (overlap_on_all_axes) {
+
+		float depth_x = a_half_extents.x + b_half_extents.x - glm::abs(a_position.x - b_position.x);
+		float depth_y = a_half_extents.y + b_half_extents.y - glm::abs(a_position.y - b_position.y);
+
+		if (depth_x < depth_y) {
+			result.Depth = depth_x;
+			if (a_position.x < b_position.x) {
+				result.Normal = glm::vec3( 1.0f, 0.0f, 0.0f); // Collision from left
+			} else {
+				result.Normal = glm::vec3(-1.0f, 0.0f, 0.0f); // Collision from right
+			}
+		} else {
+			result.Depth = depth_y;
+			if (a_position.y < b_position.y) {
+				result.Normal = glm::vec3(0.0f,  1.0f, 0.0f); // Collision from below
+			} else {
+				result.Normal = glm::vec3(0.0f, -1.0f, 0.0f); // Collision from above
+			}
+		}
+
+		result.HasCollision = true;
+	}
 
 	return result;
 }
