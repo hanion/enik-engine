@@ -59,7 +59,8 @@ DialogFileResult DialogFile::ShowPopup() {
 	}
 
 	ImGui::SameLine();
-	ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "%s", s_Data.current_directory.string().c_str());
+	auto canonical_current_directory = std::filesystem::canonical(s_Data.current_directory).string();
+	ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "%s", canonical_current_directory.c_str());
 
 	ImGui::Spacing();
 	ImGui::Separator();
@@ -85,7 +86,7 @@ DialogFileResult DialogFile::ShowPopup() {
 		Utils::FilterFiles(s_Data.entries, filters, s_Data.type == DialogType::OPEN_FILE);
 
 		s_Data.has_searched = true;
-		strcpy(file_path_buffer, s_Data.current_directory.string().c_str());
+		strcpy(file_path_buffer, canonical_current_directory.c_str());
 		s_Data.selected_path.clear();
 	}
 
