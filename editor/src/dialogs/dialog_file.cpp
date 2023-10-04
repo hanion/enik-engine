@@ -21,6 +21,10 @@ const std::filesystem::path& DialogFile::GetSelectedPath() {
 	return s_Data.selected_path;
 }
 
+void DialogFile::SetCurrentDirectory(const std::filesystem::path& directory) {
+	s_Data.current_directory = directory;
+}
+
 DialogFileResult DialogFile::Show() {
 	if (not s_Data.is_open) {
 		return DialogFileResult::NONE;
