@@ -696,6 +696,9 @@ void EditorLayer::UpdateWindowTitle() {
 }
 
 void EditorLayer::OnOverlayRender() {
+	if (not (m_SceneState == SceneState::Edit or m_ActiveScene->IsPaused())) {
+		return;
+	}
 
 	if (m_SceneState == SceneState::Edit) {
 		Renderer2D::BeginScene(m_EditorCameraController.GetCamera());
