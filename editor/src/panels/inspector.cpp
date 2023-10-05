@@ -89,7 +89,8 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 
 	DisplayComponentInInspector<Component::Camera>("Camera", entity, true, [&]() {
 		auto& cam = entity.Get<Component::Camera>();
-		ImGui::Checkbox("Primary", &cam.Primary);
+		ImGuiUtils::PrefixLabel("Primary");
+		ImGui::Checkbox("##Primary", &cam.Primary);
 
 		float size = cam.Cam.GetSize();
 		ImGuiUtils::PrefixLabel("Size");
@@ -97,7 +98,8 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			cam.Cam.SetSize(size);
 		}
 
-		if (ImGui::Checkbox("Fixed Aspect Ratio", &cam.FixedAspectRatio)) {
+		ImGuiUtils::PrefixLabel("Fixed Aspect Ratio");
+		if (ImGui::Checkbox("##Fixed Aspect Ratio", &cam.FixedAspectRatio)) {
 			m_Context->OnViewportResize(m_Context->m_ViewportWidth, m_Context->m_ViewportHeight);
 		}
 		if (cam.FixedAspectRatio) {
@@ -361,7 +363,8 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 		ImGui::DragFloat("##Tile Scale", &sprite.TileScale, 0.01f);
 	}
 
-	if (ImGui::Checkbox("Filter", &sprite.mag_filter_linear)) {
+	ImGuiUtils::PrefixLabel("Filter");
+	if (ImGui::Checkbox("##Filter", &sprite.mag_filter_linear)) {
 		sprite.Texture = Texture2D::Create(Project::GetAbsolutePath(sprite.TexturePath), sprite.mag_filter_linear);
 	}
 }
