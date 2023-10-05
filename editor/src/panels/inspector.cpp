@@ -133,17 +133,17 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	DisplayComponentInInspector<Component::RigidBody>("Rigid Body", entity, true, [&]() {
 		auto& rigid_body = entity.Get<Component::RigidBody>();
 
-		glm::vec3& velocity = rigid_body.Velocity;
-		ImGuiUtils::PrefixLabel("Velocity");
-		ImGui::DragFloat3("##Velocity", glm::value_ptr(velocity), 0.01f, 0.01f);
-
-		glm::vec3& force = rigid_body.Force;
-		ImGuiUtils::PrefixLabel("Force");
-		ImGui::DragFloat3("##Force", glm::value_ptr(force), 0.01f, 0.01f);
-
-		float& mass = rigid_body.Mass;
 		ImGuiUtils::PrefixLabel("Mass");
-		ImGui::DragFloat("##Mass", &mass, 0.01f, 0.01f);
+		ImGui::DragFloat("##Mass", &rigid_body.Mass, 0.01f, 0.01f);
+
+		ImGui::SeparatorText("Debug");
+
+		ImGuiUtils::PrefixLabel("Velocity");
+		ImGui::DragFloat3("##Velocity", glm::value_ptr(rigid_body.Velocity), 0.01f, 0.01f);
+
+		ImGuiUtils::PrefixLabel("Force");
+		ImGui::DragFloat3("##Force", glm::value_ptr(rigid_body.Force), 0.01f, 0.01f);
+
 	});
 
 	DisplayComponentInInspector<Component::Collider>("Collider", entity, true, [&]() {
