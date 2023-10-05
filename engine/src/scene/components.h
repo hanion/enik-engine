@@ -112,6 +112,16 @@ struct RigidBody {
 
 	RigidBody() = default;
 	RigidBody(const RigidBody&) = default;
+
+	void ApplyForce(const glm::vec3& force) {
+		Force += force;
+	}
+
+	void ApplyImpulse(const glm::vec3& impulse) {
+		if (Mass != 0.0f) {
+			Velocity += impulse / Mass;
+		}
+	}
 };
 
 
