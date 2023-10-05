@@ -91,7 +91,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		auto& cam = entity.Get<Component::Camera>();
 		ImGui::Checkbox("Primary", &cam.Primary);
 
-		static float size = cam.Cam.GetSize();
+		float size = cam.Cam.GetSize();
 		ImGuiUtils::PrefixLabel("Size");
 		if (ImGui::DragFloat("##Size", &size, 0.01f, 0.01f)) {
 			cam.Cam.SetSize(size);
@@ -101,7 +101,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			m_Context->OnViewportResize(m_Context->m_ViewportWidth, m_Context->m_ViewportHeight);
 		}
 		if (cam.FixedAspectRatio) {
-			static float ratio = cam.Cam.GetAspectRatio();
+			float ratio = cam.Cam.GetAspectRatio();
 			ImGuiUtils::PrefixLabel("Aspect Ratio");
 			if (ImGui::DragFloat("##Aspect Ratio", &ratio, 0.01f, 0.001f)) {
 				cam.Cam.SetAspectRatio(ratio);
