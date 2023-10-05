@@ -30,11 +30,13 @@ void ProjectSerializer::Serialize(std::filesystem::path path) {
 
 	std::ofstream fout(path);
 	fout << out.c_str();
-	EN_CORE_INFO("Serialized project   '{0}', in '{1}'", config.project_name, path);
+	EN_CORE_INFO("Serialized project   '{}', in {}", config.project_name, std::filesystem::canonical(path));
 }
 bool ProjectSerializer::Deserialize(std::filesystem::path path) {
+	path = std::filesystem::canonical(path);
+
 	if (not path.has_extension() or path.extension() != ".enik") {
-		EN_CORE_ERROR("Can not load file '{0}'\n	{1}", path, "It needs to be a project.enik file!");
+		EN_CORE_ERROR("Can not load file {}\n	{}", path, "It needs to be a project.enik file!");
 		return false;
 	}
 
@@ -43,7 +45,7 @@ bool ProjectSerializer::Deserialize(std::filesystem::path path) {
 		data = YAML::LoadFile(path);
 	}
 	catch (const YAML::ParserException& e) {
-		EN_CORE_ERROR("Failed to load project.enik file '{0}'\n	{1}", path, e.what());
+		EN_CORE_ERROR("Failed to load project.enik file {}\n	{1}", path, e.what());
 		return false;
 	}
 
@@ -60,7 +62,7 @@ bool ProjectSerializer::Deserialize(std::filesystem::path path) {
 		config.script_module_path  = data["ScriptModule"].as<std::string>();
 	}
 
-	EN_CORE_INFO("Deserialized project '{0}', in '{1}'", config.project_name, path);
+	EN_CORE_INFO("Deserialized project '{}', in {}", config.project_name, path);
 
 	return true;
 }
