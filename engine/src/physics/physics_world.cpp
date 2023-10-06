@@ -86,12 +86,12 @@ void PhysicsWorld::ResolveCollisions() {
 		if (a.Has<Component::RigidBody>()) {
 			a.Get<Component::Transform>().Position -= separation;
 			a.Get<Component::RigidBody>().Velocity *= 0.99f;
-			a.Get<Component::RigidBody>().Velocity -= separation;
+			a.Get<Component::RigidBody>().ApplyImpulse(-separation);
 		}
 		if (b.Has<Component::RigidBody>()) {
 			b.Get<Component::Transform>().Position += separation;
 			b.Get<Component::RigidBody>().Velocity *= 0.99f;
-			b.Get<Component::RigidBody>().Velocity += separation;
+			b.Get<Component::RigidBody>().ApplyImpulse(+separation);
 		}
 	}
 }
