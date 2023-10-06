@@ -23,7 +23,9 @@ void PhysicsWorld::Step() {
 		Component::RigidBody& rigid_body = group.get<Component::RigidBody>(entity);
 
 		// gravity
-		rigid_body.Force.y += rigid_body.Mass * s_Data.Gravity.y;
+		if (rigid_body.UseGravity) {
+			rigid_body.Force.y += rigid_body.Mass * s_Data.Gravity.y;
+		}
 
 		auto half_acceleration = (rigid_body.Force / rigid_body.Mass) * GetFixedUpdateRate() * 0.5f;
 		rigid_body.Velocity += half_acceleration;

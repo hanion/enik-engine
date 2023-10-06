@@ -110,6 +110,8 @@ struct RigidBody {
 	glm::vec3 Force;
 	float Mass = 1.0f;
 
+	bool UseGravity = false;
+
 	RigidBody() = default;
 	RigidBody(const RigidBody&) = default;
 

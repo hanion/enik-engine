@@ -319,7 +319,8 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::BeginMap;
 
 		auto& rigid_body = entity.Get<Component::RigidBody>();
-		out << YAML::Key << "Mass" << YAML::Value << rigid_body.Mass;
+		out << YAML::Key << "Mass"       << YAML::Value << rigid_body.Mass;
+		out << YAML::Key << "UseGravity" << YAML::Value << rigid_body.UseGravity;
 
 		out << YAML::EndMap;
 	}
@@ -403,6 +404,7 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 	if (rigid_body) {
 		auto& body = deserialized_entity.Add<Component::RigidBody>();
 		body.Mass = rigid_body["Mass"].as<float>();
+		body.UseGravity = rigid_body["UseGravity"].as<bool>();
 	}
 
 	auto collider = entity["Component::Collider"];

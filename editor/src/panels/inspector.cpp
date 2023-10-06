@@ -136,6 +136,9 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		ImGuiUtils::PrefixLabel("Mass");
 		ImGui::DragFloat("##Mass", &rigid_body.Mass, 0.01f, 0.01f);
 
+		ImGuiUtils::PrefixLabel("UseGravity");
+		ImGui::Checkbox("##UseGravity", &rigid_body.UseGravity);
+
 		ImGui::SeparatorText("Debug");
 
 		ImGuiUtils::PrefixLabel("Velocity");
