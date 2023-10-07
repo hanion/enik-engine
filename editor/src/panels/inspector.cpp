@@ -58,6 +58,10 @@ void InspectorPanel::OnImGuiRender() {
 }
 
 void InspectorPanel::DrawEntityInInspector(Entity entity) {
+	if (not entity or not entity.Has<Component::ID>()) {
+		return;
+	}
+
 	ImGui::PushID(entity.Get<Component::ID>());
 
 	DisplayComponentInInspector<Component::Tag>("Tag", entity, false, [&]() {
