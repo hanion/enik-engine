@@ -12,6 +12,8 @@ public:
 
 	void UpdateSubTexture2D();
 
+	void SetTexture(const Ref<Texture2D>& texture) { m_Texture = texture; }
+
 	const Ref<Texture2D> GetTexture() const { return m_Texture; }
 	const glm::vec2* GetTextureCoords() const { return m_TextureCoords; }
 

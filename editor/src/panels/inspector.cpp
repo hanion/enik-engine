@@ -278,6 +278,9 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 					sprite.Texture = Texture2D::Create(path);
 					auto relative = std::filesystem::relative(path, Project::GetProjectDirectory());
 					sprite.TexturePath = relative;
+					if (sprite.SubTexture != nullptr) {
+						sprite.SubTexture->SetTexture(sprite.Texture);
+					}
 				}
 			}
 			ImGui::EndDragDropTarget();
@@ -294,6 +297,9 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 					auto relative = std::filesystem::relative(DialogFile::GetSelectedPath(), Project::GetProjectDirectory());
 					sprite.TexturePath = relative;
 					sprite.Texture = Texture2D::Create(DialogFile::GetSelectedPath());
+					if (sprite.SubTexture != nullptr) {
+						sprite.SubTexture->SetTexture(sprite.Texture);
+					}
 				},
 				".png");
 		}
@@ -373,6 +379,9 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 	ImGuiUtils::PrefixLabel("Filter");
 	if (ImGui::Checkbox("##Filter", &sprite.mag_filter_linear)) {
 		sprite.Texture = Texture2D::Create(Project::GetAbsolutePath(sprite.TexturePath), sprite.mag_filter_linear);
+		if (sprite.SubTexture != nullptr) {
+			sprite.SubTexture->SetTexture(sprite.Texture);
+		}
 	}
 }
 
