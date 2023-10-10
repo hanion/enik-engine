@@ -74,26 +74,34 @@ void PhysicsWorld::ResolveCollisions() {
 			continue;
 		}
 
-		Entity a = collision.EntityA;
-		Entity b = collision.EntityB;
+		Entity& a = collision.EntityA;
+		Entity& b = collision.EntityB;
 		CollisionPoints& points = collision.Points;
+
+
+		if (a.Has<Component::NativeScript>()) {
+			a.Get<Component::NativeScript>().Instance->OnCollision(b);
+		}
+		if (b.Has<Component::NativeScript>()) {
+			b.Get<Component::NativeScript>().Instance->OnCollision(a);
+		}
 
 
 
 		// Calculate the separation vector
 		glm::vec3 separation = points.Normal * points.Depth;
 
-		// ! FIXME balls slowly go inside the plane
-		// Apply forces or impulses to simulate the collision response
 		if (a.Has<Component::RigidBody>()) {
 			a.Get<Component::Transform>().Position -= separation;
-			a.Get<Component::RigidBody>().Velocity *= 0.99f;
-			a.Get<Component::RigidBody>().ApplyImpulse(-separation);
+			auto rb = &a.Get<Component::RigidBody>();
+			rb->Velocity *= 0.99f;
+			rb->ApplyImpulse(-separation);
 		}
 		if (b.Has<Component::RigidBody>()) {
 			b.Get<Component::Transform>().Position += separation;
-			b.Get<Component::RigidBody>().Velocity *= 0.99f;
-			b.Get<Component::RigidBody>().ApplyImpulse(+separation);
+			auto rb = &b.Get<Component::RigidBody>();
+			rb->Velocity *= 0.99f;
+			rb->ApplyImpulse(+separation);
 		}
 	}
 }

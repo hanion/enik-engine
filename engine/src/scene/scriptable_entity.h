@@ -25,9 +25,12 @@ protected:
 	virtual void OnUpdate(Timestep ts) {}
 	virtual void OnFixedUpdate() {}
 
+	virtual void OnCollision(Entity& other) {}
+
 private:
 	Entity m_Entity;
 	friend class Scene;
+	friend class PhysicsWorld;
 };
 
 }
