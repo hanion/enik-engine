@@ -135,6 +135,7 @@ struct Collider {
 	ColliderShape Shape = ColliderShape::CIRCLE;
 	glm::vec3 Vector = glm::vec3(0,0,0);
 	float Float = 0.5f;
+	bool IsArea = false;
 
 	Collider() = default;
 	Collider(const Collider&) = default;

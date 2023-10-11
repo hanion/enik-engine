@@ -333,6 +333,7 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::Key << "Shape"  << YAML::Value << collider.Shape;
 		out << YAML::Key << "Float"  << YAML::Value << collider.Float;
 		out << YAML::Key << "Vector" << YAML::Value << collider.Vector;
+		out << YAML::Key << "IsArea" << YAML::Value << collider.IsArea;
 
 		out << YAML::EndMap;
 	}
@@ -413,6 +414,7 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 		col.Shape  = (Component::ColliderShape)collider["Shape"].as<int>();
 		col.Float  = collider["Float"].as<float>();
 		col.Vector = collider["Vector"].as<glm::vec3>();
+		col.IsArea = collider["IsArea"].as<bool>();
 	}
 
 }

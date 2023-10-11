@@ -175,6 +175,9 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			ImGui::EndCombo();
 		}
 
+		ImGuiUtils::PrefixLabel("Is Area");
+		ImGui::Checkbox("##IsArea", &collider.IsArea);
+
 		switch (collider.Shape) {
 			case Component::ColliderShape::CIRCLE: {
 				ImGuiUtils::PrefixLabel("Radius");
