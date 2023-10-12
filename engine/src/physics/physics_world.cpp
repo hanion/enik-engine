@@ -87,6 +87,11 @@ void PhysicsWorld::ResolveCollisions() {
 		}
 
 
+		if (a.Get<Component::Collider>().IsArea or
+			b.Get<Component::Collider>().IsArea) {
+			continue;
+		}
+
 
 		// Calculate the separation vector
 		glm::vec3 separation = points.Normal * points.Depth;
