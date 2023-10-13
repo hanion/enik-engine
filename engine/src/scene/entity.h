@@ -34,6 +34,14 @@ public:
 		m_Scene->m_Registry.remove<T>(m_Handle);
 	}
 
+	template <typename T>
+	T& GetOrAdd() {
+		if (Has<T>()) {
+			return Get<T>();
+		}
+		return Add<T>();
+	}
+
 	operator bool() const { return m_Handle != entt::null; }
 
 	operator entt::entity() const { return m_Handle; }
