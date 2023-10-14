@@ -25,11 +25,15 @@ public:
 
 	void OnImGuiRender();
 
+	void OnMouseButtonReleased(MouseButtonReleasedEvent& event);
+
 private:
 	void DrawEntityInSceneTree(Entity entity);
 
 private:
 	Ref<Scene> m_Context;
+
+	bool m_MouseReleased = false;
 
 	Entity m_SelectionContext;
 };

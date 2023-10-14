@@ -543,6 +543,7 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 }
 
 bool EditorLayer::OnMouseButtonReleased(MouseButtonReleasedEvent& event) {
+	m_SceneTreePanel.OnMouseButtonReleased(event);
 	return false;
 }
 

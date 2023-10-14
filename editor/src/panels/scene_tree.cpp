@@ -74,6 +74,7 @@ void SceneTreePanel::OnImGuiRender() {
 			DrawEntityInSceneTree(entity);
 		});
 
+		m_MouseReleased = false;
 		ImGui::TreePop();
 	}
 
@@ -97,6 +98,12 @@ void SceneTreePanel::OnImGuiRender() {
 	ImGui::End();
 }
 
+void SceneTreePanel::OnMouseButtonReleased(MouseButtonReleasedEvent& event) {
+	if (event.GetMouseButton() == Mouse::ButtonLeft) {
+		m_MouseReleased = true;
+	}
+}
+
 void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 	ImGui::PushID(entity);
 
@@ -112,8 +119,9 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 	Component::Tag& tag = entity.Get<Component::Tag>();
 	bool node_open = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.Text.c_str());
 
-	if (ImGui::IsItemClicked()) {
+	if (m_MouseReleased and ImGui::IsItemFocused()) {
 		SetSelectedEntity(entity);
+		m_MouseReleased = false;
 	}
 
 	bool delete_entity = false;
