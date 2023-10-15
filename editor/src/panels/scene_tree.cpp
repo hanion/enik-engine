@@ -119,7 +119,7 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 	Component::Tag& tag = entity.Get<Component::Tag>();
 	bool node_open = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.Text.c_str());
 
-	if (m_MouseReleased and ImGui::IsItemFocused()) {
+	if (m_MouseReleased and ImGui::IsItemFocused() and ImGui::IsItemHovered()) {
 		SetSelectedEntity(entity);
 		m_MouseReleased = false;
 	}
