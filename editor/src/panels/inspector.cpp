@@ -508,7 +508,6 @@ void InspectorPanel::DisplayNativeScript(Component::NativeScript& script) {
 				continue;
 			}
 			case FieldType::ENTITY: {
-				// TODO Drag-Drop entities from the scene tree
 				uint64_t* id = static_cast<uint64_t*>(field.Value);
 
 				std::string entity_name;
@@ -520,19 +519,21 @@ void InspectorPanel::DisplayNativeScript(Component::NativeScript& script) {
 					entity_name = "[Entity]";
 				}
 
-				bool is_open = ImGui::Button(entity_name.c_str());
+				ImGui::Button(entity_name.c_str());
+
+				if (ImGui::BeginDragDropTarget()) {
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_ENTITY")) {
+						auto payload_id = static_cast<const UUID*>(payload->Data);
+						if (payload_id != nullptr) {
+							*id = *payload_id;
+						}
+
+					}
+					ImGui::EndDragDropTarget();
+				}
 
 				if (ImGui::IsItemHovered()){
 					ImGui::SetTooltip(std::to_string(*id).c_str());
-				}
-
-				if (is_open) {
-					ImGui::OpenPopup("select_entity");
-				}
-
-				if (ImGui::BeginPopup("select_entity")) {
-					ImGui::InputScalar(label, ImGuiDataType_U64, id);
-					ImGui::EndPopup();
 				}
 
 				continue;

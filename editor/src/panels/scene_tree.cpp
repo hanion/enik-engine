@@ -119,6 +119,12 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 	Component::Tag& tag = entity.Get<Component::Tag>();
 	bool node_open = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.Text.c_str());
 
+	if (ImGui::BeginDragDropSource()) {
+		ImGui::SetDragDropPayload("DND_ENTITY", (void*)&entity.Get<Component::ID>().uuid, sizeof(UUID));
+
+		ImGui::Text(std::to_string(entity.Get<Component::ID>().uuid).c_str());
+		ImGui::EndDragDropSource();
+	}
 	if (m_MouseReleased and ImGui::IsItemFocused() and ImGui::IsItemHovered()) {
 		SetSelectedEntity(entity);
 		m_MouseReleased = false;
