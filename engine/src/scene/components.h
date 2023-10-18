@@ -150,6 +150,64 @@ struct Collider {
 	}
 };
 
+
+
+struct Family {
+	Entity Parent;
+	std::vector<Entity> Children;
+
+	Family() = default;
+	Family(const Family&) = default;
+
+
+	void AddChild(Entity entity) {
+		Children.emplace_back(entity);
+	}
+
+	void RemoveChild(Entity entity) {
+		for (size_t i = 0; i < Children.size(); ++i) {
+			if (Children[i] == entity) {
+				Children.erase(Children.begin() + i);
+				return;
+			}
+		}
+	}
+
+	bool HasEntityAsChild(Entity entity) {
+		for (Entity& child : Children) {
+			if (child == entity) {
+				return true;
+			}
+
+			if (child.Has<Component::Family>()) {
+				if (child.Get<Component::Family>().HasEntityAsChild(entity)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	void Reparent(Entity this_entity, Entity new_parent) {
+
+		if (HasEntityAsChild(new_parent)) {
+			// can not make it new parent if it is our child
+			return;
+		}
+
+		if (Parent) {
+			EN_CORE_ASSERT(Parent.Has<Component::Family>());
+			Parent.Get<Component::Family>().RemoveChild(this_entity);
+		}
+
+
+		// add child to new parent
+		new_parent.GetOrAdd<Component::Family>().AddChild(this_entity);
+		Parent = new_parent;
+	}
+
+};
+
 }
 
 }
