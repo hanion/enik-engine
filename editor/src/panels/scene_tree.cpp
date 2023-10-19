@@ -125,6 +125,19 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 		ImGui::Text(std::to_string(entity.Get<Component::ID>().uuid).c_str());
 		ImGui::EndDragDropSource();
 	}
+	if (ImGui::BeginDragDropTarget()) {
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_ENTITY")) {
+			auto payload_id = static_cast<const UUID*>(payload->Data);
+			if (payload_id != nullptr) {
+				auto payload_entity = m_Context->FindEntityByUUID(*payload_id);
+				if (payload_entity) {
+					payload_entity.GetOrAdd<Component::Family>().Reparent(payload_entity, entity);
+				}
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
+
 	if (m_MouseReleased and ImGui::IsItemFocused() and ImGui::IsItemHovered()) {
 		SetSelectedEntity(entity);
 		m_MouseReleased = false;
