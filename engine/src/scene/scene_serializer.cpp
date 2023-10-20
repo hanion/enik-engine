@@ -338,6 +338,29 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::EndMap;
 	}
 
+	if (entity.Has<Component::Family>()) {
+		auto& family = entity.Get<Component::Family>();
+		if (family.Parent or family.Children.size() > 0) {
+			out << YAML::Key << "Component::Family";
+			out << YAML::BeginMap;
+
+			if (family.Parent and family.Parent.Has<Component::ID>()) {
+				out << YAML::Key << "Parent" << YAML::Value << family.Parent.Get<Component::ID>();
+			}
+			if (family.Children.size() > 0) {
+				out << YAML::Key << "Children";
+				out << YAML::Value << YAML::BeginSeq;
+				for (auto& child : family.Children) {
+					if (child and child.Has<Component::ID>()) {
+						out << YAML::Value << child.Get<Component::ID>();
+					}
+				}
+				out << YAML::EndSeq;
+			}
+			out << YAML::EndMap;
+		}
+	}
+
 	out << YAML::EndMap;
 }
 
