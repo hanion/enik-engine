@@ -71,7 +71,13 @@ void SceneTreePanel::OnImGuiRender() {
 	if (scene_node_open) {
 		m_Context->m_Registry.each([&](auto entityID) {
 			Entity entity = Entity(entityID, m_Context.get());
-			DrawEntityInSceneTree(entity);
+			if (entity.Has<Component::Family>()) {
+				if (not entity.Get<Component::Family>().Parent) {
+					DrawEntityInSceneTree(entity);
+				}
+			} else {
+				DrawEntityInSceneTree(entity);
+			}
 		});
 
 		m_MouseReleased = false;
@@ -153,6 +159,11 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 
 	if (node_open) {
 		ImGui::TextColored(ImVec4(0.1f, 0.5f, 0.1f, 1.0f), "Entity %d, ID %lu", (uint32_t)entity, (uint64_t)entity.Get<Component::ID>());
+		if (entity.Has<Component::Family>()) {
+			for (auto& child : entity.Get<Component::Family>().Children) {
+				DrawEntityInSceneTree(child);
+			}
+		}
 		ImGui::TreePop();
 	}
 
