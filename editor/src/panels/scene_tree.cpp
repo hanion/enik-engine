@@ -151,6 +151,11 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 
 	bool delete_entity = false;
 	if (ImGui::BeginPopupContextItem()) {
+		if (ImGui::MenuItem("Create Entity")) {
+			Entity new_entity = m_Context->CreateEntity("Empty Entity");
+			new_entity.Add<Component::Family>().Parent = entity;
+			entity.GetOrAdd<Component::Family>().AddChild(new_entity);
+		}
 		if (ImGui::MenuItem("Delete Entity")) {
 			delete_entity = true;
 		}
