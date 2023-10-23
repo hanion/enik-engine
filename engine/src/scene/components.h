@@ -190,7 +190,7 @@ struct Family {
 
 	void Reparent(Entity this_entity, Entity new_parent) {
 
-		if (HasEntityAsChild(new_parent)) {
+		if (new_parent and HasEntityAsChild(new_parent)) {
 			// can not make it new parent if it is our child
 			return;
 		}
@@ -201,8 +201,10 @@ struct Family {
 		}
 
 
-		// add child to new parent
-		new_parent.GetOrAdd<Component::Family>().AddChild(this_entity);
+		if (new_parent) {
+			// add child to new parent
+			new_parent.GetOrAdd<Component::Family>().AddChild(this_entity);
+		}
 		Parent = new_parent;
 	}
 
