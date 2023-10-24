@@ -60,6 +60,21 @@ void SceneTreePanel::OnImGuiRender() {
 
 	static const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen;
 	bool scene_node_open = ImGui::TreeNodeEx("##SceneNameTreeNode", flags);
+
+	if (ImGui::BeginDragDropTarget()) {
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_ENTITY")) {
+			auto payload_id = static_cast<const UUID*>(payload->Data);
+			if (payload_id != nullptr) {
+				auto payload_entity = m_Context->FindEntityByUUID(*payload_id);
+				if (payload_entity) {
+					// reparent entity to root level
+					payload_entity.GetOrAdd<Component::Family>().Reparent(payload_entity, {});
+				}
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
+
 	ImGui::SameLine();
 	ImGuiUtils::PrefixLabel("Scene");
 	ImGui::PushItemWidth(-1); // Set item width to available width
