@@ -27,6 +27,7 @@ public:
 
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& event);
 
+	void DeleteEntityAndChildren(Entity entity);
 private:
 	void DrawEntityInSceneTree(Entity entity);
 

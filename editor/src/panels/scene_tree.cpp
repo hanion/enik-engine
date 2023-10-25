@@ -3,6 +3,7 @@
 #include <imgui/imgui.h>
 
 #include "scene/components.h"
+#include "../dialogs/dialog_confirm.h"
 
 namespace Enik {
 
@@ -164,7 +165,6 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 		m_MouseReleased = false;
 	}
 
-	bool delete_entity = false;
 	if (ImGui::BeginPopupContextItem()) {
 		if (ImGui::MenuItem("Create Entity")) {
 			Entity new_entity = m_Context->CreateEntity("Empty Entity");
@@ -172,7 +172,12 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 			entity.GetOrAdd<Component::Family>().AddChild(new_entity);
 		}
 		if (ImGui::MenuItem("Delete Entity")) {
-			delete_entity = true;
+			static Entity s_entity_to_delete = entity;
+			DialogConfirm::OpenDialog("Delete Entity ?",
+				[&](){
+					DeleteEntityAndChildren(s_entity_to_delete);
+				}
+			);
 		}
 		ImGui::EndPopup();
 	}
@@ -191,12 +196,20 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 
 	ImGui::PopID();
 
-	if (delete_entity) {
-		m_Context->DestroyEntity(entity);
-		if (m_SelectionContext == entity) {
-			m_SelectionContext = {};
+}
+
+void SceneTreePanel::DeleteEntityAndChildren(Entity entity) {
+	if (entity.Has<Component::Family>()) {
+		auto& family = entity.Get<Component::Family>();
+
+		for (auto& child : family.Children) {
+			DeleteEntityAndChildren(child);
 		}
+
+		// remove this entity child from it's parent
+		family.Reparent(entity, {});
 	}
+	m_Context->DestroyEntity(entity);
 }
 
 }

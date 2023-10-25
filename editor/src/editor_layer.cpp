@@ -507,7 +507,13 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 
 		case Key::Delete:
 			if (Application::Get().GetImGuiLayer()->GetActiveWidgetID() == 0) {
-				m_ActiveScene->DestroyEntity(m_SceneTreePanel.GetSelectedEntity());
+				DialogConfirm::OpenDialog("Delete Entity ?",
+					[&](){
+						if (m_SceneTreePanel.IsSelectedEntityValid()) {
+							m_SceneTreePanel.DeleteEntityAndChildren(m_SceneTreePanel.GetSelectedEntity());
+						}
+					}
+				);
 			}
 			break;
 
