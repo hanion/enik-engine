@@ -165,6 +165,59 @@ bool SceneSerializer::Deserialize(const std::string& filepath) {
 			DeserializeEntity(entity, uuid, name);
 			// EN_CORE_TRACE("Deserialized entity {0}, with name '{1}'", uuid, name);
 		}
+
+
+		// TODO maybe do it this way:
+		//		create new entities as the childs are coming up in the file,
+		//		add these new empty entities as childs, or parents
+		//
+		//		check if the entity exists before doing deserialize entity
+		//			if it exists, write onto that entity,
+		//			else, create new, fill it
+
+
+		// deserialize family relationships
+		// after deserializing all entities, because all entities need to exist
+		// to be able to connect them
+
+		for (std::size_t i = entities.size(); i > 0; --i) {
+			auto entity_node = entities[i - 1];
+
+			uint64_t uuid = entity_node["Entity"].as<uint64_t>();
+			Entity entity = m_Scene->FindEntityByUUID(uuid);
+
+			YAML::Node family = entity_node["Component::Family"];
+			if (family) {
+				auto& family_component = entity.GetOrAdd<Component::Family>();
+
+				if (family["Parent"]) {
+					auto parent_id = family["Parent"].as<uint64_t>();
+					Entity parent = m_Scene->FindEntityByUUID(parent_id);
+
+					EN_CORE_ASSERT(parent,
+						"Parent in scene file is invalid for " + entity.Get<Component::Tag>().Text
+					);
+
+					// family_component.Parent = parent;
+					family_component.SetParent(parent);
+				}
+
+				if (family["Children"]) {
+					for (auto child_node : family["Children"]) {
+						auto child_id = child_node.as<uint64_t>();
+						Entity child = m_Scene->FindEntityByUUID(child_id);
+
+						EN_CORE_ASSERT(child,
+							"Child in scene file is invalid for " + entity.Get<Component::Tag>().Text
+						);
+
+						family_component.AddChild(child);
+					}
+				}
+			}
+		}
+
+
 	}
 
 	return true;
