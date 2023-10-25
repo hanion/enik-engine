@@ -181,7 +181,9 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 		ImGui::TextColored(ImVec4(0.1f, 0.5f, 0.1f, 1.0f), "Entity %d, ID %lu", (uint32_t)entity, (uint64_t)entity.Get<Component::ID>());
 		if (entity.Has<Component::Family>()) {
 			for (auto& child : entity.Get<Component::Family>().Children) {
-				DrawEntityInSceneTree(child);
+				if (child and child.Has<Component::ID>()) {
+					DrawEntityInSceneTree(child);
+				}
 			}
 		}
 		ImGui::TreePop();
