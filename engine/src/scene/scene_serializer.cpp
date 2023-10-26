@@ -517,33 +517,15 @@ void WriteFieldValueToFile(YAML::Emitter& out, FieldType field_type, void* field
 		case FieldType::NONE:
 			EN_CORE_ERROR("WriteFieldValueToFile field_type is NONE !");
 			break;
-		case FieldType::BOOL:
-			out << *static_cast<bool*>(field_value);
-			break;
-		case FieldType::INT:
-			out << *static_cast<int*>(field_value);
-			break;
-		case FieldType::FLOAT:
-			out << *static_cast<float*>(field_value);
-			break;
-		case FieldType::DOUBLE:
-			out << *static_cast<double*>(field_value);
-			break;
-		case FieldType::VEC2:
-			out << *static_cast<glm::vec2*>(field_value);
-			break;
-		case FieldType::VEC3:
-			out << *static_cast<glm::vec3*>(field_value);
-			break;
-		case FieldType::VEC4:
-			out << *static_cast<glm::vec4*>(field_value);
-			break;
-		case FieldType::STRING:
-			out << *static_cast<std::string*>(field_value);
-			break;
-		case FieldType::ENTITY:
-			out << *static_cast<uint64_t*>(field_value);
-			break;
+		case FieldType::BOOL:   out << *static_cast<bool*>       (field_value); break;
+		case FieldType::INT:    out << *static_cast<int*>        (field_value); break;
+		case FieldType::FLOAT:  out << *static_cast<float*>      (field_value); break;
+		case FieldType::DOUBLE: out << *static_cast<double*>     (field_value); break;
+		case FieldType::VEC2:   out << *static_cast<glm::vec2*>  (field_value); break;
+		case FieldType::VEC3:   out << *static_cast<glm::vec3*>  (field_value); break;
+		case FieldType::VEC4:   out << *static_cast<glm::vec4*>  (field_value); break;
+		case FieldType::STRING: out << *static_cast<std::string*>(field_value); break;
+		case FieldType::ENTITY: out << *static_cast<uint64_t*>   (field_value); break;
 	}
 }
 
