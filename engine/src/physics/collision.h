@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include "scene/components.h"
+#include "scene/entity.h"
 
 
 namespace Enik {

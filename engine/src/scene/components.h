@@ -2,14 +2,19 @@
 
 #include "renderer/sub_texture2D.h"
 #include "scene/scene_camera.h"
-#include "scene/scriptable_entity.h"
 #include "core/uuid.h"
+#include <map>
+#include "scene/native_script_fields.h"
 
 #include <filesystem>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 namespace Enik {
+
+class ScriptableEntity;
+class Entity;
+
 namespace Component {
 
 struct ID {
@@ -92,16 +97,7 @@ struct NativeScript {
 	std::map<std::string, NativeScriptField> NativeScriptFields;
 	void ApplyNativeScriptFieldsToInstance();
 
-	void Bind(const std::string& script_name, const std::function<ScriptableEntity*()>& inst) {
-		ScriptName = script_name;
-
-		InstantiateScript = inst;
-
-		DestroyScript = [](NativeScript* ns) {
-			delete ns->Instance;
-			ns->Instance = nullptr;
-		};
-	}
+	void Bind(const std::string& script_name, const std::function<ScriptableEntity*()>& inst);
 };
 
 
@@ -152,62 +148,26 @@ struct Collider {
 
 
 
-struct Family {
-	Entity Parent;
-	std::vector<Entity> Children;
-
+class Family {
+public:
 	Family() = default;
 	Family(const Family&) = default;
 
+private:
+	friend Entity;
 
-	void AddChild(Entity entity) {
-		Children.emplace_back(entity);
-	}
+	Entity* Parent;
+	std::vector<Entity> Children;
 
-	void RemoveChild(Entity entity) {
-		for (size_t i = 0; i < Children.size(); ++i) {
-			if (Children[i] == entity) {
-				Children.erase(Children.begin() + i);
-				return;
-			}
-		}
-	}
+	void AddChild(Entity entity);
 
-	bool HasEntityAsChild(Entity entity) {
-		for (Entity& child : Children) {
-			if (child == entity) {
-				return true;
-			}
+	void RemoveChild(Entity entity);
 
-			if (child.Has<Component::Family>()) {
-				if (child.Get<Component::Family>().HasEntityAsChild(entity)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
+	void SetParent(Entity& entity);
 
-	void Reparent(Entity this_entity, Entity new_parent) {
+	bool HasEntityAsChild(Entity entity);
 
-		if (new_parent and HasEntityAsChild(new_parent)) {
-			// can not make it new parent if it is our child
-			return;
-		}
-
-		if (Parent) {
-			EN_CORE_ASSERT(Parent.Has<Component::Family>());
-			Parent.Get<Component::Family>().RemoveChild(this_entity);
-		}
-
-
-		if (new_parent) {
-			// add child to new parent
-			new_parent.GetOrAdd<Component::Family>().AddChild(this_entity);
-		}
-		Parent = new_parent;
-	}
-
+	void Reparent(Entity this_entity, Entity new_parent);
 };
 
 }

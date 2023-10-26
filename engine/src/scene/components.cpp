@@ -1,5 +1,7 @@
 #include "components.h"
 
+#include "scene/scriptable_entity.h"
+
 namespace Enik {
 
 // NativeScript
@@ -106,5 +108,80 @@ void Component::NativeScript::ApplyNativeScriptFieldsToInstance() {
 		}
 	}
 }
+
+void Component::NativeScript::Bind(const std::string& script_name, const std::function<ScriptableEntity*()>& inst) {
+	ScriptName = script_name;
+
+	InstantiateScript = inst;
+
+	DestroyScript = [](NativeScript* ns) {
+		delete ns->Instance;
+		ns->Instance = nullptr;
+	};
+}
+
+void Component::Family::AddChild(Entity entity) {
+	// check if it already is child
+	for (Entity& child : Children) {
+		if (child == entity) {
+			return;
+		}
+	}
+
+	Children.emplace_back(entity);
+}
+
+void Component::Family::RemoveChild(Entity entity) {
+	for (size_t i = 0; i < Children.size(); ++i) {
+		if (Children[i] == entity) {
+			Children.erase(Children.begin() + i);
+			return;
+		}
+	}
+}
+
+void Component::Family::SetParent(Entity& entity) {
+	if (Parent != nullptr) {
+		delete Parent;
+	}
+	Parent = new Entity(entity);
+}
+
+bool Component::Family::HasEntityAsChild(Entity entity) {
+    for (Entity& child : Children) {
+		if (child == entity) {
+			return true;
+		}
+
+		if (child.Has<Component::Family>()) {
+			if (child.Get<Component::Family>().HasEntityAsChild(entity)) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void Component::Family::Reparent(Entity this_entity, Entity new_parent) {
+
+	if (new_parent and HasEntityAsChild(new_parent)) {
+		// can not make it new parent if it is our child
+		return;
+	}
+
+	if (Parent) {
+		EN_CORE_ASSERT(Parent->Has<Component::Family>());
+		Parent->Get<Component::Family>().RemoveChild(this_entity);
+	}
+
+
+	if (new_parent) {
+		// add child to new parent
+		new_parent.GetOrAdd<Component::Family>().AddChild(this_entity);
+	}
+
+	SetParent(new_parent);
+}
+
 
 }
