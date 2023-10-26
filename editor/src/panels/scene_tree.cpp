@@ -106,11 +106,11 @@ void SceneTreePanel::OnImGuiRender() {
 		m_SelectionContext = {};
 	}
 	if (ImGui::IsMouseDown(1) && ImGui::IsWindowHovered()) {
-		ImGui::OpenPopup("pop");
+		ImGui::OpenPopup("pop_scene_tree");
 	}
-	if (ImGui::BeginPopup("pop")) {
+	if (ImGui::BeginPopup("pop_scene_tree")) {
 		if (ImGui::MenuItem("Create Entity")) {
-			m_Context->CreateEntity("Empty Entity");
+			m_SelectionContext = m_Context->CreateEntity("Empty Entity");
 		}
 
 		ImGui::EndPopup();
@@ -170,6 +170,7 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 			Entity new_entity = m_Context->CreateEntity("Empty Entity");
 			new_entity.Reparent(entity);
 			entity.AddChild(new_entity);
+			m_SelectionContext = new_entity;
 		}
 		if (ImGui::MenuItem("Delete Entity")) {
 			static Entity s_entity_to_delete = entity;
