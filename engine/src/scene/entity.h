@@ -3,6 +3,7 @@
 #include <entt/entt.hpp>
 #include "scene/scene.h"
 #include "core/asserter.h"
+#include "scene/components.h"
 
 namespace Enik {
 
@@ -53,6 +54,43 @@ public:
 	bool operator!=(Entity other) {
 		return !(*this == other);
 	}
+
+
+	bool HasFamily() {
+		return Has<Component::Family>();
+	}
+	Component::Family& GetOrAddFamily() {
+		return GetOrAdd<Component::Family>();
+	}
+
+	bool HasParent() {
+		if (not HasFamily()) {
+			return false;
+		}
+		Entity* parent = GetOrAddFamily().Parent;
+		if (parent != nullptr) {
+			return (*parent);
+		}
+		return false;
+	}
+	Entity& GetParent() {
+		EN_CORE_ASSERT(HasParent(), "Entity does not have parent!");
+		return *GetOrAddFamily().Parent;
+	}
+	void Reparent(Entity new_parent) {
+		GetOrAddFamily().Reparent(*this, new_parent);
+	}
+
+	std::vector<Entity>& GetChildren() {
+		return GetOrAddFamily().Children;
+	}
+	void AddChild(Entity child) {
+		GetOrAddFamily().AddChild(child);
+	}
+	void RemoveChild(Entity child) {
+		GetOrAddFamily().RemoveChild(child);
+	}
+
 
 private:
 	entt::entity m_Handle{entt::null};
