@@ -138,8 +138,7 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 		flags |= ImGuiTreeNodeFlags_Selected;
 	}
 
-	Component::Tag& tag = entity.Get<Component::Tag>();
-	bool node_open = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.Text.c_str());
+	bool node_open = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, entity.GetTag().c_str());
 
 	if (ImGui::BeginDragDropSource()) {
 		ImGui::SetDragDropPayload("DND_ENTITY", (void*)&entity.Get<Component::ID>().uuid, sizeof(UUID));

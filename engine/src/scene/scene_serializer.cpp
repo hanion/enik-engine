@@ -194,7 +194,7 @@ bool SceneSerializer::Deserialize(const std::string& filepath) {
 					Entity parent = m_Scene->FindEntityByUUID(parent_id);
 
 					EN_CORE_ASSERT(parent,
-						"Parent in scene file is invalid for " + entity.Get<Component::Tag>().Text
+						"Parent in scene file is invalid for " + entity.GetTag()
 					);
 
 					entity.Reparent(parent);
@@ -206,7 +206,7 @@ bool SceneSerializer::Deserialize(const std::string& filepath) {
 						Entity child = m_Scene->FindEntityByUUID(child_id);
 
 						EN_CORE_ASSERT(child,
-							"Child in scene file is invalid for " + entity.Get<Component::Tag>().Text
+							"Child in scene file is invalid for " + entity.GetTag()
 						);
 
 						entity.AddChild(child);
@@ -508,7 +508,7 @@ void SceneSerializer::DeserializeNativeScript(YAML::Node& node, Entity& entity) 
 		}
 	}
 
-	EN_ERROR("Couldn't find NativeScript '{0}' for entity '{1}'", script_name, entity.Get<Component::Tag>().Text);
+	EN_ERROR("Couldn't find NativeScript '{0}' for entity '{1}'", script_name, entity.GetTag());
 }
 
 

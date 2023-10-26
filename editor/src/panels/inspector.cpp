@@ -65,7 +65,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	ImGui::PushID(entity.Get<Component::ID>());
 
 	DisplayComponentInInspector<Component::Tag>("Tag", entity, false, [&]() {
-		auto& text = entity.Get<Component::Tag>().Text;
+		std::string& text = entity.GetTag();
 
 		char buffer[256];
 		memset(buffer, 0, sizeof(buffer));
@@ -513,7 +513,7 @@ void InspectorPanel::DisplayNativeScript(Component::NativeScript& script) {
 				std::string entity_name;
 
 				if (Entity entity = m_Context->FindEntityByUUID(*id)) {
-					entity_name = entity.Get<Component::Tag>().Text;
+					entity_name = entity.GetTag();
 				}
 				else {
 					entity_name = "[Entity]";

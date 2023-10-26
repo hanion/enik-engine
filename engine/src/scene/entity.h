@@ -55,6 +55,11 @@ public:
 		return !(*this == other);
 	}
 
+
+	std::string& GetTag() {
+		return Get<Component::Tag>().Text;
+	}
+
 	ScriptableEntity* GetScriptInstance() {
 		return Get<Component::NativeScript>().Instance;
 	}
