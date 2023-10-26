@@ -80,10 +80,10 @@ void PhysicsWorld::ResolveCollisions() {
 
 
 		if (a.Has<Component::NativeScript>()) {
-			a.Get<Component::NativeScript>().Instance->OnCollision(b);
+			a.GetScriptInstance()->OnCollision(b);
 		}
 		if (b.Has<Component::NativeScript>()) {
-			b.Get<Component::NativeScript>().Instance->OnCollision(a);
+			b.GetScriptInstance()->OnCollision(a);
 		}
 
 

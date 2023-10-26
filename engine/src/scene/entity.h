@@ -55,6 +55,11 @@ public:
 		return !(*this == other);
 	}
 
+	ScriptableEntity* GetScriptInstance() {
+		return Get<Component::NativeScript>().Instance;
+	}
+
+
 
 	bool HasFamily() {
 		return Has<Component::Family>();
