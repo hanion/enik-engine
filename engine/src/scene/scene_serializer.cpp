@@ -587,42 +587,15 @@ void* GetFieldValueFromNode(YAML::Node field_value, FieldType field_type) {
 			EN_CORE_ERROR("GetFieldValueFromNode field_type is NONE !");
 			return nullptr;
 		}
-		case FieldType::BOOL: {
-			bool* val = new bool(field_value.as<bool>());
-			return static_cast<void*>(val);
-		}
-		case FieldType::INT: {
-			int* val = new int(field_value.as<int>());
-			return static_cast<void*>(val);
-		}
-		case FieldType::FLOAT: {
-			float* val = new float(field_value.as<float>());
-			return static_cast<void*>(val);
-		}
-		case FieldType::DOUBLE: {
-			double* val = new double(field_value.as<double>());
-			return static_cast<void*>(val);
-		}
-		case FieldType::VEC2: {
-			glm::vec2* val = new glm::vec2(field_value.as<glm::vec2>());
-			return static_cast<void*>(val);
-		}
-		case FieldType::VEC3: {
-			glm::vec3* val = new glm::vec3(field_value.as<glm::vec3>());
-			return static_cast<void*>(val);
-		}
-		case FieldType::VEC4: {
-			glm::vec4* val = new glm::vec4(field_value.as<glm::vec4>());
-			return static_cast<void*>(val);
-		}
-		case FieldType::STRING: {
-			std::string* val = new std::string(field_value.as<std::string>());
-			return static_cast<void*>(val);
-		}
-		case FieldType::ENTITY: {
-			uint64_t* val = new uint64_t(field_value.as<uint64_t>());
-			return static_cast<void*>(val);
-		}
+		case FieldType::BOOL:   return static_cast<void*>(new bool       (field_value.as<bool>()));
+		case FieldType::INT:    return static_cast<void*>(new int        (field_value.as<int>()));
+		case FieldType::FLOAT:  return static_cast<void*>(new float      (field_value.as<float>()));
+		case FieldType::DOUBLE: return static_cast<void*>(new double     (field_value.as<double>()));
+		case FieldType::VEC2:   return static_cast<void*>(new glm::vec2  (field_value.as<glm::vec2>()));
+		case FieldType::VEC3:   return static_cast<void*>(new glm::vec3  (field_value.as<glm::vec3>()));
+		case FieldType::VEC4:   return static_cast<void*>(new glm::vec4  (field_value.as<glm::vec4>()));
+		case FieldType::STRING: return static_cast<void*>(new std::string(field_value.as<std::string>()));
+		case FieldType::ENTITY: return static_cast<void*>(new uint64_t   (field_value.as<uint64_t>()));
 	}
 	return nullptr;
 }
