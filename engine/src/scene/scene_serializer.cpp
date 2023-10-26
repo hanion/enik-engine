@@ -188,7 +188,6 @@ bool SceneSerializer::Deserialize(const std::string& filepath) {
 
 			YAML::Node family = entity_node["Component::Family"];
 			if (family) {
-				auto& family_component = entity.GetOrAdd<Component::Family>();
 
 				if (family["Parent"]) {
 					auto parent_id = family["Parent"].as<uint64_t>();
@@ -198,8 +197,7 @@ bool SceneSerializer::Deserialize(const std::string& filepath) {
 						"Parent in scene file is invalid for " + entity.Get<Component::Tag>().Text
 					);
 
-					// family_component.Parent = parent;
-					family_component.SetParent(parent);
+					entity.Reparent(parent);
 				}
 
 				if (family["Children"]) {
@@ -211,7 +209,7 @@ bool SceneSerializer::Deserialize(const std::string& filepath) {
 							"Child in scene file is invalid for " + entity.Get<Component::Tag>().Text
 						);
 
-						family_component.AddChild(child);
+						entity.AddChild(child);
 					}
 				}
 			}
@@ -391,19 +389,18 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::EndMap;
 	}
 
-	if (entity.Has<Component::Family>()) {
-		auto& family = entity.Get<Component::Family>();
-		if (family.Parent or family.Children.size() > 0) {
+	if (entity.HasFamily()) {
+		if (entity.HasParent() or entity.GetChildren().size() > 0) {
 			out << YAML::Key << "Component::Family";
 			out << YAML::BeginMap;
 
-			if (family.Parent and family.Parent.Has<Component::ID>()) {
-				out << YAML::Key << "Parent" << YAML::Value << family.Parent.Get<Component::ID>();
+			if (entity.HasParent() and entity.GetParent().Has<Component::ID>()) {
+				out << YAML::Key << "Parent" << YAML::Value << entity.GetParent().Get<Component::ID>();
 			}
-			if (family.Children.size() > 0) {
+			if (entity.GetChildren().size() > 0) {
 				out << YAML::Key << "Children";
 				out << YAML::Value << YAML::BeginSeq;
-				for (auto& child : family.Children) {
+				for (auto& child : entity.GetChildren()) {
 					if (child and child.Has<Component::ID>()) {
 						out << YAML::Value << child.Get<Component::ID>();
 					}

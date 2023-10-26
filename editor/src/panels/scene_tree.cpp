@@ -69,7 +69,7 @@ void SceneTreePanel::OnImGuiRender() {
 				auto payload_entity = m_Context->FindEntityByUUID(*payload_id);
 				if (payload_entity) {
 					// reparent entity to root level
-					payload_entity.GetOrAdd<Component::Family>().Reparent(payload_entity, {});
+					payload_entity.Reparent({});
 				}
 			}
 		}
@@ -88,7 +88,7 @@ void SceneTreePanel::OnImGuiRender() {
 		m_Context->m_Registry.each([&](auto entityID) {
 			Entity entity = Entity(entityID, m_Context.get());
 			if (entity.Has<Component::Family>()) {
-				if (not entity.Get<Component::Family>().Parent) {
+				if (not entity.HasParent()) {
 					DrawEntityInSceneTree(entity);
 				}
 			} else {
@@ -153,7 +153,7 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 			if (payload_id != nullptr) {
 				auto payload_entity = m_Context->FindEntityByUUID(*payload_id);
 				if (payload_entity) {
-					payload_entity.GetOrAdd<Component::Family>().Reparent(payload_entity, entity);
+					payload_entity.Reparent(entity);
 				}
 			}
 		}
@@ -168,8 +168,8 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 	if (ImGui::BeginPopupContextItem()) {
 		if (ImGui::MenuItem("Create Entity")) {
 			Entity new_entity = m_Context->CreateEntity("Empty Entity");
-			new_entity.Add<Component::Family>().Parent = entity;
-			entity.GetOrAdd<Component::Family>().AddChild(new_entity);
+			new_entity.Reparent(entity);
+			entity.AddChild(new_entity);
 		}
 		if (ImGui::MenuItem("Delete Entity")) {
 			static Entity s_entity_to_delete = entity;
@@ -184,8 +184,8 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 
 	if (node_open) {
 		ImGui::TextColored(ImVec4(0.1f, 0.5f, 0.1f, 1.0f), "Entity %d, ID %lu", (uint32_t)entity, (uint64_t)entity.Get<Component::ID>());
-		if (entity.Has<Component::Family>()) {
-			for (auto& child : entity.Get<Component::Family>().Children) {
+		if (entity.HasFamily()) {
+			for (auto& child : entity.GetChildren()) {
 				if (child and child.Has<Component::ID>()) {
 					DrawEntityInSceneTree(child);
 				}
@@ -199,15 +199,13 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 }
 
 void SceneTreePanel::DeleteEntityAndChildren(Entity entity) {
-	if (entity.Has<Component::Family>()) {
-		auto& family = entity.Get<Component::Family>();
-
-		for (auto& child : family.Children) {
+	if (entity.HasFamily()) {
+		for (auto& child : entity.GetChildren()) {
 			DeleteEntityAndChildren(child);
 		}
 
 		// remove this entity child from it's parent
-		family.Reparent(entity, {});
+		entity.Reparent({});
 	}
 	m_Context->DestroyEntity(entity);
 }
