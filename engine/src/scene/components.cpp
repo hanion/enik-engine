@@ -169,7 +169,7 @@ void Component::Family::Reparent(Entity this_entity, Entity new_parent) {
 		return;
 	}
 
-	if (Parent) {
+	if (Parent != nullptr and *Parent) {
 		EN_CORE_ASSERT(Parent->Has<Component::Family>());
 		Parent->Get<Component::Family>().RemoveChild(this_entity);
 	}
