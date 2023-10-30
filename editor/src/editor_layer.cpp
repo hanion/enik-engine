@@ -441,6 +441,7 @@ void EditorLayer::SaveProject() {
 }
 
 void EditorLayer::ReloadProject() {
+	ScriptSystem::ClearOnScriptModuleReloadEvents();
 	if (m_SceneTreePanel.IsSelectedEntityValid()) {
 		UUID selected_entity = m_SceneTreePanel.GetSelectedEntity().Get<Component::ID>().uuid;
 		LoadProject(Project::GetActive()->GetProjectDirectory() / "project.enik");
