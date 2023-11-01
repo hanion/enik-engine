@@ -121,6 +121,15 @@ void Component::NativeScript::Bind(const std::string& script_name, const std::fu
 
 
 
+
+
+	// retrieve fields of the script from a temporary instance
+	ScriptableEntity* temp_instance = InstantiateScript();
+	for (auto field : temp_instance->OnEditorGetFields()) {
+		NativeScriptFields[field.Name] = { field.Name, field.Type, nullptr };
+	}
+	delete temp_instance;
+
 	// allocate memory for the fields
 	for (auto& val : NativeScriptFields) {
 		auto& field = val.second;
