@@ -566,24 +566,6 @@ void* GetFieldValueFromNode(YAML::Node field_value, FieldType field_type) {
 	return nullptr;
 }
 
-void* CreateNewValueForNewField(FieldType field_type) {
-	switch (field_type) {
-		case FieldType::NONE: {
-			EN_CORE_ERROR("CreateNewValueForNewField field_type is NONE !");
-			return nullptr;
-		}
-		case FieldType::BOOL:   return static_cast<void*>(new bool);
-		case FieldType::INT:    return static_cast<void*>(new int);
-		case FieldType::FLOAT:  return static_cast<void*>(new float);
-		case FieldType::DOUBLE: return static_cast<void*>(new double);
-		case FieldType::VEC2:   return static_cast<void*>(new glm::vec2);
-		case FieldType::VEC3:   return static_cast<void*>(new glm::vec3);
-		case FieldType::VEC4:   return static_cast<void*>(new glm::vec4);
-		case FieldType::STRING: return static_cast<void*>(new std::string);
-		case FieldType::ENTITY: return static_cast<void*>(new uint64_t);
-	}
-	return nullptr;
-}
 
 
 void SceneSerializer::DeserializeNativeScriptFields(YAML::Node& node, Entity& entity) {
@@ -636,14 +618,6 @@ void SceneSerializer::DeserializeNativeScriptFields(YAML::Node& node, Entity& en
 		void* field_value = GetFieldValueFromNode(field_node["Value"], field_type);
 
 		script.NativeScriptFields[field_name] = { field_name, field_type, field_value };
-	}
-
-	// allocate memory for new fields in the script
-	for (auto& val : script.NativeScriptFields) {
-		auto& field = val.second;
-		if (field.Value == nullptr) {
-			field.Value = CreateNewValueForNewField(field.Type);
-		}
 	}
 
 }

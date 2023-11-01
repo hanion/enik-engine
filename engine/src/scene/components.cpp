@@ -91,6 +91,24 @@ void Component::NativeScript::ApplyNativeScriptFieldsToInstance() {
 	}
 }
 
+void* create_new_value_for_field(FieldType field_type) {
+	switch (field_type) {
+		case FieldType::NONE: {
+			EN_CORE_ERROR("create_new_value_for_field field_type is NONE !");
+			return nullptr;
+		}
+		case FieldType::BOOL:   return static_cast<void*>(new bool());
+		case FieldType::INT:    return static_cast<void*>(new int());
+		case FieldType::FLOAT:  return static_cast<void*>(new float());
+		case FieldType::DOUBLE: return static_cast<void*>(new double());
+		case FieldType::VEC2:   return static_cast<void*>(new glm::vec2());
+		case FieldType::VEC3:   return static_cast<void*>(new glm::vec3());
+		case FieldType::VEC4:   return static_cast<void*>(new glm::vec4());
+		case FieldType::STRING: return static_cast<void*>(new std::string());
+		case FieldType::ENTITY: return static_cast<void*>(new uint64_t());
+	}
+	return nullptr;
+}
 void Component::NativeScript::Bind(const std::string& script_name, const std::function<ScriptableEntity*()>& inst) {
 	ScriptName = script_name;
 
@@ -100,6 +118,16 @@ void Component::NativeScript::Bind(const std::string& script_name, const std::fu
 		delete ns->Instance;
 		ns->Instance = nullptr;
 	};
+
+
+
+	// allocate memory for the fields
+	for (auto& val : NativeScriptFields) {
+		auto& field = val.second;
+		if (field.Value == nullptr) {
+			field.Value = create_new_value_for_field(field.Type);
+		}
+	}
 }
 
 void Component::Family::AddChild(Entity entity) {
