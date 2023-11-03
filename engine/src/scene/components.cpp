@@ -109,12 +109,40 @@ void* create_new_value_for_field(FieldType field_type) {
 	}
 	return nullptr;
 }
+void delete_field_value(FieldType field_type, void* field_value) {
+	switch (field_type) {
+		case FieldType::NONE: {
+			EN_CORE_ERROR("delete_field_value field_type is NONE !");
+			return;
+		}
+		case FieldType::BOOL:   delete static_cast<bool*>       (field_value); return;
+		case FieldType::INT:    delete static_cast<int*>        (field_value); return;
+		case FieldType::FLOAT:  delete static_cast<float*>      (field_value); return;
+		case FieldType::DOUBLE: delete static_cast<double*>     (field_value); return;
+		case FieldType::VEC2:   delete static_cast<glm::vec2*>  (field_value); return;
+		case FieldType::VEC3:   delete static_cast<glm::vec3*>  (field_value); return;
+		case FieldType::VEC4:   delete static_cast<glm::vec4*>  (field_value); return;
+		case FieldType::STRING: delete static_cast<std::string*>(field_value); return;
+		case FieldType::ENTITY: delete static_cast<uint64_t*>   (field_value); return;
+	}
+}
+
+
 void Component::NativeScript::Bind(const std::string& script_name, const std::function<ScriptableEntity*()>& inst) {
 	ScriptName = script_name;
 
 	InstantiateScript = inst;
 
 	DestroyScript = [](NativeScript* ns) {
+
+		// delete fields
+		for (auto& val : ns->NativeScriptFields) {
+			auto& field = val.second;
+			if (field.Value == nullptr) {
+				delete_field_value(field.Type, field.Value);
+			}
+		}
+
 		delete ns->Instance;
 		ns->Instance = nullptr;
 	};
