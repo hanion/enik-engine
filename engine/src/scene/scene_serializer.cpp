@@ -217,15 +217,19 @@ void SceneSerializer::ReloadNativeScriptFields(const std::string& filepath) {
 	}
 
 	for (auto entity_node : entities) {
-		auto native_script_node = entity_node["Component::NativeScript"];
-		if (not native_script_node) {
+		if (not entity_node["Component::NativeScript"]) {
 			continue;
 		}
 
 		uint64_t entity_id = entity_node["Entity"].as<uint64_t>();
 		Entity entity = m_Scene->FindEntityByUUID(entity_id);
 		if (entity and entity.Has<Component::NativeScript>()) {
+
+			// destroy old script
+			auto& script = entity.Get<Component::NativeScript>();
+			script.DestroyScript(&script);
 			entity.Remove<Component::NativeScript>();
+
 			DeserializeNativeScript(entity_node, entity);
 		}
 	}
