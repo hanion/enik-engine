@@ -102,6 +102,10 @@ public:
 	}
 
 
+	Entity CreateEntity(const std::string& name = std::string()) {
+		return m_Scene->CreateEntity(name);
+	}
+
 private:
 	entt::entity m_Handle{entt::null};
 	Scene* m_Scene = nullptr;

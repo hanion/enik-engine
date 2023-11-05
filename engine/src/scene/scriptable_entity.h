@@ -40,6 +40,8 @@ protected:
 	void AddChild(Entity& child)       {        m_Entity.AddChild(child); }
 	void RemoveChild(Entity& child)    {        m_Entity.RemoveChild(child); }
 
+	Entity CreateEntity(const std::string& name = "") { return m_Entity.CreateEntity(name); }
+
 private:
 	Entity m_Entity;
 	friend class Scene;
