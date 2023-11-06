@@ -535,6 +535,18 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 			}
 			break;
 
+		case Key::Q:
+			if (control) {
+				DialogConfirm::OpenDialog(
+					"Exit Editor ?",
+					[&](){
+						OnSceneStop();
+						Application::Get().Close();
+					}
+				);
+			}
+			break;
+
 		case Key::F4:
 			OnSceneStop();
 			Application::Get().Close();
