@@ -69,6 +69,17 @@ void FileSystemPanel::SearchDirectory() {
 void FileSystemPanel::ShowDirectoriesTable() {
 	ImGui::BeginChild("ScrollableTable", ImVec2(0, 0), true);
 
+
+	if (ImGui::IsMouseDown(1) && ImGui::IsWindowHovered()) {
+		ImGui::OpenPopup("pop_directories_table");
+	}
+	if (ImGui::BeginPopup("pop_directories_table")) {
+		if (ImGui::MenuItem("Create File")) {
+			std::ofstream(m_CurrentDirectory / "new_file.escn").close();
+		}
+		ImGui::EndPopup();
+	}
+
 	if (ImGui::BeginTable("Directory", 1)) {
 		for (const auto& entry : m_Entries) {
 			const auto& path = entry.path();
