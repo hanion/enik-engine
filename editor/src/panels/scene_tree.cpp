@@ -183,7 +183,6 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 	}
 
 	if (node_open) {
-		ImGui::TextColored(ImVec4(0.1f, 0.5f, 0.1f, 1.0f), "Entity %d, ID %lu", (uint32_t)entity, (uint64_t)entity.Get<Component::ID>());
 		if (entity.HasFamily()) {
 			for (auto& child : entity.GetChildren()) {
 				if (child and child.Has<Component::ID>()) {

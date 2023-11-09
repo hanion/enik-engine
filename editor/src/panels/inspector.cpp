@@ -64,6 +64,11 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 
 	ImGui::PushID(entity.Get<Component::ID>());
 
+	DisplayComponentInInspector<Component::ID>("ID", entity, false, [&]() {
+		ImGuiUtils::PrefixLabel("UUID");
+		ImGui::TextColored(ImVec4(0.1f, 0.5f, 0.1f, 1.0f), "%lu", (uint64_t)entity.Get<Component::ID>());
+	});
+
 	DisplayComponentInInspector<Component::Tag>("Tag", entity, false, [&]() {
 		std::string& text = entity.GetTag();
 
