@@ -55,6 +55,9 @@ public:
 		return !(*this == other);
 	}
 
+	const UUID GetID() {
+		return Get<Component::ID>().uuid;
+	}
 
 	std::string& GetTag() {
 		return Get<Component::Tag>().Text;
