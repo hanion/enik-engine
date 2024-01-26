@@ -42,7 +42,7 @@ bool ProjectSerializer::Deserialize(std::filesystem::path path) {
 
 	YAML::Node data;
 	try {
-		data = YAML::LoadFile(path);
+		data = YAML::LoadFile(path.string());
 	}
 	catch (const YAML::ParserException& e) {
 		EN_CORE_ERROR("Failed to load project.enik file {}\n	{1}", path, e.what());

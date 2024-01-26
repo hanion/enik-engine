@@ -378,7 +378,7 @@ void EditorLayer::LoadScene(const std::filesystem::path& path) {
 	Ref<Scene> new_scene = CreateRef<Scene>();
 	m_ActiveScenePath = path;
 	SceneSerializer serializer = SceneSerializer(new_scene);
-	if (serializer.Deserialize(m_ActiveScenePath)) {
+	if (serializer.Deserialize(m_ActiveScenePath.string())) {
 		m_EditorScene = new_scene;
 		m_ActiveScene = m_EditorScene;
 		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
@@ -400,7 +400,7 @@ void EditorLayer::SaveScene() {
 		}
 
 		SceneSerializer serializer = SceneSerializer(m_ActiveScene);
-		serializer.Serialize(m_ActiveScenePath);
+		serializer.Serialize(m_ActiveScenePath.string());
 		UpdateWindowTitle();
 	}
 }
@@ -430,7 +430,7 @@ void EditorLayer::LoadProject(const std::filesystem::path& path) {
 		ScriptSystem::CallOnScriptModuleReload(
 			[&]() {
 				SceneSerializer serializer = SceneSerializer(m_ActiveScene);
-				serializer.ReloadNativeScriptFields(m_ActiveScenePath);
+				serializer.ReloadNativeScriptFields(m_ActiveScenePath.string());
 			}
 		);
 	}
@@ -500,7 +500,7 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 				SceneSerializer serializer = SceneSerializer(m_ActiveScene);
 
 				auto& id = m_SceneTreePanel.GetSelectedEntity().Get<Component::ID>().uuid;
-				auto& new_id = serializer.DuplicateEntity(m_ActiveScenePath, id);
+				auto& new_id = serializer.DuplicateEntity(m_ActiveScenePath.string(), id);
 				m_SceneTreePanel.SetSelectedEntityWithUUID(new_id);
 
 			}
@@ -665,7 +665,7 @@ void EditorLayer::OnScenePlay() {
 	/* Copy Current Editor Scene */ {
 		Ref<Scene> new_scene = CreateRef<Scene>();
 		SceneSerializer serializer = SceneSerializer(new_scene);
-		if (serializer.Deserialize(m_ActiveScenePath)) {
+		if (serializer.Deserialize(m_ActiveScenePath.string())) {
 			m_ActiveScene = new_scene;
 			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			SetPanelsContext();

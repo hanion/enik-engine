@@ -85,7 +85,7 @@ DialogFileResult DialogFile::ShowPopup() {
 		Utils::FilterFiles(s_Data.entries, filters, s_Data.type == DialogType::OPEN_FILE);
 
 		s_Data.has_searched = true;
-		strcpy(file_path_buffer, s_Data.current_directory.c_str());
+		strcpy(file_path_buffer, s_Data.current_directory.string().c_str());
 		s_Data.selected_path.clear();
 	}
 
@@ -194,7 +194,7 @@ void DialogFile::ShowDirectoriesTable(char* file_path_buffer) {
 				}
 				else {
 					s_Data.selected_path = path.string();
-					strcpy(file_path_buffer, s_Data.selected_path.c_str());
+					strcpy(file_path_buffer, s_Data.selected_path.string().c_str());
 				}
 			}
 		}

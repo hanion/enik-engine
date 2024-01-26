@@ -25,7 +25,7 @@ void ScriptSystem::LoadScriptModuleFirstTime() {
 	ReloadScriptModule();
 
 	auto sm_path = Project::GetAbsolutePath(Project::GetActive()->GetConfig().script_module_path);
-	s_Data.file_watcher = CreateScope<filewatch::FileWatch<std::string>>(sm_path, OnFileWatcherEvent);
+	s_Data.file_watcher = CreateScope<filewatch::FileWatch<std::string>>(sm_path.string(), OnFileWatcherEvent);
 }
 
 void ScriptSystem::ReloadScriptModule() {
@@ -51,7 +51,7 @@ void ScriptSystem::ReloadScriptModule() {
 void ScriptSystem::LoadScriptModule(const std::filesystem::path& script_module_path) {
 
 	if (script_module_path.empty() or not std::filesystem::exists(script_module_path)) {
-		EN_CORE_ERROR("Error while opening script module: Invalid Path\n    '{0}'", script_module_path.c_str());
+		EN_CORE_ERROR("Error while opening script module: Invalid Path\n    '{0}'", script_module_path.string().c_str());
 		return;
 	}
 
@@ -65,7 +65,7 @@ void ScriptSystem::LoadScriptModule(const std::filesystem::path& script_module_p
 		return;
 	}
 #elif defined(EN_PLATFORM_WINDOWS)
-	script_module_handle = LoadLibraryA(script_module_path.c_str());
+	script_module_handle = LoadLibraryA(script_module_path.string().c_str());
 #endif
 
 	// load the symbol
@@ -89,7 +89,7 @@ void ScriptSystem::LoadScriptModule(const std::filesystem::path& script_module_p
 			register_all();
 		}
 		s_Data.current_script_module_path = script_module_path;
-		EN_CORE_INFO("Loaded script module '{0}'", script_module_path.c_str());
+		EN_CORE_INFO("Loaded script module '{0}'", script_module_path.string().c_str());
 	}
 }
 

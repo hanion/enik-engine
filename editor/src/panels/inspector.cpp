@@ -283,7 +283,7 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_FILE_PATH")) {
 				std::filesystem::path path = std::filesystem::path(static_cast<const char*>(payload->Data));
 				if (std::filesystem::exists(path) and path.extension() == ".png") {
-					sprite.Texture = Texture2D::Create(path);
+					sprite.Texture = Texture2D::Create(path.string());
 					auto relative = std::filesystem::relative(path, Project::GetProjectDirectory());
 					sprite.TexturePath = relative;
 					if (sprite.SubTexture != nullptr) {
@@ -304,7 +304,7 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 				[&]() {
 					auto relative = std::filesystem::relative(DialogFile::GetSelectedPath(), Project::GetProjectDirectory());
 					sprite.TexturePath = relative;
-					sprite.Texture = Texture2D::Create(DialogFile::GetSelectedPath());
+					sprite.Texture = Texture2D::Create(DialogFile::GetSelectedPath().string());
 					if (sprite.SubTexture != nullptr) {
 						sprite.SubTexture->SetTexture(sprite.Texture);
 					}
@@ -356,7 +356,7 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 
 		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal) and not sprite.TexturePath.empty()) {
 			if (ImGui::BeginTooltip()) {
-				ImGui::Text(sprite.TexturePath.c_str());
+				ImGui::Text(sprite.TexturePath.string().c_str());
 				ImVec2 texture_tooltip_size = ImVec2(tex_size.x*8.0f, tex_size.y*8.0f);
 				ImGui::Image(tex_id, texture_tooltip_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 				ImGui::EndTooltip();
@@ -386,7 +386,7 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 
 	ImGuiUtils::PrefixLabel("Filter");
 	if (ImGui::Checkbox("##Filter", &sprite.mag_filter_linear)) {
-		sprite.Texture = Texture2D::Create(Project::GetAbsolutePath(sprite.TexturePath), sprite.mag_filter_linear);
+		sprite.Texture = Texture2D::Create(Project::GetAbsolutePath(sprite.TexturePath).string(), sprite.mag_filter_linear);
 		if (sprite.SubTexture != nullptr) {
 			sprite.SubTexture->SetTexture(sprite.Texture);
 		}

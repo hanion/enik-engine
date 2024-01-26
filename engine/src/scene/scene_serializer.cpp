@@ -403,7 +403,7 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 		if (not sprite.TexturePath.empty()) {
 			auto path = Project::GetAbsolutePath(sprite.TexturePath);
 			if (std::filesystem::exists(path)) {
-				sprite.Texture = Texture2D::Create(path, sprite.mag_filter_linear);
+				sprite.Texture = Texture2D::Create(path.string(), sprite.mag_filter_linear);
 			}
 			else {
 				sprite.Texture = m_ErrorTexture;
