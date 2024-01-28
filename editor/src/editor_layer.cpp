@@ -443,7 +443,7 @@ void EditorLayer::SaveProject() {
 void EditorLayer::ReloadProject() {
 	ScriptSystem::ClearOnScriptModuleReloadEvents();
 	if (m_SceneTreePanel.IsSelectedEntityValid()) {
-		UUID selected_entity = m_SceneTreePanel.GetSelectedEntity().Get<Component::ID>().uuid;
+		Enik::UUID selected_entity = m_SceneTreePanel.GetSelectedEntity().Get<Component::ID>().uuid;
 		LoadProject(Project::GetActive()->GetProjectDirectory() / "project.enik");
 		m_SceneTreePanel.SetSelectedEntityWithUUID(selected_entity);
 	}
@@ -658,7 +658,7 @@ void EditorLayer::OnScenePlay() {
 		return;
 	}
 
-	UUID current_selected_entity = m_SceneTreePanel.GetSelectedEntityUUID();
+	Enik::UUID current_selected_entity = m_SceneTreePanel.GetSelectedEntityUUID();
 
 	m_SceneState = SceneState::Play;
 
@@ -678,7 +678,7 @@ void EditorLayer::OnScenePlay() {
 
 void EditorLayer::OnSceneStop() {
 	OnScenePause(false);
-	UUID current_selected_entity = m_SceneTreePanel.GetSelectedEntityUUID();
+	Enik::UUID current_selected_entity = m_SceneTreePanel.GetSelectedEntityUUID();
 
 	m_SceneState = SceneState::Edit;
 	m_ActiveScene = m_EditorScene;
