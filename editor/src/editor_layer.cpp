@@ -423,8 +423,8 @@ void EditorLayer::LoadProject(const std::filesystem::path& path) {
 		ScriptRegistry::ClearRegistry();
 		ScriptSystem::LoadScriptModuleFirstTime();
 		LoadScene(start_scene_path);
-		m_FileSystemPanel.SetCurrentDirectory(Project::GetProjectDirectory());
-		DialogFile::SetCurrentDirectory(Project::GetProjectDirectory());
+		m_FileSystemPanel.SetCurrentDir(Project::GetProjectDirectory());
+		DialogFile::SetCurrentDir(Project::GetProjectDirectory());
 
 		ScriptSystem::ClearOnScriptModuleReloadEvents();
 		ScriptSystem::CallOnScriptModuleReload(

@@ -21,7 +21,7 @@ const std::filesystem::path& DialogFile::GetSelectedPath() {
 	return s_Data.selected_path;
 }
 
-void DialogFile::SetCurrentDirectory(const std::filesystem::path& directory) {
+void DialogFile::SetCurrentDir(const std::filesystem::path& directory) {
 	s_Data.current_directory = std::filesystem::canonical(directory);
 }
 

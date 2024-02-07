@@ -39,7 +39,7 @@ public:
 	static DialogFileResult Show();
 
 	static const std::filesystem::path& GetSelectedPath();
-	static void SetCurrentDirectory(const std::filesystem::path& directory);
+	static void SetCurrentDir(const std::filesystem::path& directory);
 
 private:
 	static DialogFileResult ShowPopup();

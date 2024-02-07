@@ -15,7 +15,7 @@ public:
 	~FileSystemPanel() = default;
 
 	void SetContext(const Ref<Scene>& context);
-	void SetCurrentDirectory(const std::filesystem::path& dir) { m_CurrentDirectory = dir;  m_HasSearched = false; }
+	void SetCurrentDir(const std::filesystem::path& dir) { m_CurrentDirectory = dir;  m_HasSearched = false; }
 
 	void OnImGuiRender();
 
