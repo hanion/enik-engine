@@ -80,7 +80,7 @@ void ScriptSystem::LoadScriptModule(const std::filesystem::path& script_module_p
 		return;
 	}
 #elif defined(EN_PLATFORM_WINDOWS)
-	symbol = GetProcAddress(script_module_handle, "RegisterAllScripts");
+	symbol = GetProcAddress((HMODULE)script_module_handle, "RegisterAllScripts");
 #endif
 
 	if (symbol and symbol != nullptr) {
@@ -104,7 +104,7 @@ void ScriptSystem::UnloadScriptModule() {
 			}
 		}
 #elif defined(EN_PLATFORM_WINDOWS)
-		FreeLibrary(script_module_handle);
+		FreeLibrary((HMODULE)script_module_handle);
 #endif
 
 		script_module_handle = nullptr;
