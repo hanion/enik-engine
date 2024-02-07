@@ -1,5 +1,8 @@
 #pragma once
+
+#ifdef EN_PLATFORM_LINUX
 #include <dlfcn.h>
+#endif
 
 #include "scene/scriptable_entity.h"
 #include "script_system/script_registry.h"
