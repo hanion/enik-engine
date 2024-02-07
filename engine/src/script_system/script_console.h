@@ -5,7 +5,7 @@
 
 
 namespace Enik {
-class __attribute__((visibility("default"))) Console {
+class Console {
 public:
 
 // ? we can't extern "C" templates so ...
