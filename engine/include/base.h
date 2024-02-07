@@ -59,3 +59,33 @@ constexpr Ref<T> CreateRef(Args&& ... args) {
 #define EN_PROFILE_SCOPE
 #define EN_PROFILE_SECTION(x)
 #endif
+
+
+
+#ifdef EN_PLATFORM_WINDOWS
+	#ifndef and
+		#define and &&
+	#endif
+	#ifndef or
+		#define or ||
+	#endif
+	#ifndef not
+		#define not !
+	#endif
+
+	#define NOMINMAX
+	#ifdef max
+		#undef max
+	#endif
+	#ifdef min
+		#undef min
+	#endif
+
+	#ifdef near
+		#undef near
+	#endif
+	#ifdef far
+		#undef far
+	#endif
+#endif
+
