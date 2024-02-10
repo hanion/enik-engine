@@ -153,12 +153,12 @@ public:
 	Family() = default;
 	Family(const Family&) = default;
 
-private:
-	friend Entity;
-
 	Entity* Parent;
 	std::vector<Entity> Children;
 
+	void Reparent(Entity this_entity, Entity new_parent);
+
+private:
 	void AddChild(Entity entity);
 
 	void RemoveChild(Entity entity);
@@ -167,7 +167,6 @@ private:
 
 	bool HasEntityAsChild(Entity entity);
 
-	void Reparent(Entity this_entity, Entity new_parent);
 };
 
 }

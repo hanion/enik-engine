@@ -35,10 +35,7 @@ protected:
 	bool HasParent()                    { return m_Entity.HasParent(); }
 	Entity& GetParent()                 { return m_Entity.GetParent(); }
 	void Reparent(Entity& new_parent)   {        m_Entity.Reparent(new_parent); }
-
-	std::vector<Entity>& GetChildren() { return m_Entity.GetChildren(); }
-	void AddChild(Entity& child)       {        m_Entity.AddChild(child); }
-	void RemoveChild(Entity& child)    {        m_Entity.RemoveChild(child); }
+	std::vector<Entity>& GetChildren()  { return m_Entity.GetChildren(); }
 
 	Entity CreateEntity(const std::string& name = "") { return m_Entity.CreateEntity(name); }
 

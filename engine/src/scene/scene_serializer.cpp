@@ -473,7 +473,7 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 				if (not child) {
 					child = m_Scene->CreateEntityWithUUID(child_id);
 				}
-				deserialized_entity.AddChild(child);
+				child.Reparent(deserialized_entity);
 			}
 		}
 	}

@@ -97,12 +97,6 @@ public:
 	std::vector<Entity>& GetChildren() {
 		return GetOrAddFamily().Children;
 	}
-	void AddChild(Entity child) {
-		GetOrAddFamily().AddChild(child);
-	}
-	void RemoveChild(Entity child) {
-		GetOrAddFamily().RemoveChild(child);
-	}
 
 
 	Entity CreateEntity(const std::string& name = std::string()) {

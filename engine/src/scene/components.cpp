@@ -167,6 +167,32 @@ void Component::NativeScript::Bind(const std::string& script_name, const std::fu
 	}
 }
 
+
+
+
+
+void Component::Family::Reparent(Entity this_entity, Entity new_parent) {
+
+	if (new_parent and HasEntityAsChild(new_parent)) {
+		// can not make it new parent if it is our child
+		return;
+	}
+
+	if (Parent != nullptr and *Parent) {
+		EN_CORE_ASSERT(Parent->Has<Component::Family>());
+		Parent->Get<Component::Family>().RemoveChild(this_entity);
+	}
+
+
+	if (new_parent) {
+		// add child to new parent
+		new_parent.GetOrAdd<Component::Family>().AddChild(this_entity);
+	}
+
+	SetParent(new_parent);
+}
+
+
 void Component::Family::AddChild(Entity entity) {
 	// check if it already is child
 	for (Entity& child : Children) {
@@ -208,27 +234,5 @@ bool Component::Family::HasEntityAsChild(Entity entity) {
 	}
 	return false;
 }
-
-void Component::Family::Reparent(Entity this_entity, Entity new_parent) {
-
-	if (new_parent and HasEntityAsChild(new_parent)) {
-		// can not make it new parent if it is our child
-		return;
-	}
-
-	if (Parent != nullptr and *Parent) {
-		EN_CORE_ASSERT(Parent->Has<Component::Family>());
-		Parent->Get<Component::Family>().RemoveChild(this_entity);
-	}
-
-
-	if (new_parent) {
-		// add child to new parent
-		new_parent.GetOrAdd<Component::Family>().AddChild(this_entity);
-	}
-
-	SetParent(new_parent);
-}
-
 
 }
