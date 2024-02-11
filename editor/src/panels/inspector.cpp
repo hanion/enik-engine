@@ -37,20 +37,6 @@ void InspectorPanel::OnImGuiRender() {
 	Entity selectedEntity = m_SceneTreePanel->GetSelectedEntity();
 	if (selectedEntity) {
 		DrawEntityInInspector(selectedEntity);
-
-		ImGui::Spacing();
-		ImVec2 fill_width = ImVec2(ImGui::GetContentRegionAvail().x, 0);
-		if (ImGui::Button("Add Component", fill_width)) {
-			ImGui::OpenPopup("AddComponent");
-		}
-		if (ImGui::BeginPopup("AddComponent")) {
-			DisplayComponentInPopup<Component::Camera>("Camera");
-			DisplayComponentInPopup<Component::SpriteRenderer>("Sprite Renderer");
-			DisplayComponentInPopup<Component::RigidBody>("Rigid Body");
-			DisplayComponentInPopup<Component::Collider>("Collider");
-			DisplayNativeScriptsInPopup();
-			ImGui::EndPopup();
-		}
 	}
 
 	ImGui::EndTable();
@@ -82,6 +68,27 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		}
 	}
 
+
+	/* Add Component Button */ {
+		ImGui::SameLine(ImGui::GetContentRegionAvail().x - GImGui->Style.FramePadding.x * 3.0f);
+		float line_width = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+		if (ImGui::Button("+", ImVec2(line_width, 0))) {
+			ImGui::OpenPopup("AddComponent");
+		}
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
+			ImGui::SetTooltip("Add Component");
+		}
+		if (ImGui::BeginPopup("AddComponent")) {
+			DisplayComponentInPopup<Component::Camera>("Camera");
+			DisplayComponentInPopup<Component::SpriteRenderer>("Sprite Renderer");
+			DisplayComponentInPopup<Component::RigidBody>("Rigid Body");
+			DisplayComponentInPopup<Component::Collider>("Collider");
+			DisplayNativeScriptsInPopup();
+			ImGui::EndPopup();
+		}
+	}
+
+	ImGui::Spacing();
 
 	DisplayComponentInInspector<Component::Transform>("Transform", entity, false, [&]() {
 		auto& transform = entity.Get<Component::Transform>();
