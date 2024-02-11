@@ -64,22 +64,24 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 
 	ImGui::PushID(entity.Get<Component::ID>());
 
-	DisplayComponentInInspector<Component::ID>("ID", entity, false, [&]() {
-		ImGuiUtils::PrefixLabel("UUID");
-		ImGui::TextColored(ImVec4(0.1f, 0.5f, 0.1f, 1.0f), "%lu", (uint64_t)entity.Get<Component::ID>());
-	});
+	/* Tag */ {
+		ImGui::TableNextRow();
+		ImGui::TableSetColumnIndex(0);
 
-	DisplayComponentInInspector<Component::Tag>("Tag", entity, false, [&]() {
 		std::string& text = entity.GetTag();
 
 		char buffer[256];
 		memset(buffer, 0, sizeof(buffer));
 		strcpy(buffer, text.c_str());
-		ImGuiUtils::PrefixLabel("Text");
+
 		if (ImGui::InputText("##Tag", buffer, sizeof(buffer))) {
 			text = std::string(buffer);
 		}
-	});
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
+			ImGui::SetTooltip("%lu", (uint64_t)entity.Get<Component::ID>());
+		}
+	}
+
 
 	DisplayComponentInInspector<Component::Transform>("Transform", entity, false, [&]() {
 		auto& transform = entity.Get<Component::Transform>();
