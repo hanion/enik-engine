@@ -105,6 +105,13 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		ImGui::DragFloat2("##Scale", glm::value_ptr(transform.Scale), 0.01f);
 	});
 
+	if (entity.Has<Component::NativeScript>()) {
+		auto& script = entity.Get<Component::NativeScript>();
+		DisplayComponentInInspector<Component::NativeScript>(script.ScriptName, entity, true, [&]() {
+			DisplayNativeScript(script);
+		});
+	}
+
 	DisplayComponentInInspector<Component::Camera>("Camera", entity, true, [&]() {
 		auto& cam = entity.Get<Component::Camera>();
 		ImGuiUtils::PrefixLabel("Primary");
@@ -140,13 +147,6 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 
 		DisplaySubTexture(sprite);
 	});
-
-	if (entity.Has<Component::NativeScript>()) {
-		auto& script = entity.Get<Component::NativeScript>();
-		DisplayComponentInInspector<Component::NativeScript>(script.ScriptName, entity, true, [&]() {
-			DisplayNativeScript(script);
-		});
-	}
 
 	DisplayComponentInInspector<Component::RigidBody>("Rigid Body", entity, true, [&]() {
 		auto& rigid_body = entity.Get<Component::RigidBody>();
@@ -257,7 +257,6 @@ void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity
 
 		lambda();
 
-		// FIXME: if inspector panel is too small this crashed the program
 		ImGui::TreePop();
 	}
 
@@ -480,11 +479,13 @@ void InspectorPanel::DisplayNativeScriptsInPopup() {
 
 void InspectorPanel::DisplayNativeScript(Component::NativeScript& script) {
 	for (auto& pair : script.NativeScriptFields) {
-		auto& field = pair.second;
+		NativeScriptField& field = pair.second;
+
+		EN_CORE_ASSERT(field.Value != nullptr);
 
 		ImGuiUtils::PrefixLabel(field.Name);
 
-		auto label = ("##"+field.Name).c_str();
+		const char* label = ("##"+field.Name).c_str();
 		float speed = 0.01f;
 
 		switch (field.Type) {
@@ -541,7 +542,6 @@ void InspectorPanel::DisplayNativeScript(Component::NativeScript& script) {
 						if (payload_id != nullptr) {
 							*id = *payload_id;
 						}
-
 					}
 					ImGui::EndDragDropTarget();
 				}
