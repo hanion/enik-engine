@@ -118,6 +118,7 @@ void SceneTreePanel::OnImGuiRender() {
 
 	ImGui::EndTable();
 	ImGui::End();
+	m_MouseReleased = false;
 }
 
 void SceneTreePanel::OnMouseButtonReleased(MouseButtonReleasedEvent& event) {
