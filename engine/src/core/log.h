@@ -12,9 +12,9 @@ class Log {
 public:
 	static void Init();
 
-	inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
-	inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
-	inline static std::shared_ptr<spdlog::logger>& GetScriptLogger() { return s_ScriptLogger; }
+	static std::shared_ptr<spdlog::logger>& GetCoreLogger();
+	static std::shared_ptr<spdlog::logger>& GetClientLogger();
+	static std::shared_ptr<spdlog::logger>& GetScriptLogger();
 
 private:
 	static std::shared_ptr<spdlog::logger> s_CoreLogger;

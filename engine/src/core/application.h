@@ -1,8 +1,6 @@
 #pragma once
 
 #include <base.h>
-
-#include "core/log.h"
 #include "core/timestep.h"
 #include "events/application_event.h"
 #include "events/event.h"
@@ -25,7 +23,7 @@ public:
 	void PushLayer(Layer* layer);
 	void PushOverlay(Layer* overlay);
 
-	inline static Application& Get() { return *s_Instance; }
+	static Application& Get();
 	inline Window& GetWindow() { return *m_Window; }
 
 	inline ImGuiLayer* GetImGuiLayer() { return m_ImGuiLayer; }

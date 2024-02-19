@@ -10,6 +10,7 @@ namespace Enik {
 
 // make application static
 Application* Application::s_Instance = nullptr;
+Application& Application::Get() { return *Application::s_Instance; }
 
 Application::Application(const std::string& name) {
 	EN_PROFILE_SCOPE;
