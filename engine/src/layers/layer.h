@@ -6,7 +6,7 @@
 
 namespace Enik {
 
-class Layer {
+class EN_API Layer {
 public:
 	Layer(const std::string& name = "Layer");
 	virtual ~Layer();

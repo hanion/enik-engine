@@ -5,10 +5,11 @@
 
 #include <spdlog/fmt/ostr.h>
 #include "core/asserter.h"
+#include "core/lib_macro.h"
 
 namespace Enik {
 
-class Log {
+class EN_API Log {
 public:
 	static void Init();
 

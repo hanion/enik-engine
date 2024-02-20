@@ -40,7 +40,7 @@ struct FrameBufferSpecification {
 	bool SwapChainTarget = false;
 };
 
-class FrameBuffer {
+class EN_API FrameBuffer {
 public:
 	virtual ~FrameBuffer() = default;
 

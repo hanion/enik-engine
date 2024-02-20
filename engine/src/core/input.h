@@ -4,7 +4,7 @@
 
 namespace Enik {
 
-class Input {
+class EN_API Input {
 public:
 	static bool IsKeyPressed(int keycode);
 	static bool IsMouseButtonPressed(int button);

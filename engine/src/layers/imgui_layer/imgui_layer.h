@@ -10,7 +10,7 @@
 
 namespace Enik {
 
-class ImGuiLayer : public Layer {
+class EN_API ImGuiLayer : public Layer {
 public:
 	ImGuiLayer();
 	~ImGuiLayer();

@@ -5,7 +5,7 @@
 
 namespace Enik {
 
-class UUID {
+class EN_API UUID {
 public:
 	UUID();
 	UUID(uint64_t uuid);

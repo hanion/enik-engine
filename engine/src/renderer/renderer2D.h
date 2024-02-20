@@ -6,7 +6,7 @@
 
 namespace Enik {
 
-class Renderer2D {
+class EN_API Renderer2D {
 public:
 	static void Init();
 	static void Shutdown();

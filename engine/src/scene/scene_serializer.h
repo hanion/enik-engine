@@ -8,7 +8,7 @@
 
 namespace Enik {
 
-class SceneSerializer {
+class EN_API SceneSerializer {
 public:
 	SceneSerializer(const Ref<Scene>& scene);
 

@@ -5,9 +5,9 @@
 
 namespace Enik {
 
-class RendererAPI {
+class EN_API RendererAPI {
 public:
-	enum class API {
+	enum class EN_API API {
 		None = 0,
 		OpenGL = 1
 	};

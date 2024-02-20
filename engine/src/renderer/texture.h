@@ -4,7 +4,7 @@
 
 namespace Enik {
 
-class Texture {
+class EN_API Texture {
    public:
 	virtual ~Texture() = default;
 
@@ -20,7 +20,7 @@ class Texture {
 	virtual bool equals(const Texture& other) const = 0;
 };
 
-class Texture2D : public Texture {
+class EN_API Texture2D : public Texture {
 public:
 	static Ref<Texture2D> Create(uint32_t width, uint32_t height);
 	static Ref<Texture2D> Create(const std::string& path, bool mag_filter_linear = true);

@@ -9,7 +9,7 @@ namespace Enik {
 
 class Entity;
 
-class Scene {
+class EN_API Scene {
 public:
 	Scene();
 	~Scene();

@@ -1,4 +1,5 @@
 #pragma once
+#include <base.h>
 #include "renderer/orthographic_camera.h"
 #include "core/timestep.h"
 
@@ -7,7 +8,7 @@
 
 namespace Enik {
 
-class OrthographicCameraController {
+class EN_API OrthographicCameraController {
 public:
 	OrthographicCameraController(float aspect_ratio, bool rotation = false);
 	OrthographicCameraController(float left, float right, float bottom, float top, bool rotation = false);

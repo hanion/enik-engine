@@ -1,5 +1,6 @@
 #pragma once
 #include <base.h>
+#include "core/application.h"
 
 extern Enik::Application* Enik::CreateApplication();
 

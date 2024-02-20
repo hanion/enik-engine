@@ -1,10 +1,11 @@
 #pragma once
 
+#include <base.h>
 #include "renderer/camera.h"
 
 namespace Enik {
 
-class SceneCamera : public Camera {
+class EN_API SceneCamera : public Camera {
 public:
 	SceneCamera();
 	virtual ~SceneCamera();
