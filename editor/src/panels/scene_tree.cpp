@@ -51,16 +51,17 @@ void SceneTreePanel::OnImGuiRender() {
 
 
 
+	ImGui::TableNextRow();
+	ImGui::TableSetColumnIndex(0);
+
 	static char buffer[256];
 	memset(buffer, 0, sizeof(buffer));
 	strcpy(buffer, m_Context->GetName().c_str());
 
-	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0);
-	ImGui::AlignTextToFramePadding();
-
-	static const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen;
-	bool scene_node_open = ImGui::TreeNodeEx("##SceneNameTreeNode", flags);
+	ImGui::SetNextItemWidth(-1);
+	if (ImGui::InputText("##SceneName", buffer, sizeof(buffer))) {
+		m_Context->SetName(buffer);
+	}
 
 	if (ImGui::BeginDragDropTarget()) {
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_ENTITY")) {
@@ -76,29 +77,18 @@ void SceneTreePanel::OnImGuiRender() {
 		ImGui::EndDragDropTarget();
 	}
 
-	ImGui::SameLine();
-	ImGuiUtils::PrefixLabel("Scene");
-	ImGui::PushItemWidth(-1); // Set item width to available width
-	if (ImGui::InputText("##SceneName", buffer, sizeof(buffer))) {
-		m_Context->SetName(buffer);
-	}
-	ImGui::PopItemWidth();
+	ImGui::Spacing();
 
-	if (scene_node_open) {
-		m_Context->m_Registry.each([&](auto entityID) {
-			Entity entity = Entity(entityID, m_Context.get());
-			if (entity.Has<Component::Family>()) {
-				if (not entity.HasParent()) {
-					DrawEntityInSceneTree(entity);
-				}
-			} else {
+	m_Context->m_Registry.each([&](auto entityID) {
+		Entity entity = Entity(entityID, m_Context.get());
+		if (entity.Has<Component::Family>()) {
+			if (not entity.HasParent()) {
 				DrawEntityInSceneTree(entity);
 			}
-		});
-
-		m_MouseReleased = false;
-		ImGui::TreePop();
-	}
+		} else {
+			DrawEntityInSceneTree(entity);
+		}
+	});
 
 
 
