@@ -146,6 +146,19 @@ void Scene::OnViewportResize(uint32_t width, uint32_t height) {
 	}
 }
 
+void Scene::OnViewportResize(glm::vec2 position, uint32_t width, uint32_t height) {
+	m_ViewportWidth = width;
+	m_ViewportHeight = height;
+
+	auto view = m_Registry.view<Component::Camera>();
+	for (auto entity : view) {
+		Component::Camera& camera = view.get<Component::Camera>(entity);
+		if (not camera.FixedAspectRatio) {
+			camera.Cam.SetViewportSize(position, width, height);
+		}
+	}
+}
+
 void Scene::DestroyScriptableEntities() {
 	m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
 		if (ns.Instance) {

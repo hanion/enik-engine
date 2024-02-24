@@ -4,6 +4,7 @@
 #include "renderer/ortho_camera_controller.h"
 #include "core/uuid.h"
 #include <entt/entt.hpp>
+#include "events/key_event.h"
 
 namespace Enik {
 
@@ -24,6 +25,7 @@ public:
 	void OnUpdateRuntime(Timestep ts);
 	void OnFixedUpdate  ();
 	void OnViewportResize(uint32_t width, uint32_t height);
+	void OnViewportResize(glm::vec2 position, uint32_t width, uint32_t height);
 
 	const std::string& GetName() const { return m_SceneName; }
 	const void SetName(const std::string& name) { m_SceneName = name; }

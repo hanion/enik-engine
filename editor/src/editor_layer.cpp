@@ -59,7 +59,7 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 	if (m_ViewportSize.x > 0.0f and m_ViewportSize.y > 0.0f and (spec.Width != m_ViewportSize.x or spec.Height != m_ViewportSize.y)) {
 		m_FrameBuffer->Resize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		m_EditorCameraController.OnResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_ActiveScene->OnViewportResize(m_ViewportPosition, (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 	}
 
 	Renderer2D::ResetStats();
@@ -242,6 +242,10 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 		m_ViewportBounds[0] = {viewport_min_region.x + viewport_offset.x, viewport_min_region.y + viewport_offset.y};
 		m_ViewportBounds[1] = {viewport_max_region.x + viewport_offset.x, viewport_max_region.y + viewport_offset.y};
 
+		const ImGuiViewport* viewport = ImGui::GetMainViewport();
+		m_ViewportPosition.x = m_ViewportBounds[0].x - viewport->Pos.x;
+		m_ViewportPosition.y = m_ViewportBounds[0].y - viewport->Pos.y;
+
 		m_ViewportFocused = ImGui::IsWindowFocused();
 		m_ViewportHovered = ImGui::IsWindowHovered();
 		Application::Get().GetImGuiLayer()->BlockEvents(!m_ViewportFocused && !m_ViewportHovered);
@@ -254,7 +258,7 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 
 			m_FrameBuffer->Resize(m_ViewportSize.x, m_ViewportSize.y);
 
-			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_ActiveScene->OnViewportResize(m_ViewportPosition, (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			m_EditorCameraController.OnResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 
@@ -381,7 +385,7 @@ void EditorLayer::LoadScene(const std::filesystem::path& path) {
 	if (serializer.Deserialize(m_ActiveScenePath.string())) {
 		m_EditorScene = new_scene;
 		m_ActiveScene = m_EditorScene;
-		m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+		m_ActiveScene->OnViewportResize(m_ViewportPosition, (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		SetPanelsContext();
 		UpdateWindowTitle();
 	}
@@ -667,7 +671,7 @@ void EditorLayer::OnScenePlay() {
 		SceneSerializer serializer = SceneSerializer(new_scene);
 		if (serializer.Deserialize(m_ActiveScenePath.string())) {
 			m_ActiveScene = new_scene;
-			m_ActiveScene->OnViewportResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+			m_ActiveScene->OnViewportResize(m_ViewportPosition, (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 			SetPanelsContext();
 		}
 	}

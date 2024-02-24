@@ -13,6 +13,7 @@ public:
 	void SetOrthographic(float size, float near, float far);
 
 	void SetViewportSize(uint32_t width, uint32_t height);
+	void SetViewportSize(glm::vec2 position, uint32_t width, uint32_t height);
 
 	float GetSize       () { return m_OrthographicSize; }
 	float GetFar        () { return m_OrthographicFar ; }
@@ -31,8 +32,12 @@ private:
 	float m_OrthographicSize =  10.0f;
 	float m_OrthographicFar  =  1.0f;
 	float m_OrthographicNear = -1.0f;
-	
+
 	float m_AspectRatio = 1.0f;
+
+	float m_ScreenWidth  = 1.0f;
+	float m_ScreenHeight = 1.0f;
+	glm::vec2 m_ScreenPosition = glm::vec2(0.0f);
 
 };
 

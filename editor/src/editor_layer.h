@@ -69,6 +69,8 @@ private:
 	glm::vec2 m_ViewportSize = glm::vec2(0);
 	glm::vec2 m_ViewportBounds[2];
 
+	glm::vec2 m_ViewportPosition = glm::vec2(0);
+
 	bool m_DockSpaceInitialized = false;
 
 	bool m_ShowRendererStats = false;
