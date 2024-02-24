@@ -30,6 +30,17 @@ void SceneCamera::SetViewportSize(glm::vec2 position, uint32_t width, uint32_t h
 	SetViewportSize(width, height);
 }
 
+glm::vec2 SceneCamera::GetWorldPosition(const float x, const float y) const {
+	float ortho_left   = -m_OrthographicSize * m_AspectRatio * 0.5f;
+	float ortho_right  =  m_OrthographicSize * m_AspectRatio * 0.5f;
+	float ortho_bottom = -m_OrthographicSize * 0.5f;
+	float ortho_top    =  m_OrthographicSize * 0.5f;
+
+	float world_x = ortho_left   +         (x - m_ScreenPosition.x) / m_ScreenWidth   * (ortho_right - ortho_left);
+	float world_y = ortho_bottom + (1.0f - (y - m_ScreenPosition.y) / m_ScreenHeight) * (ortho_top - ortho_bottom);
+	return { world_x, world_y };
+}
+
 void SceneCamera::RecalculateProjection() {
 	float ortho_left   = -m_OrthographicSize * m_AspectRatio * 0.5f;
 	float ortho_right  =  m_OrthographicSize * m_AspectRatio * 0.5f;

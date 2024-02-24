@@ -25,6 +25,12 @@ public:
 	void SetNear       (float near ) { m_OrthographicNear = near ; RecalculateProjection(); }
 	void SetAspectRatio(float ratio) { m_AspectRatio      = ratio; RecalculateProjection(); }
 
+	glm::vec2 GetWorldPosition(const float x, const float y) const;
+
+	glm::vec2 GetWorldPosition(const std::pair<float, float>& position) const {
+		return GetWorldPosition(position.first , position.second);
+	}
+
 private:
 	void RecalculateProjection();
 
