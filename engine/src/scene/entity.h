@@ -103,6 +103,10 @@ public:
 		return m_Scene->CreateEntity(name);
 	}
 
+	void DestroyEntity(Entity& entity) {
+		m_Scene->DestroyEntity(entity);
+	}
+
 private:
 	entt::entity m_Handle{entt::null};
 	Scene* m_Scene = nullptr;

@@ -38,6 +38,7 @@ protected:
 	std::vector<Entity>& GetChildren()  { return m_Entity.GetChildren(); }
 
 	Entity CreateEntity(const std::string& name = "") { return m_Entity.CreateEntity(name); }
+	void DestroyEntity(Entity& entity) { m_Entity.DestroyEntity(entity); }
 
 private:
 	Entity m_Entity;
