@@ -37,7 +37,17 @@ Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name) {
 	return entity;
 }
 
-void Scene::DestroyEntity(const Entity& entity) {
+// recursive
+void Scene::DestroyEntity(Entity entity) {
+	if (entity.HasFamily()) {
+		for (auto& child : entity.GetChildren()) {
+			DestroyEntity(child);
+		}
+
+		// remove this entity child from it's parent
+		entity.Reparent({});
+	}
+
 	if (m_Registry.valid(entity)) {
 		m_Registry.destroy(entity);
 	}

@@ -166,7 +166,7 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 			static Entity s_entity_to_delete = entity;
 			DialogConfirm::OpenDialog("Delete Entity ?",
 				[&](){
-					DeleteEntityAndChildren(s_entity_to_delete);
+					m_Context->DestroyEntity(s_entity_to_delete);
 				}
 			);
 		}
@@ -186,18 +186,6 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 
 	ImGui::PopID();
 
-}
-
-void SceneTreePanel::DeleteEntityAndChildren(Entity entity) {
-	if (entity.HasFamily()) {
-		for (auto& child : entity.GetChildren()) {
-			DeleteEntityAndChildren(child);
-		}
-
-		// remove this entity child from it's parent
-		entity.Reparent({});
-	}
-	m_Context->DestroyEntity(entity);
 }
 
 }

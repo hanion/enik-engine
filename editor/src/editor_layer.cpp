@@ -515,7 +515,7 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 				DialogConfirm::OpenDialog("Delete Entity ?",
 					[&](){
 						if (m_SceneTreePanel.IsSelectedEntityValid()) {
-							m_SceneTreePanel.DeleteEntityAndChildren(m_SceneTreePanel.GetSelectedEntity());
+							m_ActiveScene->DestroyEntity(m_SceneTreePanel.GetSelectedEntity());
 						}
 					}
 				);
