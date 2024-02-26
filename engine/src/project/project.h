@@ -22,7 +22,7 @@ public:
 		return s_ActiveProject->m_ProjectDirectory;
 	}
 
-	static const std::filesystem::path GetAbsolutePath(std::filesystem::path& path) {
+	static const std::filesystem::path GetAbsolutePath(const std::filesystem::path& path) {
 		try {
 			std::filesystem::path absolute_path = std::filesystem::canonical(GetProjectDirectory() / path);
 			if (std::filesystem::exists(absolute_path)) {
