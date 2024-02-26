@@ -40,6 +40,10 @@ protected:
 	Entity CreateEntity(const std::string& name = "") { return m_Entity.CreateEntity(name); }
 	void DestroyEntity(Entity& entity) { m_Entity.DestroyEntity(entity); }
 
+	Entity InstantiatePrefab(const std::filesystem::path& path) {
+		return m_Entity.InstantiatePrefab(path);
+	}
+
 private:
 	Entity m_Entity;
 	friend class Scene;

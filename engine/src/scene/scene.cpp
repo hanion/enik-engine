@@ -7,6 +7,7 @@
 #include "scene/entity.h"
 #include "script_system/script_system.h"
 #include "physics/physics_world.h"
+#include "scene/scene_serializer.h"
 
 namespace Enik {
 
@@ -51,6 +52,12 @@ void Scene::DestroyEntity(Entity entity) {
 	if (m_Registry.valid(entity)) {
 		m_Registry.destroy(entity);
 	}
+}
+
+Entity Scene::InstantiatePrefab(const std::filesystem::path& path) {
+	std::filesystem::path canonical_path = Project::GetAbsolutePath(path);
+	SceneSerializer serializer = SceneSerializer(this);
+	return serializer.DeserializePrefab(canonical_path);
 }
 
 void Scene::OnUpdateEditor(Timestep ts, OrthographicCameraController& camera) {

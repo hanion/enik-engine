@@ -96,8 +96,13 @@ YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec4& vec) {
 
 namespace Enik {
 
-SceneSerializer::SceneSerializer(const Ref<Scene>& scene)
+SceneSerializer::SceneSerializer(Scene* scene)
 	: m_Scene(scene) {
+	m_ErrorTexture = Texture2D::Create(FULL_PATH_EDITOR("assets/textures/error.png"), false);
+}
+
+SceneSerializer::SceneSerializer(const Ref<Scene>& scene)
+	: m_Scene(scene.get()) {
 	m_ErrorTexture = Texture2D::Create(FULL_PATH_EDITOR("assets/textures/error.png"), false);
 }
 
@@ -112,7 +117,7 @@ void SceneSerializer::Serialize(const std::string& filepath) {
 	out << YAML::Value << YAML::BeginSeq;
 
 	m_Scene->m_Registry.each([&](auto entityID) {
-		Entity entity = Entity(entityID, m_Scene.get());
+		Entity entity = Entity(entityID, m_Scene);
 		if (not entity) {
 			return;
 		}
@@ -235,6 +240,144 @@ void SceneSerializer::ReloadNativeScriptFields(const std::string& filepath) {
 	}
 }
 
+void SceneSerializer::SerializePrefab(const std::string& filepath, Entity entity_to_prefab) {
+	YAML::Emitter out;
+	out << YAML::BeginMap;
+	out << YAML::Key << "Prefab" << YAML::Value << entity_to_prefab.GetTag();
+	out << YAML::Key << "Root"   << YAML::Value << entity_to_prefab.Get<Component::ID>().uuid;
+
+	out << YAML::Key << "Entities";
+	out << YAML::Value << YAML::BeginSeq;
+
+	SerializeEntity(out, entity_to_prefab);
+
+	Component::Family entity_family = entity_to_prefab.GetOrAddFamily();
+	if (entity_family.Children.size() > 0) {
+		m_Scene->m_Registry.each([&](auto entityID) {
+			Entity entity = Entity(entityID, m_Scene);
+			if (not entity) {
+				return;
+			}
+			if (entity_family.HasEntityAsChild(entity)) {
+				SerializeEntity(out, entity);
+			}
+		});
+	}
+
+	out << YAML::EndSeq;
+	out << YAML::EndMap;
+
+	std::ofstream fout(filepath);
+	fout << out.c_str();
+}
+
+
+Entity SceneSerializer::DeserializePrefab(const std::string& filepath) {
+	YAML::Node data;
+	try {
+		data = YAML::LoadFile(filepath);
+	}
+	catch (const YAML::ParserException& e) {
+		EN_CORE_ERROR("Failed to load prefab file '{0}'\n	{1}", filepath, e.what());
+		return {};
+	}
+
+	if (not data["Prefab"] or not data["Root"]) {
+		return {};
+	}
+
+	auto entities = data["Entities"];
+	if (not entities) {
+		return {};
+	}
+
+	std::unordered_map<uint64_t, uint64_t> uuid_map;
+
+	// update uuid's
+	for (auto entity : entities) {
+		uint64_t old_uuid = entity["Entity"].as<uint64_t>();
+		UUID new_uuid;
+
+		auto iter = uuid_map.find(old_uuid);
+		if (iter != uuid_map.end()) {
+			new_uuid = UUID(iter->second);
+		}
+		else {
+			uuid_map[old_uuid] = new_uuid;
+		}
+
+		entity["Entity"] = (uint64_t)new_uuid;
+
+
+		YAML::Node family = entity["Component::Family"];
+		if (family) {
+			if (family["Parent"]) {
+				family.remove("Parent");
+			}
+			if (family["Children"]) {
+				for (std::size_t j = 0; j < family["Children"].size(); ++j) {
+					auto child_old_uuid = family["Children"][j].as<uint64_t>();
+					UUID child_new_uuid;
+
+					auto iter = uuid_map.find(child_old_uuid);
+					if (iter != uuid_map.end()) {
+						child_new_uuid = UUID(iter->second);
+					}
+					else {
+						uuid_map[child_old_uuid] = child_new_uuid;
+					}
+
+					family["Children"][j] = (uint64_t)child_new_uuid;
+				}
+			}
+		}
+
+
+		YAML::Node native_script = entity["Component::NativeScript"];
+		if (native_script and native_script["ScriptFields"] and native_script["ScriptFields"].IsMap()) {
+			for (auto field : native_script["ScriptFields"]) {
+				YAML::Node& field_node = field.second;
+
+				if (not field_node["Type"] or not field_node["Value"]) {
+					continue;
+				}
+
+				const std::string& field_type_string = field_node["Type"].as<std::string>();
+				FieldType field_type = NativeScriptField::NameType(field_type_string);
+
+				if (field_type == FieldType::ENTITY) {
+					uint64_t field_uuid = field_node["Value"].as<uint64_t>();
+
+					auto iter = uuid_map.find(field_uuid);
+					if (iter != uuid_map.end()) {
+						field_node["Value"] = iter->second;
+					}
+				}
+			}
+		}
+
+	}
+
+	// iterate reversed to not change entity indexes
+	for (std::size_t i = entities.size(); i > 0; --i) {
+		auto entity = entities[i - 1];
+		uint64_t uuid = entity["Entity"].as<uint64_t>();
+		std::string name;
+		auto tag = entity["Component::Tag"];
+		if (tag) {
+			name = tag["Text"].as<std::string>();
+		}
+
+		DeserializeEntity(entity, uuid, name);
+	}
+
+	// return root entity
+	auto iter = uuid_map.find(data["Root"].as<uint64_t>());
+	if (iter != uuid_map.end()) {
+		return m_Scene->FindEntityByUUID(UUID(iter->second));
+	}
+	return {};
+}
 
 void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 	out << YAML::BeginMap; // Entity

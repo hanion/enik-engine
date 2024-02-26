@@ -19,6 +19,8 @@ public:
 	Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
 	void DestroyEntity(Entity entity);
 
+	Entity InstantiatePrefab(const std::filesystem::path& path);
+
 	entt::registry& Reg() { return m_Registry; }
 
 	void OnUpdateEditor (Timestep ts, OrthographicCameraController& camera);

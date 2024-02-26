@@ -158,6 +158,7 @@ public:
 
 	EN_API void Reparent(Entity this_entity, Entity new_parent);
 
+	bool HasEntityAsChild(Entity entity);
 private:
 	void AddChild(Entity entity);
 
@@ -165,7 +166,6 @@ private:
 
 	void SetParent(Entity& entity);
 
-	bool HasEntityAsChild(Entity entity);
 
 };
 

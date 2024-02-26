@@ -4,6 +4,8 @@
 
 #include "scene/components.h"
 #include "../dialogs/dialog_confirm.h"
+#include "../dialogs/dialog_file.h"
+#include "scene/scene_serializer.h"
 
 namespace Enik {
 
@@ -148,6 +150,16 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 				}
 			}
 		}
+		else if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_FILE_PATH")) {
+			std::filesystem::path path = std::filesystem::path(static_cast<const char*>(payload->Data));
+			if (std::filesystem::exists(path) and path.extension() == ".prefab") {
+				if (payload->IsDelivery()) {
+					Entity prefab = SceneSerializer(m_Context).DeserializePrefab(path);
+					prefab.Reparent(entity);
+					SetSelectedEntity(prefab);
+				}
+			}
+		}
 		ImGui::EndDragDropTarget();
 	}
 
@@ -161,6 +173,17 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 			Entity new_entity = m_Context->CreateEntity("Empty Entity");
 			new_entity.Reparent(entity);
 			m_SelectionContext = new_entity;
+		}
+		if (ImGui::MenuItem("Create Prefab")) {
+			static Entity s_entity_to_prefab;
+			s_entity_to_prefab = entity;
+			DialogFile::OpenDialog(DialogType::SAVE_FILE,
+				[&]() {
+					SceneSerializer serializer = SceneSerializer(m_Context);
+					serializer.SerializePrefab(DialogFile::GetSelectedPath(), s_entity_to_prefab);
+				}
+				, ".prefab"
+			);
 		}
 		if (ImGui::MenuItem("Delete Entity")) {
 			static Entity s_entity_to_delete = entity;

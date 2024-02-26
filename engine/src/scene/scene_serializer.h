@@ -10,6 +10,7 @@ namespace Enik {
 
 class EN_API SceneSerializer {
 public:
+	SceneSerializer(Scene* scene);
 	SceneSerializer(const Ref<Scene>& scene);
 
 	void Serialize(const std::string& filepath);
@@ -22,6 +23,9 @@ public:
 
 	void ReloadNativeScriptFields(const std::string& filepath);
 
+	void SerializePrefab(const std::string& filepath, Entity entity_to_prefab);
+	Entity DeserializePrefab(const std::string& filepath);
+
 private:
 	void SerializeEntity(YAML::Emitter& out, Entity& entity);
 	void DeserializeEntity(YAML::Node& data, uint64_t uuid, std::string& name);
@@ -31,7 +35,7 @@ private:
 	void DeserializeNativeScriptFields(YAML::Node& node, Entity& entity);
 
 private:
-	Ref<Scene> m_Scene;
+	Scene* m_Scene;
 
 	Ref<Texture2D> m_ErrorTexture;
 };

@@ -107,6 +107,11 @@ public:
 		m_Scene->DestroyEntity(entity);
 	}
 
+	Entity InstantiatePrefab(const std::filesystem::path& path) {
+		return m_Scene->InstantiatePrefab(path);
+	}
+
+
 private:
 	entt::entity m_Handle{entt::null};
 	Scene* m_Scene = nullptr;

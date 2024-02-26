@@ -271,14 +271,20 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_FILE_PATH", ImGuiDragDropFlags_AcceptBeforeDelivery)) {
 					std::filesystem::path path = std::filesystem::path(static_cast<const char*>(payload->Data));
 
-					if (std::filesystem::exists(path) and path.extension() == ".escn") {
+					if (std::filesystem::exists(path) and (path.extension() == ".escn" or path.extension() == ".prefab")) {
 						// draw rect to show it can be draggable
 						ImVec2 drawStart = ImVec2(m_ViewportBounds[0].x + 2, m_ViewportBounds[0].y + 2);
 						ImVec2 drawEnd   = ImVec2(m_ViewportBounds[1].x - 2, m_ViewportBounds[1].y - 2);
 						ImGui::GetWindowDrawList()->AddRect(drawStart, drawEnd, IM_COL32(240, 240, 10, 240), 0.0f, ImDrawCornerFlags_All, 3.0f);
 
 						if (payload->IsDelivery()) {
-							LoadScene(path);
+							if (path.extension() == ".escn") {
+								LoadScene(path);
+							}
+							else if (path.extension() == ".prefab") {
+								Entity prefab = SceneSerializer(m_ActiveScene).DeserializePrefab(path);
+								m_SceneTreePanel.SetSelectedEntity(prefab);
+							}
 						}
 					}
 				}
