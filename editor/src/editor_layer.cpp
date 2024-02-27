@@ -386,11 +386,11 @@ void EditorLayer::LoadScene(const std::filesystem::path& path) {
 	}
 
 	Ref<Scene> new_scene = CreateRef<Scene>();
-	m_ActiveScenePath = path;
 	SceneSerializer serializer = SceneSerializer(new_scene);
-	if (serializer.Deserialize(m_ActiveScenePath.string())) {
+	if (serializer.Deserialize(path.string())) {
 		m_EditorScene = new_scene;
 		m_ActiveScene = m_EditorScene;
+		m_ActiveScenePath = path;
 		m_ActiveScene->OnViewportResize(m_ViewportPosition, (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		SetPanelsContext();
 		UpdateWindowTitle();
