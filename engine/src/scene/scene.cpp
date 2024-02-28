@@ -131,7 +131,7 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 }
 
 void Scene::OnFixedUpdate() {
-	if (not m_IsPaused or m_StepFrames-- > 0) {
+	if (not m_IsPaused or m_StepFrames > 0) {
 		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
 			if (not ns.Instance or ns.Instance == nullptr) {
 				if (ns.InstantiateScript and ns.InstantiateScript != nullptr) {
