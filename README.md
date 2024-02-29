@@ -6,55 +6,31 @@
 
 <br>
 
-# Key Features
-- **Native C++ Scripting**
-  - Write game logic using C++ scripting for maximum performance and flexibility.
+# Key features
 
-- **Dynamic Script Loading**
-  - The engine automatically detects and reloads script module when you compile it.
+**Native C++ scripting:** Write game logic using C++ scripting for maximum performance and flexibility.
 
-- **Physics Engine**
-  - In development, this engine provides 2D physics simulations.
+**Dynamic script loading:** The engine automatically detects and reloads script module when you compile it.
 
-- **Tracy Profiler**
-  - Integrated Tracy profiler for profiling and optimizing performance.
+**Physics engine:** In development, this engine provides 2D physics simulations.
 
+**Tracy profiler:** Integrated profiler for measuring and optimizing performance.
 
 <br>
 
-
-# System Requirements
-
-**Operating System**: 🐧 Linux
-
-📣 **Note**: 
-I have a strong preference for developing on Linux and currently do not have a Windows development environment.
-But I'm open to contributions and may consider adding Windows support in the future.
-Adding Windows support should not be difficult, as I have intentionally avoided using extensive platform-specific code.
-
-<br>
-
-# How to Build
+# How to build
 
 ### Clone the repository
 
 ```bash
 git clone --recursive https://github.com/hanion/enik-engine.git
-cd enik-engine
 ```
 
 ### Build with CMake
 
 ```bash
-mkdir build
-cd build
+cd enik-engine
+mkdir build & cd build
 cmake ..
 cmake --build .
-```
-
-### Run the editor
-
-```bash
-cd editor
-./editor
 ```
