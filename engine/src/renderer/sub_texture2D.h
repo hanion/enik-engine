@@ -5,7 +5,7 @@
 
 namespace Enik {
 
-class EN_API SubTexture2D {
+class SubTexture2D {
 public:
 	SubTexture2D(const Ref<Texture2D>& texture, const glm::vec2& tile_size, const glm::vec2& tile_index, const glm::vec2& tile_sep = glm::vec2(0));
 	static Ref<SubTexture2D> CreateFromTileIndex(const Ref<Texture2D> texture, const glm::vec2& tile_size, const glm::vec2& tile_index, const glm::vec2& tile_sep = glm::vec2(0));

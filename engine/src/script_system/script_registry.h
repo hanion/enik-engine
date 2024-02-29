@@ -4,9 +4,9 @@
 namespace Enik {
 
 namespace ScriptRegistry {
-	EN_API extern "C" void RegisterScriptClass(const std::string& class_name, ScriptableEntity* (*create_function)());
-	EN_API std::unordered_map<std::string, ScriptableEntity* (*)()>& GetRegistry();
-	EN_API void ClearRegistry();
+	extern "C" void RegisterScriptClass(const std::string& class_name, ScriptableEntity* (*create_function)());
+	std::unordered_map<std::string, ScriptableEntity* (*)()>& GetRegistry();
+	void ClearRegistry();
 }
 
 }

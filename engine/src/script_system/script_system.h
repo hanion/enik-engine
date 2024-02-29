@@ -12,7 +12,7 @@
 
 namespace Enik {
 
-class EN_API ScriptSystem {
+class ScriptSystem {
 public:
 
 	static void LoadScriptModuleFirstTime();

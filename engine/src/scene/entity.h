@@ -7,7 +7,7 @@
 
 namespace Enik {
 
-class EN_API Entity {
+class Entity {
 public:
 	Entity() = default;
 	Entity(entt::entity handle, Scene* scene);

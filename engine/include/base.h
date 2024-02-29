@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include "core/lib_macro.h"
 #include "core/log.h"
 
 

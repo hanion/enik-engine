@@ -3,7 +3,7 @@
 
 namespace Enik {
 
-class EN_API RenderCommand {
+class RenderCommand {
 public:
 	inline static void Init() {
 		GetAPI()->Init();

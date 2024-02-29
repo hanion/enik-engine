@@ -44,7 +44,12 @@ file(GLOB include_files
 
 
 
-add_library(${PROJECT_NAME} SHARED ${source_files} ${include_files})
+if(UNIX)
+	add_library(${PROJECT_NAME} SHARED ${source_files} ${include_files})
+endif()
+if(WIN32)
+	add_library(${PROJECT_NAME} STATIC ${source_files} ${include_files})
+endif()
 
 set(BUILD_SHARED_LIBS OFF)
 set(YAML_BUILD_SHARED_LIBS OFF)

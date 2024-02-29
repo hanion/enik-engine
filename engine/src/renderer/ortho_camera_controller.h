@@ -8,7 +8,7 @@
 
 namespace Enik {
 
-class EN_API OrthographicCameraController {
+class OrthographicCameraController {
 public:
 	OrthographicCameraController(float aspect_ratio, bool rotation = false);
 	OrthographicCameraController(float left, float right, float bottom, float top, bool rotation = false);

@@ -12,7 +12,7 @@ struct ProjectConfig {
 	std::filesystem::path script_module_path;
 };
 
-class EN_API Project {
+class Project {
 public:
 
 	static const std::filesystem::path GetProjectDirectory() {

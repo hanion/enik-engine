@@ -5,7 +5,7 @@
 
 namespace Enik {
 
-class EN_API SceneCamera : public Camera {
+class SceneCamera : public Camera {
 public:
 	SceneCamera();
 	virtual ~SceneCamera();

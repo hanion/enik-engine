@@ -12,7 +12,7 @@
 
 namespace Enik {
 
-class EN_API Application {
+class Application {
 public:
 	Application(const std::string& name = "eengine");
 	virtual ~Application();
@@ -57,6 +57,6 @@ private:
 };
 
 // To be defined in CLIENT
-EN_API Application* CreateApplication();
+Application* CreateApplication();
 
 }

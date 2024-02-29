@@ -86,7 +86,7 @@ struct Camera {
 	Camera(const Camera&) = default;
 };
 
-struct EN_API NativeScript {
+struct NativeScript {
 	ScriptableEntity* Instance = nullptr;
 
 	std::function<ScriptableEntity*()> InstantiateScript;
@@ -156,7 +156,7 @@ public:
 	Entity* Parent;
 	std::vector<Entity> Children;
 
-	EN_API void Reparent(Entity this_entity, Entity new_parent);
+	void Reparent(Entity this_entity, Entity new_parent);
 
 	bool HasEntityAsChild(Entity entity);
 private:
