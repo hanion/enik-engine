@@ -282,7 +282,7 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 								LoadScene(path);
 							}
 							else if (path.extension() == ".prefab") {
-								Entity prefab = SceneSerializer(m_ActiveScene).DeserializePrefab(path);
+								Entity prefab = SceneSerializer(m_ActiveScene).DeserializePrefab(path.string());
 								m_SceneTreePanel.SetSelectedEntity(prefab);
 							}
 						}
