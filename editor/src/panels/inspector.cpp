@@ -520,6 +520,22 @@ void InspectorPanel::DisplayNativeScript(Component::NativeScript& script) {
 				if (ImGui::InputText(label, buffer, sizeof(buffer))) {
 					*static_cast<std::string*>(field.Value) = std::string(buffer);
 				}
+
+				if (ImGui::BeginDragDropTarget()) {
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_FILE_PATH")) {
+						if (payload->DataSize > 0) {
+							char* payload_data = new char[payload->DataSize];
+							if (payload_data != nullptr) {
+								memcpy(payload_data, payload->Data, payload->DataSize);
+								strcpy(buffer, reinterpret_cast<const char*>(payload_data));
+								*static_cast<std::string*>(field.Value) = std::string(buffer);
+								delete[] payload_data;
+							}
+						}
+					}
+					ImGui::EndDragDropTarget();
+				}
+
 				continue;
 			}
 			case FieldType::ENTITY: {
