@@ -6,6 +6,7 @@
 #include "../dialogs/dialog_confirm.h"
 #include "../dialogs/dialog_file.h"
 #include "scene/scene_serializer.h"
+#include "project/project.h"
 
 namespace Enik {
 
@@ -152,6 +153,7 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 		}
 		else if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_FILE_PATH")) {
 			std::filesystem::path path = std::filesystem::path(static_cast<const char*>(payload->Data));
+			path = Project::GetAbsolutePath(path);
 			if (std::filesystem::exists(path) and path.extension() == ".prefab") {
 				if (payload->IsDelivery()) {
 					Entity prefab = SceneSerializer(m_Context).DeserializePrefab(path.string());

@@ -290,6 +290,7 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 		if (ImGui::BeginDragDropTarget()) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_FILE_PATH")) {
 				std::filesystem::path path = std::filesystem::path(static_cast<const char*>(payload->Data));
+				path = Project::GetAbsolutePath(path);
 				if (std::filesystem::exists(path) and path.extension() == ".png") {
 					sprite.Texture = Texture2D::Create(path.string());
 					auto relative = std::filesystem::relative(path, Project::GetProjectDirectory());
