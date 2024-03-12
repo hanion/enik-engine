@@ -121,7 +121,7 @@ void SceneTreePanel::OnMouseButtonReleased(MouseButtonReleasedEvent& event) {
 }
 
 void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
-	ImGui::PushID(entity);
+	ImGui::PushID(entity.GetID());
 
 	ImGui::TableNextRow();
 	ImGui::TableSetColumnIndex(0);
