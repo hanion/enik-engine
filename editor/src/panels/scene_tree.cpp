@@ -133,6 +133,11 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 		flags |= ImGuiTreeNodeFlags_Selected;
 	}
 
+	// no arrow for leaf nodes
+	if (not entity.Has<Component::Family>() or entity.GetChildren().size() < 1) {
+		flags |= ImGuiTreeNodeFlags_Leaf;
+	}
+
 	bool node_open = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, entity.GetTag().c_str());
 
 	if (ImGui::BeginDragDropSource()) {
