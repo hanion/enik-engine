@@ -42,6 +42,7 @@ struct Tag {
 
 struct Transform {
 	glm::vec3 Position = glm::vec3(0.0f);
+	glm::vec3 GlobalPosition = Position;
 	float Rotation = 0.0f;
 	glm::vec2 Scale = glm::vec2(1.0f);
 
@@ -52,7 +53,7 @@ struct Transform {
 
 	glm::mat4 GetTransform() const {
 		glm::mat4 transform = glm::mat4(1.0f);
-		transform = glm::translate(transform, Position);
+		transform = glm::translate(transform, GlobalPosition);
 		transform = glm::rotate(transform, Rotation, glm::vec3(0.0f, 0.0f, 1.0f));
 		transform = glm::scale(transform, glm::vec3(Scale.x, Scale.y, 1.0f));
 		return transform;
@@ -157,6 +158,8 @@ public:
 	std::vector<Entity> Children;
 
 	void Reparent(Entity this_entity, Entity new_parent);
+
+	glm::vec3 FindGlobalPosition(const Component::Transform& transform);
 
 	bool HasEntityAsChild(Entity entity);
 private:

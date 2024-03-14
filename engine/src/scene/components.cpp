@@ -193,6 +193,25 @@ void Component::Family::Reparent(Entity this_entity, Entity new_parent) {
 }
 
 
+glm::vec3 Component::Family::FindGlobalPosition(const Component::Transform& transform) {
+	if (Parent == nullptr or not *Parent or not Parent->Has<Component::Transform>()) {
+		return transform.Position;
+	}
+
+	auto& parent_transform = Parent->Get<Component::Transform>();
+
+	glm::vec3 parent_global_position;
+	if (Parent->HasParent()) {
+		parent_global_position = Parent->GetOrAddFamily().FindGlobalPosition(parent_transform);
+	}
+	else {
+		parent_global_position = parent_transform.Position;
+	}
+
+	return transform.Position + parent_global_position;
+}
+
+
 void Component::Family::AddChild(Entity entity) {
 	// check if it already is child
 	for (Entity& child : Children) {

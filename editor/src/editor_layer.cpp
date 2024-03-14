@@ -756,8 +756,8 @@ void EditorLayer::OnOverlayRender() {
 					Renderer2D::DrawCircle(
 						// transform.Position + collider.vector,
 						glm::vec3(
-							transform.Position.x + collider.Vector.x,
-							transform.Position.y + collider.Vector.y,
+							transform.GlobalPosition.x + collider.Vector.x,
+							transform.GlobalPosition.y + collider.Vector.y,
 							0.999f),
 						transform.Scale.x * collider.Float,
 						32,
@@ -766,22 +766,22 @@ void EditorLayer::OnOverlayRender() {
 				}
 				case Component::ColliderShape::PLANE: {
 					Component::Transform trans;
-					trans.Position = transform.Position;
+					trans.GlobalPosition = transform.GlobalPosition;
 					trans.Rotation = transform.Rotation;
 					trans.Scale = transform.Scale * collider.Float * 2.0f;
-					trans.Position.z = 0.999f;
+					trans.GlobalPosition.z = 0.999f;
 					Renderer2D::DrawRect(trans, glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
 					Renderer2D::DrawLine(
-						trans.Position,
-						trans.Position + glm::vec3(collider.Vector.x, collider.Vector.y, 0),
+						trans.GlobalPosition,
+						trans.GlobalPosition + glm::vec3(collider.Vector.x, collider.Vector.y, 0),
 						glm::vec4(0.8f, 0.3f, 0.3f, 1.0f));
 					break;
 				}
 				case Component::ColliderShape::BOX: {
 					Component::Transform trans;
-					trans.Position = glm::vec3(
-							transform.Position.x + collider.Vector.x,
-							transform.Position.y + collider.Vector.y,
+					trans.GlobalPosition = glm::vec3(
+							transform.GlobalPosition.x + collider.Vector.x,
+							transform.GlobalPosition.y + collider.Vector.y,
 							0.999f);
 					trans.Rotation = transform.Rotation;
 					trans.Scale = transform.Scale * collider.Float * 2.0f;

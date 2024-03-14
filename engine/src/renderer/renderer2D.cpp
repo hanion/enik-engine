@@ -255,10 +255,10 @@ void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::Sp
 	else {
 		glm::vec2 half_scale = trans.Scale / 2.0f;
 
-		positions[0] = {trans.Position.x - half_scale.x, trans.Position.y - half_scale.y, trans.Position.z};
-		positions[1] = {trans.Position.x + half_scale.x, trans.Position.y - half_scale.y, trans.Position.z};
-		positions[2] = {trans.Position.x + half_scale.x, trans.Position.y + half_scale.y, trans.Position.z};
-		positions[3] = {trans.Position.x - half_scale.x, trans.Position.y + half_scale.y, trans.Position.z};
+		positions[0] = {trans.GlobalPosition.x - half_scale.x, trans.GlobalPosition.y - half_scale.y, trans.GlobalPosition.z};
+		positions[1] = {trans.GlobalPosition.x + half_scale.x, trans.GlobalPosition.y - half_scale.y, trans.GlobalPosition.z};
+		positions[2] = {trans.GlobalPosition.x + half_scale.x, trans.GlobalPosition.y + half_scale.y, trans.GlobalPosition.z};
+		positions[3] = {trans.GlobalPosition.x - half_scale.x, trans.GlobalPosition.y + half_scale.y, trans.GlobalPosition.z};
 	}
 
 	for (size_t i = 0; i < 4; i++) {

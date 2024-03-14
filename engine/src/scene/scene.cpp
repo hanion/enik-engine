@@ -63,6 +63,8 @@ Entity Scene::InstantiatePrefab(const std::filesystem::path& path) {
 void Scene::OnUpdateEditor(Timestep ts, OrthographicCameraController& camera) {
 	EN_PROFILE_SECTION("Scene::OnUpdateEditor");
 
+	SetGlobalPositions();
+
 	Renderer2D::BeginScene(camera.GetCamera());
 
 	/* Get Sprites */ {
@@ -83,6 +85,8 @@ void Scene::OnUpdateEditor(Timestep ts, OrthographicCameraController& camera) {
 void Scene::OnUpdateRuntime(Timestep ts) {
 	EN_PROFILE_SECTION("Scene::OnUpdateRuntime");
 
+
+	SetGlobalPositions();
 
 	/* Update Scripts */
 	if (not m_IsPaused or m_StepFrames-- > 0) {
@@ -226,6 +230,25 @@ Entity Scene::FindEntityByName(const std::string& name) {
 		}
 	}
 	return Entity();
+}
+
+void Scene::SetGlobalPositions() {
+	EN_PROFILE_SCOPE;
+
+	// reset all global positions
+	m_Registry.view<Component::Transform>().each(
+		[=](auto entity, auto& transform) {
+			transform.GlobalPosition = transform.Position;
+		}
+	);
+
+	// find global positions
+	auto group = m_Registry.group<Component::Family>(entt::get<Component::Transform>);
+	for (auto entity : group) {
+		Component::Transform& transform = group.get<Component::Transform>(entity);
+		Component::Family&    family    = group.get<Component::Family>   (entity);
+		transform.GlobalPosition = family.FindGlobalPosition(transform);
+	}
 }
 
 }
