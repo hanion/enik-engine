@@ -7,6 +7,7 @@
 #include "renderer/opengl/opengl_shader.h"
 #include "scene/scene_serializer.h"
 #include <imgui/imgui_internal.h>
+#include "utils/editor_colors.h"
 
 
 #define EDITOR_BIND_FUNC(fn) std::bind(&EditorLayer::fn, this)
@@ -108,6 +109,13 @@ void EditorLayer::OnEvent(Event& event) {
 }
 
 void EditorLayer::OnImGuiRender() {
+	// tint editor while playing
+	int pushed_style_color_count = 0;
+	if (m_SceneState == SceneState::Play) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::dim);
+		pushed_style_color_count++;
+	}
+
 	/*DockSpace*/ {
 		static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
@@ -212,6 +220,8 @@ void EditorLayer::OnImGuiRender() {
 
 	DialogFile::Show();
 	DialogConfirm::Show();
+
+	ImGui::PopStyleColor(pushed_style_color_count);
 }
 
 void EditorLayer::OnImGuiDockSpaceRender() {

@@ -7,6 +7,7 @@
 #include "../dialogs/dialog_file.h"
 #include "scene/scene_serializer.h"
 #include "project/project.h"
+#include "../utils/editor_colors.h"
 
 namespace Enik {
 
@@ -138,7 +139,24 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 		flags |= ImGuiTreeNodeFlags_Leaf;
 	}
 
+	// color entities with components
+	int pushed_style_color_count = 0;
+	if (entity.Has<Component::Prefab>()) {
+		if (entity.Get<Component::Prefab>().RootPrefab) {
+			ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::blue);
+		} else {
+			ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::blue_a);
+		}
+		pushed_style_color_count++;
+	}
+	else if (entity.Has<Component::NativeScript>()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::orange);
+		pushed_style_color_count++;
+	}
+
 	bool node_open = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, entity.GetTag().c_str());
+
+	ImGui::PopStyleColor(pushed_style_color_count);
 
 	if (ImGui::BeginDragDropSource()) {
 		ImGui::SetDragDropPayload("DND_ENTITY", (void*)&entity.Get<Component::ID>().uuid, sizeof(UUID));
