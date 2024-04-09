@@ -154,6 +154,57 @@ void Scene::OnFixedUpdate() {
 	}
 }
 
+
+void Scene::OnKeyPressed(const KeyPressedEvent& event) {
+	if (not m_IsPaused or m_StepFrames > 0) {
+		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
+			if (ns.Instance and ns.Instance != nullptr) {
+				ns.Instance->OnKeyPressed(event);
+			}
+		});
+	}
+}
+
+void Scene::OnKeyReleased(const KeyReleasedEvent& event) {
+	if (not m_IsPaused or m_StepFrames > 0) {
+		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
+			if (ns.Instance and ns.Instance != nullptr) {
+				ns.Instance->OnKeyReleased(event);
+			}
+		});
+	}
+}
+
+void Scene::OnMouseButtonPressed(const MouseButtonPressedEvent& event) {
+	if (not m_IsPaused or m_StepFrames > 0) {
+		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
+			if (ns.Instance and ns.Instance != nullptr) {
+				ns.Instance->OnMouseButtonPressed(event);
+			}
+		});
+	}
+}
+
+void Scene::OnMouseButtonReleased(const MouseButtonReleasedEvent& event) {
+	if (not m_IsPaused or m_StepFrames > 0) {
+		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
+			if (ns.Instance and ns.Instance != nullptr) {
+				ns.Instance->OnMouseButtonReleased(event);
+			}
+		});
+	}
+}
+
+void Scene::OnMouseScrolled(const MouseScrolledEvent& event) {
+	if (not m_IsPaused or m_StepFrames > 0) {
+		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
+			if (ns.Instance and ns.Instance != nullptr) {
+				ns.Instance->OnMouseScrolled(event);
+			}
+		});
+	}
+}
+
 void Scene::OnViewportResize(uint32_t width, uint32_t height) {
 	m_ViewportWidth = width;
 	m_ViewportHeight = height;

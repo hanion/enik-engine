@@ -40,9 +40,11 @@ private:
 	void SaveProject();
 	void ReloadProject();
 
-	bool OnKeyPressed(KeyPressedEvent &event);
-	bool OnMouseButtonReleased(MouseButtonReleasedEvent &event);
+	bool OnKeyPressed (KeyPressedEvent &event);
+	bool OnKeyReleased(KeyReleasedEvent &event);
 	bool OnMouseButtonPressed (MouseButtonPressedEvent  &event);
+	bool OnMouseButtonReleased(MouseButtonReleasedEvent &event);
+	bool OnMouseScrolled(MouseScrolledEvent &event);
 
 
 	void ShowToolbarPlayPause();

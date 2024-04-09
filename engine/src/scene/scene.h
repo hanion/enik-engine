@@ -26,6 +26,12 @@ public:
 	void OnUpdateEditor (Timestep ts, OrthographicCameraController& camera);
 	void OnUpdateRuntime(Timestep ts);
 	void OnFixedUpdate  ();
+	void OnKeyPressed (const KeyPressedEvent&  event);
+	void OnKeyReleased(const KeyReleasedEvent& event);
+	void OnMouseButtonPressed (const MouseButtonPressedEvent&  event);
+	void OnMouseButtonReleased(const MouseButtonReleasedEvent& event);
+	void OnMouseScrolled(const MouseScrolledEvent& event);
+
 	void OnViewportResize(uint32_t width, uint32_t height);
 	void OnViewportResize(glm::vec2 position, uint32_t width, uint32_t height);
 

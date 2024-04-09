@@ -27,6 +27,12 @@ protected:
 
 	virtual void OnCollision(Entity& other) {}
 
+	virtual void OnKeyPressed (const KeyPressedEvent&  event) { }
+	virtual void OnKeyReleased(const KeyReleasedEvent& event) { }
+	virtual void OnMouseButtonPressed (const MouseButtonPressedEvent&  event) { }
+	virtual void OnMouseButtonReleased(const MouseButtonReleasedEvent& event) { }
+	virtual void OnMouseScrolled(const MouseScrolledEvent& event) { }
+
 protected:
 	std::string& GetTag() { return m_Entity.GetTag(); }
 

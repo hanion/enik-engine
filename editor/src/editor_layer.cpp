@@ -10,7 +10,9 @@
 #include "utils/editor_colors.h"
 
 
-#define EDITOR_BIND_FUNC(fn) std::bind(&EditorLayer::fn, this)
+
+#define BIND_FUNC(fn) std::bind(&EditorLayer::fn, this)
+#define BIND_FUNC_EVENT(fn) std::bind(&EditorLayer::fn, this, std::placeholders::_1)
 
 EditorLayer::EditorLayer()
 	: Layer("EditorLayer"), m_EditorCameraController(0,1280,0,600) {
@@ -23,8 +25,8 @@ void EditorLayer::OnAttach() {
 	spec.Attachments = {FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::Depth};
 	m_FrameBuffer = FrameBuffer::Create(spec);
 
-	m_TexturePlay = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/play_button.png"));
-	m_TextureStop = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/stop_button.png"));
+	m_TexturePlay  = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/play_button.png"));
+	m_TextureStop  = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/stop_button.png"));
 	m_TexturePause = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/pause_button.png"));
 	m_TextureStep  = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/step_button.png"));
 
@@ -103,9 +105,11 @@ void EditorLayer::OnEvent(Event& event) {
 	}
 
 	EventDispatcher dispatcher = EventDispatcher(event);
-	dispatcher.Dispatch<KeyPressedEvent>(std::bind(&EditorLayer::OnKeyPressed, this, std::placeholders::_1));
-	dispatcher.Dispatch<MouseButtonReleasedEvent>(std::bind(&EditorLayer::OnMouseButtonReleased, this, std::placeholders::_1));
-	dispatcher.Dispatch<MouseButtonPressedEvent> (std::bind(&EditorLayer::OnMouseButtonPressed, this, std::placeholders::_1));
+	dispatcher.Dispatch<KeyPressedEvent>         (BIND_FUNC_EVENT(OnKeyPressed));
+	dispatcher.Dispatch<KeyReleasedEvent>        (BIND_FUNC_EVENT(OnKeyReleased));
+	dispatcher.Dispatch<MouseButtonReleasedEvent>(BIND_FUNC_EVENT(OnMouseButtonReleased));
+	dispatcher.Dispatch<MouseButtonPressedEvent> (BIND_FUNC_EVENT(OnMouseButtonPressed));
+	dispatcher.Dispatch<MouseScrolledEvent>      (BIND_FUNC_EVENT(OnMouseScrolled));
 }
 
 void EditorLayer::OnImGuiRender() {
@@ -163,7 +167,7 @@ void EditorLayer::OnImGuiRender() {
 
 				if (m_ActiveScene != nullptr and ImGui::BeginMenu("Scene")) {
 					if (ImGui::MenuItem("New Scene")) {
-						DialogConfirm::OpenDialog("Create New Scene ?", EDITOR_BIND_FUNC(CreateNewScene));
+						DialogConfirm::OpenDialog("Create New Scene ?", BIND_FUNC(CreateNewScene));
 					}
 
 					if (ImGui::MenuItem("Open Scene")) {
@@ -474,6 +478,10 @@ void EditorLayer::ReloadProject() {
 }
 
 bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
+	if (m_ViewportHovered and m_SceneState == SceneState::Play) {
+		m_ActiveScene->OnKeyPressed(event);
+	}
+
 	if (event.IsRepeat()) {
 		return false;
 	}
@@ -484,7 +492,7 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 	switch (event.GetKeyCode()) {
 		case Key::N:
 			if (control) {
-				DialogConfirm::OpenDialog("Create New Scene ?", EDITOR_BIND_FUNC(CreateNewScene));
+				DialogConfirm::OpenDialog("Create New Scene ?", BIND_FUNC(CreateNewScene));
 			}
 			break;
 
@@ -582,12 +590,33 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 	return false;
 }
 
+bool EditorLayer::OnKeyReleased(KeyReleasedEvent& event) {
+    if (m_ViewportHovered and m_SceneState == SceneState::Play) {
+		m_ActiveScene->OnKeyReleased(event);
+	}
+	return false;
+}
+
 bool EditorLayer::OnMouseButtonReleased(MouseButtonReleasedEvent& event) {
 	m_SceneTreePanel.OnMouseButtonReleased(event);
+
+	if (m_ViewportHovered and m_SceneState == SceneState::Play) {
+		m_ActiveScene->OnMouseButtonReleased(event);
+	}
+	return false;
+}
+
+bool EditorLayer::OnMouseScrolled(MouseScrolledEvent& event) {
+    if (m_ViewportHovered and m_SceneState == SceneState::Play) {
+		m_ActiveScene->OnMouseScrolled(event);
+	}
 	return false;
 }
 
 bool EditorLayer::OnMouseButtonPressed(MouseButtonPressedEvent& event) {
+	if (m_ViewportHovered and m_SceneState == SceneState::Play) {
+		m_ActiveScene->OnMouseButtonPressed(event);
+	}
 	return false;
 }
 
