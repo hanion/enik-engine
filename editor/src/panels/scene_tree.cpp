@@ -179,7 +179,7 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 			path = Project::GetAbsolutePath(path);
 			if (std::filesystem::exists(path) and path.extension() == ".prefab") {
 				if (payload->IsDelivery()) {
-					Entity prefab = SceneSerializer(m_Context).DeserializePrefab(path.string());
+					Entity prefab = SceneSerializer(m_Context).InstantiatePrefab(path.string());
 					prefab.Reparent(entity);
 					SetSelectedEntity(prefab);
 				}
@@ -205,7 +205,7 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 			DialogFile::OpenDialog(DialogType::SAVE_FILE,
 				[&]() {
 					SceneSerializer serializer = SceneSerializer(m_Context);
-					serializer.SerializePrefab(DialogFile::GetSelectedPath().string(), s_entity_to_prefab);
+					serializer.CreatePrefab(DialogFile::GetSelectedPath().string(), s_entity_to_prefab);
 				}
 				, ".prefab"
 			);

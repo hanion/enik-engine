@@ -172,6 +172,15 @@ private:
 
 };
 
+class Prefab {
+public:
+	Prefab() = default;
+	Prefab(const Prefab&) = default;
+
+	bool RootPrefab = false;
+	std::filesystem::path PrefabPath = std::filesystem::path();
+};
+
 }
 
 }

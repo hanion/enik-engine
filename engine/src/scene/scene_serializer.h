@@ -23,8 +23,8 @@ public:
 
 	void ReloadNativeScriptFields(const std::string& filepath);
 
-	void SerializePrefab(const std::string& filepath, Entity entity_to_prefab);
-	Entity DeserializePrefab(const std::string& filepath);
+	void CreatePrefab(const std::string& filepath, Entity entity_to_prefab);
+	Entity InstantiatePrefab(const std::string& filepath);
 
 private:
 	void SerializeEntity(YAML::Emitter& out, Entity& entity);
@@ -33,6 +33,8 @@ private:
 	void DeserializeNativeScript(YAML::Node& node, Entity& entity);
 	void SerializeNativeScriptFields(YAML::Emitter& out, Component::NativeScript& script);
 	void DeserializeNativeScriptFields(YAML::Node& node, Entity& entity);
+
+	void UpdateUUIDs(YAML::Node& entities, std::unordered_map<uint64_t, uint64_t>& uuid_map);
 
 private:
 	Scene* m_Scene;

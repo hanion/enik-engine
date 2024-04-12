@@ -1,6 +1,7 @@
 #include "scene_serializer.h"
 
 #include <pch.h>
+#include <stack>
 
 #include "project/project.h"
 #include "script_system/script_registry.h"
@@ -187,26 +188,49 @@ const UUID SceneSerializer::DuplicateEntity(const std::string& filepath, UUID uu
 	}
 
 	auto entities = data["Entities"];
-	if (entities) {
-		for (auto entity : entities) {
-			uint64_t data_uuid = entity["Entity"].as<uint64_t>();
-			if (data_uuid == uuid) {
+	if (not entities) {
+		return -1;
+	}
 
-				std::string name;
-				auto tag = entity["Component::Tag"];
-				if (tag) {
-					name = tag["Text"].as<std::string>();
-				}
-				name += " duplicate";
+	// strip unrelated entities from yaml node
+	YAML::Node related_entities;
+	Component::Family root_family = m_Scene->FindEntityByUUID(uuid).GetOrAddFamily();
+	for (const auto& entity : entities) {
+		uint64_t data_uuid = entity["Entity"].as<uint64_t>();
+		Entity test_entity = m_Scene->FindEntityByUUID(data_uuid);
+		EN_CORE_ASSERT(test_entity);
 
-				auto new_id = UUID();
-				DeserializeEntity(entity, new_id, name);
-				return new_id;
-			}
-
+		if (data_uuid == uuid) {
+			related_entities.push_back(entity);
+		}
+		else if (root_family.HasEntityAsChild(test_entity)) {
+			related_entities.push_back(entity);
 		}
 	}
-	return -1;
+	entities = related_entities;
+
+	std::unordered_map<uint64_t, uint64_t> uuid_map;
+	UpdateUUIDs(entities, uuid_map);
+
+	// iterate reversed to not change entity indexes
+	for (size_t i = entities.size(); i > 0; --i) {
+		auto entity = entities[i - 1];
+		uint64_t uuid = entity["Entity"].as<uint64_t>();
+
+		std::string name;
+		auto tag = entity["Component::Tag"];
+		if (tag) {
+			name = tag["Text"].as<std::string>();
+		}
+		DeserializeEntity(entity, uuid, name);
+	}
+
+	UUID root_uuid;
+	auto iter = uuid_map.find(uuid);
+	if (iter != uuid_map.end()) {
+		root_uuid = UUID(iter->second);
+	}
+	return root_uuid;
 }
 
 
@@ -240,7 +264,7 @@ void SceneSerializer::ReloadNativeScriptFields(const std::string& filepath) {
 	}
 }
 
-void SceneSerializer::SerializePrefab(const std::string& filepath, Entity entity_to_prefab) {
+void SceneSerializer::CreatePrefab(const std::string& filepath, Entity entity_to_prefab) {
 	YAML::Emitter out;
 	out << YAML::BeginMap;
 	out << YAML::Key << "Prefab" << YAML::Value << entity_to_prefab.GetTag();
@@ -269,31 +293,39 @@ void SceneSerializer::SerializePrefab(const std::string& filepath, Entity entity
 
 	std::ofstream fout(filepath);
 	fout << out.c_str();
-}
 
-
-Entity SceneSerializer::DeserializePrefab(const std::string& filepath) {
+	// remove Component::Prefab
 	YAML::Node data;
 	try {
 		data = YAML::LoadFile(filepath);
 	}
 	catch (const YAML::ParserException& e) {
 		EN_CORE_ERROR("Failed to load prefab file '{0}'\n	{1}", filepath, e.what());
-		return {};
+		return;
 	}
-
-	if (not data["Prefab"] or not data["Root"]) {
-		return {};
-	}
-
 	auto entities = data["Entities"];
 	if (not entities) {
-		return {};
+		return;
+	}
+	for (auto entity : entities) {
+		if (entity["Component::Prefab"]) {
+			entity.remove("Component::Prefab");
+		}
 	}
 
-	std::unordered_map<uint64_t, uint64_t> uuid_map;
+	// save it back
+	try {
+		std::ofstream fout(filepath);
+		fout << data;
+		fout.close();
+	}
+	catch (const std::exception& e) {
+		EN_CORE_ERROR("Failed to save prefab file '{0}'\n    {1}", filepath, e.what());
+	}
+}
 
-	// update uuid's
+
+void SceneSerializer::UpdateUUIDs(YAML::Node& entities, std::unordered_map<uint64_t, uint64_t>& uuid_map) {
 	for (auto entity : entities) {
 		uint64_t old_uuid = entity["Entity"].as<uint64_t>();
 		UUID new_uuid;
@@ -357,6 +389,29 @@ Entity SceneSerializer::DeserializePrefab(const std::string& filepath) {
 		}
 
 	}
+}
+
+Entity SceneSerializer::InstantiatePrefab(const std::string& filepath) {
+	YAML::Node data;
+	try {
+		data = YAML::LoadFile(filepath);
+	}
+	catch (const YAML::ParserException& e) {
+		EN_CORE_ERROR("Failed to load prefab file '{0}'\n	{1}", filepath, e.what());
+		return {};
+	}
+
+	if (not data["Prefab"] or not data["Root"]) {
+		return {};
+	}
+
+	auto entities = data["Entities"];
+	if (not entities) {
+		return {};
+	}
+
+	std::unordered_map<uint64_t, uint64_t> uuid_map;
+	UpdateUUIDs(entities,uuid_map);
 
 	// iterate reversed to not change entity indexes
 	for (std::size_t i = entities.size(); i > 0; --i) {
@@ -368,15 +423,41 @@ Entity SceneSerializer::DeserializePrefab(const std::string& filepath) {
 			name = tag["Text"].as<std::string>();
 		}
 
+		// remove prefab tag so it goes through DeserializeEntity
+		if (entity["Component::Prefab"]) {
+			entity.remove("Component::Prefab");
+		}
+
 		DeserializeEntity(entity, uuid, name);
 	}
 
-	// return root entity
+	Entity root_entity;
 	auto iter = uuid_map.find(data["Root"].as<uint64_t>());
 	if (iter != uuid_map.end()) {
-		return m_Scene->FindEntityByUUID(UUID(iter->second));
+		root_entity = m_Scene->FindEntityByUUID(UUID(iter->second));
 	}
-	return {};
+
+	Component::Prefab& component = root_entity.Add<Component::Prefab>();
+	component.RootPrefab = true;
+	component.PrefabPath = Project::GetRelativePath(filepath);
+
+	// flag children as prefab iterative
+	std::stack<Entity> all_entities;
+	all_entities.push(root_entity);
+
+	while (not all_entities.empty()) {
+		Entity current_entity = all_entities.top();
+		all_entities.pop();
+
+		if (current_entity.HasFamily()) {
+			for (Entity child : current_entity.GetChildren()) {
+				child.Add<Component::Prefab>().RootPrefab = false;
+				all_entities.push(child);
+			}
+		}
+	}
+
+	return root_entity;
 }
 
 void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
@@ -507,6 +588,19 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		}
 	}
 
+	if (entity.Has<Component::Prefab>()) {
+		out << YAML::Key << "Component::Prefab";
+		out << YAML::BeginMap;
+
+		auto& component = entity.Get<Component::Prefab>();
+		out << YAML::Key << "RootPrefab" << YAML::Value << component.RootPrefab;
+		if (component.RootPrefab) {
+			out << YAML::Key << "PrefabPath" << YAML::Value << component.PrefabPath.string();
+		}
+
+		out << YAML::EndMap;
+	}
+
 	out << YAML::EndMap;
 }
 
@@ -520,6 +614,26 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 		deserialized_entity = m_Scene->CreateEntityWithUUID(uuid, name);
 	}
 
+
+	auto prefab = entity["Component::Prefab"];
+	if (prefab) {
+		if (prefab["RootPrefab"].as<bool>()) {
+			if (prefab["PrefabPath"]) {
+				std::filesystem::path prefab_path = prefab["PrefabPath"].as<std::string>();
+				Entity instantiated_root = m_Scene->InstantiatePrefab(prefab_path);
+				auto& trans = instantiated_root.Get<Component::Transform>();
+				// root transform should be controllable, with this
+				auto transform = entity["Component::Transform"];
+				if (transform) {
+					trans.Position = transform["Position"].as<glm::vec3>();
+					trans.Rotation = transform["Rotation"].as<float>();
+					trans.Scale = transform["Scale"].as<glm::vec2>();
+				}
+			}
+		}
+		m_Scene->DestroyEntity(deserialized_entity);
+		return;
+	}
 
 	auto transform = entity["Component::Transform"];
 	if (transform) {
@@ -751,7 +865,7 @@ void SceneSerializer::DeserializeNativeScriptFields(YAML::Node& node, Entity& en
 
 		void* field_value = GetFieldValueFromNode(field_node["Value"], field_type);
 
-		script.NativeScriptFields[field_name] = { field_name, field_type, field_value };
+		script.NativeScriptFields[field_name].Value = field_value;
 	}
 
 }
