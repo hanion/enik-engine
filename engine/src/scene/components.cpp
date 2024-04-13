@@ -91,21 +91,21 @@ void Component::NativeScript::ApplyNativeScriptFieldsToInstance() {
 	}
 }
 
-void* create_new_value_for_field(FieldType field_type) {
+void* create_new_value_for_field(FieldType field_type, void* field_default) {
 	switch (field_type) {
 		case FieldType::NONE: {
 			EN_CORE_ERROR("create_new_value_for_field field_type is NONE !");
 			return nullptr;
 		}
-		case FieldType::BOOL:   return static_cast<void*>(new bool());
-		case FieldType::INT:    return static_cast<void*>(new int());
-		case FieldType::FLOAT:  return static_cast<void*>(new float());
-		case FieldType::DOUBLE: return static_cast<void*>(new double());
-		case FieldType::VEC2:   return static_cast<void*>(new glm::vec2());
-		case FieldType::VEC3:   return static_cast<void*>(new glm::vec3());
-		case FieldType::VEC4:   return static_cast<void*>(new glm::vec4());
-		case FieldType::STRING: return static_cast<void*>(new std::string());
-		case FieldType::ENTITY: return static_cast<void*>(new uint64_t());
+		case FieldType::BOOL:   return static_cast<void*>(new bool       (*(bool*       )field_default));
+		case FieldType::INT:    return static_cast<void*>(new int        (*(int*        )field_default));
+		case FieldType::FLOAT:  return static_cast<void*>(new float      (*(float*      )field_default));
+		case FieldType::DOUBLE: return static_cast<void*>(new double     (*(double*     )field_default));
+		case FieldType::VEC2:   return static_cast<void*>(new glm::vec2  (*(glm::vec2*  )field_default));
+		case FieldType::VEC3:   return static_cast<void*>(new glm::vec3  (*(glm::vec3*  )field_default));
+		case FieldType::VEC4:   return static_cast<void*>(new glm::vec4  (*(glm::vec4*  )field_default));
+		case FieldType::STRING: return static_cast<void*>(new std::string(*(std::string*)field_default));
+		case FieldType::ENTITY: return static_cast<void*>(new uint64_t   (*(uint64_t*   )field_default));
 	}
 	return nullptr;
 }
@@ -154,17 +154,13 @@ void Component::NativeScript::Bind(const std::string& script_name, const std::fu
 	// retrieve fields of the script from a temporary instance
 	ScriptableEntity* temp_instance = InstantiateScript();
 	for (auto field : temp_instance->OnEditorGetFields()) {
-		NativeScriptFields[field.Name] = { field.Name, field.Type, nullptr };
+		NativeScriptFields[field.Name] = NativeScriptField(
+			field.Name,
+			field.Type,
+			create_new_value_for_field(field.Type, field.Value)
+		);
 	}
 	delete temp_instance;
-
-	// allocate memory for the fields
-	for (auto& val : NativeScriptFields) {
-		auto& field = val.second;
-		if (field.Value == nullptr) {
-			field.Value = create_new_value_for_field(field.Type);
-		}
-	}
 }
 
 
