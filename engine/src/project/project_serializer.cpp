@@ -49,7 +49,7 @@ bool ProjectSerializer::Deserialize(std::filesystem::path path) {
 		return false;
 	}
 
-	if (not data["Project"] or not data["StartScene"]) {
+	if (not data.IsMap() or not data["Project"] or not data["StartScene"]) {
 		return false;
 	}
 

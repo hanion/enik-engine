@@ -146,7 +146,7 @@ bool SceneSerializer::Deserialize(const std::string& filepath) {
 		return false;
 	}
 
-	if (not data["Scene"]) {
+	if (not data.IsMap() or not data["Scene"]) {
 		return false;
 	}
 
@@ -183,7 +183,7 @@ bool SceneSerializer::DeserializeRuntime(const std::string& filepath) {
 
 const UUID SceneSerializer::DuplicateEntity(const std::string& filepath, UUID uuid) {
 	YAML::Node data = YAML::LoadFile(filepath);
-	if (not data["Scene"]) {
+	if (not data.IsMap() or not data["Scene"]) {
 		return -1;
 	}
 
@@ -236,7 +236,7 @@ const UUID SceneSerializer::DuplicateEntity(const std::string& filepath, UUID uu
 
 void SceneSerializer::ReloadNativeScriptFields(const std::string& filepath) {
 	YAML::Node data = YAML::LoadFile(filepath);
-	if (not data["Scene"]) {
+	if (not data.IsMap() or not data["Scene"]) {
 		return;
 	}
 
@@ -401,7 +401,7 @@ Entity SceneSerializer::InstantiatePrefab(const std::string& filepath) {
 		return {};
 	}
 
-	if (not data["Prefab"] or not data["Root"]) {
+	if (not data.IsMap() or not data["Prefab"] or not data["Root"]) {
 		return {};
 	}
 
