@@ -169,12 +169,11 @@ void EditorLayer::OnImGuiRender() {
 					if (ImGui::MenuItem("New Scene")) {
 						DialogConfirm::OpenDialog("Create New Scene ?", BIND_FUNC(CreateNewScene));
 					}
-
 					if (ImGui::MenuItem("Open Scene")) {
 						DialogFile::OpenDialog(DialogType::OPEN_FILE,
 							[&](){
 								LoadScene(DialogFile::GetSelectedPath());
-							});
+							}, ".escn");
 					}
 
 					if (ImGui::MenuItem("Save Scene")) {
@@ -183,7 +182,7 @@ void EditorLayer::OnImGuiRender() {
 								[&](){
 									m_ActiveScenePath = DialogFile::GetSelectedPath();
 									SaveScene();
-								});
+								}, ".escn");
 						}
 						else {
 							SaveScene();
@@ -194,7 +193,7 @@ void EditorLayer::OnImGuiRender() {
 							[&](){
 								m_ActiveScenePath = DialogFile::GetSelectedPath();
 								SaveScene();
-							});
+							}, ".escn");
 					}
 					ImGui::EndMenu();
 				}
@@ -420,7 +419,7 @@ void EditorLayer::SaveScene() {
 				[&](){
 					m_ActiveScenePath = DialogFile::GetSelectedPath();
 					SaveScene();
-				});
+				}, ".escn");
 			return;
 		}
 
@@ -501,7 +500,7 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 				DialogFile::OpenDialog(DialogType::OPEN_FILE,
 					[&](){
 						LoadScene(DialogFile::GetSelectedPath());
-					});
+					}, ".escn");
 			}
 			break;
 		case Key::R:
@@ -516,7 +515,7 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 					[&](){
 						m_ActiveScenePath = DialogFile::GetSelectedPath();
 						SaveScene();
-					});
+					}, ".escn");
 			}
 			else if (control) {
 				SaveScene();

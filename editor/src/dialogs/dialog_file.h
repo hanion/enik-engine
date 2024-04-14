@@ -34,7 +34,7 @@ enum DialogFileResult {
 
 class DialogFile {
 public:
-	static void OpenDialog(DialogType type, const std::function<void()>& call_when_confirmed, const std::string& ext = ".escn");
+	static void OpenDialog(DialogType type, const std::function<void()>& call_when_confirmed, const std::string& ext = "");
 
 	static DialogFileResult Show();
 
@@ -44,7 +44,7 @@ public:
 private:
 	static DialogFileResult ShowPopup();
 	static void ShowDirectoriesTable(char* file_path_buffer);
-	static bool isValidSelection();
+	static bool IsValidSelection();
 };
 
 }

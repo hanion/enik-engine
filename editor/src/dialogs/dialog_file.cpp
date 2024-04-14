@@ -73,16 +73,14 @@ DialogFileResult DialogFile::ShowPopup() {
 		s_Data.entries.clear();
 
 		for (const auto& entry : fs::directory_iterator(s_Data.current_directory)) {
-			if (entry.is_regular_file() && entry.path().extension() != s_Data.ext) {
-				continue;
-			}
 			s_Data.entries.push_back(entry);
 		}
 
 		Utils::SortDirectoryEntries(s_Data.entries);
 
-		std::vector<std::string> filters = {s_Data.ext};
-		Utils::FilterFiles(s_Data.entries, filters, s_Data.type == DialogType::OPEN_FILE);
+		if (not s_Data.ext.empty()) {
+			Utils::FilterFiles(s_Data.entries, { s_Data.ext }, s_Data.type == DialogType::OPEN_FILE);
+		}
 
 		s_Data.has_searched = true;
 		strcpy(file_path_buffer, s_Data.current_directory.string().c_str());
@@ -127,7 +125,7 @@ DialogFileResult DialogFile::ShowPopup() {
 
 	// TODO: currently we are not checking the save file extension
 
-	bool is_valid = isValidSelection();
+	bool is_valid = IsValidSelection();
 	ImGui::BeginDisabled(s_Data.selected_path.empty() || (not is_valid));
 
 	ImGui::SameLine();
@@ -143,7 +141,7 @@ DialogFileResult DialogFile::ShowPopup() {
 		s_Data.is_open = false;
 
 		if (s_Data.selected_path.has_extension()) {
-			if (s_Data.selected_path.extension() != s_Data.ext) {
+			if (s_Data.selected_path.extension() != s_Data.ext and not s_Data.ext.empty()) {
 				s_Data.selected_path = (s_Data.selected_path.parent_path() / s_Data.selected_path.stem()).string() + s_Data.ext;
 			}
 		}
@@ -151,7 +149,7 @@ DialogFileResult DialogFile::ShowPopup() {
 			s_Data.selected_path += s_Data.ext;
 		}
 
-		EN_CORE_TRACE("Dialog File: selected path '{0}'", s_Data.selected_path);
+		EN_CORE_TRACE("Dialog File: selected path {0}", s_Data.selected_path);
 
 		ImGui::EndDisabled();
 
@@ -203,7 +201,7 @@ void DialogFile::ShowDirectoriesTable(char* file_path_buffer) {
 	ImGui::EndChild();
 }
 
-bool DialogFile::isValidSelection() {
+bool DialogFile::IsValidSelection() {
 	fs::path path = s_Data.selected_path;
 	if (fs::exists(path.parent_path()) && fs::is_directory(path.parent_path())) {
 		// selection can not be a directory, it needs to be a file path
@@ -212,6 +210,10 @@ bool DialogFile::isValidSelection() {
 		}
 
 		if ((fs::status(path.parent_path()).permissions() & fs::perms::owner_write) != fs::perms::none) {
+			if (s_Data.ext.empty()) {
+				// extension not required
+				return true;
+			}
 			if (path.has_extension()) {
 				// has the correct extension
 				if (path.extension() == s_Data.ext) {
