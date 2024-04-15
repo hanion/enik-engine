@@ -237,17 +237,22 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 	m_SceneTreePanel.OnImGuiRender();
 	m_InspectorPanel.OnImGuiRender();
 	m_FileSystemPanel.OnImGuiRender();
-
-	if (m_SceneState == SceneState::Edit or m_ActiveScene->IsPaused()) {
-		m_ToolbarPanel.OnImGuiRender(m_ViewportBounds[0], m_ViewportBounds[1]);
 	}
+
+	bool is_viewport_open = false;
 
 	/*Viewport*/ {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoScrollbar;
 		ImGui::SetNextWindowSize(ImVec2(300.0f, 300.0f), ImGuiCond_FirstUseEver);
-		ImGui::Begin("Viewport", nullptr, window_flags);
+		is_viewport_open = ImGui::Begin("Viewport", nullptr, window_flags);
 		ImGui::PopStyleVar(1);
+		if (is_viewport_open) {
+			ShowToolbarPlayPause();
+			if (m_SceneState == SceneState::Edit or m_ActiveScene->IsPaused()) {
+				m_ToolbarPanel.OnImGuiRender(m_ViewportBounds[0], m_ViewportBounds[1]);
+			}
+		}
 
 		auto viewport_min_region = ImGui::GetWindowContentRegionMin();
 		auto viewport_max_region = ImGui::GetWindowContentRegionMax();
@@ -275,9 +280,11 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 			m_EditorCameraController.OnResize((uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 		}
 
-		uint32_t texture_id = m_FrameBuffer->GetColorAttachmentRendererID();
-		ImGui::Image(reinterpret_cast<void*>(static_cast<uintptr_t>(texture_id)),
-					 ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
+		if (is_viewport_open) {
+			uint32_t texture_id = m_FrameBuffer->GetColorAttachmentRendererID();
+			ImGui::Image(reinterpret_cast<void*>(static_cast<uintptr_t>(texture_id)),
+						ImVec2(m_ViewportSize.x, m_ViewportSize.y), ImVec2(0, 1), ImVec2(1, 0));
+		}
 
 		/* Drag drop target */ {
 			if (ImGui::BeginDragDropTarget()) {
@@ -310,7 +317,7 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 	}
 
 	/* ShowPerformance */
-	if (m_ShowPerformance) {
+	if (m_ShowPerformance and is_viewport_open) {
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav;
 		window_flags |= ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
 		window_flags |= ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking;
@@ -330,7 +337,7 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 	}
 
 	/* ShowRenderer2DStats */
-	if (m_ShowRendererStats) {
+	if (m_ShowRendererStats and is_viewport_open) {
 		ImGuiWindowFlags window_flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav;
 		window_flags |= ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
 		window_flags |= ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking;
@@ -352,8 +359,6 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 		}
 		ImGui::End();
 	}
-
-	ShowToolbarPlayPause();
 
 	InitDockSpace();
 }
