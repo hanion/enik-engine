@@ -2,6 +2,7 @@
 #include <base.h>
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
+#include "../utils/editor_colors.h"
 
 namespace Enik {
 namespace ImGuiUtils {
@@ -38,6 +39,39 @@ inline void PrefixLabel(std::string_view title) {
 	ImGui::SetCursorScreenPos(ImVec2(text_rect.Max.x, text_rect.Max.y - (text_size.y + window->DC.CurrLineTextBaseOffset)));
 	ImGui::SameLine();
 }
+
+// call `ImGui::PopStyleColor(pushed_color_count);` after calling this !
+inline void ColorFileText(const std::filesystem::path& filepath, int& pushed_color_count) {
+	if (not std::filesystem::exists(filepath)) {
+		return;
+	}
+	if (not std::filesystem::is_regular_file(filepath)) {
+		return;
+	}
+	if (not filepath.has_extension()) {
+		return;
+	}
+
+	std::string extension = filepath.extension();
+
+	if (extension == ".prefab") {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::blue);
+		pushed_color_count++;
+	}
+	else if (extension == ".escn") {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::green);
+		pushed_color_count++;
+	}
+	else if (extension == ".png") {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::cyan);
+		pushed_color_count++;
+	}
+	else if (extension == ".enik") {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::yellow);
+		pushed_color_count++;
+	}
+}
+
 
 }
 }

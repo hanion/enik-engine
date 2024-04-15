@@ -10,6 +10,10 @@ constexpr ImVec4 dim    = ImVec4(0.8f, 0.8f, 0.8f, 0.8f);
 constexpr ImVec4 orange = ImVec4(0.9f, 0.5f, 0.1f, 1.0f);
 constexpr ImVec4 blue   = ImVec4(0.3f, 0.6f, 0.9f, 1.0f);
 constexpr ImVec4 blue_a = ImVec4(0.3f, 0.6f, 0.9f, 0.6f);
+constexpr ImVec4 green  = ImVec4(0.3f, 0.9f, 0.3f, 1.0f);
+constexpr ImVec4 yellow = ImVec4(0.9f, 0.9f, 0.0f, 1.0f);
+constexpr ImVec4 cyan   = ImVec4(0.0f, 0.9f, 0.9f, 1.0f);
+
 
 }
 }

@@ -4,6 +4,7 @@
 #include <base.h>
 #include <imgui/imgui.h>
 #include "../utils/utils.h"
+#include "../utils/imgui_utils.h"
 
 namespace Enik {
 
@@ -184,10 +185,13 @@ void DialogFile::ShowDirectoriesTable(char* file_path_buffer) {
 				fileName = fileName + "/";
 			}
 
+			int pushed_color_count = 0;
+			ImGuiUtils::ColorFileText(path, pushed_color_count);
+
 			if (ImGui::Selectable(fileName.c_str())) {
 				if (fs::is_directory(path)) {
 					s_Data.current_directory = path;
-					strcpy(file_path_buffer, "");  // Clear the file path buffer when changing directory
+					strcpy(file_path_buffer, "");
 					s_Data.has_searched = false;
 				}
 				else {
@@ -195,6 +199,8 @@ void DialogFile::ShowDirectoriesTable(char* file_path_buffer) {
 					strcpy(file_path_buffer, s_Data.selected_path.string().c_str());
 				}
 			}
+
+			ImGui::PopStyleColor(pushed_color_count);
 		}
 		ImGui::EndTable();
 	}

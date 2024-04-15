@@ -5,6 +5,7 @@
 
 #include "project/project.h"
 #include "../utils/utils.h"
+#include "../utils/imgui_utils.h"
 
 
 namespace Enik {
@@ -83,20 +84,24 @@ void FileSystemPanel::ShowDirectoriesTable() {
 	if (ImGui::BeginTable("Directory", 1)) {
 		for (const auto& entry : m_Entries) {
 			const auto& path = entry.path();
-			std::string fileName = path.filename().string();
+			std::string filename = path.filename().string();
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 
 			if (entry.is_directory()) {
-				fileName = fileName + "/";
+				filename = filename + "/";
 			}
 
-			if (ImGui::Selectable(fileName.c_str())) {
-				if (std::filesystem::is_directory(path)) {
+			int pushed_color_count = 0;
+			ImGuiUtils::ColorFileText(path, pushed_color_count);
+
+			if (ImGui::Selectable(filename.c_str())) {
+				if (entry.is_directory()) {
 					ChangeDirectory(path);
 				}
 				else {
+			ImGui::PopStyleColor(pushed_color_count);
 				}
 			}
 
@@ -107,7 +112,7 @@ void FileSystemPanel::ShowDirectoriesTable() {
 
 					// Display preview (could be anything, e.g. when dragging an image we could decide to display
 					// the filename and a small preview of the image, etc.)
-					ImGui::Text(fileName.c_str());
+					ImGui::Text(filename.c_str());
 					ImGui::EndDragDropSource();
 				}
 			}
