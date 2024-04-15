@@ -28,7 +28,9 @@ UUID SceneTreePanel::GetSelectedEntityUUID() {
 }
 
 void SceneTreePanel::SetSelectedEntity(const Entity& entity) {
-	m_SelectionContext = entity;
+	if(entity) {
+		m_SelectionContext = entity;
+	}
 }
 
 void SceneTreePanel::SetSelectedEntityWithUUID(const UUID& uuid) {
@@ -211,8 +213,9 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 			);
 		}
 		if (ImGui::MenuItem("Delete Entity")) {
-			static Entity s_entity_to_delete = entity;
-			DialogConfirm::OpenDialog("Delete Entity ?",
+			static Entity s_entity_to_delete;
+			s_entity_to_delete = entity;
+			DialogConfirm::OpenDialog("Delete Entity ?", entity.GetTag(),
 				[&](){
 					m_Context->DestroyEntity(s_entity_to_delete);
 				}
