@@ -7,6 +7,7 @@ enum class FieldType {
 	NONE,
 	BOOL, INT, FLOAT, DOUBLE,
 	VEC2, VEC3, VEC4,
+	PREFAB,
 	STRING,
 	ENTITY
 };
@@ -33,6 +34,7 @@ struct NativeScriptField {
 			case FieldType::VEC2:   return "vec2";
 			case FieldType::VEC3:   return "vec3";
 			case FieldType::VEC4:   return "vec4";
+			case FieldType::PREFAB: return "prefab";
 			case FieldType::STRING: return "string";
 			case FieldType::ENTITY: return "entity";
 		}
@@ -48,6 +50,7 @@ struct NativeScriptField {
 		else if (name == "vec2"  ) { return FieldType::VEC2;   }
 		else if (name == "vec3"  ) { return FieldType::VEC3;   }
 		else if (name == "vec4"  ) { return FieldType::VEC4;   }
+		else if (name == "prefab") { return FieldType::PREFAB; }
 		else if (name == "string") { return FieldType::STRING; }
 		else if (name == "entity") { return FieldType::ENTITY; }
 

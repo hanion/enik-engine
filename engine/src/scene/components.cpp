@@ -60,6 +60,7 @@ void copy_saved_value_to_instance(NativeScriptField& instance_field, NativeScrip
 			delete saved_value;
 			return;
 		}
+		case FieldType::PREFAB:
 		case FieldType::STRING: {
 			std::string* instance_value = static_cast<std::string*>(instance_field.Value);
 			std::string*    saved_value = static_cast<std::string*>(saved_field.Value);
@@ -104,6 +105,7 @@ void* create_new_value_for_field(FieldType field_type, void* field_default) {
 		case FieldType::VEC2:   return static_cast<void*>(new glm::vec2  (*(glm::vec2*  )field_default));
 		case FieldType::VEC3:   return static_cast<void*>(new glm::vec3  (*(glm::vec3*  )field_default));
 		case FieldType::VEC4:   return static_cast<void*>(new glm::vec4  (*(glm::vec4*  )field_default));
+		case FieldType::PREFAB:
 		case FieldType::STRING: return static_cast<void*>(new std::string(*(std::string*)field_default));
 		case FieldType::ENTITY: return static_cast<void*>(new uint64_t   (*(uint64_t*   )field_default));
 	}
@@ -122,6 +124,7 @@ void delete_field_value(FieldType field_type, void* field_value) {
 		case FieldType::VEC2:   delete static_cast<glm::vec2*>  (field_value); return;
 		case FieldType::VEC3:   delete static_cast<glm::vec3*>  (field_value); return;
 		case FieldType::VEC4:   delete static_cast<glm::vec4*>  (field_value); return;
+		case FieldType::PREFAB:
 		case FieldType::STRING: delete static_cast<std::string*>(field_value); return;
 		case FieldType::ENTITY: delete static_cast<uint64_t*>   (field_value); return;
 	}

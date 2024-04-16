@@ -769,6 +769,7 @@ void WriteFieldValueToFile(YAML::Emitter& out, FieldType field_type, void* field
 		case FieldType::VEC2:   out << *static_cast<glm::vec2*>  (field_value); break;
 		case FieldType::VEC3:   out << *static_cast<glm::vec3*>  (field_value); break;
 		case FieldType::VEC4:   out << *static_cast<glm::vec4*>  (field_value); break;
+		case FieldType::PREFAB:
 		case FieldType::STRING: out << *static_cast<std::string*>(field_value); break;
 		case FieldType::ENTITY: out << *static_cast<uint64_t*>   (field_value); break;
 	}
@@ -821,6 +822,7 @@ void* GetFieldValueFromNode(YAML::Node field_value, FieldType field_type) {
 		case FieldType::VEC2:   return static_cast<void*>(new glm::vec2  (field_value.as<glm::vec2>()));
 		case FieldType::VEC3:   return static_cast<void*>(new glm::vec3  (field_value.as<glm::vec3>()));
 		case FieldType::VEC4:   return static_cast<void*>(new glm::vec4  (field_value.as<glm::vec4>()));
+		case FieldType::PREFAB:
 		case FieldType::STRING: return static_cast<void*>(new std::string(field_value.as<std::string>()));
 		case FieldType::ENTITY: return static_cast<void*>(new uint64_t   (field_value.as<uint64_t>()));
 	}

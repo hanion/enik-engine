@@ -8,6 +8,7 @@
 #include "project/project.h"
 #include "script_system/script_system.h"
 #include "core/input.h"
+#include "../utils/editor_colors.h"
 
 
 namespace Enik {
@@ -514,6 +515,41 @@ void InspectorPanel::DisplayNativeScript(Component::NativeScript& script) {
 			case FieldType::VEC4:
 				ImGui::DragFloat4(label, static_cast<float*>(field.Value), speed);
 				continue;
+			case FieldType::PREFAB: {
+				char buffer[256];
+				memset(buffer, 0, sizeof(buffer));
+				strcpy(buffer, static_cast<std::string*>(field.Value)->c_str());
+
+				auto file = std::filesystem::path(buffer);
+				if (file.empty()) {
+					file = "[Prefab]";
+				}
+				ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::blue);
+				ImGui::Button(file.filename().c_str());
+				if (ImGui::IsItemHovered()){
+					ImGui::SetTooltip(file.c_str());
+				}
+				ImGui::PopStyleColor();
+
+				if (ImGui::BeginDragDropTarget()) {
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_FILE_PATH")) {
+						if (payload->DataSize > 0) {
+							char* payload_data = new char[payload->DataSize];
+							if (payload_data != nullptr) {
+								memcpy(payload_data, payload->Data, payload->DataSize);
+								strcpy(buffer, reinterpret_cast<const char*>(payload_data));
+								std::filesystem::path path = { buffer };
+								if (path.has_extension() and path.extension() == ".prefab") {
+									*static_cast<std::string*>(field.Value) = path.string();
+								}
+								delete[] payload_data;
+							}
+						}
+					}
+					ImGui::EndDragDropTarget();
+				}
+				continue;
+			}
 			case FieldType::STRING: {
 				char buffer[256];
 				memset(buffer, 0, sizeof(buffer));
