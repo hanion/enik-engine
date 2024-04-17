@@ -10,6 +10,8 @@
 #include "renderer/ortho_camera_controller.h"
 #include "renderer/texture.h"
 
+#include "panels/text_editor.h"
+
 
 using namespace Enik;
 
@@ -58,6 +60,9 @@ private:
 
 	void OnOverlayRender();
 
+
+	void ExitEditor();
+
 private:
 	Ref<FrameBuffer> m_FrameBuffer;
 
@@ -78,6 +83,7 @@ private:
 	bool m_ShowRendererStats = false;
 	bool m_ShowPerformance   = false;
 	bool m_ShowColliders     = true;
+	bool m_ShowTextEditor    = true;
 
 	Ref<Texture2D> m_TexturePlay, m_TextureStop, m_TexturePause, m_TextureStep;
 
@@ -87,6 +93,7 @@ private:
 	InspectorPanel m_InspectorPanel;
 	FileSystemPanel m_FileSystemPanel;
 	ToolbarPanel m_ToolbarPanel;
+	TextEditorPanel m_TextEditorPanel;
 
 	std::filesystem::path m_ActiveScenePath = std::filesystem::canonical(".");
 

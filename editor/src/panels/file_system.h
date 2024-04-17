@@ -5,16 +5,16 @@
 #include "filewatch/FileWatch.hpp"
 
 #include "scene/scene.h"
+#include "text_editor.h"
 
 namespace Enik {
 
 class FileSystemPanel {
 public:
 	FileSystemPanel() = default;
-	FileSystemPanel(const Ref<Scene> context);
 	~FileSystemPanel() = default;
 
-	void SetContext(const Ref<Scene>& context);
+	void SetContext(TextEditorPanel* text_editor_panel);
 	void SetCurrentDir(const std::filesystem::path& dir) { m_CurrentDirectory = dir;  m_HasSearched = false; }
 
 	void OnImGuiRender();
@@ -26,7 +26,7 @@ private:
 	void ChangeDirectory(const std::filesystem::path& directory);
 
 private:
-	Ref<Scene> m_Context;
+	TextEditorPanel* m_TextEditorPanel;
 
 	std::filesystem::path m_CurrentDirectory;
 	std::string m_CurrentDirectoryText;

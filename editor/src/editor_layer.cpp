@@ -199,12 +199,16 @@ void EditorLayer::OnImGuiRender() {
 				}
 
 				if (ImGui::MenuItem("Exit")) {
-					Application::Get().Close();
+					ExitEditor();
 				}
 				ImGui::EndMenu();
 			}
 
 			if (ImGui::BeginMenu("View")) {
+				if (ImGui::BeginMenu("Panels")) {
+					ImGui::Checkbox("Show Text Editor", &m_ShowTextEditor);
+					ImGui::EndMenu();
+				}
 				ImGui::Checkbox("Show Performance", &m_ShowPerformance);
 				ImGui::Checkbox("Show Renderer Stats", &m_ShowRendererStats);
 				ImGui::Checkbox("Show Colliders", &m_ShowColliders);
@@ -237,6 +241,8 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 	m_SceneTreePanel.OnImGuiRender();
 	m_InspectorPanel.OnImGuiRender();
 	m_FileSystemPanel.OnImGuiRender();
+	if (m_ShowTextEditor) {
+		m_TextEditorPanel.OnImGuiRender();
 	}
 
 	bool is_viewport_open = false;
@@ -378,6 +384,7 @@ void EditorLayer::InitDockSpace() {
 	ImGuiID dock_id_2 = ImGui::DockBuilderSplitNode(dock_id_1,    ImGuiDir_Right, 0.52f, NULL, &dock_id_1);
 	ImGuiID dock_id_3 = ImGui::DockBuilderSplitNode(dock_id_1,    ImGuiDir_Down,  0.45f, NULL, &dock_id_1);
 
+	ImGui::DockBuilderDockWindow("Text Editor", dock_id_main);
 	ImGui::DockBuilderDockWindow("Viewport",    dock_id_main);
 	ImGui::DockBuilderDockWindow("Scene Tree",  dock_id_1);
 	ImGui::DockBuilderDockWindow("Inspector",   dock_id_2);
@@ -471,7 +478,7 @@ void EditorLayer::SaveProject() {
 
 void EditorLayer::ReloadProject() {
 	ScriptSystem::ClearOnScriptModuleReloadEvents();
-	if (m_SceneTreePanel.IsSelectedEntityValid()) {
+	if (m_ActiveScene and m_SceneTreePanel.IsSelectedEntityValid()) {
 		Enik::UUID selected_entity = m_SceneTreePanel.GetSelectedEntity().Get<Component::ID>().uuid;
 		LoadProject(Project::GetActive()->GetProjectDirectory() / "project.enik");
 		m_SceneTreePanel.SetSelectedEntityWithUUID(selected_entity);
@@ -524,6 +531,7 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 			}
 			else if (control) {
 				SaveScene();
+				m_TextEditorPanel.AskToSaveFile();
 			}
 			break;
 
@@ -541,13 +549,15 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 
 		case Key::Delete:
 			if (Application::Get().GetImGuiLayer()->GetActiveWidgetID() == 0) {
-				DialogConfirm::OpenDialog("Delete Entity ?",
-					[&](){
-						if (m_SceneTreePanel.IsSelectedEntityValid()) {
+				if (m_SceneTreePanel.IsSelectedEntityValid()) {
+					DialogConfirm::OpenDialog(
+						"Delete Entity ?",
+						m_SceneTreePanel.GetSelectedEntity().GetTag(),
+						[&](){
 							m_ActiveScene->DestroyEntity(m_SceneTreePanel.GetSelectedEntity());
 						}
-					}
-				);
+					);
+				}
 			}
 			break;
 
@@ -570,13 +580,7 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 
 		case Key::Q:
 			if (control) {
-				DialogConfirm::OpenDialog(
-					"Exit Editor ?",
-					[&](){
-						OnSceneStop();
-						Application::Get().Close();
-					}
-				);
+				ExitEditor();
 			}
 			break;
 
@@ -727,6 +731,7 @@ void EditorLayer::OnScenePlay() {
 	}
 
 	m_SceneTreePanel.SetSelectedEntityWithUUID(current_selected_entity);
+	ImGui::SetWindowFocus("Viewport");
 
 }
 
@@ -751,7 +756,7 @@ void EditorLayer::OnScenePause(bool is_paused) {
 void EditorLayer::SetPanelsContext() {
 	m_SceneTreePanel.SetContext(m_ActiveScene);
 	m_InspectorPanel.SetContext(m_ActiveScene, &m_SceneTreePanel);
-	m_FileSystemPanel.SetContext(m_ActiveScene);
+	m_FileSystemPanel.SetContext(&m_TextEditorPanel);
 	m_ToolbarPanel.SetContext(m_ActiveScene, &m_SceneTreePanel);
 }
 
@@ -859,4 +864,15 @@ void EditorLayer::OnOverlayRender() {
 
 
 	Renderer2D::EndScene();
+}
+
+void EditorLayer::ExitEditor() {
+	DialogConfirm::OpenDialog(
+		"Exit Editor ?",
+		"Everything not saved will be lost.",
+		[&](){
+			OnSceneStop();
+			Application::Get().Close();
+		}
+	);
 }

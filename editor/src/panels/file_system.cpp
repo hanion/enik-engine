@@ -5,17 +5,14 @@
 
 #include "project/project.h"
 #include "../utils/utils.h"
+#include "../dialogs/dialog_confirm.h"
 #include "../utils/imgui_utils.h"
 
 
 namespace Enik {
 
-FileSystemPanel::FileSystemPanel(const Ref<Scene> context) {
-	SetContext(context);
-}
-
-void FileSystemPanel::SetContext(const Ref<Scene>& context) {
-	m_Context = context;
+void FileSystemPanel::SetContext(TextEditorPanel* text_editor_panel) {
+	m_TextEditorPanel = text_editor_panel;
 	if (m_CurrentDirectory.empty()) {
 		ChangeDirectory(Project::GetProjectDirectory());
 	}
@@ -24,7 +21,7 @@ void FileSystemPanel::SetContext(const Ref<Scene>& context) {
 void FileSystemPanel::OnImGuiRender() {
 	ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
 
-	if (!ImGui::Begin("File System") or m_Context == nullptr or m_CurrentDirectory.empty()) {
+	if (!ImGui::Begin("File System") or m_CurrentDirectory.empty()) {
 		ImGui::End();
 		return;
 	}
@@ -100,9 +97,25 @@ void FileSystemPanel::ShowDirectoriesTable() {
 				if (entry.is_directory()) {
 					ChangeDirectory(path);
 				}
-				else {
+			}
+
 			ImGui::PopStyleColor(pushed_color_count);
+
+			if (ImGui::BeginPopupContextItem()) {
+				if (entry.is_regular_file() and path.has_extension()) {
+					auto ext = path.extension();
+					if (ext == ".escn" or
+						ext == ".prefab" or
+						ext == ".enik" or
+						ext == ".txt" ) {
+						if (ImGui::MenuItem("Open File")) {
+							m_TextEditorPanel->OpenTextFile(path);
+							ImGui::SetWindowFocus("Text Editor");
+						}
+					}
 				}
+
+				ImGui::EndPopup();
 			}
 
 			if (entry.is_regular_file()) {

@@ -14,6 +14,8 @@ constexpr ImVec4 green  = ImVec4(0.3f, 0.9f, 0.3f, 1.0f);
 constexpr ImVec4 yellow = ImVec4(0.9f, 0.9f, 0.0f, 1.0f);
 constexpr ImVec4 cyan   = ImVec4(0.0f, 0.9f, 0.9f, 1.0f);
 
+constexpr ImVec4 te_bg  = ImVec4(0.08f, 0.08f, 0.08f, 1.0f);
+
 
 }
 }
