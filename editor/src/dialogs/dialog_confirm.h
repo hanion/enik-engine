@@ -6,6 +6,7 @@ namespace Enik {
 struct DialogConfirmData {
 	bool is_open = false;
 	std::string text;
+	std::string description;
 
 	std::function<void()> call_function;
 };
@@ -19,6 +20,8 @@ public:
 
 public:
 	static void OpenDialog(const std::string& text, const std::function<void()>& call_when_confirmed);
+	static void OpenDialog(const std::string& text, const std::string& description, const std::function<void()>& call_when_confirmed);
+
 
 	// ? This is a BeginPopupModal
 	// ? Call OpenDialog once before
