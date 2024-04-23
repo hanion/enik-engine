@@ -209,8 +209,9 @@ void EditorLayer::OnImGuiRender() {
 					ImGui::Checkbox("Show Text Editor", &m_ShowTextEditor);
 					ImGui::EndMenu();
 				}
-				ImGui::Checkbox("Show Performance", &m_ShowPerformance);
-				ImGui::Checkbox("Show Renderer Stats", &m_ShowRendererStats);
+
+				m_DebugInfoPanel.BeginMenu();
+
 				ImGui::Checkbox("Show Colliders", &m_ShowColliders);
 				ImGui::Checkbox("Show Selection Outline", &m_ShowSelectionOutline);
 
@@ -322,48 +323,9 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 		ImGui::End();
 	}
 
-	/* ShowPerformance */
-	if (m_ShowPerformance and is_viewport_open) {
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav;
-		window_flags |= ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
-		window_flags |= ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking;
-
-		ImGui::SetNextWindowBgAlpha(0.65f);
-		ImVec2 pos;
-		pos.x = 20 + m_ViewportBounds[0].x;
-		pos.y = 40 + m_ViewportBounds[0].y;
-
-		ImGui::SetNextWindowPos(pos);
-		if (ImGui::Begin("Performance", nullptr, window_flags)) {
-			ImGui::Text("Performance");
-			ImGui::Text("deltaTime = %.2fms", m_Timestep.GetMilliseconds());
-			ImGui::Text("FPS = %.0f", (1.0f / m_Timestep.GetSeconds()));
-		}
-		ImGui::End();
-	}
-
-	/* ShowRenderer2DStats */
-	if (m_ShowRendererStats and is_viewport_open) {
-		ImGuiWindowFlags window_flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoNav;
-		window_flags |= ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing;
-		window_flags |= ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking;
-
-		ImGui::SetNextWindowBgAlpha(0.65f);
-		ImVec2 pos;
-		pos.x = 20 + m_ViewportBounds[0].x;
-		pos.y = 130 + m_ViewportBounds[0].y;
-
-		ImGui::SetNextWindowPos(pos);
-		if (ImGui::Begin("Renderer2D Stats", nullptr, window_flags)) {
-			auto stats = Renderer2D::GetStats();
-
-			ImGui::Text("Renderer2D Stats");
-			ImGui::Text("Draw Calls: %d", stats.DrawCalls);
-			ImGui::Text("Quad Count: %d", stats.QuadCount);
-			ImGui::Text("Total Vertex Count: %d", stats.GetTotalVertexCount());
-			ImGui::Text("Total Index  Count: %d", stats.GetTotalIndexCount());
-		}
-		ImGui::End();
+	if (is_viewport_open) {
+		ImGui::SetNextWindowPos({ m_ViewportBounds[0].x + 10, m_ViewportBounds[0].y + 40 });
+		m_DebugInfoPanel.ShowDebugInfoPanel(m_Timestep);
 	}
 
 	InitDockSpace();
@@ -602,6 +564,7 @@ bool EditorLayer::OnKeyReleased(KeyReleasedEvent& event) {
     if (m_ViewportHovered and m_SceneState == SceneState::Play) {
 		m_ActiveScene->OnKeyReleased(event);
 	}
+	m_DebugInfoPanel.OnKeyReleased(event);
 	return false;
 }
 

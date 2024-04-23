@@ -11,6 +11,7 @@
 #include "renderer/texture.h"
 
 #include "panels/text_editor.h"
+#include "panels/debug_info.h"
 
 
 using namespace Enik;
@@ -80,8 +81,6 @@ private:
 
 	bool m_DockSpaceInitialized = false;
 
-	bool m_ShowRendererStats = false;
-	bool m_ShowPerformance   = false;
 	bool m_ShowColliders     = true;
 	bool m_ShowTextEditor    = true;
 
@@ -94,6 +93,7 @@ private:
 	FileSystemPanel m_FileSystemPanel;
 	ToolbarPanel m_ToolbarPanel;
 	TextEditorPanel m_TextEditorPanel;
+	DebugInfoPanel m_DebugInfoPanel;
 
 	std::filesystem::path m_ActiveScenePath = std::filesystem::canonical(".");
 
