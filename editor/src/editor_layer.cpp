@@ -325,7 +325,11 @@ void EditorLayer::OnImGuiDockSpaceRender() {
 
 	if (is_viewport_open) {
 		ImGui::SetNextWindowPos({ m_ViewportBounds[0].x + 10, m_ViewportBounds[0].y + 40 });
-		m_DebugInfoPanel.ShowDebugInfoPanel(m_Timestep);
+		glm::vec2 viewport_size = {
+			m_ViewportBounds[1].x - m_ViewportBounds[0].x,
+			m_ViewportBounds[1].y - m_ViewportBounds[0].y
+		};
+		m_DebugInfoPanel.ShowDebugInfoPanel(m_Timestep, viewport_size);
 	}
 
 	InitDockSpace();

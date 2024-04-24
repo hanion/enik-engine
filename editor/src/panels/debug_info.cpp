@@ -14,14 +14,14 @@ void DebugInfoPanel::BeginMenu() {
 		ImGui::Checkbox("Renderer Stats", &m_ShowRendererStats);
 		ImGui::Checkbox("Renderer",       &m_ShowRenderer);
 		ImGui::Checkbox("Project",        &m_ShowProject);
-		ImGui::Checkbox("Window",         &m_ShowWindow);
+		ImGui::Checkbox("Viewport",       &m_ShowViewport);
 		ImGui::Checkbox("Program",        &m_ShowProgram);
 		ImGui::EndMenu();
 	}
 }
 
 
-void DebugInfoPanel::ShowDebugInfoPanel(Timestep timestep) {
+void DebugInfoPanel::ShowDebugInfoPanel(Timestep timestep, glm::vec2 viewport_size) {
 	constexpr ImGuiWindowFlags debug_info_window_flags = ImGuiWindowFlags_AlwaysAutoResize |
 		ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoInputs |
 		ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoBackground
@@ -71,16 +71,32 @@ void DebugInfoPanel::ShowDebugInfoPanel(Timestep timestep) {
 		ImGui::Text("	Script Module: %s",  config.script_module_path.c_str());
 	}
 
-	if (m_ShowWindow) {
+	if (m_ShowViewport) {
 		ImGui::Spacing();
 		ImGui::Spacing();
 
-		Window& window = Application::Get().GetWindow();
+		ImGui::TextColored(color, "Viewport");
+		ImGui::Text("	Size: %dx%d", (int)viewport_size.x, (int)viewport_size.y);
 
-		ImGui::TextColored(color, "Window");
-		ImGui::Text("	Size: %dx%d", window.GetWidth(), window.GetHeight());
+		{
+			int numerator   = (int)viewport_size.x;
+			int denominator = (int)viewport_size.y;
 
-		if (window.IsVSync()) {
+			int tmp;
+			while (denominator != 0) {
+				tmp = denominator;
+				denominator = numerator % denominator;
+				numerator = tmp;
+			}
+
+			float gcd = (float)numerator;
+			int w = viewport_size.x / gcd;
+			int h = viewport_size.y / gcd;
+
+			ImGui::Text("	Ratio: %d:%d", w, h);
+		}
+
+		if (Application::Get().GetWindow().IsVSync()) {
 			ImGui::Text("	VSync: On");
 		} else {
 			ImGui::Text("	VSync: Off");
@@ -109,7 +125,7 @@ void DebugInfoPanel::ShowDebugInfoPanel(Timestep timestep) {
 bool DebugInfoPanel::OnKeyReleased(KeyReleasedEvent& event) {
 	if (Input::IsKeyPressed(Key::LeftControl)) {
 		if (event.GetKeyCode() == Key::U) {
-			m_ShowPerformance = m_ShowRendererStats = m_ShowRenderer = m_ShowProject = m_ShowWindow = m_ShowProgram = not m_ShowPerformance;
+			m_ShowPerformance = m_ShowRendererStats = m_ShowRenderer = m_ShowProject = m_ShowViewport = m_ShowProgram = not m_ShowPerformance;
 		}
 	}
     return false;
