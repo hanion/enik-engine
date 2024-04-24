@@ -10,7 +10,7 @@ Entities:
     Component::SpriteRenderer:
       Color: [0.329411775, 0.329411775, 0.329411775, 0.0941176489]
       TileScale: 20
-      TexturePath: ../sandbox/assets/textures/checkerboard.png
+      TexturePath: ""
   - Entity: 3496759271100677586
     Component::Tag:
       Text: eye1
