@@ -1,6 +1,11 @@
 #pragma once
 #include <Enik.h>
 
+#define RUNTIME_SHOW_DEBUG_INFO_PANEL 1
+
+#if RUNTIME_SHOW_DEBUG_INFO_PANEL
+#include "debug_info.h"
+#endif
 
 
 using namespace Enik;
@@ -44,6 +49,9 @@ private:
 
 	bool m_DockSpaceInitialized = false;
 
+#if RUNTIME_SHOW_DEBUG_INFO_PANEL
+	DebugInfoPanel m_DebugInfoPanel;
+#endif
 
 
 };

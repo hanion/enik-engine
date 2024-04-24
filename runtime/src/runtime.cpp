@@ -121,6 +121,9 @@ void RuntimeLayer::OnImGuiRender() {
 	}
 
 
+#if RUNTIME_SHOW_DEBUG_INFO_PANEL
+	m_DebugInfoPanel.ShowDebugInfoPanel(m_Timestep);
+#endif
 
 	ImGui::PopStyleVar(3);
 }
@@ -157,6 +160,9 @@ bool RuntimeLayer::OnKeyPressed(KeyPressedEvent& event) {
 bool RuntimeLayer::OnKeyReleased(KeyReleasedEvent& event) {
 	m_ActiveScene->OnKeyReleased(event);
 
+#if RUNTIME_SHOW_DEBUG_INFO_PANEL
+	m_DebugInfoPanel.OnKeyReleased(event);
+#endif
 
     return false;
 }
