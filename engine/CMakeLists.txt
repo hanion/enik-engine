@@ -24,6 +24,7 @@ file(GLOB source_files
 	"${source_dir}/project/*.cpp"
 	"${source_dir}/script_system/*.cpp"
 	"${source_dir}/physics/*.cpp"
+	"${source_dir}/audio/*.cpp"
 )
 file(GLOB include_files
 	"${PROJECT_SOURCE_DIR}/include/*.h"
@@ -40,6 +41,7 @@ file(GLOB include_files
 	"${source_dir}/project/*.h"
 	"${source_dir}/script_system/*.h"
 	"${source_dir}/physics/*.h"
+	"${source_dir}/audio/*.h"
 )
 
 

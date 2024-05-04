@@ -9,6 +9,7 @@
 #include "script_system/script_system.h"
 #include "core/input.h"
 #include "../utils/editor_colors.h"
+#include "audio/audio.h"
 
 
 namespace Enik {
@@ -84,6 +85,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			DisplayComponentInPopup<Component::SpriteRenderer>("Sprite Renderer");
 			DisplayComponentInPopup<Component::RigidBody>("Rigid Body");
 			DisplayComponentInPopup<Component::Collider>("Collider");
+			DisplayComponentInPopup<Component::AudioSources>("Audio Sources");
 			DisplayNativeScriptsInPopup();
 			ImGui::EndPopup();
 		}
@@ -215,6 +217,69 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 				ImGui::DragFloat3("##Center", glm::value_ptr(collider.Vector), 0.01f);
 				break;
 			}
+		}
+
+	});
+
+	DisplayComponentInInspector<Component::AudioSources>("Audio Sources", entity, true, [&]() {
+		auto& sources = entity.Get<Component::AudioSources>();
+
+		size_t to_remove_index = SIZE_MAX;
+
+		for (size_t i = 0; i < sources.SourcePaths.size(); i++) {
+			char buffer[256];
+			memset(buffer, 0, sizeof(buffer));
+			strcpy(buffer, sources.SourcePaths[i].c_str());
+
+			auto file = std::filesystem::path(buffer);
+			if (file.empty()) {
+				file = "[AudioSource]";
+				ImGuiUtils::PrefixLabel("Source");
+			}
+			else {
+				ImGuiUtils::PrefixLabel(file.stem().c_str());
+			}
+
+
+			ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::teal);
+			if (ImGui::Button(file.filename().c_str())) {
+				sources.Play(sources.SourcePaths[i].stem());
+			}
+
+			if (ImGui::IsItemHovered()){
+				ImGui::SetTooltip(file.c_str());
+
+				if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+					to_remove_index = i;
+				}
+			}
+			ImGui::PopStyleColor();
+
+			if (ImGui::BeginDragDropTarget()) {
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_FILE_PATH")) {
+					if (payload->DataSize > 0) {
+						char* payload_data = new char[payload->DataSize];
+						if (payload_data != nullptr) {
+							memcpy(payload_data, payload->Data, payload->DataSize);
+							strcpy(buffer, reinterpret_cast<const char*>(payload_data));
+							std::filesystem::path path = { buffer };
+							if (path.has_extension() and path.extension() == ".wav") {
+								sources.SourcePaths[i] = path;
+							}
+							delete[] payload_data;
+						}
+					}
+				}
+				ImGui::EndDragDropTarget();
+			}
+		}
+
+		if (ImGui::Button("Add", ImVec2(-1,0))) {
+			sources.SourcePaths.emplace_back("");
+		}
+
+		if (to_remove_index != SIZE_MAX) {
+			sources.SourcePaths.erase(sources.SourcePaths.begin() + to_remove_index);
 		}
 
 	});

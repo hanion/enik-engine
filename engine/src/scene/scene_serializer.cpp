@@ -487,6 +487,18 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::EndMap;
 	}
 
+	if (entity.Has<Component::NativeScript>()) {
+		out << YAML::Key << "Component::NativeScript";
+		out << YAML::BeginMap;
+
+		auto& script = entity.Get<Component::NativeScript>();
+		out << YAML::Key << "ScriptName" << YAML::Value << script.ScriptName;
+
+		SerializeNativeScriptFields(out, script);
+
+		out << YAML::EndMap;
+	}
+
 	if (entity.Has<Component::Camera>()) {
 		out << YAML::Key << "Component::Camera";
 		out << YAML::BeginMap;
@@ -530,17 +542,6 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::EndMap;
 	}
 
-	if (entity.Has<Component::NativeScript>()) {
-		out << YAML::Key << "Component::NativeScript";
-		out << YAML::BeginMap;
-
-		auto& script = entity.Get<Component::NativeScript>();
-		out << YAML::Key << "ScriptName" << YAML::Value << script.ScriptName;
-
-		SerializeNativeScriptFields(out, script);
-
-		out << YAML::EndMap;
-	}
 
 	if (entity.Has<Component::RigidBody>()) {
 		out << YAML::Key << "Component::RigidBody";
@@ -597,6 +598,24 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		if (component.RootPrefab) {
 			out << YAML::Key << "PrefabPath" << YAML::Value << component.PrefabPath.string();
 		}
+
+		out << YAML::EndMap;
+	}
+
+	if (entity.Has<Component::AudioSources>()) {
+		out << YAML::Key << "Component::AudioSources";
+		out << YAML::BeginMap;
+
+		auto& sources = entity.Get<Component::AudioSources>();
+
+		out << YAML::Key << "SourcePaths";
+		out << YAML::Value << YAML::BeginSeq;
+		for (size_t i = 0; i < sources.SourcePaths.size(); i++) {
+			if (not sources.SourcePaths[i].empty()) {
+				out << YAML::Value << sources.SourcePaths[i].string();
+			}
+		}
+		out << YAML::EndSeq;
 
 		out << YAML::EndMap;
 	}
@@ -734,6 +753,22 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 			}
 		}
 	}
+
+
+	auto audio_sources = entity["Component::AudioSources"];
+	if (audio_sources) {
+		auto& sources = deserialized_entity.Add<Component::AudioSources>();
+
+		if (audio_sources["SourcePaths"]) {
+			for (auto source_path_node : audio_sources["SourcePaths"]) {
+				auto path = std::filesystem::path(source_path_node.as<std::string>());
+				if (not path.empty()) {
+					sources.SourcePaths.emplace_back(path);
+				}
+			}
+		}
+	}
+
 
 }
 

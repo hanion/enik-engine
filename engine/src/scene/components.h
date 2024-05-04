@@ -181,6 +181,18 @@ public:
 	std::filesystem::path PrefabPath = std::filesystem::path();
 };
 
+
+
+class AudioSources {
+public:
+	AudioSources() = default;
+	AudioSources(const AudioSources&) = default;
+
+	void Play(const std::string& name);
+
+	std::vector<std::filesystem::path> SourcePaths;
+};
+
 }
 
 }

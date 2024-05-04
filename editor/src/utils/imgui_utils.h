@@ -66,6 +66,10 @@ inline void ColorFileText(const std::filesystem::path& filepath, int& pushed_col
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::cyan);
 		pushed_color_count++;
 	}
+	else if (extension == ".wav") {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::teal);
+		pushed_color_count++;
+	}
 	else if (extension == ".enik") {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::yellow);
 		pushed_color_count++;

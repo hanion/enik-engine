@@ -5,6 +5,7 @@
 #include "core/input.h"
 #include "renderer/renderer.h"
 #include "physics/physics_world.h"
+#include "audio/audio.h"
 
 namespace Enik {
 
@@ -23,6 +24,8 @@ Application::Application(const std::string& name) {
 	m_Window->SetVsync(true);
 
 	Renderer::Init();
+
+	Audio::Init();
 
 	m_ImGuiLayer = new ImGuiLayer();
 	PushOverlay(m_ImGuiLayer);

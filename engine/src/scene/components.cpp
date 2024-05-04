@@ -1,6 +1,8 @@
 #include "components.h"
 
 #include "scene/scriptable_entity.h"
+#include "audio/audio.h"
+#include "project/project.h"
 
 namespace Enik {
 
@@ -251,6 +253,15 @@ bool Component::Family::HasEntityAsChild(Entity entity) {
 		}
 	}
 	return false;
+}
+
+
+void Component::AudioSources::Play(const std::string& name) {
+	for (size_t i = 0; i < SourcePaths.size(); i++) {
+		if (SourcePaths[i].stem() == name) {
+			Audio::Play(Project::GetAbsolutePath(SourcePaths[i]));
+		}
+	}
 }
 
 }
