@@ -207,6 +207,11 @@ float Renderer2D::GetTextureIndex(const Ref<Texture2D>& texture) {
 		return 0.0f;
 	}
 
+	if (s_Data.TextureSlotIndex == s_Data.MaxTextureSlots) {
+		Flush();
+		StartBatch();
+	}
+
 	float textureIndex = 0.0f;
 	for (uint32_t i = 1; i < s_Data.TextureSlotIndex; i++) {
 		if (texture->equals(*s_Data.TextureSlots[i])) {
