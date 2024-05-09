@@ -1,9 +1,10 @@
 #pragma once
 #include <base.h>
-#include "miniaudio.h"
 
 
 namespace Enik {
+
+struct AudioEngine;
 
 class Audio {
 public:
@@ -16,7 +17,7 @@ public:
 
 private:
 	static Scope<Audio> s_Instance;
-	ma_engine m_AudioEngine;
+	Scope<AudioEngine> m_AudioEngine;
 };
 
 }
