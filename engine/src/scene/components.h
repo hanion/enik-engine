@@ -172,25 +172,22 @@ private:
 
 };
 
-class Prefab {
-public:
-	Prefab() = default;
-	Prefab(const Prefab&) = default;
-
+struct Prefab {
 	bool RootPrefab = false;
 	std::filesystem::path PrefabPath = std::filesystem::path();
+
+	Prefab() = default;
+	Prefab(const Prefab&) = default;
 };
 
 
+struct AudioSources {
+	std::vector<std::filesystem::path> SourcePaths;
 
-class AudioSources {
-public:
 	AudioSources() = default;
 	AudioSources(const AudioSources&) = default;
 
 	void Play(const std::string& name);
-
-	std::vector<std::filesystem::path> SourcePaths;
 };
 
 }
