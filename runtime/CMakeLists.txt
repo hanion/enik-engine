@@ -10,6 +10,12 @@ set(source_dir "${PROJECT_SOURCE_DIR}/src/")
 file(GLOB source_files "${source_dir}/*.cpp")
 file(GLOB include_files "${source_dir}/*h")
 
+
+if (CMAKE_COMPILER_IS_GNUCC)
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath='$ORIGIN'")
+endif()
+
+
 add_executable(${PROJECT_NAME} ${source_files} ${include_files})
 
 target_link_libraries(${PROJECT_NAME} enik-engine)
