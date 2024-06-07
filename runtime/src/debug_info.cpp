@@ -16,7 +16,8 @@ void DebugInfoPanel::ShowDebugInfoPanel(Timestep timestep) {
 
 	constexpr ImGuiWindowFlags debug_info_window_flags = ImGuiWindowFlags_AlwaysAutoResize |
 		ImGuiWindowFlags_NoNav | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoSavedSettings |
-		ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoBackground
+		ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoBackground |
+		ImGuiWindowFlags_NoInputs
 	;
 	constexpr ImVec4 color = ImVec4(0.6f, 0.6f, 0.6f, 1.0f);
 
@@ -57,9 +58,9 @@ void DebugInfoPanel::ShowDebugInfoPanel(Timestep timestep) {
 
 		ImGui::TextColored(color, "Project");
 		ImGui::Text("	Name: %s",  config.project_name.c_str());
-		ImGui::Text("	Path: %s",  Project::GetAbsolutePath(".").c_str());
-		ImGui::Text("	Start Scene: %s",  config.start_scene.c_str());
-		ImGui::Text("	Script Module: %s",  config.script_module_path.c_str());
+		ImGui::Text("	Path: %s",  Project::GetAbsolutePath(".").string().c_str());
+		ImGui::Text("	Start Scene: %s",  config.start_scene.string().c_str());
+		ImGui::Text("	Script Module: %s",  config.script_module_path.string().c_str());
 	}
 
 	if (m_ShowDebugInfoPanel > 4) {
