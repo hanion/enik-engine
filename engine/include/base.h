@@ -1,5 +1,16 @@
 #pragma once
 
+#define EN_DIST_BUILD 0
+
+
+#if EN_DIST_BUILD
+	#define PROJECT_PATH std::filesystem::path("./project.enik")
+#else
+	#define PROJECT_PATH std::filesystem::path("./project.enik")
+#endif
+
+
+#include <cstdint>
 #include <memory>
 #include "core/log.h"
 
@@ -24,9 +35,6 @@
 
 #define EN_BIND_EVENT_FN(fn) std::bind(&Enik::fn, this, std::placeholders::_1)
 
-// path relative to ./build/sandbox 
-#define FULL_PATH(x) (((std::string)"../../sandbox/") + ((std::string)x))
-#define FULL_PATH_EDITOR(x) (((std::string)"../../editor/") + ((std::string)x))
 
 namespace Enik {
 
@@ -87,5 +95,12 @@ constexpr Ref<T> CreateRef(Args&& ... args) {
 	#ifdef far
 		#undef far
 	#endif
+#endif
+
+
+#if EN_DIST_BUILD
+	#define EN_ASSETS_PATH(x) (std::string("./src/assets/") + x)
+#else
+	#define EN_ASSETS_PATH(x) (std::string("../../editor/assets/") + x)
 #endif
 

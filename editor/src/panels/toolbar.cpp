@@ -4,10 +4,10 @@ namespace Enik {
 
 ToolbarPanel::ToolbarPanel() {
 	/* Create Textures */ {
-		m_TextureSelect = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/tool_select.png"));
-		m_TextureMove   = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/tool_move.png"));
-		m_TextureScale  = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/tool_scale.png"));
-		m_TextureRotate = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/tool_rotate.png"));
+		m_TextureSelect = Texture2D::Create(EN_ASSETS_PATH("icons/tool_select.png"));
+		m_TextureMove   = Texture2D::Create(EN_ASSETS_PATH("icons/tool_move.png"));
+		m_TextureScale  = Texture2D::Create(EN_ASSETS_PATH("icons/tool_scale.png"));
+		m_TextureRotate = Texture2D::Create(EN_ASSETS_PATH("icons/tool_rotate.png"));
 	}
 }
 

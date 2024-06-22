@@ -17,7 +17,13 @@ void RuntimeLayer::OnAttach() {
 	specification.Attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::Depth };
 	m_FrameBuffer = FrameBuffer::Create(specification);
 
-	std::filesystem::path project = { FULL_PATH_EDITOR("project.enik") };
+	std::filesystem::path project = PROJECT_PATH;
+
+	if (not std::filesystem::exists(project)) {
+		EN_CORE_ERROR("Project not found! {}", project);
+		return;
+	}
+
 	LoadProject(project);
 }
 
@@ -154,7 +160,7 @@ void RuntimeLayer::ResizeWindow() {
 
 bool RuntimeLayer::OnKeyPressed(KeyPressedEvent& event) {
 	m_ActiveScene->OnKeyPressed(event);
-    return false;
+	return false;
 }
 
 bool RuntimeLayer::OnKeyReleased(KeyReleasedEvent& event) {
@@ -164,22 +170,22 @@ bool RuntimeLayer::OnKeyReleased(KeyReleasedEvent& event) {
 	m_DebugInfoPanel.OnKeyReleased(event);
 #endif
 
-    return false;
+	return false;
 }
 
 bool RuntimeLayer::OnMouseButtonPressed(MouseButtonPressedEvent& event) {
 	m_ActiveScene->OnMouseButtonPressed(event);
-    return false;
+	return false;
 }
 
 bool RuntimeLayer::OnMouseButtonReleased(MouseButtonReleasedEvent& event) {
 		m_ActiveScene->OnMouseButtonReleased(event);
-    return false;
+	return false;
 }
 
 bool RuntimeLayer::OnMouseScrolled(MouseScrolledEvent& event) {
 	m_ActiveScene->OnMouseScrolled(event);
-    return false;
+	return false;
 }
 
 

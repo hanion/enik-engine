@@ -99,12 +99,12 @@ namespace Enik {
 
 SceneSerializer::SceneSerializer(Scene* scene)
 	: m_Scene(scene) {
-	m_ErrorTexture = Texture2D::Create(FULL_PATH_EDITOR("assets/textures/error.png"), false);
+	m_ErrorTexture = Texture2D::Create(EN_ASSETS_PATH("textures/error.png"), false);
 }
 
 SceneSerializer::SceneSerializer(const Ref<Scene>& scene)
 	: m_Scene(scene.get()) {
-	m_ErrorTexture = Texture2D::Create(FULL_PATH_EDITOR("assets/textures/error.png"), false);
+	m_ErrorTexture = Texture2D::Create(EN_ASSETS_PATH("textures/error.png"), false);
 }
 
 void SceneSerializer::Serialize(const std::string& filepath) {

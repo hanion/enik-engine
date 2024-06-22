@@ -1,5 +1,8 @@
 #include "script_system.h"
 #include "core/application.h"
+#include "script_system/script_registry.h"
+#include "project/project.h"
+
 
 #ifdef EN_PLATFORM_LINUX
 #include <dlfcn.h>
@@ -158,7 +161,14 @@ std::filesystem::path ScriptSystem::CopyScriptModule() {
 	auto new_path = std::filesystem::temp_directory_path() / ("enik_script_module_" + std::to_string(UUID()));
 
 	std::error_code error_code;
-	if (std::filesystem::copy_file(Project::GetAbsolutePath(Project::GetActive()->GetConfig().script_module_path), new_path, error_code)) {
+
+	bool copy_result = std::filesystem::copy_file(
+		Project::GetAbsolutePath(Project::GetActive()->GetConfig().script_module_path),
+		new_path,
+		error_code
+	);
+
+	if (copy_result) {
 		return new_path;
 	}
 

@@ -4,7 +4,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "renderer/opengl/opengl_shader.h"
+#include "core/log.h"
 #include "scene/scene_serializer.h"
 #include <imgui/imgui_internal.h>
 #include "utils/editor_colors.h"
@@ -25,16 +25,15 @@ void EditorLayer::OnAttach() {
 	spec.Attachments = {FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::Depth};
 	m_FrameBuffer = FrameBuffer::Create(spec);
 
-	m_TexturePlay  = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/play_button.png"));
-	m_TextureStop  = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/stop_button.png"));
-	m_TexturePause = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/pause_button.png"));
-	m_TextureStep  = Texture2D::Create(FULL_PATH_EDITOR("assets/icons/step_button.png"));
+	m_TexturePlay  = Texture2D::Create(EN_ASSETS_PATH("icons/play_button.png"));
+	m_TextureStop  = Texture2D::Create(EN_ASSETS_PATH("icons/stop_button.png"));
+	m_TexturePause = Texture2D::Create(EN_ASSETS_PATH("icons/pause_button.png"));
+	m_TextureStep  = Texture2D::Create(EN_ASSETS_PATH("icons/step_button.png"));
 
-	// TODO prompt user to select a name and a directory
-	// CreateNewProject();
-	std::filesystem::path proj(FULL_PATH_EDITOR("project.enik"));
-	LoadProject(proj);
-
+	std::filesystem::path project = PROJECT_PATH;
+	if (std::filesystem::exists(project)) {
+		LoadProject(project);
+	}
 
 	m_ToolbarPanel.InitValues(m_FrameBuffer, m_EditorCameraController, m_ViewportHovered);
 	SetPanelsContext();
