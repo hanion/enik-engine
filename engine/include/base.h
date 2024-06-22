@@ -49,7 +49,7 @@ constexpr Ref<T> CreateRef(Args&& ... args) {
 }
 
 
-#if defined(EN_DEBUG) && !defined(EN_PLATFORM_WINDOWS)
+#if defined(EN_DEBUG) && !defined(EN_PLATFORM_WINDOWS) && defined(TRACY_ENABLE)
 #include "Tracy.hpp"
 #define EN_PROFILE_FRAME(x) FrameMark
 #define EN_PROFILE_SCOPE ZoneScoped

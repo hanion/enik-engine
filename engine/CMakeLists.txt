@@ -79,10 +79,8 @@ target_compile_definitions(${PROJECT_NAME}
 	$<$<BOOL:${EN_PLATFORM_LINUX}>:EN_PLATFORM_LINUX>
 	$<$<BOOL:${EN_PLATFORM_WINDOWS}>:EN_PLATFORM_WINDOWS>
 	ENIK_ENGINE_BUILD
+	$<$<CONFIG:Debug>:EN_DEBUG>
 )
-
-
-target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:EN_DEBUG> $<$<CONFIG:Debug>:TRACY_ENABLE>)
 
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -92,6 +90,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	target_include_directories(${PROJECT_NAME} PUBLIC external/tracy/public/tracy)
 	target_link_libraries(${PROJECT_NAME} PUBLIC TracyClient)
 	set_property(TARGET TracyClient PROPERTY POSITION_INDEPENDENT_CODE ON)
+	target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:TRACY_ENABLE>)
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DTRACY_ENABLE -Itracy/")
 endif()
 
 
