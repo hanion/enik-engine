@@ -19,13 +19,13 @@ public:
 	}
 
 	template <typename T>
-	T& Get() {
+	T& Get() const {
 		EN_CORE_ASSERT(Has<T>(), "Entity does not have component!");
 		return m_Scene->m_Registry.get<T>(m_Handle);
 	}
 
 	template <typename T>
-	bool Has() {
+	bool Has() const {
 		return m_Scene->m_Registry.all_of<T>(m_Handle);
 	}
 
@@ -55,21 +55,21 @@ public:
 		return !(*this == other);
 	}
 
-	const UUID GetID() {
+	const UUID& GetID() const {
 		return Get<Component::ID>().uuid;
 	}
 
-	std::string& GetTag() {
+	std::string& GetTag() const {
 		return Get<Component::Tag>().Text;
 	}
 
-	ScriptableEntity* GetScriptInstance() {
+	ScriptableEntity* GetScriptInstance() const {
 		return Get<Component::NativeScript>().Instance;
 	}
 
 
 
-	bool HasFamily() {
+	bool HasFamily() const {
 		return Has<Component::Family>();
 	}
 	Component::Family& GetOrAddFamily() {
@@ -109,6 +109,14 @@ public:
 
 	Entity InstantiatePrefab(const std::filesystem::path& path) {
 		return m_Scene->InstantiatePrefab(path);
+	}
+
+	Entity FindEntityByUUID(UUID uuid) {
+		return m_Scene->FindEntityByUUID(uuid);
+	}
+
+	Entity FindEntityByName(const std::string& name) {
+		return m_Scene->FindEntityByName(name);
 	}
 
 

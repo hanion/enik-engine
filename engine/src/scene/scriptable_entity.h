@@ -11,10 +11,41 @@ public:
 	virtual ~ScriptableEntity() {}
 
 	template <typename T>
-	T& Get() {
-		return m_Entity.Get<T>();
-	}
+	T& Get() { return m_Entity.Get<T>(); }
 
+	template <typename T>
+	bool Has() const { return m_Entity.Has<T>(); }
+
+	template <typename T>
+	T& GetOrAdd() { return m_Entity.GetOrAdd<T>(); }
+
+
+	const UUID& GetID() const { return m_Entity.GetID(); }
+	std::string& GetTag() const { return m_Entity.GetTag(); }
+
+	bool HasFamily() { return m_Entity.HasFamily(); }
+	Component::Family& GetOrAddFamily() { return m_Entity.GetOrAddFamily(); }
+
+	bool HasParent() { return m_Entity.HasParent(); }
+	Entity& GetParent() { return m_Entity.GetParent(); }
+
+	void Reparent(Entity& new_parent) { m_Entity.Reparent(new_parent); }
+
+	std::vector<Entity>& GetChildren() { return m_Entity.GetChildren(); }
+
+	Entity CreateEntity(const std::string& name = "") { return m_Entity.CreateEntity(name); }
+	void DestroyEntity(Entity entity) { m_Entity.DestroyEntity(entity); }
+
+	Entity InstantiatePrefab(const std::filesystem::path& path) { return m_Entity.InstantiatePrefab(path); }
+
+	Entity FindEntityByUUID(UUID uuid) { return m_Entity.FindEntityByUUID(uuid); }
+	Entity FindEntityByName(const std::string& name) { return m_Entity.FindEntityByName(name); }
+
+
+
+	Entity m_Entity;
+
+public:
 	virtual std::vector<NativeScriptField> OnEditorGetFields() {
 		return std::vector<NativeScriptField>{};
 	}
@@ -33,25 +64,7 @@ protected:
 	virtual void OnMouseButtonReleased(const MouseButtonReleasedEvent& event) { }
 	virtual void OnMouseScrolled(const MouseScrolledEvent& event) { }
 
-protected:
-	std::string& GetTag() { return m_Entity.GetTag(); }
-
-	bool HasFamily()                    { return m_Entity.HasFamily(); }
-	Component::Family& GetOrAddFamily() { return m_Entity.GetOrAddFamily(); }
-	bool HasParent()                    { return m_Entity.HasParent(); }
-	Entity& GetParent()                 { return m_Entity.GetParent(); }
-	void Reparent(Entity& new_parent)   {        m_Entity.Reparent(new_parent); }
-	std::vector<Entity>& GetChildren()  { return m_Entity.GetChildren(); }
-
-	Entity CreateEntity(const std::string& name = "") { return m_Entity.CreateEntity(name); }
-	void DestroyEntity(Entity& entity) { m_Entity.DestroyEntity(entity); }
-
-	Entity InstantiatePrefab(const std::filesystem::path& path) {
-		return m_Entity.InstantiatePrefab(path);
-	}
-
 private:
-	Entity m_Entity;
 	friend class Scene;
 	friend class PhysicsWorld;
 };
