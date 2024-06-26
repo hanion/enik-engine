@@ -3,7 +3,9 @@
 #include <pch.h>
 #include <stack>
 
+#include "core/log.h"
 #include "project/project.h"
+#include "scene/components.h"
 #include "script_system/script_registry.h"
 
 
@@ -192,9 +194,15 @@ const UUID SceneSerializer::DuplicateEntity(const std::string& filepath, UUID uu
 		return -1;
 	}
 
+	Entity parent_of_root;
+	Entity root_entity = m_Scene->FindEntityByUUID(uuid);
+	if (root_entity.HasParent()) {
+		parent_of_root = root_entity.GetParent();
+	}
+
 	// strip unrelated entities from yaml node
 	YAML::Node related_entities;
-	Component::Family root_family = m_Scene->FindEntityByUUID(uuid).GetOrAddFamily();
+	Component::Family& root_family = root_entity.GetOrAddFamily();
 	for (const auto& entity : entities) {
 		uint64_t data_uuid = entity["Entity"].as<uint64_t>();
 		Entity test_entity = m_Scene->FindEntityByUUID(data_uuid);
@@ -210,27 +218,28 @@ const UUID SceneSerializer::DuplicateEntity(const std::string& filepath, UUID uu
 	entities = related_entities;
 
 	std::unordered_map<uint64_t, uint64_t> uuid_map;
-	UpdateUUIDs(entities, uuid_map);
-
+	UUID new_root_uuid = UUID();
+	uuid_map[uuid] = new_root_uuid;
+	UpdateUUIDs(entities, uuid_map, new_root_uuid);
+	
 	// iterate reversed to not change entity indexes
 	for (size_t i = entities.size(); i > 0; --i) {
-		auto entity = entities[i - 1];
-		uint64_t uuid = entity["Entity"].as<uint64_t>();
+		auto relative_entity = entities[i - 1];
+		uint64_t relative_uuid = relative_entity["Entity"].as<uint64_t>();
 
 		std::string name;
-		auto tag = entity["Component::Tag"];
-		if (tag) {
+		if (auto tag = relative_entity["Component::Tag"]) {
 			name = tag["Text"].as<std::string>();
 		}
-		DeserializeEntity(entity, uuid, name);
+
+		DeserializeEntity(relative_entity, relative_uuid, name);
 	}
 
-	UUID root_uuid;
-	auto iter = uuid_map.find(uuid);
-	if (iter != uuid_map.end()) {
-		root_uuid = UUID(iter->second);
+	if (Entity root_entity = m_Scene->FindEntityByUUID(new_root_uuid)) {
+		root_entity.Reparent(parent_of_root);
 	}
-	return root_uuid;
+
+	return new_root_uuid;
 }
 
 
@@ -293,8 +302,9 @@ void SceneSerializer::CreatePrefab(const std::string& filepath, Entity entity_to
 
 	std::ofstream fout(filepath);
 	fout << out.c_str();
+	fout.close();
 
-	// remove Component::Prefab
+	// remove Component::Prefab and roots parent
 	YAML::Node data;
 	try {
 		data = YAML::LoadFile(filepath);
@@ -304,12 +314,23 @@ void SceneSerializer::CreatePrefab(const std::string& filepath, Entity entity_to
 		return;
 	}
 	auto entities = data["Entities"];
-	if (not entities) {
+	if (not entities or not entities.IsSequence()) {
 		return;
 	}
 	for (auto entity : entities) {
-		if (entity["Component::Prefab"]) {
-			entity.remove("Component::Prefab");
+		if (entity["Entity"].as<std::uint64_t>() == entity_to_prefab.GetID()) {
+			if (entity["Component::Prefab"]) {
+				entity.remove("Component::Prefab");
+			}
+			if (auto fam = entity["Component::Family"]) {
+				if (fam["Parent"]) {
+					fam.remove("Parent");
+				}
+				if (not fam["Children"]) {
+					entity.remove("Component::Family");
+				}
+			}
+			break;
 		}
 	}
 
@@ -325,7 +346,7 @@ void SceneSerializer::CreatePrefab(const std::string& filepath, Entity entity_to
 }
 
 
-void SceneSerializer::UpdateUUIDs(YAML::Node& entities, std::unordered_map<uint64_t, uint64_t>& uuid_map) {
+void SceneSerializer::UpdateUUIDs(YAML::Node& entities, std::unordered_map<uint64_t, uint64_t>& uuid_map, UUID new_root_uuid) {
 	for (auto entity : entities) {
 		uint64_t old_uuid = entity["Entity"].as<uint64_t>();
 		UUID new_uuid;
@@ -344,7 +365,19 @@ void SceneSerializer::UpdateUUIDs(YAML::Node& entities, std::unordered_map<uint6
 		YAML::Node family = entity["Component::Family"];
 		if (family) {
 			if (family["Parent"]) {
-				family.remove("Parent");
+				// do not change parent of the root entity
+				if (new_uuid != new_root_uuid) {
+					UUID old_parent_uuid = family["Parent"].as<uint64_t>();
+					UUID parent_new_uuid;
+					auto iter = uuid_map.find(old_parent_uuid);
+					if (iter != uuid_map.end()) {
+						parent_new_uuid = UUID(iter->second);
+					}
+					else {
+						uuid_map[old_parent_uuid] = parent_new_uuid;
+					}
+					family["Parent"] = (uint64_t)parent_new_uuid;
+				}
 			}
 			if (family["Children"]) {
 				for (std::size_t j = 0; j < family["Children"].size(); ++j) {
@@ -391,7 +424,7 @@ void SceneSerializer::UpdateUUIDs(YAML::Node& entities, std::unordered_map<uint6
 	}
 }
 
-Entity SceneSerializer::InstantiatePrefab(const std::string& filepath) {
+Entity SceneSerializer::InstantiatePrefab(const std::string& filepath, UUID instance_uuid) {
 	YAML::Node data;
 	try {
 		data = YAML::LoadFile(filepath);
@@ -411,7 +444,10 @@ Entity SceneSerializer::InstantiatePrefab(const std::string& filepath) {
 	}
 
 	std::unordered_map<uint64_t, uint64_t> uuid_map;
-	UpdateUUIDs(entities,uuid_map);
+
+	UUID old_root_uuid = data["Root"].as<uint64_t>();
+	uuid_map[old_root_uuid] = instance_uuid;
+	UpdateUUIDs(entities, uuid_map, instance_uuid);
 
 	// iterate reversed to not change entity indexes
 	for (std::size_t i = entities.size(); i > 0; --i) {
@@ -423,19 +459,19 @@ Entity SceneSerializer::InstantiatePrefab(const std::string& filepath) {
 			name = tag["Text"].as<std::string>();
 		}
 
-		// remove prefab tag so it goes through DeserializeEntity
-		if (entity["Component::Prefab"]) {
-			entity.remove("Component::Prefab");
+		// remove prefab from node, so it doesn't instantiate again forever
+		if (auto pref = entity["Component::Prefab"]) {
+			if (pref["RootPrefab"].as<bool>()) {
+				if (uuid == instance_uuid) {
+					entity.remove("Component::Prefab");
+				}
+			}
 		}
 
 		DeserializeEntity(entity, uuid, name);
 	}
 
-	Entity root_entity;
-	auto iter = uuid_map.find(data["Root"].as<uint64_t>());
-	if (iter != uuid_map.end()) {
-		root_entity = m_Scene->FindEntityByUUID(UUID(iter->second));
-	}
+	Entity root_entity = m_Scene->FindEntityByUUID(instance_uuid);
 
 	Component::Prefab& component = root_entity.Add<Component::Prefab>();
 	component.RootPrefab = true;
@@ -451,7 +487,7 @@ Entity SceneSerializer::InstantiatePrefab(const std::string& filepath) {
 
 		if (current_entity.HasFamily()) {
 			for (Entity child : current_entity.GetChildren()) {
-				child.Add<Component::Prefab>().RootPrefab = false;
+				child.GetOrAdd<Component::Prefab>().RootPrefab = false;
 				all_entities.push(child);
 			}
 		}
@@ -636,21 +672,30 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 
 	auto prefab = entity["Component::Prefab"];
 	if (prefab) {
+		m_Scene->DestroyEntity(deserialized_entity);
 		if (prefab["RootPrefab"].as<bool>()) {
 			if (prefab["PrefabPath"]) {
 				std::filesystem::path prefab_path = prefab["PrefabPath"].as<std::string>();
-				Entity instantiated_root = m_Scene->InstantiatePrefab(prefab_path);
+				Entity instantiated_root = m_Scene->InstantiatePrefab(prefab_path, uuid);
 				auto& trans = instantiated_root.Get<Component::Transform>();
-				// root transform should be controllable, with this
+
 				auto transform = entity["Component::Transform"];
 				if (transform) {
 					trans.Position = transform["Position"].as<glm::vec3>();
 					trans.Rotation = transform["Rotation"].as<float>();
 					trans.Scale = transform["Scale"].as<glm::vec2>();
 				}
+
+				auto family = entity["Component::Family"];
+				if (family and family["Parent"]) {
+					auto parent_id = family["Parent"].as<uint64_t>();
+					Entity parent = m_Scene->FindEntityByUUID(parent_id);
+					if (parent) {
+						instantiated_root.Reparent(parent);
+					}
+				}
 			}
 		}
-		m_Scene->DestroyEntity(deserialized_entity);
 		return;
 	}
 
@@ -749,7 +794,9 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 				if (not child) {
 					child = m_Scene->CreateEntityWithUUID(child_id);
 				}
-				child.Reparent(deserialized_entity);
+				if (child) {
+					child.Reparent(deserialized_entity);
+				}
 			}
 		}
 	}

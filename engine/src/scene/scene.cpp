@@ -57,10 +57,10 @@ void Scene::DestroyEntity(Entity entity) {
 	}
 }
 
-Entity Scene::InstantiatePrefab(const std::filesystem::path& path) {
+Entity Scene::InstantiatePrefab(const std::filesystem::path& path, UUID instance_uuid) {
 	std::filesystem::path canonical_path = Project::GetAbsolutePath(path);
 	SceneSerializer serializer = SceneSerializer(this);
-	return serializer.InstantiatePrefab(canonical_path.string());
+	return serializer.InstantiatePrefab(canonical_path.string(), instance_uuid);
 }
 
 void Scene::OnUpdateEditor(Timestep ts, OrthographicCameraController& camera) {

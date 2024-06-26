@@ -19,7 +19,7 @@ public:
 	Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
 	void DestroyEntity(Entity entity);
 
-	Entity InstantiatePrefab(const std::filesystem::path& path);
+	Entity InstantiatePrefab(const std::filesystem::path& path, UUID instance_uuid = UUID());
 
 	entt::registry& Reg() { return m_Registry; }
 
