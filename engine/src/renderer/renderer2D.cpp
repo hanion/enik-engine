@@ -254,11 +254,11 @@ void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::Sp
 	glm::mat4 transform;
 	glm::vec3 positions[4];
 
-	if (trans.Rotation) {
+	if (trans.GlobalRotation) {
 		transform = trans.GetTransform();
 	}
 	else {
-		glm::vec2 half_scale = trans.Scale / 2.0f;
+		glm::vec2 half_scale = trans.GlobalScale / 2.0f;
 
 		positions[0] = {trans.GlobalPosition.x - half_scale.x, trans.GlobalPosition.y - half_scale.y, trans.GlobalPosition.z};
 		positions[1] = {trans.GlobalPosition.x + half_scale.x, trans.GlobalPosition.y - half_scale.y, trans.GlobalPosition.z};
@@ -267,7 +267,7 @@ void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::Sp
 	}
 
 	for (size_t i = 0; i < 4; i++) {
-		if (trans.Rotation) {
+		if (trans.GlobalRotation) {
 			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
 		}
 		else {

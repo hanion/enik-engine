@@ -194,22 +194,20 @@ void Component::Family::Reparent(Entity this_entity, Entity new_parent) {
 }
 
 
-glm::vec3 Component::Family::FindGlobalPosition(const Component::Transform& transform) {
-	if (Parent == nullptr or not *Parent or not Parent->Has<Component::Transform>()) {
-		return transform.Position;
-	}
+void Component::Family::SetChildrenGlobalTransformRecursive(Component::Transform& transform) {
+	for (Entity& child : Children) {
+		Component::Transform& child_transform = child.Get<Component::Transform>();
 
-	auto& parent_transform = Parent->Get<Component::Transform>();
+		glm::mat4 child_global_transform = transform.GetTransform() * child_transform.GetTransform();
 
-	glm::vec3 parent_global_position;
-	if (Parent->HasParent()) {
-		parent_global_position = Parent->GetOrAddFamily().FindGlobalPosition(parent_transform);
-	}
-	else {
-		parent_global_position = parent_transform.Position;
-	}
+		glm::vec3 skew;
+		glm::vec4 perspective;
+		glm::quat rotation;
+		glm::decompose(child_global_transform, child_transform.GlobalScale, rotation, child_transform.GlobalPosition, skew, perspective);
 
-	return transform.Position + parent_global_position;
+		child_transform.GlobalRotation = glm::eulerAngles(rotation).z;
+		child.Get<Component::Family>().SetChildrenGlobalTransformRecursive(child_transform);
+	}
 }
 
 

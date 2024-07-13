@@ -9,6 +9,8 @@
 #include <filesystem>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 namespace Enik {
 
@@ -41,21 +43,24 @@ struct Tag {
 };
 
 struct Transform {
-	glm::vec3 Position = glm::vec3(0.0f);
-	glm::vec3 GlobalPosition = Position;
-	float Rotation = 0.0f;
-	glm::vec2 Scale = glm::vec2(1.0f);
+	glm::vec3 LocalPosition = glm::vec3(0.0f);
+	float     LocalRotation = 0.0f;
+	glm::vec3 LocalScale    = glm::vec3(1.0f);
+
+	glm::vec3 GlobalPosition = LocalPosition;
+	float     GlobalRotation = LocalRotation;
+	glm::vec3 GlobalScale    = LocalScale;
 
 	Transform() = default;
 	Transform(const Transform&) = default;
-	Transform(const glm::vec3& position, const float rotation = 0.0f, const glm::vec3& scale = glm::vec3(0.0f))
-		: Position(position), Rotation(rotation), Scale(scale) {}
+	Transform(const glm::vec3& position, float rotation = 0.0f, const glm::vec3& scale = glm::vec3(1.0f))
+	: LocalPosition(position), LocalRotation(rotation), LocalScale(scale) {}
 
 	glm::mat4 GetTransform() const {
 		glm::mat4 transform = glm::mat4(1.0f);
 		transform = glm::translate(transform, GlobalPosition);
-		transform = glm::rotate(transform, Rotation, glm::vec3(0.0f, 0.0f, 1.0f));
-		transform = glm::scale(transform, glm::vec3(Scale.x, Scale.y, 1.0f));
+		transform = glm::rotate(transform, GlobalRotation, glm::vec3(0.0f, 0.0f, 1.0f));
+		transform = glm::scale(transform, GlobalScale);
 		return transform;
 	}
 };
@@ -159,7 +164,7 @@ public:
 
 	void Reparent(Entity this_entity, Entity new_parent);
 
-	glm::vec3 FindGlobalPosition(const Component::Transform& transform);
+	void SetChildrenGlobalTransformRecursive(Component::Transform& transform);
 
 	bool HasEntityAsChild(Entity entity);
 private:

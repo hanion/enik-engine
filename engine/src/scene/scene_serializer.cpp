@@ -516,9 +516,9 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::BeginMap;
 
 		auto& transform = entity.Get<Component::Transform>();
-		out << YAML::Key << "Position" << YAML::Value << transform.Position;
-		out << YAML::Key << "Rotation" << YAML::Value << transform.Rotation;
-		out << YAML::Key << "Scale" << YAML::Value << transform.Scale;
+		out << YAML::Key << "Position" << YAML::Value << transform.LocalPosition;
+		out << YAML::Key << "Rotation" << YAML::Value << transform.LocalRotation;
+		out << YAML::Key << "Scale"    << YAML::Value << transform.LocalScale;
 
 		out << YAML::EndMap;
 	}
@@ -681,9 +681,16 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 
 				auto transform = entity["Component::Transform"];
 				if (transform) {
-					trans.Position = transform["Position"].as<glm::vec3>();
-					trans.Rotation = transform["Rotation"].as<float>();
-					trans.Scale = transform["Scale"].as<glm::vec2>();
+					trans.LocalPosition = transform["Position"].as<glm::vec3>();
+					trans.LocalRotation = transform["Rotation"].as<float>();
+
+					if (transform["Scale"].size() == 2) {
+						glm::vec2 scale = transform["Scale"].as<glm::vec2>();
+						trans.LocalScale.x = scale.x;
+						trans.LocalScale.y = scale.y;
+					} else if (transform["Scale"].size() == 3) {
+						trans.LocalScale = transform["Scale"].as<glm::vec3>();
+					}
 				}
 
 				auto family = entity["Component::Family"];
@@ -702,9 +709,15 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 	auto transform = entity["Component::Transform"];
 	if (transform) {
 		auto& trans = deserialized_entity.Get<Component::Transform>();
-		trans.Position = transform["Position"].as<glm::vec3>();
-		trans.Rotation = transform["Rotation"].as<float>();
-		trans.Scale = transform["Scale"].as<glm::vec2>();
+		trans.LocalPosition = transform["Position"].as<glm::vec3>();
+		trans.LocalRotation = transform["Rotation"].as<float>();
+		if (transform["Scale"].size() == 2) {
+			glm::vec2 scale = transform["Scale"].as<glm::vec2>();
+			trans.LocalScale.x = scale.x;
+			trans.LocalScale.y = scale.y;
+		} else if (transform["Scale"].size() == 3) {
+			trans.LocalScale = transform["Scale"].as<glm::vec3>();
+		}
 	}
 
 	auto spriteRenderer = entity["Component::SpriteRenderer"];

@@ -29,7 +29,7 @@ void PhysicsWorld::Step() {
 
 		auto half_acceleration = (rigid_body.Force / rigid_body.Mass) * GetFixedUpdateRate() * 0.5f;
 		rigid_body.Velocity += half_acceleration;
-		transform.Position += rigid_body.Velocity * GetFixedUpdateRate();
+		transform.LocalPosition += rigid_body.Velocity * GetFixedUpdateRate();
 		rigid_body.Velocity += half_acceleration;
 
 		// reset force
@@ -97,13 +97,13 @@ void PhysicsWorld::ResolveCollisions() {
 		glm::vec3 separation = points.Normal * points.Depth;
 
 		if (a.Has<Component::RigidBody>()) {
-			a.Get<Component::Transform>().Position -= separation;
+			a.Get<Component::Transform>().LocalPosition -= separation;
 			auto rb = &a.Get<Component::RigidBody>();
 			rb->Velocity *= 0.99f;
 			rb->ApplyImpulse(-separation);
 		}
 		if (b.Has<Component::RigidBody>()) {
-			b.Get<Component::Transform>().Position += separation;
+			b.Get<Component::Transform>().LocalPosition += separation;
 			auto rb = &b.Get<Component::RigidBody>();
 			rb->Velocity *= 0.99f;
 			rb->ApplyImpulse(+separation);

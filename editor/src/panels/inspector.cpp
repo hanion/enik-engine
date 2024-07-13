@@ -96,16 +96,16 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	DisplayComponentInInspector<Component::Transform>("Transform", entity, false, [&]() {
 		auto& transform = entity.Get<Component::Transform>();
 		ImGuiUtils::PrefixLabel("Position");
-		ImGui::DragFloat3("##Position", glm::value_ptr(transform.Position), 0.01f);
+		ImGui::DragFloat3("##Position", glm::value_ptr(transform.LocalPosition), 0.01f);
 
 		ImGuiUtils::PrefixLabel("Rotation");
-		float rot = glm::degrees(transform.Rotation);
+		float rot = glm::degrees(transform.LocalRotation);
 		if (ImGui::DragFloat("##Rotation", &rot, 0.1f)) {
-			transform.Rotation = glm::radians(rot);
+			transform.LocalRotation = glm::radians(rot);
 		}
 
 		ImGuiUtils::PrefixLabel("Scale");
-		ImGui::DragFloat2("##Scale", glm::value_ptr(transform.Scale), 0.01f);
+		ImGui::DragFloat2("##Scale", glm::value_ptr(transform.LocalScale), 0.01f);
 	});
 
 	if (entity.Has<Component::NativeScript>()) {

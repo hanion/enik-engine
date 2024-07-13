@@ -765,12 +765,11 @@ void EditorLayer::OnOverlayRender() {
 			switch (collider.Shape) {
 				case Component::ColliderShape::CIRCLE: {
 					Renderer2D::DrawCircle(
-						// transform.Position + collider.vector,
 						glm::vec3(
 							transform.GlobalPosition.x + collider.Vector.x,
 							transform.GlobalPosition.y + collider.Vector.y,
 							0.999f),
-						transform.Scale.x * collider.Float,
+						transform.LocalScale.x * collider.Float,
 						32,
 						glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
 					break;
@@ -778,8 +777,8 @@ void EditorLayer::OnOverlayRender() {
 				case Component::ColliderShape::PLANE: {
 					Component::Transform trans;
 					trans.GlobalPosition = transform.GlobalPosition;
-					trans.Rotation = transform.Rotation;
-					trans.Scale = transform.Scale * collider.Float * 2.0f;
+					trans.LocalRotation = transform.LocalRotation;
+					trans.LocalScale = transform.LocalScale * collider.Float * 2.0f;
 					trans.GlobalPosition.z = 0.999f;
 					Renderer2D::DrawRect(trans, glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
 					Renderer2D::DrawLine(
@@ -794,8 +793,8 @@ void EditorLayer::OnOverlayRender() {
 							transform.GlobalPosition.x + collider.Vector.x,
 							transform.GlobalPosition.y + collider.Vector.y,
 							0.999f);
-					trans.Rotation = transform.Rotation;
-					trans.Scale = transform.Scale * collider.Float * 2.0f;
+					trans.LocalRotation = transform.LocalRotation;
+					trans.LocalScale = transform.LocalScale * collider.Float * 2.0f;
 					Renderer2D::DrawRect(trans, glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
 					break;
 				}
@@ -810,7 +809,7 @@ void EditorLayer::OnOverlayRender() {
 	if (m_ShowSelectionOutline) {
 		if (m_SceneTreePanel.IsSelectedEntityValid()) {
 			auto transform = m_SceneTreePanel.GetSelectedEntity().Get<Component::Transform>();
-			transform.Position.z = 0.999f;
+			transform.GlobalPosition.z = 0.999f;
 
 			float increase_amount = 0.004f * m_EditorCameraController.GetZoomLevel();
 
@@ -819,8 +818,8 @@ void EditorLayer::OnOverlayRender() {
 					transform,
 					m_SelectionOutlineColor
 				);
-				transform.Scale.x += increase_amount;
-				transform.Scale.y += increase_amount;
+				transform.LocalScale.x += increase_amount;
+				transform.LocalScale.y += increase_amount;
 			}
 		}
 	}

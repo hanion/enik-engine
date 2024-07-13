@@ -56,14 +56,14 @@ CollisionPoints TestCircleCircle(
 	if (b->Shape != Component::ColliderShape::CIRCLE)  { return result; }
 
 
-	glm::vec3 a_center = (a_transform->Position + a->Vector);
-	glm::vec3 b_center = (b_transform->Position + b->Vector);
+	glm::vec3 a_center = (a_transform->GlobalPosition + a->Vector);
+	glm::vec3 b_center = (b_transform->GlobalPosition + b->Vector);
 
 	glm::vec3 diff = b_center - a_center;
 	auto distance = glm::length(diff);
 
-	float a_radius = a->Float * a_transform->Scale.x;
-	float b_radius = b->Float * b_transform->Scale.x;
+	float a_radius = a->Float * a_transform->GlobalScale.x;
+	float b_radius = b->Float * b_transform->GlobalScale.x;
 
 	if (distance < a_radius + b_radius) {
 		glm::vec3 normal = glm::normalize(diff);
@@ -91,11 +91,11 @@ CollisionPoints TestCirclePlane(
 	if (circle->Shape != Component::ColliderShape::CIRCLE)  { return result; }
 	if (plane->Shape  != Component::ColliderShape::PLANE )  { return result; }
 
-	glm::vec3 circle_center = circle_transform->Position + circle->Vector;
-	float circle_radius = circle->Float * circle_transform->Scale.x;
+	glm::vec3 circle_center = circle_transform->GlobalPosition + circle->Vector;
+	float circle_radius = circle->Float * circle_transform->GlobalScale.x;
 
 	glm::vec3 plane_normal = plane->Vector;
-	float plane_d = plane_transform->Position.y + plane->Float;
+	float plane_d = plane_transform->GlobalPosition.y + plane->Float;
 
 	float distance = glm::dot(circle_center, plane_normal) - plane_d;
 
@@ -121,19 +121,19 @@ CollisionPoints TestCircleBox(
 	if (circle->Shape != Component::ColliderShape::CIRCLE)  { return result; }
 	if (box->Shape    != Component::ColliderShape::BOX   )  { return result; }
 
-	glm::vec3 box_scale = glm::vec3(box_transform->Scale.x * 0.5f, box_transform->Scale.y * 0.5f, 0);
+	glm::vec3 box_scale = glm::vec3(box_transform->GlobalScale.x * 0.5f, box_transform->GlobalScale.y * 0.5f, 0);
 
 	glm::vec3 closest_point_on_box = glm::clamp(
-		circle_transform->Position,
-		box_transform->Position - box_scale,
-		box_transform->Position + box_scale
+		circle_transform->GlobalPosition,
+		box_transform->GlobalPosition - box_scale,
+		box_transform->GlobalPosition + box_scale
 	);
 
-	glm::vec3 circle_to_closest_point = closest_point_on_box - circle_transform->Position;
+	glm::vec3 circle_to_closest_point = closest_point_on_box - circle_transform->GlobalPosition;
 
 	float distance = glm::length(circle_to_closest_point);
 
-	float circle_radius = circle->Float * circle_transform->Scale.x;
+	float circle_radius = circle->Float * circle_transform->GlobalScale.x;
 
 	if (distance <= circle_radius) {
 		result.Depth = circle_radius - distance;
@@ -155,10 +155,10 @@ CollisionPoints TestPlaneBox(
 	if (box->Shape   != Component::ColliderShape::BOX  )  { return result; }
 
 
-	float distance = glm::dot(box_transform->Position - plane_transform->Position, plane->Vector);
+	float distance = glm::dot(box_transform->GlobalPosition - plane_transform->GlobalPosition, plane->Vector);
 
-	if (distance <= box_transform->Scale.y) {
-		result.Depth = box_transform->Scale.y - distance;
+	if (distance <= box_transform->GlobalScale.y) {
+		result.Depth = box_transform->GlobalScale.y - distance;
 		result.Normal = plane->Vector;
 		result.HasCollision = true;
 	}
@@ -214,17 +214,17 @@ CollisionPoints TestBoxBox(
 	if (b->Shape != Component::ColliderShape::BOX)  { return result; }
 
 
-	const glm::vec3& a_position = a_transform->Position;
-	const glm::vec3& b_position = b_transform->Position;
+	const glm::vec3& a_position = a_transform->GlobalPosition;
+	const glm::vec3& b_position = b_transform->GlobalPosition;
 
-	glm::vec2 a_half_extents = a_transform->Scale * 0.5f;
-	glm::vec2 b_half_extents = b_transform->Scale * 0.5f;
+	glm::vec2 a_half_extents = a_transform->GlobalScale * 0.5f;
+	glm::vec2 b_half_extents = b_transform->GlobalScale * 0.5f;
 
 	glm::vec2 a_vertices[4];
 	glm::vec2 b_vertices[4];
 
-	CalculateBoxVertices(a_position, a_half_extents, glm::radians(a_transform->Rotation), a_vertices);
-	CalculateBoxVertices(b_position, b_half_extents, glm::radians(b_transform->Rotation), b_vertices);
+	CalculateBoxVertices(a_position, a_half_extents, glm::radians(a_transform->GlobalRotation), a_vertices);
+	CalculateBoxVertices(b_position, b_half_extents, glm::radians(b_transform->GlobalRotation), b_vertices);
 
 	bool overlap_on_all_axes = true;
 

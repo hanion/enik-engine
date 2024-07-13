@@ -66,7 +66,7 @@ Entity Scene::InstantiatePrefab(const std::filesystem::path& path, UUID instance
 void Scene::OnUpdateEditor(Timestep ts, OrthographicCameraController& camera) {
 	EN_PROFILE_SECTION("Scene::OnUpdateEditor");
 
-	SetGlobalPositions();
+	SetGlobalTransforms();
 
 	Renderer2D::BeginScene(camera.GetCamera());
 
@@ -89,7 +89,7 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 	EN_PROFILE_SECTION("Scene::OnUpdateRuntime");
 
 
-	SetGlobalPositions();
+	SetGlobalTransforms();
 
 	/* Update Scripts */
 	if (not m_IsPaused or m_StepFrames-- > 0) {
@@ -286,22 +286,26 @@ Entity Scene::FindEntityByName(const std::string& name) {
 	return Entity();
 }
 
-void Scene::SetGlobalPositions() {
+void Scene::SetGlobalTransforms() {
 	EN_PROFILE_SCOPE;
 
-	// reset all global positions
+	// reset all global transforms
 	m_Registry.view<Component::Transform>().each(
 		[=](auto entity, auto& transform) {
-			transform.GlobalPosition = transform.Position;
+			transform.GlobalPosition = transform.LocalPosition;
+			transform.GlobalRotation = transform.LocalRotation;
+			transform.GlobalScale    = transform.LocalScale;
 		}
 	);
 
-	// find global positions
 	auto group = m_Registry.group<Component::Family>(entt::get<Component::Transform>);
 	for (auto entity : group) {
 		Component::Transform& transform = group.get<Component::Transform>(entity);
 		Component::Family&    family    = group.get<Component::Family>   (entity);
-		transform.GlobalPosition = family.FindGlobalPosition(transform);
+		if (family.Parent) {
+			continue;
+		}
+		family.SetChildrenGlobalTransformRecursive(transform);
 	}
 }
 

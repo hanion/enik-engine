@@ -236,7 +236,7 @@ void ToolbarPanel::Moving() {
 	if (m_SceneTreePanel->IsSelectedEntityValid()) {
 		glm::vec2 diff = GetMouseDelta();
 
-		glm::vec3& entity_pos = m_SceneTreePanel->GetSelectedEntity().Get<Component::Transform>().Position;
+		glm::vec3& entity_pos = m_SceneTreePanel->GetSelectedEntity().Get<Component::Transform>().LocalPosition;
 		entity_pos.x += diff.x;
 		entity_pos.y -= diff.y;
 	}
@@ -250,7 +250,7 @@ void ToolbarPanel::Scaling() {
 	if (m_SceneTreePanel->IsSelectedEntityValid()) {
 		glm::vec2 diff = GetMouseDelta();
 
-		glm::vec2& entity_scale = m_SceneTreePanel->GetSelectedEntity().Get<Component::Transform>().Scale;
+		glm::vec3& entity_scale = m_SceneTreePanel->GetSelectedEntity().Get<Component::Transform>().LocalScale;
 		entity_scale.x += diff.x;
 		entity_scale.y += diff.y;
 	}
@@ -266,7 +266,7 @@ void ToolbarPanel::Rotating() {
 		// ? zoom level does not matter while rotating, intuitively
 		diff *= 1.1f / m_EditorCamera->GetZoomLevel();
 
-		m_SceneTreePanel->GetSelectedEntity().Get<Component::Transform>().Rotation += diff.x - diff.y;
+		m_SceneTreePanel->GetSelectedEntity().Get<Component::Transform>().LocalRotation += diff.x - diff.y;
 	}
 }
 

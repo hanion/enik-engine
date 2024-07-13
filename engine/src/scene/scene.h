@@ -51,7 +51,8 @@ public:
 	Entity FindEntityByUUID(UUID uuid);
 	Entity FindEntityByName(const std::string& name);
 
-	void SetGlobalPositions();
+	void SetGlobalTransforms();
+
 
 private:
 	entt::registry m_Registry;
