@@ -412,9 +412,6 @@ void EditorLayer::CreateNewProject() {
 		[&](){
 			// TODO this
 			EN_CORE_WARN("TODO Create a new project here. (EditorLayer::CreateNewProject)");
-			std::filesystem::path proj(FULL_PATH_EDITOR("project.enik"));
-			LoadProject(proj);
-
 		}, ".enik");
 }
 
