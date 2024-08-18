@@ -1,17 +1,17 @@
 #pragma once
 #include <base.h>
 
+#include "editor_panel.h"
 #include "scene/entity.h"
 #include "scene/scene.h"
-#include "../utils/imgui_utils.h"
+#include "utils/imgui_utils.h"
 
 
 namespace Enik {
 
-class SceneTreePanel {
+class SceneTreePanel : public EditorPanel {
 public:
-	SceneTreePanel() = default;
-	SceneTreePanel(const Ref<Scene>& context);
+	SceneTreePanel() : EditorPanel("Scene Tree") {}
 	~SceneTreePanel() {}
 
 	void SetContext(const Ref<Scene>& context);
@@ -23,7 +23,7 @@ public:
 	void SetSelectedEntity(const Entity& entity);
 	void SetSelectedEntityWithUUID(const UUID& uuid);
 
-	void OnImGuiRender();
+	virtual void RenderContent() override final;
 
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& event);
 

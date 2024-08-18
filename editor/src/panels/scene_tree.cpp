@@ -2,18 +2,15 @@
 
 #include <imgui/imgui.h>
 
+#include "core/log.h"
 #include "scene/components.h"
-#include "../dialogs/dialog_confirm.h"
-#include "../dialogs/dialog_file.h"
+#include "dialogs/dialog_confirm.h"
+#include "dialogs/dialog_file.h"
 #include "scene/scene_serializer.h"
 #include "project/project.h"
-#include "../utils/editor_colors.h"
+#include "utils/editor_colors.h"
 
 namespace Enik {
-
-SceneTreePanel::SceneTreePanel(const Ref<Scene>& context) {
-	SetContext(context);
-}
 
 void SceneTreePanel::SetContext(const Ref<Scene>& context) {
 	m_Context = context;
@@ -28,9 +25,7 @@ UUID SceneTreePanel::GetSelectedEntityUUID() {
 }
 
 void SceneTreePanel::SetSelectedEntity(const Entity& entity) {
-	if(entity) {
-		m_SelectionContext = entity;
-	}
+	m_SelectionContext = entity;
 }
 
 void SceneTreePanel::SetSelectedEntityWithUUID(const UUID& uuid) {
@@ -42,18 +37,15 @@ void SceneTreePanel::SetSelectedEntityWithUUID(const UUID& uuid) {
 	});
 }
 
-void SceneTreePanel::OnImGuiRender() {
-	ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
-
-	if (!ImGui::Begin("Scene Tree")) {
-		ImGui::End();
-		return;
-	}
+void SceneTreePanel::RenderContent() {
+	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0,0));
 	if (!ImGui::BeginTable("SceneTreeTable", 1) or m_Context == nullptr) {
 		ImGui::EndTable();
 		ImGui::End();
+		ImGui::PopStyleVar();
 		return;
 	}
+	ImGui::PopStyleVar();
 
 
 
@@ -113,7 +105,6 @@ void SceneTreePanel::OnImGuiRender() {
 	}
 
 	ImGui::EndTable();
-	ImGui::End();
 	m_MouseReleased = false;
 }
 
@@ -130,8 +121,9 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 	ImGui::TableSetColumnIndex(0);
 	ImGui::AlignTextToFramePadding();
 
-	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-	flags |= ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen;
+	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth
+		| ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen
+		| ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_AllowOverlap;
 	if (m_SelectionContext == entity) {
 		flags |= ImGuiTreeNodeFlags_Selected;
 	}
@@ -156,7 +148,7 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 		pushed_style_color_count++;
 	}
 
-	bool node_open = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, entity.GetTag().c_str());
+	bool node_open = ImGui::TreeNodeEx((void*)(uint64_t)entity, flags, entity.GetTag().c_str());
 
 	ImGui::PopStyleColor(pushed_style_color_count);
 

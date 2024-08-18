@@ -20,7 +20,7 @@ void RuntimeLayer::OnAttach() {
 	std::filesystem::path project = PROJECT_PATH;
 
 	if (not std::filesystem::exists(project)) {
-		EN_CORE_ERROR("Project not found! {}", project);
+		EN_CORE_ERROR("Project not found! {}", project.string());
 		return;
 	}
 

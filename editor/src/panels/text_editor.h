@@ -1,4 +1,7 @@
 #pragma once
+
+#include "editor_panel.h"
+
 #include <base.h>
 #include <fstream>
 #include <filesystem>
@@ -6,12 +9,11 @@
 
 namespace Enik {
 
-class TextEditorPanel {
+class TextEditorPanel : public EditorPanel {
 public:
-	TextEditorPanel() = default;
-	~TextEditorPanel() = default;
+	TextEditorPanel() : EditorPanel("Text Editor") {}
 
-	void OnImGuiRender();
+	void RenderContent();
 
 	bool OpenTextFile(const std::filesystem::path& path);
 	bool SaveCurrentTextFile();

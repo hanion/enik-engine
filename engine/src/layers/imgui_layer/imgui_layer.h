@@ -15,8 +15,8 @@ public:
 	ImGuiLayer();
 	~ImGuiLayer();
 
-	void OnAttach();
-	void OnDetach();
+	void OnAttach() override;
+	void OnDetach() override;
 	virtual void OnEvent(Event& e) override final;
 
 	void Begin();

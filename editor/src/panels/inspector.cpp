@@ -4,33 +4,22 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-#include "../dialogs/dialog_file.h"
+#include "dialogs/dialog_file.h"
 #include "project/project.h"
 #include "script_system/script_system.h"
 #include "core/input.h"
-#include "../utils/editor_colors.h"
+#include "utils/editor_colors.h"
 #include "audio/audio.h"
 
 
 namespace Enik {
-
-InspectorPanel::InspectorPanel(const Ref<Scene>& context) {
-	SetContext(context);
-}
 
 void InspectorPanel::SetContext(const Ref<Scene>& context, SceneTreePanel* scene_tree_panel) {
 	m_Context = context;
 	m_SceneTreePanel = scene_tree_panel;
 }
 
-void InspectorPanel::OnImGuiRender() {
-	ImGui::SetNextWindowSize(ImVec2(200, 200), ImGuiCond_FirstUseEver);
-
-	if (!ImGui::Begin("Inspector")) {
-		ImGui::End();
-		return;
-	}
-
+void InspectorPanel::RenderContent() {
 	if (!ImGui::BeginTable("InspectorTable", 1)) {
 		ImGui::EndTable();
 		return;
@@ -42,7 +31,6 @@ void InspectorPanel::OnImGuiRender() {
 	}
 
 	ImGui::EndTable();
-	ImGui::End();
 }
 
 void InspectorPanel::DrawEntityInInspector(Entity entity) {
@@ -50,7 +38,14 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		return;
 	}
 
-	ImGui::PushID(entity.Get<Component::ID>());
+	ImGui::PushID(entity.GetID());
+
+	int pushed_style_color = 0;
+	if (entity.Has<Component::Prefab>() and not entity.Get<Component::Prefab>().RootPrefab) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::blue_a);
+		pushed_style_color++;
+	}
+
 
 	/* Tag */ {
 		ImGui::TableNextRow();
@@ -92,6 +87,14 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	}
 
 	ImGui::Spacing();
+
+	DisplayComponentInInspector<Component::Prefab>("Prefab", entity, true, [&]() {
+		auto& pref = entity.Get<Component::Prefab>();
+		ImGuiUtils::PrefixLabel("RootPrefab");
+		ImGui::Checkbox("##RootPrefab", &pref.RootPrefab);
+		ImGuiUtils::PrefixLabel("PrefabPath");
+		ImGui::Text("%s", pref.PrefabPath.string().c_str());
+	});
 
 	DisplayComponentInInspector<Component::Transform>("Transform", entity, false, [&]() {
 		auto& transform = entity.Get<Component::Transform>();
@@ -247,7 +250,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			}
 
 			if (ImGui::IsItemHovered()){
-				ImGui::SetTooltip(file.c_str());
+				ImGui::SetTooltip("%s", file.c_str());
 
 				if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
 					to_remove_index = i;
@@ -284,6 +287,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 
 	});
 
+	ImGui::PopStyleColor(pushed_style_color);
 	ImGui::PopID();
 }
 
@@ -293,24 +297,24 @@ void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity
 		return;
 	}
 
-	static ImGuiTreeNodeFlags tree_node_flags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
-	tree_node_flags |= ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen;
-	tree_node_flags |= ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_AllowItemOverlap;
+	constexpr ImGuiTreeNodeFlags tree_node_flags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_OpenOnDoubleClick |
+		ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen |
+		ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_AllowItemOverlap;
 
 	ImGui::TableNextRow();
 	ImGui::TableSetColumnIndex(0);
 
 	bool remove_component = false;
 
-	if (ImGui::TreeNodeEx((void*)typeid(T).hash_code(), tree_node_flags, name.c_str())) {
+	if (ImGui::TreeNodeEx((void*)typeid(T).hash_code(), tree_node_flags, "%s", name.c_str())) {
 		if (can_delete) {
 			if (Input::IsMouseButtonPressed(1) and ImGui::IsItemHovered()) {
 				ImGui::OpenPopup("ComponentSettings");
 			}
 
-			float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-			ImGui::SameLine(ImGui::GetContentRegionAvail().x - GImGui->Style.FramePadding.x);
-			if (ImGui::Button("...", ImVec2(lineHeight, lineHeight))) {
+			ImGui::SameLine(ImGui::GetContentRegionAvail().x - GImGui->Style.FramePadding.x * 1.0f);
+			float line_width = GImGui->Font->FontSize + GImGui->Style.FramePadding.x * 2.0f;
+			if (ImGui::Button("...", ImVec2(line_width, 0))) {
 				ImGui::OpenPopup("ComponentSettings");
 			}
 			if (ImGui::BeginPopup("ComponentSettings")) {
@@ -338,10 +342,9 @@ void InspectorPanel::DisplayComponentInPopup(const std::string& name) {
 	if (ImGui::MenuItem(name.c_str())) {
 		m_SceneTreePanel->GetSelectedEntity().Add<T>();
 		ImGui::CloseCurrentPopup();
-	}
-
-	if (std::is_same<T, Component::Camera>::value) {
-		m_Context->OnViewportResize(m_Context->m_ViewportWidth, m_Context->m_ViewportHeight);
+		if (std::is_same<T, Component::Camera>::value) {
+			m_Context->OnViewportResize(m_Context->m_ViewportWidth, m_Context->m_ViewportHeight);
+		}
 	}
 
 	ImGui::EndDisabled();
@@ -431,7 +434,10 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 
 		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal) and not sprite.TexturePath.empty()) {
 			if (ImGui::BeginTooltip()) {
-				ImGui::Text(sprite.TexturePath.string().c_str());
+				std::string width  = std::to_string(sprite.Texture->GetWidth());
+				std::string height = std::to_string(sprite.Texture->GetHeight());
+				std::string txt = sprite.TexturePath.string() + " - " + width + "x" + height;
+				ImGui::Text("%s", txt.c_str());
 				ImVec2 texture_tooltip_size = ImVec2(tex_size.x*8.0f, tex_size.y*8.0f);
 				ImGui::Image(tex_id, texture_tooltip_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 				ImGui::EndTooltip();
@@ -552,7 +558,8 @@ void InspectorPanel::DisplayNativeScript(Component::NativeScript& script) {
 
 		ImGuiUtils::PrefixLabel(field.Name);
 
-		const char* label = ("##"+field.Name).c_str();
+		std::string field_name = ("##"+field.Name);
+		const char* label = field_name.c_str();
 		float speed = 0.01f;
 
 		switch (field.Type) {
@@ -592,7 +599,7 @@ void InspectorPanel::DisplayNativeScript(Component::NativeScript& script) {
 				ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::blue);
 				ImGui::Button(file.filename().c_str());
 				if (ImGui::IsItemHovered()){
-					ImGui::SetTooltip(file.c_str());
+					ImGui::SetTooltip("%s", file.c_str());
 				}
 				ImGui::PopStyleColor();
 
@@ -619,7 +626,7 @@ void InspectorPanel::DisplayNativeScript(Component::NativeScript& script) {
 				char buffer[256];
 				memset(buffer, 0, sizeof(buffer));
 				strcpy(buffer, static_cast<std::string*>(field.Value)->c_str());
-				if (ImGui::InputText(label, buffer, sizeof(buffer))) {
+				if (ImGui::InputTextMultiline(label, buffer, sizeof(buffer))) {
 					*static_cast<std::string*>(field.Value) = std::string(buffer);
 				}
 
@@ -652,7 +659,9 @@ void InspectorPanel::DisplayNativeScript(Component::NativeScript& script) {
 					entity_name = "[Entity]";
 				}
 
-				ImGui::Button(entity_name.c_str());
+				if (ImGui::Button(entity_name.c_str())) {
+					m_SceneTreePanel->SetSelectedEntityWithUUID(*id);
+				}
 
 				if (ImGui::BeginDragDropTarget()) {
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_ENTITY")) {
@@ -665,7 +674,7 @@ void InspectorPanel::DisplayNativeScript(Component::NativeScript& script) {
 				}
 
 				if (ImGui::IsItemHovered()){
-					ImGui::SetTooltip(std::to_string(*id).c_str());
+					ImGui::SetTooltip("%s", std::to_string(*id).c_str());
 				}
 
 				continue;

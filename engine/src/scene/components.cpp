@@ -171,6 +171,13 @@ void Component::NativeScript::Bind(const std::string& script_name, const std::fu
 
 
 
+bool Component::Family::HasParent() {
+	return (m_ParentUUID != 0);
+}
+
+Entity Component::Family::GetParent() {
+	return FindEntityByUUID(m_ParentUUID);
+}
 
 void Component::Family::Reparent(Entity this_entity, Entity new_parent) {
 
@@ -179,9 +186,8 @@ void Component::Family::Reparent(Entity this_entity, Entity new_parent) {
 		return;
 	}
 
-	if (Parent != nullptr and *Parent) {
-		EN_CORE_ASSERT(Parent->Has<Component::Family>());
-		Parent->Get<Component::Family>().RemoveChild(this_entity);
+	if (HasParent()) {
+		GetParent().GetOrAdd<Component::Family>().RemoveChild(this_entity);
 	}
 
 
@@ -232,10 +238,11 @@ void Component::Family::RemoveChild(Entity entity) {
 }
 
 void Component::Family::SetParent(Entity& entity) {
-	if (Parent != nullptr) {
-		delete Parent;
+	if (entity) {
+		m_ParentUUID = entity.GetID();
+	} else {
+		m_ParentUUID = 0;
 	}
-	Parent = new Entity(entity);
 }
 
 bool Component::Family::HasEntityAsChild(Entity entity) {

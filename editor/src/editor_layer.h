@@ -3,15 +3,9 @@
 
 #include "dialogs/dialog_file.h"
 #include "dialogs/dialog_confirm.h"
-#include "panels/file_system.h"
-#include "panels/inspector.h"
-#include "panels/scene_tree.h"
-#include "panels/toolbar.h"
-#include "renderer/ortho_camera_controller.h"
 #include "renderer/texture.h"
 
-#include "panels/text_editor.h"
-#include "panels/debug_info.h"
+#include "tabs/editor_tab.h"
 
 
 using namespace Enik;
@@ -29,14 +23,17 @@ public:
 	virtual void OnEvent(Event &event) override final;
 	virtual void OnImGuiRender() override final;
 
-	void OnImGuiDockSpaceRender();
+	void RequestOpenAsset(const std::filesystem::path& path);
 
 private:
-	void InitDockSpace();
+	void ProcessOpenAssetRequests();
+	void OpenAsset(const std::filesystem::path& path);
+
+	bool BeginMainDockspace();
+	void RenderContent();
+	void InitializeMainDockspace();
 
 	void CreateNewScene();
-	void LoadScene(const std::filesystem::path &path);
-	void SaveScene();
 
 	void CreateNewProject();
 	void LoadProject(const std::filesystem::path &path);
@@ -44,18 +41,6 @@ private:
 	void ReloadProject();
 
 	bool OnKeyPressed (KeyPressedEvent &event);
-	bool OnKeyReleased(KeyReleasedEvent &event);
-	bool OnMouseButtonPressed (MouseButtonPressedEvent  &event);
-	bool OnMouseButtonReleased(MouseButtonReleasedEvent &event);
-	bool OnMouseScrolled(MouseScrolledEvent &event);
-
-
-	void ShowToolbarPlayPause();
-	void OnScenePlay();
-	void OnSceneStop();
-	void OnScenePause(bool is_paused = false);
-
-	void SetPanelsContext();
 
 	void UpdateWindowTitle();
 
@@ -65,46 +50,12 @@ private:
 	void ExitEditor();
 
 private:
-	Ref<FrameBuffer> m_FrameBuffer;
+	std::vector<Ref<EditorTab>> m_EditorTabs;
 
-	Ref<Scene> m_ActiveScene;
-	Ref<Scene> m_EditorScene;
+	ImGuiID          m_MainDockspaceID;
+	ImGuiWindowClass m_MainDockspaceClass;
+	bool             m_MainDockspaceInitialized = false;
 
-	OrthographicCameraController m_EditorCameraController;
-
-	bool m_ViewportFocused = false;
-	bool m_ViewportHovered = false;
-	glm::vec2 m_ViewportSize = glm::vec2(0);
-	glm::vec2 m_ViewportBounds[2];
-
-	glm::vec2 m_ViewportPosition = glm::vec2(0);
-
-	bool m_DockSpaceInitialized = false;
-
-	bool m_ShowColliders     = true;
-	bool m_ShowTextEditor    = true;
-
-	Ref<Texture2D> m_TexturePlay, m_TextureStop, m_TexturePause, m_TextureStep;
-
-	Timestep m_Timestep;
-
-	SceneTreePanel m_SceneTreePanel;
-	InspectorPanel m_InspectorPanel;
-	FileSystemPanel m_FileSystemPanel;
-	ToolbarPanel m_ToolbarPanel;
-	TextEditorPanel m_TextEditorPanel;
-	DebugInfoPanel m_DebugInfoPanel;
-
-	std::filesystem::path m_ActiveScenePath = std::filesystem::canonical(".");
-
-	enum class SceneState {
-		Edit = 0,
-		Play = 1
-	};
-	SceneState m_SceneState = SceneState::Edit;
-
-	bool m_ShowSelectionOutline = true;
-	glm::vec4 m_SelectionOutlineColor = glm::vec4(1.0f, 0.44f, 0.1f, 0.84f);
-	int m_SelectionOutlineWidth = 5;
+	std::vector<std::filesystem::path> m_OpenAssetRequests;
 
 };

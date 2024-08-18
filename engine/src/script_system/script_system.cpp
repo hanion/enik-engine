@@ -54,7 +54,7 @@ void ScriptSystem::ReloadScriptModule() {
 void ScriptSystem::LoadScriptModule(const std::filesystem::path& script_module_path) {
 
 	if (script_module_path.empty() or not std::filesystem::exists(script_module_path)) {
-		EN_CORE_ERROR("Error while opening script module: Invalid Path\n    '{0}'", script_module_path.string().c_str());
+		EN_CORE_ERROR("Error while opening script module: Invalid Path\n    '{0}'", script_module_path.string());
 		return;
 	}
 
@@ -92,7 +92,7 @@ void ScriptSystem::LoadScriptModule(const std::filesystem::path& script_module_p
 			register_all();
 		}
 		s_Data.current_script_module_path = script_module_path;
-		EN_CORE_INFO("Loaded script module '{0}'", script_module_path.string().c_str());
+		EN_CORE_INFO("Loaded script module '{0}'", script_module_path.string());
 	}
 }
 

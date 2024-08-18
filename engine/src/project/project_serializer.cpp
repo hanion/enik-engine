@@ -36,7 +36,7 @@ bool ProjectSerializer::Deserialize(std::filesystem::path path) {
 	path = std::filesystem::canonical(path);
 
 	if (not path.has_extension() or path.extension() != ".enik") {
-		EN_CORE_ERROR("Can not load file {}\n	{}", path, "It needs to be a project.enik file!");
+		EN_CORE_ERROR("Can not load file {}\n	{}", path.string(), "It needs to be a project.enik file!");
 		return false;
 	}
 
@@ -45,7 +45,7 @@ bool ProjectSerializer::Deserialize(std::filesystem::path path) {
 		data = YAML::LoadFile(path.string());
 	}
 	catch (const YAML::ParserException& e) {
-		EN_CORE_ERROR("Failed to load project.enik file {}\n	{1}", path, e.what());
+		EN_CORE_ERROR("Failed to load project.enik file {}\n	{1}", path.string(), e.what());
 		return false;
 	}
 

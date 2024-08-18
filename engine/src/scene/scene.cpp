@@ -302,7 +302,7 @@ void Scene::SetGlobalTransforms() {
 	for (auto entity : group) {
 		Component::Transform& transform = group.get<Component::Transform>(entity);
 		Component::Family&    family    = group.get<Component::Family>   (entity);
-		if (family.Parent) {
+		if (family.HasParent()) {
 			continue;
 		}
 		family.SetChildrenGlobalTransformRecursive(transform);

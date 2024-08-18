@@ -1,6 +1,7 @@
 #pragma once
 #include <base.h>
 
+#include "editor_panel.h"
 #include "scene/entity.h"
 #include "scene/scene.h"
 #include "scene_tree.h"
@@ -8,17 +9,16 @@
 
 namespace Enik {
 
-class InspectorPanel {
+class InspectorPanel : public EditorPanel {
 public:
-	InspectorPanel() = default;
-	InspectorPanel(const Ref<Scene>& context);
+	InspectorPanel() : EditorPanel("Inspector") {}
 	~InspectorPanel() {}
 
 	void SetContext(const Ref<Scene>& context, SceneTreePanel* scene_tree_panel = nullptr);
 
-	void OnImGuiRender();
-
 private:
+	virtual void RenderContent() override final;
+
 	void DrawEntityInInspector(Entity entity);
 
 

@@ -27,7 +27,7 @@ public:
 	Component::Family& GetOrAddFamily() { return m_Entity.GetOrAddFamily(); }
 
 	bool HasParent() { return m_Entity.HasParent(); }
-	Entity& GetParent() { return m_Entity.GetParent(); }
+	Entity GetParent() { return m_Entity.GetParent(); }
 
 	void Reparent(Entity& new_parent) { m_Entity.Reparent(new_parent); }
 

@@ -41,18 +41,15 @@ inline void PrefixLabel(std::string_view title) {
 }
 
 // call `ImGui::PopStyleColor(pushed_color_count);` after calling this !
-inline void ColorFileText(const std::filesystem::path& filepath, int& pushed_color_count) {
-	if (not std::filesystem::exists(filepath)) {
-		return;
-	}
-	if (not std::filesystem::is_regular_file(filepath)) {
-		return;
-	}
-	if (not filepath.has_extension()) {
+inline void ColorFile(const std::filesystem::path& path, int& pushed_color_count) {
+	if (path.empty()) {
 		return;
 	}
 
-	std::string extension = filepath.extension();
+	std::string extension = path.extension().string();
+	if (extension.empty()) {
+		return;
+	}
 
 	if (extension == ".prefab") {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::blue);

@@ -3,23 +3,14 @@
 #include <imgui/imgui.h>
 #include <pch.h>
 
-#include "../dialogs/dialog_confirm.h"
-#include "../dialogs/dialog_file.h"
-#include "../utils/editor_colors.h"
+#include "dialogs/dialog_confirm.h"
+#include "dialogs/dialog_file.h"
+#include "utils/editor_colors.h"
 #include "project/project.h"
 
 namespace Enik {
 
-void TextEditorPanel::OnImGuiRender() {
-	ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
-
-	bool is_open = ImGui::Begin("Text Editor", nullptr, ImGuiWindowFlags_MenuBar);
-
-	if (not is_open) {
-		ImGui::End();
-		return;
-	}
-
+void TextEditorPanel::RenderContent() {
 	m_WindowFocused = ImGui::IsWindowFocused();
 
 	if (ImGui::BeginMenuBar()) {
@@ -88,9 +79,6 @@ void TextEditorPanel::OnImGuiRender() {
 			ImGui::EndDragDropTarget();
 		}
 	}
-
-
-	ImGui::End();
 }
 
 
@@ -105,8 +93,9 @@ bool TextEditorPanel::OpenTextFile(const std::filesystem::path& path) {
 	const char* filename = m_CurrentFile.c_str();
 
 	std::ifstream file(filename, std::ios::binary);
-	if (!file.is_open())
+	if (!file.is_open()) {
 		return false;
+	}
 
 	file.seekg(0, std::ios::end);
 	std::streamsize size = file.tellg();

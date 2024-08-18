@@ -80,15 +80,11 @@ public:
 		if (not HasFamily()) {
 			return false;
 		}
-		Entity* parent = GetOrAddFamily().Parent;
-		if (parent != nullptr) {
-			return (*parent);
-		}
-		return false;
+		return GetOrAddFamily().HasParent();
 	}
-	Entity& GetParent() {
+	Entity GetParent() {
 		EN_CORE_ASSERT(HasParent(), "Entity does not have parent!");
-		return *GetOrAddFamily().Parent;
+		return GetOrAddFamily().GetParent();
 	}
 	void Reparent(Entity new_parent) {
 		GetOrAddFamily().Reparent(*this, new_parent);

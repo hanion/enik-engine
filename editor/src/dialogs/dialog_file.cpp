@@ -3,8 +3,8 @@
 
 #include <base.h>
 #include <imgui/imgui.h>
-#include "../utils/utils.h"
-#include "../utils/imgui_utils.h"
+#include "utils/utils.h"
+#include "utils/imgui_utils.h"
 
 namespace Enik {
 
@@ -150,7 +150,7 @@ DialogFileResult DialogFile::ShowPopup() {
 			s_Data.selected_path += s_Data.ext;
 		}
 
-		EN_CORE_TRACE("Dialog File: selected path {0}", s_Data.selected_path);
+		EN_CORE_TRACE("Dialog File: selected path {}", s_Data.selected_path.string());
 
 		ImGui::EndDisabled();
 
@@ -176,19 +176,19 @@ void DialogFile::ShowDirectoriesTable(char* file_path_buffer) {
 	if (ImGui::BeginTable("Directory", 1)) {
 		for (const auto& entry : s_Data.entries) {
 			const auto& path = entry.path();
-			std::string fileName = path.filename().string();
+			std::string filename = path.filename().string();
 
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 
 			if (entry.is_directory()) {
-				fileName = fileName + "/";
+				filename = filename + "/";
 			}
 
 			int pushed_color_count = 0;
-			ImGuiUtils::ColorFileText(path, pushed_color_count);
+			ImGuiUtils::ColorFile(path, pushed_color_count);
 
-			if (ImGui::Selectable(fileName.c_str())) {
+			if (ImGui::Selectable(filename.c_str())) {
 				if (fs::is_directory(path)) {
 					s_Data.current_directory = path;
 					strcpy(file_path_buffer, "");

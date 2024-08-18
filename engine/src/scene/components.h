@@ -159,8 +159,10 @@ public:
 	Family() = default;
 	Family(const Family&) = default;
 
-	Entity* Parent;
 	std::vector<Entity> Children;
+
+	bool HasParent();
+	Entity GetParent();
 
 	void Reparent(Entity this_entity, Entity new_parent);
 
@@ -168,6 +170,8 @@ public:
 
 	bool HasEntityAsChild(Entity entity);
 private:
+	UUID m_ParentUUID = 0;
+
 	void AddChild(Entity entity);
 
 	void RemoveChild(Entity entity);

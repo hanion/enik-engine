@@ -1,4 +1,5 @@
 #include "toolbar.h"
+#include "imgui.h"
 
 namespace Enik {
 
@@ -67,8 +68,9 @@ void ToolbarPanel::ShowToolbar() {
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.1f, 0.1f, 0.5f));
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.3f, 0.3f, 0.5f));
 
-	ImGuiWindowFlags flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_AlwaysAutoResize;
-	flags |= ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDecoration;
+	constexpr ImGuiWindowFlags flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |
+		ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDecoration |
+		ImGuiWindowFlags_NoDocking;
 
 	if (not ImGui::Begin("##Toolbar", nullptr, flags)) {
 		ImGui::End();
@@ -87,13 +89,13 @@ void ToolbarPanel::ShowToolbar() {
 	}
 
 	ImGui::SameLine();
-	if (ToolImageButton(m_TextureScale, Tool::SCALE)) {
-		m_SelectedTool = Tool::SCALE;
+	if (ToolImageButton(m_TextureRotate, Tool::ROTATE)) {
+		m_SelectedTool = Tool::ROTATE;
 	}
 
 	ImGui::SameLine();
-	if (ToolImageButton(m_TextureRotate, Tool::ROTATE)) {
-		m_SelectedTool = Tool::ROTATE;
+	if (ToolImageButton(m_TextureScale, Tool::SCALE)) {
+		m_SelectedTool = Tool::SCALE;
 	}
 
 	ImGui::End();
@@ -102,7 +104,7 @@ void ToolbarPanel::ShowToolbar() {
 }
 
 bool ToolbarPanel::ToolImageButton(const Ref<Texture2D>& texture, Tool tool) {
-	float size = ImGui::GetWindowHeight() - m_Padding;
+	float size = m_ToolbarMinSize - m_Padding;
 	auto texture_id = reinterpret_cast<void*>(static_cast<uintptr_t>(texture->GetRendererID()));
 
 	ImVec4 tint_color = ImVec4(1, 1, 1, 1);
@@ -142,10 +144,10 @@ bool ToolbarPanel::OnKeyPressed(KeyPressedEvent& event) {
 		case Key::W:
 			m_SelectedTool = Tool::MOVE;
 			break;
-		case Key::E:
+		case Key::R:
 			m_SelectedTool = Tool::SCALE;
 			break;
-		case Key::R:
+		case Key::E:
 			m_SelectedTool = Tool::ROTATE;
 			break;
 		default:
