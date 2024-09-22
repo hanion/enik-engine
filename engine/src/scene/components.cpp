@@ -172,11 +172,14 @@ void Component::NativeScript::Bind(const std::string& script_name, const std::fu
 
 
 bool Component::Family::HasParent() {
-	return (m_ParentUUID != 0);
+	return (Parent != nullptr);
 }
 
 Entity Component::Family::GetParent() {
-	return FindEntityByUUID(m_ParentUUID);
+	if (HasParent()) {
+		return *Parent;
+	}
+	return {};
 }
 
 void Component::Family::Reparent(Entity this_entity, Entity new_parent) {
@@ -187,13 +190,13 @@ void Component::Family::Reparent(Entity this_entity, Entity new_parent) {
 	}
 
 	if (HasParent()) {
-		GetParent().GetOrAdd<Component::Family>().RemoveChild(this_entity);
+		GetParent().GetOrAddFamily().RemoveChild(this_entity);
 	}
 
 
 	if (new_parent) {
 		// add child to new parent
-		new_parent.GetOrAdd<Component::Family>().AddChild(this_entity);
+		new_parent.GetOrAddFamily().AddChild(this_entity);
 	}
 
 	SetParent(new_parent);
@@ -217,7 +220,7 @@ void Component::Family::SetChildrenGlobalTransformRecursive(Component::Transform
 }
 
 
-void Component::Family::AddChild(Entity entity) {
+void Component::Family::AddChild(const Entity& entity) {
 	// check if it already is child
 	for (Entity& child : Children) {
 		if (child == entity) {
@@ -228,7 +231,7 @@ void Component::Family::AddChild(Entity entity) {
 	Children.emplace_back(entity);
 }
 
-void Component::Family::RemoveChild(Entity entity) {
+void Component::Family::RemoveChild(const Entity& entity) {
 	for (size_t i = 0; i < Children.size(); ++i) {
 		if (Children[i] == entity) {
 			Children.erase(Children.begin() + i);
@@ -237,15 +240,15 @@ void Component::Family::RemoveChild(Entity entity) {
 	}
 }
 
-void Component::Family::SetParent(Entity& entity) {
+void Component::Family::SetParent(const Entity& entity) {
+	Parent.reset();
+
 	if (entity) {
-		m_ParentUUID = entity.GetID();
-	} else {
-		m_ParentUUID = 0;
+		Parent = CreateRef<Entity>(entity);
 	}
 }
 
-bool Component::Family::HasEntityAsChild(Entity entity) {
+bool Component::Family::HasEntityAsChild(const Entity& entity) {
     for (Entity& child : Children) {
 		if (child == entity) {
 			return true;

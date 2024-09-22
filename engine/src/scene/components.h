@@ -168,17 +168,16 @@ public:
 
 	void SetChildrenGlobalTransformRecursive(Component::Transform& transform);
 
-	bool HasEntityAsChild(Entity entity);
+	bool HasEntityAsChild(const Entity& entity);
+
 private:
-	UUID m_ParentUUID = 0;
+	Ref<Entity> Parent;
 
-	void AddChild(Entity entity);
+	void AddChild(const Entity& entity);
 
-	void RemoveChild(Entity entity);
+	void RemoveChild(const Entity& entity);
 
-	void SetParent(Entity& entity);
-
-
+	void SetParent(const Entity& entity);
 };
 
 struct Prefab {
