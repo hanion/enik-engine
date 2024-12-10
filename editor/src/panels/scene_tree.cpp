@@ -38,25 +38,21 @@ void SceneTreePanel::SetSelectedEntityWithUUID(const UUID& uuid) {
 }
 
 void SceneTreePanel::RenderContent() {
-	ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(0,0));
 	if (!ImGui::BeginTable("SceneTreeTable", 1) or m_Context == nullptr) {
 		ImGui::EndTable();
 		ImGui::End();
-		ImGui::PopStyleVar();
 		return;
 	}
-	ImGui::PopStyleVar();
 
 
 
 	ImGui::TableNextRow();
 	ImGui::TableSetColumnIndex(0);
 
-	static char buffer[256];
+	char buffer[256];
 	memset(buffer, 0, sizeof(buffer));
 	strcpy(buffer, m_Context->GetName().c_str());
 
-	ImGui::SetNextItemWidth(-1);
 	if (ImGui::InputText("##SceneName", buffer, sizeof(buffer))) {
 		m_Context->SetName(buffer);
 	}
@@ -73,6 +69,25 @@ void SceneTreePanel::RenderContent() {
 			}
 		}
 		ImGui::EndDragDropTarget();
+	}
+
+
+	/* Add Entity Button */ {
+		ImGui::SameLine(ImGui::GetContentRegionAvail().x - GImGui->Style.FramePadding.x * 3.0f);
+		float line_width = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+		if (ImGui::Button("+", ImVec2(line_width, 0))) {
+			ImGui::OpenPopup("AddEntity");
+		}
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
+			ImGui::SetTooltip("Add Entity");
+		}
+		if (ImGui::BeginPopup("AddEntity")) {
+			if (ImGui::MenuItem("Empty Entity")) {
+				Entity new_entity = m_Context->CreateEntity("Empty Entity");
+				m_SelectionContext = new_entity;
+			}
+			ImGui::EndPopup();
+		}
 	}
 
 	ImGui::Spacing();
@@ -92,16 +107,6 @@ void SceneTreePanel::RenderContent() {
 
 	if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
 		m_SelectionContext = {};
-	}
-	if (ImGui::IsMouseDown(1) && ImGui::IsWindowHovered()) {
-		ImGui::OpenPopup("pop_scene_tree");
-	}
-	if (ImGui::BeginPopup("pop_scene_tree")) {
-		if (ImGui::MenuItem("Create Entity")) {
-			m_SelectionContext = m_Context->CreateEntity("Empty Entity");
-		}
-
-		ImGui::EndPopup();
 	}
 
 	ImGui::EndTable();
