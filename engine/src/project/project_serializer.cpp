@@ -25,6 +25,8 @@ void ProjectSerializer::Serialize(std::filesystem::path path) {
 	if (not config.script_module_path.empty()) {
 		out << YAML::Key << "ScriptModule" << YAML::Value << config.script_module_path.string();
 	}
+	out << YAML::Key << "AssetRegistry" << YAML::Value << config.asset_registry_path.string();
+
 
 	out << YAML::EndMap;
 
@@ -60,6 +62,10 @@ bool ProjectSerializer::Deserialize(std::filesystem::path path) {
 
 	if (data["ScriptModule"]) {
 		config.script_module_path  = data["ScriptModule"].as<std::string>();
+	}
+
+	if (data["AssetRegistry"]) {
+		config.asset_registry_path  = data["AssetRegistry"].as<std::string>();
 	}
 
 	EN_CORE_INFO("Deserialized project '{}', in {}", config.project_name, path);

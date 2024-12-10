@@ -10,8 +10,8 @@ namespace Enik {
 
 class SceneSerializer {
 public:
-	SceneSerializer(Scene* scene);
-	SceneSerializer(const Ref<Scene>& scene);
+	SceneSerializer(Scene* scene) : m_Scene(scene) {}
+	SceneSerializer(const Ref<Scene>& scene) : SceneSerializer(scene.get()) {}
 
 	void Serialize(const std::string& filepath);
 	void SerializeRuntime(const std::string& filepath);

@@ -4,8 +4,11 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "asset/asset_manager.h"
+#include "core/asserter.h"
 #include "renderer/render_command.h"
 #include "renderer/shader.h"
+#include "renderer/texture.h"
 #include "renderer/vertex_array.h"
 
 namespace Enik {
@@ -122,9 +125,11 @@ void Renderer2D::Init() {
 
 	s_Data.TextureColorShader = Shader::Create(EN_ASSETS_PATH("shaders/texture_color.glsl"));
 
-	s_Data.WhiteTexture = Texture2D::Create(1, 1);
-	uint32_t whiteTextureData = 0xffffffff;
-	s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
+	TextureSpecification spec;
+	s_Data.WhiteTexture = Texture2D::Create(spec);
+	Buffer tex = Buffer(sizeof(uint32_t));
+	*tex.Data = (uint8_t)0xffffffff;
+	s_Data.WhiteTexture->SetData(tex);
 
 	s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 	s_Data.TextureSlots[0]->Bind();
@@ -232,18 +237,17 @@ float Renderer2D::GetTextureIndex(const Ref<Texture2D>& texture) {
 
 void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::SpriteRenderer& sprite, int32_t entityID) {
 	EN_PROFILE_SCOPE;
+	if (!sprite.Handle) {return;}
+	EN_VERIFY(sprite.Handle);
 
 	const glm::vec2 defaultTextureCoords[] = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
 	const glm::vec2* textureCoords = defaultTextureCoords;
 
 	float textureIndex = 0.0f;
 
-	if (sprite.SubTexture) {
-		textureIndex = GetTextureIndex(sprite.SubTexture->GetTexture());
-		textureCoords = sprite.SubTexture->GetTextureCoords();
-	}
-	else {
-		textureIndex = GetTextureIndex(sprite.Texture);
+	if (sprite.Handle) {
+		Ref<Texture2D> texture = AssetManager::GetAsset<Texture2D>(sprite.Handle);
+		textureIndex = GetTextureIndex(texture);
 	}
 
 	if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {

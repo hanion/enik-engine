@@ -28,6 +28,8 @@ file(
   "${source_dir}/project/*.cpp"
   "${source_dir}/script_system/*.cpp"
   "${source_dir}/physics/*.cpp"
+  "${source_dir}/asset/*.cpp"
+  "${source_dir}/asset/importer/*.cpp"
   "${source_dir}/audio/*.cpp")
 file(
   GLOB
@@ -46,6 +48,8 @@ file(
   "${source_dir}/project/*.h"
   "${source_dir}/script_system/*.h"
   "${source_dir}/physics/*.h"
+  "${source_dir}/asset/*.h"
+  "${source_dir}/asset/importer/*.h"
   "${source_dir}/audio/*.h")
 
 

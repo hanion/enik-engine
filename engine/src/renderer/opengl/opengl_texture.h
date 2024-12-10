@@ -7,11 +7,12 @@ namespace Enik {
 
 class OpenGLTexture2D : public Texture2D {
 public:
-	OpenGLTexture2D(const std::string& path, bool mag_filter_linear = true);
-	OpenGLTexture2D(uint32_t width, uint32_t height);
+	OpenGLTexture2D(const TextureSpecification& specification, Buffer data = Buffer());
 	virtual ~OpenGLTexture2D();
 
-	virtual void SetData(void* data, uint32_t size) override final;
+	virtual void SetData(Buffer data) override final;
+
+	virtual const TextureSpecification& GetSpecification() const override { return m_Specification; }
 
 	virtual uint32_t GetWidth() const override { return m_Width; };
 	virtual uint32_t GetHeight() const override { return m_Height; };
@@ -28,7 +29,8 @@ public:
 	}
 
 private:
-	std::string m_Path;
+	TextureSpecification m_Specification;
+
 	uint32_t m_Width;
 	uint32_t m_Height;
 	uint32_t m_RendererID;

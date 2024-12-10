@@ -4,8 +4,11 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+#include "asset/asset_manager.h"
+#include "asset/asset_manager_editor.h"
 #include "dialogs/dialog_file.h"
 #include "project/project.h"
+#include "scene/components.h"
 #include "script_system/script_system.h"
 #include "core/input.h"
 #include "utils/editor_colors.h"
@@ -359,14 +362,8 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 		if (ImGui::BeginDragDropTarget()) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_FILE_PATH")) {
 				std::filesystem::path path = std::filesystem::path(static_cast<const char*>(payload->Data));
-				path = Project::GetAbsolutePath(path);
-				if (std::filesystem::exists(path) and path.extension() == ".png") {
-					sprite.Texture = Texture2D::Create(path.string());
-					auto relative = std::filesystem::relative(path, Project::GetProjectDirectory());
-					sprite.TexturePath = relative;
-					if (sprite.SubTexture != nullptr) {
-						sprite.SubTexture->SetTexture(sprite.Texture);
-					}
+				if (path.extension() == ".png") {
+					sprite.Handle = Project::GetAssetManagerEditor()->ImportAsset(path);
 				}
 			}
 			ImGui::EndDragDropTarget();
@@ -375,17 +372,13 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 
 	ImGuiUtils::PrefixLabel("Texture");
 
-	if (sprite.TexturePath.empty()) {
+	if (sprite.Handle == 0) {
 		if (ImGui::Button("Add Texture")) {
 			DialogFile::OpenDialog(
 				DialogType::OPEN_FILE,
 				[&]() {
-					auto relative = std::filesystem::relative(DialogFile::GetSelectedPath(), Project::GetProjectDirectory());
-					sprite.TexturePath = relative;
-					sprite.Texture = Texture2D::Create(DialogFile::GetSelectedPath().string());
-					if (sprite.SubTexture != nullptr) {
-						sprite.SubTexture->SetTexture(sprite.Texture);
-					}
+					auto relative = Project::GetRelativePath(DialogFile::GetSelectedPath());
+					sprite.Handle = Project::GetAssetManagerEditor()->ImportAsset(relative);
 				},
 				".png");
 		}
@@ -393,7 +386,6 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 		return;
 	}
 
-	ImVec4 tint_col = ImVec4(sprite.Color.r, sprite.Color.g, sprite.Color.b, sprite.Color.a);
 	ImVec4 border_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
 	ImVec2 avail = ImGui::GetContentRegionAvail();
 
@@ -409,13 +401,12 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 	ImTextureID tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(0));
 	ImVec2 tex_size = ImVec2(0, 0);
 
-	if (sprite.Texture) {
-		tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(sprite.Texture->GetRendererID()));
-		tex_size = ImVec2(sprite.Texture->GetWidth(), sprite.Texture->GetHeight());
-	}
-	else if (sprite.SubTexture) {
-		tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(sprite.SubTexture->GetTexture()->GetRendererID()));
-		tex_size = ImVec2(sprite.SubTexture->GetTexture()->GetWidth(), sprite.SubTexture->GetTexture()->GetHeight());
+	Ref<Texture2D> texture;
+
+	if (sprite.Handle) {
+		texture = AssetManager::GetAsset<Texture2D>(sprite.Handle);
+		tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(texture->GetRendererID()));
+		tex_size = ImVec2(texture->GetWidth(), texture->GetHeight());
 	}
 
 	if (tex_size.x > avail.x) {
@@ -430,13 +421,13 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 	tex_size = ImVec2(glm::max(32.0f, tex_size.x), glm::max(32.0f, tex_size.y));
 	ImVec2 childSize = ImVec2(tex_size.x + GImGui->Style.FramePadding.x, tex_size.y + GImGui->Style.FramePadding.y);
 	if (ImGui::BeginChild("TextureChild", childSize, false, ImGuiWindowFlags_NoScrollbar)) {
-		ImGui::Image(tex_id, tex_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), tint_col, border_col);
+		ImGui::Image(tex_id, tex_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f,1.0f,1.0f,1.0f), border_col);
 
-		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal) and not sprite.TexturePath.empty()) {
+		if (sprite.Handle and ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)) {
 			if (ImGui::BeginTooltip()) {
-				std::string width  = std::to_string(sprite.Texture->GetWidth());
-				std::string height = std::to_string(sprite.Texture->GetHeight());
-				std::string txt = sprite.TexturePath.string() + " - " + width + "x" + height;
+				std::string width  = std::to_string(texture->GetWidth());
+				std::string height = std::to_string(texture->GetHeight());
+				std::string txt = Project::GetRelativePath(AssetManager::GetAssetPath(sprite.Handle)).string() + " - " + width + "x" + height;
 				ImGui::Text("%s", txt.c_str());
 				ImVec2 texture_tooltip_size = ImVec2(tex_size.x*8.0f, tex_size.y*8.0f);
 				ImGui::Image(tex_id, texture_tooltip_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
@@ -449,9 +440,7 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 		}
 		if (ImGui::BeginPopup("popup_remove_texture")) {
 			if (ImGui::MenuItem("Remove Texture")) {
-				sprite.TexturePath.clear();
-				sprite.Texture = nullptr;
-				sprite.SubTexture = nullptr;
+				sprite.Handle = 0;
 			}
 			ImGui::EndPopup();
 		}
@@ -460,21 +449,23 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 		ImGui::EndChild();
 	}
 
-	if (sprite.Texture != nullptr) {
+	if (texture != nullptr) {
 		ImGuiUtils::PrefixLabel("Tile Scale");
 		ImGui::DragFloat("##Tile Scale", &sprite.TileScale, 0.01f);
 	}
 
-	ImGuiUtils::PrefixLabel("Filter");
-	if (ImGui::Checkbox("##Filter", &sprite.mag_filter_linear)) {
-		sprite.Texture = Texture2D::Create(Project::GetAbsolutePath(sprite.TexturePath).string(), sprite.mag_filter_linear);
-		if (sprite.SubTexture != nullptr) {
-			sprite.SubTexture->SetTexture(sprite.Texture);
-		}
-	}
+// TODO: make texture import settings, this option should not be on the sprite, but on the texture asset
+// 	ImGuiUtils::PrefixLabel("Filter");
+// 	if (ImGui::Checkbox("##Filter", &sprite.mag_filter_linear)) {
+// 		sprite.Texture = Texture2D::Create(Project::GetAbsolutePath(sprite.TexturePath).string(), sprite.mag_filter_linear);
+// 		if (sprite.SubTexture != nullptr) {
+// 			sprite.SubTexture->SetTexture(sprite.Texture);
+// 		}
+// 	}
 }
 
 void InspectorPanel::DisplaySubTexture(Component::SpriteRenderer& sprite) {
+#if 0
 	if (sprite.Texture == nullptr) {
 		return;
 	}
@@ -532,6 +523,7 @@ void InspectorPanel::DisplaySubTexture(Component::SpriteRenderer& sprite) {
 	if (remove_sub_texture) {
 		sprite.SubTexture.reset();
 	}
+#endif
 }
 
 void InspectorPanel::DisplayNativeScriptsInPopup() {

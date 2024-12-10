@@ -31,7 +31,7 @@ private:
 
 private:
 	std::filesystem::path m_CurrentDirectory;
-	std::string m_CurrentDirectoryText;
+	std::string m_CurrentDirectoryText = "res://";
 
 	EditorLayer* m_EditorLayer = nullptr;
 
@@ -41,10 +41,6 @@ private:
 	bool m_HasSearched = false;
 
 	const std::vector<std::string> m_Filters = {".escn", ".png", ".enik", ".prefab", ".wav"};
-
-	bool m_PreviewTextureOpen = false;
-	std::filesystem::path m_PreviewTexturePath;
-	Ref<Texture2D> m_PreviewTexture;
 
 };
 

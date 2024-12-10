@@ -68,14 +68,8 @@ struct Transform {
 struct SpriteRenderer {
 	glm::vec4 Color = glm::vec4(1.0f);
 
-	Ref<Texture2D> Texture = nullptr;
-	Ref<SubTexture2D> SubTexture = nullptr;
+	AssetHandle Handle = 0;
 	float TileScale = 1.0f;
-
-	bool mag_filter_linear = true;
-
-	// ? relative path
-	std::filesystem::path TexturePath;
 
 	SpriteRenderer() = default;
 	SpriteRenderer(const SpriteRenderer&) = default;

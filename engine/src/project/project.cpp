@@ -14,7 +14,9 @@ Ref<Project> Project::Load(const std::filesystem::path& path) {
 	ProjectSerializer serializer = ProjectSerializer(project);
 	if (serializer.Deserialize(path)) {
 		project->m_ProjectDirectory = std::filesystem::canonical(path.parent_path());
+		project->m_AssetManager = CreateRef<AssetManagerEditor>();
 		s_ActiveProject = project;
+		GetAssetManagerEditor()->DeserializeAssetRegistry();
 		return s_ActiveProject;
 	}
 

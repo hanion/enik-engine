@@ -1,5 +1,6 @@
 #include <pch.h>
 #include "scene_editor_tab.h"
+#include "asset/importer/texture_importer.h"
 #include "events/event.h"
 #include "events/mouse_event.h"
 #include "imgui.h"
@@ -20,10 +21,10 @@ SceneEditorTab::SceneEditorTab(const std::string& name)
 	spec.Attachments = {FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::Depth};
 	m_FrameBuffer = FrameBuffer::Create(spec);
 
-	m_TexturePlay  = Texture2D::Create(EN_ASSETS_PATH("icons/play_button.png"));
-	m_TextureStop  = Texture2D::Create(EN_ASSETS_PATH("icons/stop_button.png"));
-	m_TexturePause = Texture2D::Create(EN_ASSETS_PATH("icons/pause_button.png"));
-	m_TextureStep  = Texture2D::Create(EN_ASSETS_PATH("icons/step_button.png"));
+	m_TexturePlay  = TextureImporter::LoadTexture2D(EN_ASSETS_PATH("icons/play_button.png"));
+	m_TextureStop  = TextureImporter::LoadTexture2D(EN_ASSETS_PATH("icons/stop_button.png"));
+	m_TexturePause = TextureImporter::LoadTexture2D(EN_ASSETS_PATH("icons/pause_button.png"));
+	m_TextureStep  = TextureImporter::LoadTexture2D(EN_ASSETS_PATH("icons/step_button.png"));
 
 	m_ToolbarPanel.InitValues(m_FrameBuffer, m_EditorCameraController, m_ViewportHovered);
 	m_FileSystemPanel.SetCurrentDir(Project::GetProjectDirectory());
@@ -257,6 +258,7 @@ void SceneEditorTab::SaveScene() {
 
 		SceneSerializer serializer = SceneSerializer(m_ActiveScene);
 		serializer.Serialize(m_ActiveScenePath.string());
+		Project::GetAssetManagerEditor()->SerializeAssetRegistry();
 	}
 }
 

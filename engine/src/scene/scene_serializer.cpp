@@ -99,16 +99,6 @@ YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec4& vec) {
 
 namespace Enik {
 
-SceneSerializer::SceneSerializer(Scene* scene)
-	: m_Scene(scene) {
-	m_ErrorTexture = Texture2D::Create(EN_ASSETS_PATH("textures/error.png"), false);
-}
-
-SceneSerializer::SceneSerializer(const Ref<Scene>& scene)
-	: m_Scene(scene.get()) {
-	m_ErrorTexture = Texture2D::Create(EN_ASSETS_PATH("textures/error.png"), false);
-}
-
 void SceneSerializer::Serialize(const std::string& filepath) {
 	// EN_CORE_INFO("Serializing scene   '{0}', in '{1}'", m_Scene->GetName(), filepath);
 	YAML::Emitter out;
@@ -561,19 +551,7 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		auto& sprite = entity.Get<Component::SpriteRenderer>();
 		out << YAML::Key << "Color" << YAML::Value << sprite.Color;
 		out << YAML::Key << "TileScale" << YAML::Value << sprite.TileScale;
-		out << YAML::Key << "TexturePath" << YAML::Value << sprite.TexturePath.string(); // TODO asset manager
-		out << YAML::Key << "mag_filter_linear" << YAML::Value << sprite.mag_filter_linear;
-
-		if (sprite.SubTexture != nullptr) {
-			out << YAML::Key << "SubTexture";
-			out << YAML::BeginMap;
-
-			out << YAML::Key << "TileSize" << YAML::Value << sprite.SubTexture->GetTileSize();
-			out << YAML::Key << "TileIndex" << YAML::Value << sprite.SubTexture->GetTileIndex();
-			out << YAML::Key << "TileSeparation" << YAML::Value << sprite.SubTexture->GetTileSeparation();
-
-			out << YAML::EndMap;
-		}
+		out << YAML::Key << "TextureHandle" << YAML::Value << sprite.Handle;
 
 		out << YAML::EndMap;
 	}
@@ -725,34 +703,11 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 		auto& sprite = deserialized_entity.Add<Component::SpriteRenderer>();
 		sprite.Color = spriteRenderer["Color"].as<glm::vec4>();
 		sprite.TileScale = spriteRenderer["TileScale"].as<float>();
-		if (spriteRenderer["mag_filter_linear"]) {
-			sprite.mag_filter_linear = spriteRenderer["mag_filter_linear"].as<bool>();
+
+
+		if (spriteRenderer["TextureHandle"]) {
+			sprite.Handle = spriteRenderer["TextureHandle"].as<uint64_t>();
 		}
-
-		auto path = std::filesystem::path(spriteRenderer["TexturePath"].as<std::string>());
-		if (not path.empty()) {
-			sprite.TexturePath = path;
-		}
-
-		if (not sprite.TexturePath.empty()) {
-			auto path = Project::GetAbsolutePath(sprite.TexturePath);
-			if (std::filesystem::exists(path)) {
-				sprite.Texture = Texture2D::Create(path.string(), sprite.mag_filter_linear);
-			}
-			else {
-				sprite.Texture = m_ErrorTexture;
-			}
-		}
-
-		if (spriteRenderer["SubTexture"]) {
-			glm::vec2 tile_size = spriteRenderer["SubTexture"]["TileSize"].as<glm::vec2>();
-			glm::vec2 tile_index = spriteRenderer["SubTexture"]["TileIndex"].as<glm::vec2>();
-			glm::vec2 tile_separation = spriteRenderer["SubTexture"]["TileSeparation"].as<glm::vec2>();
-
-			sprite.SubTexture = SubTexture2D::CreateFromTileIndex(
-				sprite.Texture, tile_size, tile_index, tile_separation);
-		}
-
 	}
 
 	auto camera = entity["Component::Camera"];
