@@ -3,6 +3,10 @@
 namespace Enik {
 
 TextEditorTab::TextEditorTab(const std::string& name) : EditorTab(name) {
+	m_NoTabBar = true;
+	std::filesystem::path path(name);
+	SetWindowName(path.filename().string());
+
 	OpenTextFile(name);
 }
 

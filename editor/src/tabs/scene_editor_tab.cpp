@@ -30,10 +30,14 @@ SceneEditorTab::SceneEditorTab(const std::string& name)
 	m_FileSystemPanel.SetCurrentDir(Project::GetProjectDirectory());
 	SetPanelsContext();
 
+	std::filesystem::path path(name);
+	SetWindowName(path.filename().string());
+
 	LoadScene(Project::GetAbsolutePath(name));
 }
 
 SceneEditorTab::~SceneEditorTab() {
+	OnSceneStop();
 	if (m_EditorScene != m_ActiveScene) {
 		m_ActiveScene->ClearNativeScripts();
 	}
@@ -291,7 +295,7 @@ bool SceneEditorTab::OnKeyPressed(KeyPressedEvent& event) {
 			}
 			break;
 		case Key::D:
-			if (control) {
+			if (control and m_SceneTreePanel.IsSelectedEntityValid()) {
 				SaveScene();
 				SceneSerializer serializer = SceneSerializer(m_ActiveScene);
 
@@ -561,8 +565,8 @@ void SceneEditorTab::OnOverlayRender() {
 				case Component::ColliderShape::PLANE: {
 					Component::Transform trans;
 					trans.GlobalPosition = transform.GlobalPosition;
-					trans.LocalRotation = transform.LocalRotation;
-					trans.LocalScale = transform.LocalScale * collider.Float * 2.0f;
+					trans.GlobalRotation = transform.GlobalRotation;
+					trans.GlobalScale = transform.GlobalScale * collider.Float * 2.0f;
 					trans.GlobalPosition.z = 0.999f;
 					Renderer2D::DrawRect(trans, glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
 					Renderer2D::DrawLine(
@@ -577,8 +581,8 @@ void SceneEditorTab::OnOverlayRender() {
 							transform.GlobalPosition.x + collider.Vector.x,
 							transform.GlobalPosition.y + collider.Vector.y,
 							0.999f);
-					trans.LocalRotation = transform.LocalRotation;
-					trans.LocalScale = transform.LocalScale * collider.Float * 2.0f;
+					trans.GlobalRotation = transform.GlobalRotation;
+					trans.GlobalScale = transform.GlobalScale * collider.Float * 2.0f;
 					Renderer2D::DrawRect(trans, glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
 					break;
 				}
