@@ -43,10 +43,11 @@ public:
 		return Add<T>();
 	}
 
-	operator bool() const { return m_Handle != entt::null; }
+	operator bool() const {
+		return (m_Handle != entt::null) and (m_Scene != nullptr);// and Has<Component::Transform>();
+	}
 
 	operator entt::entity() const { return m_Handle; }
-	operator uint32_t() const { return (uint32_t)m_Handle; }
 
 	bool operator==(Entity other) {
 		return m_Handle == other.m_Handle && m_Scene == other.m_Scene;
