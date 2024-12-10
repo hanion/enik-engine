@@ -61,6 +61,10 @@ void Scene::DestroyEntity(Entity entity) {
 
 Entity Scene::InstantiatePrefab(const std::filesystem::path& path, UUID instance_uuid) {
 	std::filesystem::path canonical_path = Project::GetAbsolutePath(path);
+	if (canonical_path.empty()) {
+		EN_CORE_ERROR("InstantiatePrefab invalid path! {} {}", instance_uuid, path.string());
+		return {};
+	}
 	SceneSerializer serializer = SceneSerializer(this);
 	return serializer.InstantiatePrefab(canonical_path.string(), instance_uuid);
 }

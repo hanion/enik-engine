@@ -654,7 +654,16 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 		if (prefab["RootPrefab"].as<bool>()) {
 			if (prefab["PrefabPath"]) {
 				std::filesystem::path prefab_path = prefab["PrefabPath"].as<std::string>();
+
+				if (prefab_path.empty()) {
+					EN_CORE_ERROR("DeserializeEntity PrefabPath is empty! {} {}", uuid, name);
+					return;
+				}
 				Entity instantiated_root = m_Scene->InstantiatePrefab(prefab_path, uuid);
+				if (not instantiated_root) {
+					return;
+				}
+
 				auto& trans = instantiated_root.Get<Component::Transform>();
 
 				auto transform = entity["Component::Transform"];

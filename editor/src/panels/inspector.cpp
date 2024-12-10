@@ -14,6 +14,7 @@
 #include "utils/editor_colors.h"
 #include "audio/audio.h"
 
+#define COLOR(color) ImGui::PushStyleColor(ImGuiCol_Text, color)
 
 namespace Enik {
 
@@ -308,8 +309,22 @@ void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity
 	ImGui::TableSetColumnIndex(0);
 
 	bool remove_component = false;
+	
+	int pushed_color = 0;
+	if constexpr (std::is_same<T, Component::Prefab>::value) {
+		COLOR(EditorColors::blue);
+		pushed_color++;
+	} else if constexpr (std::is_same<T, Component::NativeScript>::value) {
+		COLOR(EditorColors::orange);
+		pushed_color++;
+	}
 
-	if (ImGui::TreeNodeEx((void*)typeid(T).hash_code(), tree_node_flags, "%s", name.c_str())) {
+	bool open = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), tree_node_flags, "%s", name.c_str());
+
+	ImGui::PopStyleColor(pushed_color);
+
+
+	if (open) {
 		if (can_delete) {
 			if (Input::IsMouseButtonPressed(1) and ImGui::IsItemHovered()) {
 				ImGui::OpenPopup("ComponentSettings");
