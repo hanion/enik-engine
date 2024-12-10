@@ -27,10 +27,12 @@ void PhysicsWorld::Step() {
 			rigid_body.Force.y += rigid_body.Mass * s_Data.Gravity.y;
 		}
 
-		auto half_acceleration = (rigid_body.Force / rigid_body.Mass) * GetFixedUpdateRate() * 0.5f;
-		rigid_body.Velocity += half_acceleration;
-		transform.LocalPosition += rigid_body.Velocity * GetFixedUpdateRate();
-		rigid_body.Velocity += half_acceleration;
+		if (rigid_body.Awake) {
+			auto half_acceleration = (rigid_body.Force / rigid_body.Mass) * GetFixedUpdateRate() * 0.5f;
+			rigid_body.Velocity += half_acceleration;
+			transform.LocalPosition += rigid_body.Velocity * GetFixedUpdateRate();
+			rigid_body.Velocity += half_acceleration;
+		}
 
 		// reset force
 		rigid_body.Force = glm::vec3(0);
@@ -79,13 +81,25 @@ void PhysicsWorld::ResolveCollisions() {
 		CollisionPoints& points = collision.Points;
 
 
+		if (not a or not b) { continue; }
 		if (a.Has<Component::NativeScript>()) {
-			a.GetScriptInstance()->OnCollision(b);
-		}
-		if (b.Has<Component::NativeScript>()) {
-			b.GetScriptInstance()->OnCollision(a);
+			if (a.GetScriptInstance() != nullptr) {
+				a.GetScriptInstance()->OnCollision(b);
+			}
 		}
 
+		if (not a or not b) { continue; }
+		if (b.Has<Component::NativeScript>()) {
+			if (b.GetScriptInstance() != nullptr) {
+				b.GetScriptInstance()->OnCollision(a);
+			}
+		}
+
+		if (not a or not b) { continue; }
+		if (not a.Has<Component::Collider>() or
+			not b.Has<Component::Collider>()) {
+			continue;
+		}
 
 		if (a.Get<Component::Collider>().IsArea or
 			b.Get<Component::Collider>().IsArea) {
@@ -95,18 +109,22 @@ void PhysicsWorld::ResolveCollisions() {
 
 		// Calculate the separation vector
 		glm::vec3 separation = points.Normal * points.Depth;
+		// NOTE: lock all bodies in 2d
+		separation.z = 0.0f;
+		// FIXME: ! adding energy to the system ???
+		static constexpr float bounce = 200.0f;
 
 		if (a.Has<Component::RigidBody>()) {
 			a.Get<Component::Transform>().LocalPosition -= separation;
 			auto rb = &a.Get<Component::RigidBody>();
-			rb->Velocity *= 0.99f;
-			rb->ApplyImpulse(-separation);
+			rb->Velocity *= 0.9999f;
+			rb->ApplyImpulse(-separation * bounce);
 		}
 		if (b.Has<Component::RigidBody>()) {
 			b.Get<Component::Transform>().LocalPosition += separation;
 			auto rb = &b.Get<Component::RigidBody>();
-			rb->Velocity *= 0.99f;
-			rb->ApplyImpulse(+separation);
+			rb->Velocity *= 0.9999f;
+			rb->ApplyImpulse(+separation * bounce);
 		}
 	}
 }

@@ -106,17 +106,30 @@ struct RigidBody {
 	glm::vec3 Force;
 	float Mass = 1.0f;
 
+	bool Awake = true;
 	bool UseGravity = false;
 
 	RigidBody() = default;
 	RigidBody(const RigidBody&) = default;
 
+	static constexpr float epsilon = 0.001f;
+
 	void ApplyForce(const glm::vec3& force) {
+		if (force.length() < epsilon) {
+			return;
+		}
+
+		Awake = true;
 		Force += force;
 	}
 
 	void ApplyImpulse(const glm::vec3& impulse) {
+		if (impulse.length() < epsilon) {
+			return;
+		}
+
 		if (Mass != 0.0f) {
+			Awake = true;
 			Velocity += impulse / Mass;
 		}
 	}

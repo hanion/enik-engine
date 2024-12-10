@@ -163,6 +163,7 @@ void Scene::OnFixedUpdate() {
 			}
 		});
 
+		SetGlobalTransforms();
 		PhysicsWorld::Step();
 	}
 }

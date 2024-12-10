@@ -175,6 +175,9 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		ImGuiUtils::PrefixLabel("Force");
 		ImGui::DragFloat3("##Force", glm::value_ptr(rigid_body.Force), 0.01f, 0.01f);
 
+		ImGuiUtils::PrefixLabel("Awake");
+		ImGui::Checkbox("##Awake", &rigid_body.Awake);
+
 	});
 
 	DisplayComponentInInspector<Component::Collider>("Collider", entity, true, [&]() {
