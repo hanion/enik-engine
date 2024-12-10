@@ -77,8 +77,6 @@ private:
 
 	bool m_ShowColliders     = true;
 
-	Ref<Texture2D> m_TexturePlay, m_TextureStop, m_TexturePause, m_TextureStep;
-
 
 	SceneTreePanel m_SceneTreePanel;
 	InspectorPanel m_InspectorPanel;

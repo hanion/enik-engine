@@ -16,6 +16,7 @@
 #include "tabs/editor_tab.h"
 #include "tabs/scene_editor_tab.h"
 #include "tabs/text_editor_tab.h"
+#include "utils/editor_assets.h"
 #include "utils/editor_colors.h"
 
 
@@ -29,6 +30,8 @@ EditorLayer::EditorLayer()
 
 void EditorLayer::OnAttach() {
 	EN_PROFILE_SCOPE;
+
+	EditorAssets::LoadEditorAssets();
 
 	std::filesystem::path project = PROJECT_PATH;
 	if (std::filesystem::exists(project)) {

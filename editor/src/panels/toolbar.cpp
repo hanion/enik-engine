@@ -1,17 +1,10 @@
 #include "toolbar.h"
 #include "asset/importer/texture_importer.h"
 #include "imgui.h"
+#include "asset/asset_manager.h"
+#include "utils/editor_assets.h"
 
 namespace Enik {
-
-ToolbarPanel::ToolbarPanel() {
-	/* Create Textures */ {
-		m_TextureSelect = TextureImporter::LoadTexture2D(EN_ASSETS_PATH("icons/tool_select.png"));
-		m_TextureMove   = TextureImporter::LoadTexture2D(EN_ASSETS_PATH("icons/tool_move.png"));
-		m_TextureScale  = TextureImporter::LoadTexture2D(EN_ASSETS_PATH("icons/tool_scale.png"));
-		m_TextureRotate = TextureImporter::LoadTexture2D(EN_ASSETS_PATH("icons/tool_rotate.png"));
-	}
-}
 
 ToolbarPanel::ToolbarPanel(const Ref<Scene>& context, SceneTreePanel* scene_tree_panel) {
 	SetContext(context, scene_tree_panel);
@@ -80,22 +73,22 @@ void ToolbarPanel::ShowToolbar() {
 		return;
 	}
 
-	if (ToolImageButton(m_TextureSelect, Tool::SELECT)) {
+	if (ToolImageButton(EditorAssets::Select, Tool::SELECT)) {
 		m_SelectedTool = Tool::SELECT;
 	}
 
 	ImGui::SameLine();
-	if (ToolImageButton(m_TextureMove, Tool::MOVE)) {
+	if (ToolImageButton(EditorAssets::Move, Tool::MOVE)) {
 		m_SelectedTool = Tool::MOVE;
 	}
 
 	ImGui::SameLine();
-	if (ToolImageButton(m_TextureRotate, Tool::ROTATE)) {
+	if (ToolImageButton(EditorAssets::Rotate, Tool::ROTATE)) {
 		m_SelectedTool = Tool::ROTATE;
 	}
 
 	ImGui::SameLine();
-	if (ToolImageButton(m_TextureScale, Tool::SCALE)) {
+	if (ToolImageButton(EditorAssets::Scale, Tool::SCALE)) {
 		m_SelectedTool = Tool::SCALE;
 	}
 

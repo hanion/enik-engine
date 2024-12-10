@@ -9,6 +9,7 @@
 #include "dialogs/dialog_confirm.h"
 
 #include "editor_layer.h"
+#include "utils/editor_assets.h"
 
 #define BIND_FUNC_EVENT(fn) std::bind(&SceneEditorTab::fn, this, std::placeholders::_1)
 
@@ -20,11 +21,6 @@ SceneEditorTab::SceneEditorTab(const std::string& name)
 	FrameBufferSpecification spec;
 	spec.Attachments = {FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::RED_INTEGER, FrameBufferTextureFormat::Depth};
 	m_FrameBuffer = FrameBuffer::Create(spec);
-
-	m_TexturePlay  = TextureImporter::LoadTexture2D(EN_ASSETS_PATH("icons/play_button.png"));
-	m_TextureStop  = TextureImporter::LoadTexture2D(EN_ASSETS_PATH("icons/stop_button.png"));
-	m_TexturePause = TextureImporter::LoadTexture2D(EN_ASSETS_PATH("icons/pause_button.png"));
-	m_TextureStep  = TextureImporter::LoadTexture2D(EN_ASSETS_PATH("icons/step_button.png"));
 
 	m_ToolbarPanel.InitValues(m_FrameBuffer, m_EditorCameraController, m_ViewportHovered);
 	m_FileSystemPanel.SetCurrentDir(Project::GetProjectDirectory());
@@ -427,7 +423,7 @@ void SceneEditorTab::ShowToolbarPlayPause() {
 
 	if (m_SceneState == SceneState::Play) {
 		if (m_ActiveScene->IsPaused()) {
-			auto texture_id_step = reinterpret_cast<void*>(static_cast<uintptr_t>(m_TextureStep->GetRendererID()));
+			auto texture_id_step = reinterpret_cast<void*>(static_cast<uintptr_t>(EditorAssets::Step->GetRendererID()));
 			if (ImGui::ImageButton(texture_id_step, toolbar_size, ImVec2(0, 1), ImVec2(1, 0), 0)) {
 				m_ActiveScene->Step();
 			}
@@ -439,7 +435,7 @@ void SceneEditorTab::ShowToolbarPlayPause() {
 			tint_color = ImVec4(0.5f, 0.5f, 0.9f, 1.0f);
 		}
 
-		auto texture_id_pause = reinterpret_cast<void*>(static_cast<uintptr_t>(m_TexturePause->GetRendererID()));
+		auto texture_id_pause = reinterpret_cast<void*>(static_cast<uintptr_t>(EditorAssets::Pause->GetRendererID()));
 		if (ImGui::ImageButton(texture_id_pause, toolbar_size, ImVec2(0, 1), ImVec2(1, 0), 0, ImVec4(0, 0, 0, 0), tint_color)) {
 			OnScenePause(not m_ActiveScene->IsPaused());
 		}
@@ -448,7 +444,7 @@ void SceneEditorTab::ShowToolbarPlayPause() {
 
 
 
-	Ref<Texture2D> texture = (m_SceneState == SceneState::Edit) ? m_TexturePlay : m_TextureStop;
+	Ref<Texture2D> texture = (m_SceneState == SceneState::Edit) ? EditorAssets::Play : EditorAssets::Stop;
 	auto texture_id = reinterpret_cast<void*>(static_cast<uintptr_t>(texture->GetRendererID()));
 	if (ImGui::ImageButton(texture_id, toolbar_size, ImVec2(0, 1), ImVec2(1, 0), 0)) {
 		if (m_SceneState == SceneState::Edit) {

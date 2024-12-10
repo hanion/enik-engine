@@ -9,7 +9,7 @@ namespace Enik {
 
 class ToolbarPanel {
 public:
-	ToolbarPanel();
+	ToolbarPanel() {}
 	ToolbarPanel(const Ref<Scene>& context, SceneTreePanel* scene_tree_panel = nullptr);
 	~ToolbarPanel() {}
 
@@ -53,8 +53,6 @@ private:
 
 	constexpr static float m_Padding = 4.0f;
 	constexpr static float m_ToolbarMinSize = 32.0f;
-
-	Ref<Texture2D> m_TextureSelect, m_TextureScale, m_TextureMove, m_TextureRotate;
 
 	Ref<FrameBuffer> m_FrameBuffer;
 	OrthographicCameraController* m_EditorCamera;
