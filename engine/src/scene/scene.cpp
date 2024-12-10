@@ -8,6 +8,7 @@
 #include "script_system/script_system.h"
 #include "physics/physics_world.h"
 #include "scene/scene_serializer.h"
+#include "scene/tween.h"
 
 namespace Enik {
 
@@ -106,6 +107,10 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 				ns.Instance->OnUpdate(ts);
 			}
 		});
+
+
+		Tween::StepAll(ts);
+
 	}
 
 
