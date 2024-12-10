@@ -53,6 +53,7 @@ public:
 
 	void SetGlobalTransforms();
 
+	void CloseApplication();
 
 private:
 	entt::registry m_Registry;

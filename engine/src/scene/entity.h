@@ -116,6 +116,9 @@ public:
 		return m_Scene->FindEntityByName(name);
 	}
 
+	void CloseApplication() {
+		m_Scene->CloseApplication();
+	}
 
 private:
 	entt::entity m_Handle{entt::null};

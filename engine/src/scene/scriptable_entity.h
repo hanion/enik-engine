@@ -41,6 +41,7 @@ public:
 	Entity FindEntityByUUID(UUID uuid) { return m_Entity.FindEntityByUUID(uuid); }
 	Entity FindEntityByName(const std::string& name) { return m_Entity.FindEntityByName(name); }
 
+	void CloseApplication() { m_Entity.CloseApplication(); }
 
 
 	Entity m_Entity;

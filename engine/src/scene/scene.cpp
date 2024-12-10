@@ -8,6 +8,7 @@
 #include "script_system/script_system.h"
 #include "physics/physics_world.h"
 #include "scene/scene_serializer.h"
+#include "core/application.h"
 #include "scene/tween.h"
 
 namespace Enik {
@@ -312,6 +313,14 @@ void Scene::SetGlobalTransforms() {
 		}
 		family.SetChildrenGlobalTransformRecursive(transform);
 	}
+}
+
+void Scene::CloseApplication() {
+#if EN_DIST_BUILD
+	Application::Get().Close();
+#else
+	SetPaused(true);
+#endif
 }
 
 }
