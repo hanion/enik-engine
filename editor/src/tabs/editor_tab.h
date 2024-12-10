@@ -12,7 +12,8 @@ namespace Enik {
 
 class EditorTab {
 public:
-	explicit EditorTab(const std::string& name) : m_TabID(s_TabIDCounter++), m_Name(name), m_WindowName(m_Name + "##tab" + std::to_string(m_TabID)) {}
+	explicit EditorTab(const std::string& name) : 
+		m_TabID(++s_TabIDCounter), m_Name(name), m_WindowName(m_Name + "##tab" + std::to_string(m_TabID)) {}
 	virtual ~EditorTab() = default;
 
 	void OnImGuiRender();
@@ -24,6 +25,7 @@ public:
 
 	const std::string& GetName() const { return m_Name; }
 	const std::string& GetWindowName() const { return m_WindowName; }
+	inline void SetWindowName(const std::string& name) { m_WindowName = name + "##tab" + std::to_string(m_TabID); }
 
 	bool ShouldClose() const { return not m_IsOpen and not m_IsDirty; }
 
@@ -39,7 +41,7 @@ protected:
 protected:
 	int m_TabID;
 	const std::string m_Name;
-	const std::string m_WindowName;
+	std::string m_WindowName;
 
 	bool m_IsOpen = true;
 	bool m_IsDirty = false;
@@ -47,6 +49,8 @@ protected:
 	ImGuiID m_DockspaceID;
 
 	EditorLayer* m_EditorLayer;
+
+	bool m_NoTabBar = false;
 
 private:
 	static int s_TabIDCounter;

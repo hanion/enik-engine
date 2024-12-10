@@ -22,7 +22,7 @@ void EditorTab::OnImGuiRender() {
 
 void EditorTab::DockTo(ImGuiID dockspace_id) {
 	ImGui::DockBuilderDockWindow(m_WindowName.c_str(), dockspace_id);
-	EN_CORE_TRACE("Tab {}", m_WindowName);
+	EN_CORE_TRACE("Docked Tab {}", m_WindowName);
 }
 
 bool EditorTab::BeginDockspace() {
@@ -39,12 +39,19 @@ bool EditorTab::BeginDockspace() {
 	int pushed_color_count = 0;
 	ImGuiUtils::ColorFile(m_Name, pushed_color_count);
 
-	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBackground;
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
 	if (m_IsDirty) {
 		flags |= ImGuiWindowFlags_UnsavedDocument;
 	}
 
 	bool dockspace_open = ImGui::Begin(m_WindowName.c_str(), &m_IsOpen, flags);
+	if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)) {
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 1.0f);
+		ImGui::SetTooltip("%s", m_Name.c_str());
+		ImGui::PopStyleVar(3);
+	}
 
 	ImGui::PopStyleColor(pushed_color_count);
 	ImGui::PopStyleVar(4);
@@ -56,7 +63,11 @@ bool EditorTab::BeginDockspace() {
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, EditorVars::PanelTabPadding);
 
 	m_DockspaceID = ImGui::GetID(m_WindowName.c_str());
-	ImGui::DockSpace(m_DockspaceID, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+	if (!m_NoTabBar) {
+		ImGui::DockSpace(m_DockspaceID, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_None);
+	} else {
+		ImGui::DockSpace(m_DockspaceID, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_NoTabBar);
+	}
 
 	ImGui::PopStyleVar();
 
