@@ -319,8 +319,22 @@ void EditorLayer::SaveProject() {
 }
 
 void EditorLayer::ReloadProject() {
-	ScriptSystem::ClearOnScriptModuleReloadEvents();
-	LoadProject(Project::GetActive()->GetProjectDirectory() / "project.enik");
+	if (Project::GetActive()) {
+		ScriptSystem::ClearOnScriptModuleReloadEvents();
+		LoadProject(Project::GetActive()->GetProjectDirectory() / "project.enik");
+	}
+}
+
+void EditorLayer::ReloadTab() {
+	for (auto it = m_EditorTabs.begin(); it != m_EditorTabs.end(); ++it) {
+		Ref<EditorTab> tab = *it;
+		if (tab->IsFocused() and !tab->IsDirty()) {
+			auto name = tab->GetName();
+			m_EditorTabs.erase(it);
+			RequestOpenAsset(name);
+			return;
+		}
+	}
 }
 
 bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
@@ -349,7 +363,7 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 			break;
 		case Key::R:
 			if (control) {
-				ReloadProject();
+				ReloadTab();
 			}
 			break;
 
@@ -361,6 +375,14 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 
 		case Key::F4:
 			ExitEditor();
+			break;
+
+		case Key::T:
+			if (control) {
+				if (Project::GetActive()){
+					RequestOpenAsset(Project::GetActive()->GetConfig().start_scene);
+				}
+			}
 			break;
 
 		default:

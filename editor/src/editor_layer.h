@@ -39,6 +39,7 @@ private:
 	void LoadProject(const std::filesystem::path &path);
 	void SaveProject();
 	void ReloadProject();
+	void ReloadTab();
 
 	bool OnKeyPressed (KeyPressedEvent &event);
 
