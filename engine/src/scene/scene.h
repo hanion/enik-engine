@@ -70,6 +70,7 @@ private:
 	friend class SceneTreePanel;
 	friend class InspectorPanel;
 	friend class SceneSerializer;
+	friend class PrefabEditorTab;
 };
 
 }

@@ -99,6 +99,29 @@ YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec4& vec) {
 
 namespace Enik {
 
+bool IsChildOfPrefab(Entity entity) {
+	if (!entity.HasParent()) {
+		return false;
+	}
+
+	std::stack<Entity> parents;
+	parents.push(entity.GetParent());
+
+	while (!parents.empty()) {
+		Entity p = parents.top();
+		parents.pop();
+
+		if (p.Has<Component::Prefab>()) {
+			return true;
+		}
+
+		if (p.HasParent()) {
+			parents.push(p.GetParent());
+		}
+	}
+	return false;
+}
+
 void SceneSerializer::Serialize(const std::string& filepath) {
 	// EN_CORE_INFO("Serializing scene   '{0}', in '{1}'", m_Scene->GetName(), filepath);
 	YAML::Emitter out;
@@ -113,6 +136,11 @@ void SceneSerializer::Serialize(const std::string& filepath) {
 		Entity entity = Entity(entityID, m_Scene);
 		if (not entity) {
 			return;
+		}
+		if (entity.Has<Component::Prefab>()) {
+			if (IsChildOfPrefab(entity)) {
+				return;
+			}
 		}
 		SerializeEntity(out, entity);
 	});
@@ -414,7 +442,7 @@ void SceneSerializer::UpdateUUIDs(YAML::Node& entities, std::unordered_map<uint6
 	}
 }
 
-Entity SceneSerializer::InstantiatePrefab(const std::string& filepath, UUID instance_uuid) {
+Entity SceneSerializer::InstantiatePrefab(const std::string& filepath, UUID instance_uuid, bool no_uuid_update) {
 	YAML::Node data;
 	try {
 		data = YAML::LoadFile(filepath);
@@ -436,8 +464,16 @@ Entity SceneSerializer::InstantiatePrefab(const std::string& filepath, UUID inst
 	std::unordered_map<uint64_t, uint64_t> uuid_map;
 
 	UUID old_root_uuid = data["Root"].as<uint64_t>();
-	uuid_map[old_root_uuid] = instance_uuid;
-	UpdateUUIDs(entities, uuid_map, instance_uuid);
+	if (instance_uuid) {
+		uuid_map[old_root_uuid] = instance_uuid;
+	} else {
+		instance_uuid = old_root_uuid;
+	}
+
+	if (!no_uuid_update) {
+		UpdateUUIDs(entities, uuid_map, instance_uuid);
+
+	}
 
 	// iterate reversed to not change entity indexes
 	for (std::size_t i = entities.size(); i > 0; --i) {
@@ -463,7 +499,7 @@ Entity SceneSerializer::InstantiatePrefab(const std::string& filepath, UUID inst
 
 	Entity root_entity = m_Scene->FindEntityByUUID(instance_uuid);
 
-	Component::Prefab& component = root_entity.Add<Component::Prefab>();
+	Component::Prefab& component = root_entity.GetOrAdd<Component::Prefab>();
 	component.RootPrefab = true;
 	component.PrefabPath = Project::GetRelativePath(filepath);
 
@@ -477,7 +513,7 @@ Entity SceneSerializer::InstantiatePrefab(const std::string& filepath, UUID inst
 
 		if (current_entity.HasFamily()) {
 			for (Entity child : current_entity.GetChildren()) {
-				child.GetOrAdd<Component::Prefab>().RootPrefab = false;
+				child.GetOrAdd<Component::Prefab>();
 				all_entities.push(child);
 			}
 		}

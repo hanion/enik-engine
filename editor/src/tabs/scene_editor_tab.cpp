@@ -228,6 +228,10 @@ void SceneEditorTab::LoadScene(const std::filesystem::path& path) {
 	if (not std::filesystem::exists(path)) {
 		return;
 	}
+	if (path.has_extension() and path.extension() != ".escn") {
+		return;
+	}
+
 	if (m_SceneState != SceneState::Edit) {
 		OnSceneStop();
 	}

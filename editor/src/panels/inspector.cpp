@@ -97,8 +97,12 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		auto& pref = entity.Get<Component::Prefab>();
 		ImGuiUtils::PrefixLabel("RootPrefab");
 		ImGui::Checkbox("##RootPrefab", &pref.RootPrefab);
+
 		ImGuiUtils::PrefixLabel("PrefabPath");
-		ImGui::Text("%s", pref.PrefabPath.string().c_str());
+		char buffer[256];
+		memset(buffer, 0, sizeof(buffer));
+		strcpy(buffer, pref.PrefabPath.string().c_str());
+		ImGui::InputText("##PrefabPath", buffer, sizeof(buffer));
 	});
 
 	DisplayComponentInInspector<Component::Transform>("Transform", entity, false, [&]() {

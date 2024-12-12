@@ -24,7 +24,7 @@ public:
 	void ReloadNativeScriptFields(const std::string& filepath);
 
 	void CreatePrefab(const std::string& filepath, Entity entity_to_prefab);
-	Entity InstantiatePrefab(const std::string& filepath, UUID instance_uuid = UUID());
+	Entity InstantiatePrefab(const std::string& filepath, UUID instance_uuid = UUID(), bool no_uuid_update = false);
 
 private:
 	void SerializeEntity(YAML::Emitter& out, Entity& entity);

@@ -16,7 +16,7 @@ namespace Enik {
 class SceneEditorTab : public EditorTab {
 public:
 	SceneEditorTab(const std::string& name);
-	~SceneEditorTab();
+	virtual ~SceneEditorTab();
 
 private:
 	virtual void RenderContent() override final;
@@ -35,8 +35,8 @@ private:
 private:
 	void SetPanelsContext();
 
-	void LoadScene(const std::filesystem::path& path);
-	void SaveScene();
+	virtual void LoadScene(const std::filesystem::path& path);
+	virtual void SaveScene();
 
 
 	bool OnKeyPressed (KeyPressedEvent &event);
@@ -92,6 +92,7 @@ private:
 	glm::vec4 m_SelectionOutlineColor = glm::vec4(1.0f, 0.44f, 0.1f, 0.84f);
 	int m_SelectionOutlineWidth = 5;
 
+friend class PrefabEditorTab;
 };
 
 }

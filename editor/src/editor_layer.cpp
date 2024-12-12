@@ -14,6 +14,7 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 #include "tabs/editor_tab.h"
+#include "tabs/prefab_editor_tab.h"
 #include "tabs/scene_editor_tab.h"
 #include "tabs/text_editor_tab.h"
 #include "utils/editor_assets.h"
@@ -240,11 +241,12 @@ void EditorLayer::OpenAsset(const std::filesystem::path& path) {
 	Ref<EditorTab> tab = nullptr;
 	if (ext == ".escn") {
 		tab = std::static_pointer_cast<EditorTab>(CreateRef<SceneEditorTab>(path));
+	} else if (ext == ".prefab") {
+		tab = std::static_pointer_cast<EditorTab>(CreateRef<PrefabEditorTab>(path));
 	} else if (ext == ".enik" or
 		ext == ".txt" or
 		ext == ".png" or
-		ext == ".wav" or
-		ext == ".prefab") {
+		ext == ".wav") {
 		tab = std::static_pointer_cast<EditorTab>(CreateRef<TextEditorTab>(path));
 	}
 
