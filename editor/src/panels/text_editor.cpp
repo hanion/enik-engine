@@ -15,9 +15,9 @@ void TextEditorPanel::RenderContent() {
 
 	if (ImGui::BeginMenuBar()) {
 		if (IsEditing()) {
-			bool menu_open = ImGui::BeginMenu(m_CurrentFile.filename().c_str());
+			bool menu_open = ImGui::BeginMenu(m_CurrentFile.filename().string().c_str());
 			if (ImGui::IsItemHovered()) {
-				ImGui::SetTooltip(Project::GetRelativePath(m_CurrentFile).c_str());
+				ImGui::SetTooltip(Project::GetRelativePath(m_CurrentFile).string().c_str());
 			}
 
 			if (menu_open) {
@@ -90,7 +90,7 @@ bool TextEditorPanel::OpenTextFile(const std::filesystem::path& path) {
 
 	m_CurrentFile = Project::GetAbsolutePath(path);
 
-	const char* filename = m_CurrentFile.c_str();
+	const char* filename = m_CurrentFile.string().c_str();
 
 	std::ifstream file(filename, std::ios::binary);
 	if (!file.is_open()) {
@@ -114,7 +114,7 @@ bool TextEditorPanel::OpenTextFile(const std::filesystem::path& path) {
 }
 
 bool TextEditorPanel::SaveCurrentTextFile() {
-	const char* filename = m_CurrentFile.c_str();
+	const char* filename = m_CurrentFile.string().c_str();
 
 	std::ofstream file = std::ofstream(filename);
 	if (not file.is_open()) {

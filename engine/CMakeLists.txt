@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 3.26.4)
 
 project(enik-engine)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-dangling-reference -Wl,-E")
+if(MSVC)
+  set(CMAKE_CXX_FLAGS "/w /FS /wd4820 /wd4996 ${CMAKE_CXX_FLAGS_INIT}") # Suppress all warnings on MSVC
+else()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-dangling-reference  -Wl,-E")
+endif()
 
 # set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

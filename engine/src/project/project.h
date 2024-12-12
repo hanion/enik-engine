@@ -49,6 +49,9 @@ public:
 		return std::filesystem::path();
 	}
 
+	static const std::filesystem::path GetRelativePath(const std::filesystem::path& path) {
+		return GetRelativePath(path.string());
+	}
 	static const std::filesystem::path GetRelativePath(const std::string& path) {
 		std::filesystem::path canonical = std::filesystem::absolute(path);
 		std::filesystem::path base      = std::filesystem::absolute(GetProjectDirectory());

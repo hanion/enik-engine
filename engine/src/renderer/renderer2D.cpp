@@ -377,12 +377,11 @@ void Renderer2D::CreateErrorTexture() {
 		0,   0,   0, 255,   255, 0, 255, 255,
 		255, 0, 255, 255,     0, 0,   0, 255
 	};
-	TextureSpecification spec {
-		.Width = 2,
-		.Height = 2,
-		.Format = ImageFormat::RGBA8,
-		.MagFilterLinear = false
-	};
+	TextureSpecification spec;
+	spec.Width = 2;
+	spec.Height = 2;
+	spec.Format = ImageFormat::RGBA8;
+	spec.MagFilterLinear = false;
 	Buffer data;
 	data.Data = _s_ErrorTextureData;
 	data.Size = sizeof(_s_ErrorTextureData);

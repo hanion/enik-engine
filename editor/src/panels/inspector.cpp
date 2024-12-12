@@ -244,7 +244,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		for (size_t i = 0; i < sources.SourcePaths.size(); i++) {
 			char buffer[256];
 			memset(buffer, 0, sizeof(buffer));
-			strcpy(buffer, sources.SourcePaths[i].c_str());
+			strcpy(buffer, sources.SourcePaths[i].string().c_str());
 
 			auto file = std::filesystem::path(buffer);
 			if (file.empty()) {
@@ -252,13 +252,13 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 				ImGuiUtils::PrefixLabel("Source");
 			}
 			else {
-				ImGuiUtils::PrefixLabel(file.stem().c_str());
+				ImGuiUtils::PrefixLabel(file.stem().string());
 			}
 
 
 			ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::teal);
-			if (ImGui::Button(file.filename().c_str())) {
-				sources.Play(sources.SourcePaths[i].stem());
+			if (ImGui::Button(file.filename().string().c_str())) {
+				sources.Play(sources.SourcePaths[i].stem().string());
 			}
 
 			if (ImGui::IsItemHovered()){
@@ -611,7 +611,7 @@ void InspectorPanel::DisplayNativeScript(Component::NativeScript& script) {
 					file = "[Prefab]";
 				}
 				ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::blue);
-				ImGui::Button(file.filename().c_str());
+				ImGui::Button(file.filename().string().c_str());
 				if (ImGui::IsItemHovered()){
 					ImGui::SetTooltip("%s", file.c_str());
 				}

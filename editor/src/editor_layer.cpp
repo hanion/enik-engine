@@ -275,7 +275,7 @@ void EditorLayer::CreateNewScene() {
 					[&]() {
 						Ref<Scene> new_scene = CreateRef<Scene>();
 						SceneSerializer serializer = SceneSerializer(new_scene);
-						serializer.Serialize(DialogFile::GetSelectedPath());
+						serializer.Serialize(DialogFile::GetSelectedPath().string());
 						RequestOpenAsset(Project::GetRelativePath(DialogFile::GetSelectedPath()));
 					}
 				);
@@ -283,7 +283,7 @@ void EditorLayer::CreateNewScene() {
 			else {
 				Ref<Scene> new_scene = CreateRef<Scene>();
 				SceneSerializer serializer = SceneSerializer(new_scene);
-				serializer.Serialize(new_path);
+				serializer.Serialize(new_path.string());
 				RequestOpenAsset(relative);
 			}
 

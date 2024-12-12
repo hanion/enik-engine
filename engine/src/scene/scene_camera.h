@@ -20,10 +20,10 @@ public:
 	float GetNear       () { return m_OrthographicNear; }
 	float GetAspectRatio() { return m_AspectRatio     ; }
 
-	void SetSize       (float size ) { m_OrthographicSize = size ; RecalculateProjection(); }
-	void SetFar        (float far  ) { m_OrthographicFar  = far  ; RecalculateProjection(); }
-	void SetNear       (float near ) { m_OrthographicNear = near ; RecalculateProjection(); }
-	void SetAspectRatio(float ratio) { m_AspectRatio      = ratio; RecalculateProjection(); }
+	void SetSize       (float _size ) { m_OrthographicSize = _size ; RecalculateProjection(); }
+	void SetFar        (float _far  ) { m_OrthographicFar  = _far  ; RecalculateProjection(); }
+	void SetNear       (float _near ) { m_OrthographicNear = _near ; RecalculateProjection(); }
+	void SetAspectRatio(float _ratio) { m_AspectRatio      = _ratio; RecalculateProjection(); }
 
 	glm::vec2 GetWorldPosition(const float x, const float y) const;
 
