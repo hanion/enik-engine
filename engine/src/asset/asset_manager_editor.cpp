@@ -83,7 +83,7 @@ Ref<Asset> AssetManagerEditor::GetAsset(AssetHandle handle) {
 
 
 AssetHandle AssetManagerEditor::ImportAsset(const std::filesystem::path& path) {
-	const std::filesystem::path absolute_path = Project::GetAbsolutePath(path);
+	const std::filesystem::path absolute_path = std::filesystem::absolute(path);
 
 	// NOTE: check if it already exists before creating new
 	{

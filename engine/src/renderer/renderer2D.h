@@ -40,8 +40,12 @@ public:
 	static void ResetStats();
 	static Statistics GetStats();
 
+	static Ref<Texture2D> s_ErrorTexture;
+
 private:
 	static float GetTextureIndex(const Ref<Texture2D>& texture);
+
+	static void CreateErrorTexture();
 };
 
 }

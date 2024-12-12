@@ -8,7 +8,6 @@ public:
 	static void LoadEditorAssets();
 
 public:
-	static Ref<Texture2D> Error;
 	static Ref<Texture2D> Play, Stop, Pause, Step;
 	static Ref<Texture2D> Select, Move, Scale, Rotate;
 };

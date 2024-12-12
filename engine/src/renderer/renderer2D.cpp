@@ -62,6 +62,7 @@ struct Renderer2DData {
 };
 
 static Renderer2DData s_Data;
+Ref<Texture2D> Renderer2D::s_ErrorTexture;
 
 const glm::vec4 Renderer2DData::QuadVertexPositions[] = {
 	glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f),
@@ -71,6 +72,8 @@ const glm::vec4 Renderer2DData::QuadVertexPositions[] = {
 
 void Renderer2D::Init() {
 	EN_PROFILE_SCOPE;
+
+	CreateErrorTexture();
 
 	s_Data.QuadVertexArray = VertexArray::Create();
 
@@ -247,6 +250,9 @@ void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::Sp
 
 	if (sprite.Handle) {
 		Ref<Texture2D> texture = AssetManager::GetAsset<Texture2D>(sprite.Handle);
+		if (!texture) {
+			texture = s_ErrorTexture;
+		}
 		textureIndex = GetTextureIndex(texture);
 	}
 
@@ -364,6 +370,23 @@ void Renderer2D::ResetStats() {
 
 Renderer2D::Statistics Renderer2D::GetStats() {
 	return s_Data.Stats;
+}
+
+void Renderer2D::CreateErrorTexture() {
+	static uint8_t _s_ErrorTextureData[2 * 2 * 4] = {
+		0,   0,   0, 255,   255, 0, 255, 255,
+		255, 0, 255, 255,     0, 0,   0, 255
+	};
+	TextureSpecification spec {
+		.Width = 2,
+		.Height = 2,
+		.Format = ImageFormat::RGBA8,
+		.MagFilterLinear = false
+	};
+	Buffer data;
+	data.Data = _s_ErrorTextureData;
+	data.Size = sizeof(_s_ErrorTextureData);
+	s_ErrorTexture = Texture2D::Create(spec, data);
 }
 
 }

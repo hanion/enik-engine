@@ -3,7 +3,6 @@
 
 namespace Enik {
 
-Ref<Texture2D> EditorAssets::Error;
 Ref<Texture2D> EditorAssets::Play;
 Ref<Texture2D> EditorAssets::Stop;
 Ref<Texture2D> EditorAssets::Pause;
@@ -19,8 +18,6 @@ Ref<Texture2D> Load(const std::string& path) {
 }
 
 void EditorAssets::LoadEditorAssets() {
-	Error = Load("textures/error.png");
-
 	Play  = Load("icons/play_button.png");
 	Stop  = Load("icons/stop_button.png");
 	Pause = Load("icons/pause_button.png");

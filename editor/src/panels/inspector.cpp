@@ -13,6 +13,7 @@
 #include "core/input.h"
 #include "utils/editor_colors.h"
 #include "audio/audio.h"
+#include "renderer/renderer2D.h"
 
 #define COLOR(color) ImGui::PushStyleColor(ImGuiCol_Text, color)
 
@@ -416,12 +417,12 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 	avail.y = (avail.y < 32) ? avail.y : 32;
 	avail.x -= GImGui->Style.FramePadding.x;
 
-	ImTextureID tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(0));
-	ImVec2 tex_size = ImVec2(0, 0);
 
-	Ref<Texture2D> texture;
+	Ref<Texture2D> texture = Renderer2D::s_ErrorTexture;
+	ImTextureID tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(texture->GetRendererID()));
+	ImVec2 tex_size = ImVec2(texture->GetWidth(), texture->GetHeight());
 
-	if (sprite.Handle) {
+	if (sprite.Handle and AssetManager::IsAssetHandleValid(sprite.Handle)) {
 		texture = AssetManager::GetAsset<Texture2D>(sprite.Handle);
 		tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(texture->GetRendererID()));
 		tex_size = ImVec2(texture->GetWidth(), texture->GetHeight());
@@ -441,11 +442,11 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 	if (ImGui::BeginChild("TextureChild", childSize, false, ImGuiWindowFlags_NoScrollbar)) {
 		ImGui::Image(tex_id, tex_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f,1.0f,1.0f,1.0f), border_col);
 
-		if (sprite.Handle and ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)) {
+		if (texture and ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)) {
 			if (ImGui::BeginTooltip()) {
 				std::string width  = std::to_string(texture->GetWidth());
 				std::string height = std::to_string(texture->GetHeight());
-				std::string txt = Project::GetRelativePath(AssetManager::GetAssetPath(sprite.Handle)).string() + " - " + width + "x" + height;
+				std::string txt = std::to_string(sprite.Handle) + " - " + width + "x" + height;
 				ImGui::Text("%s", txt.c_str());
 				ImVec2 texture_tooltip_size = ImVec2(tex_size.x*8.0f, tex_size.y*8.0f);
 				ImGui::Image(tex_id, texture_tooltip_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
