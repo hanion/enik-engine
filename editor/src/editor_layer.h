@@ -51,6 +51,7 @@ private:
 
 private:
 	std::vector<Ref<EditorTab>> m_EditorTabs;
+	Ref<EditorTab> m_FocusedTab;
 
 	ImGuiID          m_MainDockspaceID;
 	ImGuiWindowClass m_MainDockspaceClass;

@@ -50,13 +50,24 @@ void EditorLayer::OnUpdate(Timestep timestep) {
 	EN_PROFILE_SCOPE;
 
 	for (const auto& tab : m_EditorTabs) {
-		tab->OnUpdate(timestep);
+		if (tab->IsFocused()) {
+			if (m_FocusedTab != tab) {
+				if (auto set = std::dynamic_pointer_cast<SceneEditorTab>(m_FocusedTab)) {
+					set->OnSceneStop();
+				}
+			}
+			m_FocusedTab = tab;
+		}
+	}
+
+	if (m_FocusedTab) {
+		m_FocusedTab->OnUpdate(timestep);
 	}
 }
 
 void EditorLayer::OnFixedUpdate() {
-	for (const auto& tab : m_EditorTabs) {
-		tab->OnFixedUpdate();
+	if (m_FocusedTab) {
+		m_FocusedTab->OnFixedUpdate();
 	}
 }
 
@@ -66,8 +77,8 @@ void EditorLayer::OnEvent(Event& event) {
 	EventDispatcher dispatcher = EventDispatcher(event);
 	dispatcher.Dispatch<KeyPressedEvent>(BIND_FUNC_EVENT(OnKeyPressed));
 
-	for (const auto& tab : m_EditorTabs) {
-		tab->OnEvent(event);
+	if (m_FocusedTab) {
+		m_FocusedTab->OnEvent(event);
 	}
 }
 
@@ -241,6 +252,8 @@ void EditorLayer::OpenAsset(const std::filesystem::path& path) {
 		tab->DockTo(m_MainDockspaceID);
 		tab->SetContext(this);
 		m_EditorTabs.push_back(tab);
+		m_FocusedTab = tab;
+		ImGui::FocusWindow(ImGui::FindWindowByName(tab->GetWindowName().c_str()));
 	} else {
 		EN_CORE_ERROR("Could not open tab! {}", path.string());
 	}

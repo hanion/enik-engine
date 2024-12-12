@@ -45,6 +45,8 @@ bool EditorTab::BeginDockspace() {
 	}
 
 	bool dockspace_open = ImGui::Begin(m_WindowName.c_str(), &m_IsOpen, flags);
+	m_IsFocused = dockspace_open && ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows | ImGuiFocusedFlags_DockHierarchy);
+
 	if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)) {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 3.0f);
