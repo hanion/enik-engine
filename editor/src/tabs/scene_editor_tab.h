@@ -46,13 +46,12 @@ private:
 	bool OnMouseScrolled(MouseScrolledEvent &event);
 
 	void ShowToolbarPlayPause();
+	void OnOverlayRender();
+
+public:
 	void OnScenePlay();
 	void OnSceneStop();
 	void OnScenePause(bool is_paused = false);
-
-
-	void OnOverlayRender();
-
 
 
 private:
@@ -73,10 +72,7 @@ private:
 
 	glm::vec2 m_ViewportPosition = glm::vec2(0);
 
-
-
 	bool m_ShowColliders     = true;
-
 
 	SceneTreePanel m_SceneTreePanel;
 	InspectorPanel m_InspectorPanel;

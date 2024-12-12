@@ -42,6 +42,7 @@ void EditorLayer::OnAttach() {
 void EditorLayer::OnDetach() {
 	EN_PROFILE_SCOPE;
 
+	m_EditorTabs.clear();
 	ScriptSystem::UnloadScriptModule();
 }
 
