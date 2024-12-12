@@ -5,7 +5,7 @@ namespace Enik {
 
 class PrefabEditorTab : public SceneEditorTab {
 public:
-	PrefabEditorTab(const std::string& name);
+	PrefabEditorTab(const std::filesystem::path& name);
 	~PrefabEditorTab() {}
 
 private:

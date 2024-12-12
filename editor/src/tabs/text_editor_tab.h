@@ -8,7 +8,7 @@ namespace Enik {
 
 class TextEditorTab : public EditorTab {
 public:
-	TextEditorTab(const std::string& name);
+	TextEditorTab(const std::filesystem::path& name);
 
 	bool OpenTextFile(const std::filesystem::path& path) {
 		return m_Panel.OpenTextFile(path);

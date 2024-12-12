@@ -12,8 +12,8 @@ namespace Enik {
 
 class EditorTab {
 public:
-	explicit EditorTab(const std::string& name) : 
-		m_TabID(++s_TabIDCounter), m_Name(name), m_WindowName(m_Name + "##tab" + std::to_string(m_TabID)) {}
+	explicit EditorTab(const std::filesystem::path& name) :
+		m_TabID(++s_TabIDCounter), m_Name(name.string()), m_WindowName(m_Name + "##tab" + std::to_string(m_TabID)) {}
 	virtual ~EditorTab() = default;
 
 	void OnImGuiRender();

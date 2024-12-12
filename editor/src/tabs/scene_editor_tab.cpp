@@ -15,7 +15,7 @@
 
 namespace Enik {
 
-SceneEditorTab::SceneEditorTab(const std::string& name)
+SceneEditorTab::SceneEditorTab(const std::filesystem::path& name)
 	: EditorTab(name), m_EditorCameraController(0,1280,0,600), m_ViewportPanelName("Viewport##" + std::to_string(m_TabID)) {
 
 	FrameBufferSpecification spec;

@@ -15,7 +15,7 @@ namespace Enik {
 
 class SceneEditorTab : public EditorTab {
 public:
-	SceneEditorTab(const std::string& name);
+	SceneEditorTab(const std::filesystem::path& name);
 	virtual ~SceneEditorTab();
 
 private:

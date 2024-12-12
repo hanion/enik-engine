@@ -7,7 +7,7 @@
 
 namespace Enik {
 
-PrefabEditorTab::PrefabEditorTab(const std::string& name)
+PrefabEditorTab::PrefabEditorTab(const std::filesystem::path& name)
 	: SceneEditorTab(name) {
 	LoadScene(Project::GetAbsolutePath(name));
 }
@@ -27,7 +27,7 @@ void PrefabEditorTab::LoadScene(const std::filesystem::path& path) {
 	SetPanelsContext();
 
 	SceneSerializer serializer(new_scene);
-	m_RootEntity = serializer.InstantiatePrefab(path, 0, true);
+	m_RootEntity = serializer.InstantiatePrefab(path.string(), 0, true);
 
 	m_RootEntity.Remove<Component::Prefab>();
 	new_scene->SetName(m_RootEntity.Get<Component::Tag>().Text);
@@ -54,7 +54,7 @@ void PrefabEditorTab::LoadScene(const std::filesystem::path& path) {
 
 void PrefabEditorTab::SaveScene() {
 	SceneSerializer serializer(m_EditorScene);
-	serializer.CreatePrefab(m_PrefabSourcePath, m_RootEntity);
+	serializer.CreatePrefab(m_PrefabSourcePath.string(), m_RootEntity);
 	m_EditorScene->SetName(m_RootEntity.Get<Component::Tag>().Text);
 	Project::GetAssetManagerEditor()->SerializeAssetRegistry();
 }

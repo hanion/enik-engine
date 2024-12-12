@@ -2,7 +2,7 @@
 
 namespace Enik {
 
-TextEditorTab::TextEditorTab(const std::string& name) : EditorTab(name) {
+TextEditorTab::TextEditorTab(const std::filesystem::path& name) : EditorTab(name) {
 	m_NoTabBar = true;
 	std::filesystem::path path(name);
 	SetWindowName(path.filename().string());
