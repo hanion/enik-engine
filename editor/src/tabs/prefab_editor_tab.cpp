@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "prefab_editor_tab.h"
 #include "asset/asset_manager_editor.h"
 #include "scene/components.h"
