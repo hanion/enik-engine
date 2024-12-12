@@ -493,7 +493,10 @@ void SceneEditorTab::OnSceneStop() {
 
 	Tween::ResetData();
 
-	Enik::UUID current_selected_entity = m_SceneTreePanel.GetSelectedEntityUUID();
+	Enik::UUID current_selected_entity = 0;
+	if (m_SceneTreePanel.IsSelectedEntityValid()) {
+		current_selected_entity = m_SceneTreePanel.GetSelectedEntityUUID();
+	}
 
 	m_SceneState = SceneState::Edit;
 	m_ActiveScene = m_EditorScene;

@@ -16,7 +16,7 @@ public:
 
 	void SetContext(const Ref<Scene>& context);
 
-	bool IsSelectedEntityValid() const { return m_Context->m_Registry.valid(m_SelectionContext); }
+	bool IsSelectedEntityValid() const { return m_SelectionContext && m_Context->m_Registry.valid(m_SelectionContext); }
 
 	Entity GetSelectedEntity() const { return m_SelectionContext; }
 	UUID GetSelectedEntityUUID();

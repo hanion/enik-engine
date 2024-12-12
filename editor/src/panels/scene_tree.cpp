@@ -29,6 +29,9 @@ void SceneTreePanel::SetSelectedEntity(const Entity& entity) {
 }
 
 void SceneTreePanel::SetSelectedEntityWithUUID(const UUID& uuid) {
+	if (!uuid) {
+		return;
+	}
 	m_Context->m_Registry.view<Component::ID>().each([=](auto entity, auto& id) {
 		if (id == uuid) {
 			SetSelectedEntity(Entity(entity, m_Context.get()));

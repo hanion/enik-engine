@@ -382,7 +382,7 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_FILE_PATH")) {
 				std::filesystem::path path = std::filesystem::path(static_cast<const char*>(payload->Data));
 				if (path.extension() == ".png") {
-					sprite.Handle = Project::GetAssetManagerEditor()->ImportAsset(path);
+					sprite.Handle = Project::GetAssetManagerEditor()->ImportAsset(Project::GetAbsolutePath(path));
 				}
 			}
 			ImGui::EndDragDropTarget();
@@ -396,8 +396,7 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 			DialogFile::OpenDialog(
 				DialogType::OPEN_FILE,
 				[&]() {
-					auto relative = Project::GetRelativePath(DialogFile::GetSelectedPath());
-					sprite.Handle = Project::GetAssetManagerEditor()->ImportAsset(relative);
+					sprite.Handle = Project::GetAssetManagerEditor()->ImportAsset(DialogFile::GetSelectedPath());
 				},
 				".png");
 		}
