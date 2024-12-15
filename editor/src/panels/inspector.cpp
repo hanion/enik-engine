@@ -14,6 +14,7 @@
 #include "utils/editor_colors.h"
 #include "audio/audio.h"
 #include "renderer/renderer2D.h"
+#include "utils/imgui_utils.h"
 
 #define COLOR(color) ImGui::PushStyleColor(ImGuiCol_Text, color)
 
@@ -172,17 +173,20 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		ImGuiUtils::PrefixLabel("UseGravity");
 		ImGui::Checkbox("##UseGravity", &rigid_body.UseGravity);
 
-		ImGui::SeparatorText("Debug");
-
-		ImGuiUtils::PrefixLabel("Velocity");
-		ImGui::DragFloat3("##Velocity", glm::value_ptr(rigid_body.Velocity), 0.01f, 0.01f);
-
-		ImGuiUtils::PrefixLabel("Force");
-		ImGui::DragFloat3("##Force", glm::value_ptr(rigid_body.Force), 0.01f, 0.01f);
-
-		ImGuiUtils::PrefixLabel("Awake");
-		ImGui::Checkbox("##Awake", &rigid_body.Awake);
-
+		/* Debug */ {
+			constexpr ImGuiTreeNodeFlags tree_node_flags = ImGuiTreeNodeFlags_OpenOnDoubleClick |
+				ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth |
+				ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_AllowItemOverlap;
+			if (ImGui::TreeNodeEx("##RBDebug", tree_node_flags, "Debug")) {
+				ImGuiUtils::PrefixLabel("Velocity");
+				ImGui::DragFloat3("##Velocity", glm::value_ptr(rigid_body.Velocity), 0.01f, 0.01f);
+				ImGuiUtils::PrefixLabel("Force");
+				ImGui::DragFloat3("##Force", glm::value_ptr(rigid_body.Force), 0.01f, 0.01f);
+				ImGuiUtils::PrefixLabel("Awake");
+				ImGui::Checkbox("##Awake", &rigid_body.Awake);
+				ImGui::TreePop();
+			}
+		}
 	});
 
 	DisplayComponentInInspector<Component::Collider>("Collider", entity, true, [&]() {
@@ -381,100 +385,39 @@ void InspectorPanel::DisplayComponentInPopup(const std::string& name) {
 
 
 void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
-	std::function<void()> BeDragDropTargetTexture = [&]() {
-		if (ImGui::BeginDragDropTarget()) {
-			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_FILE_PATH")) {
-				std::filesystem::path path = std::filesystem::path(static_cast<const char*>(payload->Data));
-				if (path.extension() == ".png") {
-					sprite.Handle = Project::GetAssetManagerEditor()->ImportAsset(Project::GetAbsolutePath(path));
-				}
-			}
-			ImGui::EndDragDropTarget();
-		}
-	};
-
 	ImGuiUtils::PrefixLabel("Texture");
+	ImGuiUtils::AssetButton<Texture2D>(sprite.Handle);
+	bool hovered = ImGui::IsItemHovered();
 
-	if (sprite.Handle == 0) {
-		if (ImGui::Button("Add Texture")) {
-			DialogFile::OpenDialog(
-				DialogType::OPEN_FILE,
-				[&]() {
-					sprite.Handle = Project::GetAssetManagerEditor()->ImportAsset(DialogFile::GetSelectedPath());
-				},
-				".png");
-		}
-		BeDragDropTargetTexture();
+	ImGuiUtils::PrefixLabel("Tile Scale");
+	ImGui::DragFloat("##Tile Scale", &sprite.TileScale, 0.01f);
+
+	if (sprite.Handle == 0 || !hovered) {
 		return;
 	}
-
-	ImVec4 border_col = ImGui::GetStyleColorVec4(ImGuiCol_Border);
-	ImVec2 avail = ImGui::GetContentRegionAvail();
-
-	// ! to not crash at ImGui::TreePop();
-	if (avail.x < 0 or avail.y < -10.0f) {
-		ImGui::Button("##TooSmallToShowTexture");
-		return;
-	}
-
-	avail.y = (avail.y < 32) ? avail.y : 32;
-	avail.x -= GImGui->Style.FramePadding.x;
-
 
 	Ref<Texture2D> texture = Renderer2D::s_ErrorTexture;
+	if (sprite.Handle and AssetManager::IsAssetHandleValid(sprite.Handle)) {
+		texture = AssetManager::GetAsset<Texture2D>(sprite.Handle);
+	}
+
 	ImTextureID tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(texture->GetRendererID()));
 	ImVec2 tex_size = ImVec2(texture->GetWidth(), texture->GetHeight());
 
-	if (sprite.Handle and AssetManager::IsAssetHandleValid(sprite.Handle)) {
-		texture = AssetManager::GetAsset<Texture2D>(sprite.Handle);
-		tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(texture->GetRendererID()));
-		tex_size = ImVec2(texture->GetWidth(), texture->GetHeight());
+	constexpr float target_y = 256.0f;
+	float scale = target_y / tex_size.y;
+	tex_size.y = target_y;
+	tex_size.x *= scale;
+
+	if (ImGui::BeginTooltip()) {
+		std::string width  = std::to_string(texture->GetWidth());
+		std::string height = std::to_string(texture->GetHeight());
+		std::string txt = std::to_string(sprite.Handle) + " - " + width + "x" + height;
+		ImGui::Text("%s", txt.c_str());
+		ImGui::Image(tex_id, tex_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+		ImGui::EndTooltip();
 	}
 
-	if (tex_size.x > avail.x) {
-		tex_size.y = tex_size.y - ((tex_size.x - avail.x) * (tex_size.y / tex_size.x));
-		tex_size.x = avail.x;
-	}
-	if (tex_size.y > avail.y) {
-		tex_size.x = tex_size.x - ((tex_size.y - avail.y) * (tex_size.x / tex_size.y));
-		tex_size.y = avail.y;
-	}
-
-	tex_size = ImVec2(glm::max(32.0f, tex_size.x), glm::max(32.0f, tex_size.y));
-	ImVec2 childSize = ImVec2(tex_size.x + GImGui->Style.FramePadding.x, tex_size.y + GImGui->Style.FramePadding.y);
-	if (ImGui::BeginChild("TextureChild", childSize, false, ImGuiWindowFlags_NoScrollbar)) {
-		ImGui::Image(tex_id, tex_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f), ImVec4(1.0f,1.0f,1.0f,1.0f), border_col);
-
-		if (texture and ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)) {
-			if (ImGui::BeginTooltip()) {
-				std::string width  = std::to_string(texture->GetWidth());
-				std::string height = std::to_string(texture->GetHeight());
-				std::string txt = std::to_string(sprite.Handle) + " - " + width + "x" + height;
-				ImGui::Text("%s", txt.c_str());
-				ImVec2 texture_tooltip_size = ImVec2(tex_size.x*8.0f, tex_size.y*8.0f);
-				ImGui::Image(tex_id, texture_tooltip_size, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-				ImGui::EndTooltip();
-			}
-		}
-
-		if (ImGui::IsMouseDown(1) && ImGui::IsWindowHovered()) {
-			ImGui::OpenPopup("popup_remove_texture");
-		}
-		if (ImGui::BeginPopup("popup_remove_texture")) {
-			if (ImGui::MenuItem("Remove Texture")) {
-				sprite.Handle = 0;
-			}
-			ImGui::EndPopup();
-		}
-
-		BeDragDropTargetTexture();
-		ImGui::EndChild();
-	}
-
-	if (texture != nullptr) {
-		ImGuiUtils::PrefixLabel("Tile Scale");
-		ImGui::DragFloat("##Tile Scale", &sprite.TileScale, 0.01f);
-	}
 
 // TODO: make texture import settings, this option should not be on the sprite, but on the texture asset
 // 	ImGuiUtils::PrefixLabel("Filter");
