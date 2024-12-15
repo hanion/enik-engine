@@ -90,9 +90,7 @@ bool TextEditorPanel::OpenTextFile(const std::filesystem::path& path) {
 
 	m_CurrentFile = Project::GetAbsolutePath(path);
 
-	const char* filename = m_CurrentFile.string().c_str();
-
-	std::ifstream file(filename, std::ios::binary);
+	std::ifstream file(m_CurrentFile.string().c_str(), std::ios::binary);
 	if (!file.is_open()) {
 		return false;
 	}
@@ -114,9 +112,7 @@ bool TextEditorPanel::OpenTextFile(const std::filesystem::path& path) {
 }
 
 bool TextEditorPanel::SaveCurrentTextFile() {
-	const char* filename = m_CurrentFile.string().c_str();
-
-	std::ofstream file = std::ofstream(filename);
+	std::ofstream file = std::ofstream(m_CurrentFile.string().c_str());
 	if (not file.is_open()) {
 		return false;
 	}
