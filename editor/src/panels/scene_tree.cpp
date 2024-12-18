@@ -150,20 +150,28 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 			ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::blue_a);
 		}
 		pushed_style_color_count++;
-	}
-	else if (entity.Has<Component::NativeScript>()) {
+	} else if (entity.Has<Component::NativeScript>()) {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::orange);
+		pushed_style_color_count++;
+	} else if (entity.Has<Component::AnimationPlayer>()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::purple);
+		pushed_style_color_count++;
+	} else if (entity.Has<Component::AudioSources>()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::teal);
+		pushed_style_color_count++;
+	} else if (entity.Has<Component::SpriteRenderer>()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::cyan);
 		pushed_style_color_count++;
 	}
 
-	bool node_open = ImGui::TreeNodeEx((void*)(uint64_t)entity, flags, entity.GetTag().c_str());
+	bool node_open = ImGui::TreeNodeEx((void*)(uint64_t)entity, flags, "%s", entity.GetTag().c_str());
 
 	ImGui::PopStyleColor(pushed_style_color_count);
 
 	if (ImGui::BeginDragDropSource()) {
 		ImGui::SetDragDropPayload("DND_ENTITY", (void*)&entity.Get<Component::ID>().uuid, sizeof(UUID));
 
-		ImGui::Text(std::to_string(entity.Get<Component::ID>().uuid).c_str());
+		ImGui::Text("%s", std::to_string(entity.Get<Component::ID>().uuid).c_str());
 		ImGui::EndDragDropSource();
 	}
 	if (ImGui::BeginDragDropTarget()) {

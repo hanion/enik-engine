@@ -5,6 +5,7 @@
 #include "core/uuid.h"
 #include <map>
 #include "scene/native_script_fields.h"
+#include "scene/animation.h"
 
 #include <filesystem>
 #include <glm/glm.hpp>
@@ -203,6 +204,24 @@ struct AudioSources {
 	AudioSources(const AudioSources&) = default;
 
 	void Play(const std::string& name);
+	void Play(int index);
+};
+
+
+struct AnimationPlayer {
+	Ref<Entity> BoundEntity = nullptr;
+	std::map<std::string, AssetHandle> Animations = {};
+	AssetHandle CurrentAnimation = 0;
+	float CurrentTime = 0;
+	bool Paused = false;
+
+	void Start(const std::string& name);
+	// fast forwards to the end
+	void End();
+	// stops the animation where it currently is
+	void Kill();
+
+	void Update(const Timestep& dt);
 };
 
 }

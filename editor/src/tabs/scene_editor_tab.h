@@ -2,6 +2,7 @@
 
 #include "core/timestep.h"
 #include "editor_tab.h"
+#include "panels/animation_editor.h"
 #include "renderer/texture.h"
 
 #include "panels/file_system.h"
@@ -79,6 +80,7 @@ private:
 	FileSystemPanel m_FileSystemPanel;
 	ToolbarPanel m_ToolbarPanel;
 	DebugInfoPanel m_DebugInfoPanel;
+	AnimationEditorPanel m_AnimationeditorPanel;
 
 	std::filesystem::path m_ActiveScenePath = std::filesystem::canonical(".");
 

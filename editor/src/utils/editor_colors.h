@@ -23,6 +23,8 @@ constexpr ImVec4 cyan   = ImVec4(0.0f, 0.9f, 0.9f, 1.0f);
 constexpr ImVec4 te_bg  = ImVec4(0.08f, 0.08f, 0.08f, 1.0f);
 // .wav
 constexpr ImVec4 teal   = ImVec4(0.2f, 0.8f, 0.6f, 1.0f);
+// .anim
+constexpr ImVec4 purple = ImVec4(0.75f, 0.5f, 1.0f, 1.0f);
 
 
 }

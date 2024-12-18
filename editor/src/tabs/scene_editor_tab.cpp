@@ -42,9 +42,9 @@ SceneEditorTab::~SceneEditorTab() {
 
 void SceneEditorTab::SetPanelsContext() {
 	m_SceneTreePanel.SetContext(m_ActiveScene);
-	m_InspectorPanel.SetContext(m_ActiveScene, &m_SceneTreePanel);
 	m_FileSystemPanel.SetContext(m_EditorLayer);
 	m_ToolbarPanel.SetContext(m_ActiveScene, &m_SceneTreePanel);
+	m_InspectorPanel.SetContext(m_ActiveScene, &m_SceneTreePanel, &m_AnimationeditorPanel);
 }
 
 
@@ -125,6 +125,7 @@ void SceneEditorTab::RenderContent() {
 	m_SceneTreePanel.OnImGuiRender();
 	m_InspectorPanel.OnImGuiRender();
 	m_FileSystemPanel.OnImGuiRender();
+	m_AnimationeditorPanel.OnImGuiRender();
 
 	bool is_viewport_open = false;
 
@@ -215,12 +216,13 @@ void SceneEditorTab::InitializeDockspace() {
 	ImGuiID dock_id_1 = ImGui::DockBuilderSplitNode(m_DockspaceID, ImGuiDir_Left,  0.42f, NULL, &m_DockspaceID);
 	ImGuiID dock_id_2 = ImGui::DockBuilderSplitNode(dock_id_1,     ImGuiDir_Right, 0.52f, NULL, &dock_id_1);
 	ImGuiID dock_id_3 = ImGui::DockBuilderSplitNode(dock_id_1,     ImGuiDir_Down,  0.45f, NULL, &dock_id_1);
+	ImGuiID dock_id_4 = ImGui::DockBuilderSplitNode(m_DockspaceID, ImGuiDir_Down,  0.34f, NULL, &m_DockspaceID);
 
 	ImGui::DockBuilderDockWindow(m_ViewportPanelName.c_str(), m_DockspaceID);
 	m_SceneTreePanel.DockTo(dock_id_1);
 	m_InspectorPanel.DockTo(dock_id_2);
 	m_FileSystemPanel.DockTo(dock_id_3);
-
+	m_AnimationeditorPanel.DockTo(dock_id_4);
 }
 
 

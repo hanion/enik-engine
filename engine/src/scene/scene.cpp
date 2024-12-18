@@ -116,6 +116,14 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 
 		Tween::StepAll(ts);
 
+		// Update animations
+		m_Registry.view<Component::AnimationPlayer>().each([=](auto entity, Component::AnimationPlayer& ap) {
+			if (ap.BoundEntity == nullptr) {
+				ap.BoundEntity = CreateRef<Entity>(entity, this);
+			}
+			ap.Update(ts);
+		});
+
 	}
 
 

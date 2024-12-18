@@ -1,5 +1,6 @@
 #include "components.h"
 
+#include "asset/asset_manager.h"
 #include "scene/scriptable_entity.h"
 #include "audio/audio.h"
 #include "project/project.h"
@@ -270,6 +271,71 @@ void Component::AudioSources::Play(const std::string& name) {
 			Audio::Play(Project::GetAbsolutePath(SourcePaths[i]));
 		}
 	}
+}
+
+void Component::AudioSources::Play(int index) {
+	if (index < 0 or index >= (int)SourcePaths.size()) {
+		EN_CORE_ERROR("Component::AudioSources::Play invalid index: {}", index);
+		return;
+	}
+
+	Audio::Play(Project::GetAbsolutePath(SourcePaths[index]));
+}
+
+
+
+void Component::AnimationPlayer::Start(const std::string& name) {
+	if (Animations.find(name) != Animations.end()) {
+		CurrentAnimation = Animations[name];
+		CurrentTime = 0.0f;
+		Paused = false;
+	}
+}
+
+void Component::AnimationPlayer::End() {
+	if (!CurrentAnimation || !BoundEntity || !AssetManager::IsAssetHandleValid(CurrentAnimation)) {
+		return;
+	}
+
+	Ref<Animation> anim = AssetManager::GetAsset<Animation>(CurrentAnimation);
+	if (!anim) {
+		return;
+	}
+
+	CurrentTime = anim->Duration;
+	anim->Update((*BoundEntity.get()), CurrentTime);
+	Paused = true;
+	CurrentTime = 0.0f;
+}
+
+void Component::AnimationPlayer::Kill() {
+	Paused = true;
+	CurrentTime = 0.0f;
+}
+
+
+void Component::AnimationPlayer::Update(const Timestep& dt) {
+	if (Paused || !CurrentAnimation || !BoundEntity || !AssetManager::IsAssetHandleValid(CurrentAnimation)) {
+		return;
+	}
+
+	Ref<Animation> anim = AssetManager::GetAsset<Animation>(CurrentAnimation);
+	if (!anim) {
+		return;
+	}
+
+	CurrentTime += dt;
+
+	anim->Update((*BoundEntity.get()), CurrentTime);
+
+	if (CurrentTime >= anim->Duration) {
+		if (anim->Looping) {
+			CurrentTime = 0.0f;
+		} else {
+			Paused = true;
+			// TODO: send on animation finished event
+		}
+	}	
 }
 
 }

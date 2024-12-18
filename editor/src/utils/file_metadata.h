@@ -4,6 +4,7 @@
 #include "utils/editor_colors.h"
 #include "asset/asset.h"
 #include "audio/audio.h"
+#include "scene/animation.h"
 #include "renderer/texture.h"
 
 namespace Enik {
@@ -20,6 +21,7 @@ struct FileInfo {
 static const std::unordered_map<std::type_index, FileInfo> FileInfoMap = {
 	{typeid(Texture2D), {".png",    "[Texture2D]", EditorColors::cyan}},
 	{typeid(Audio),     {".wav",    "[Audio]",     EditorColors::teal}},
+	{typeid(Animation), {".anim",   "[Animation]", EditorColors::purple}},
 // 	{typeid(Prefab),    {".prefab", "[Prefab]",    EditorColors::blue}},
 // 	{typeid(Scene),     {".escn",   "[Scene]",     EditorColors::green}},
 // 	{typeid(Project),   {".enik",   "[Project]",   EditorColors::yellow}},
@@ -28,6 +30,7 @@ static const std::unordered_map<std::type_index, FileInfo> FileInfoMap = {
 static const std::unordered_map<std::string, ImVec4> ExtensionColorMap = {
 	{".png",    EditorColors::cyan},
 	{".wav",    EditorColors::teal},
+	{".anim",   EditorColors::purple},
 	{".prefab", EditorColors::blue},
 	{".escn",   EditorColors::green},
 	{".enik",   EditorColors::yellow}
@@ -44,15 +47,21 @@ std::string GetPlaceholder() {
 	return it != FileInfoMap.end() ? it->second.placeholder : "";
 }
 
+
+template <typename T>
+const ImVec4& GetColor() {
+	auto it = FileInfoMap.find(typeid(T));
+	if (it != FileInfoMap.end()) {
+		return it->second.color;
+	} else {
+		return default_text;
+	}
+}
+
 // NOTE: call `ImGui::PopStyleColor();` after calling this !
 template <typename T>
 void ColorFileText() {
-	auto it = FileInfoMap.find(typeid(T));
-	if (it != FileInfoMap.end()) {
-		ImGui::PushStyleColor(ImGuiCol_Text, it->second.color);
-	} else {
-		ImGui::PushStyleColor(ImGuiCol_Text, default_text);
-	}
+	ImGui::PushStyleColor(ImGuiCol_Text, GetColor<T>());
 }
 
 inline ImVec4 GetColorFromExtension(const std::string& extension) {

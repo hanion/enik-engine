@@ -20,9 +20,10 @@
 
 namespace Enik {
 
-void InspectorPanel::SetContext(const Ref<Scene>& context, SceneTreePanel* scene_tree_panel) {
+void InspectorPanel::SetContext(const Ref<Scene>& context, SceneTreePanel* scene_tree_panel, AnimationEditorPanel* animation_panel) {
 	m_Context = context;
 	m_SceneTreePanel = scene_tree_panel;
+	m_AnimationEditorPanel = animation_panel;
 }
 
 void InspectorPanel::RenderContent() {
@@ -87,6 +88,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			DisplayComponentInPopup<Component::RigidBody>("Rigid Body");
 			DisplayComponentInPopup<Component::Collider>("Collider");
 			DisplayComponentInPopup<Component::AudioSources>("Audio Sources");
+			DisplayComponentInPopup<Component::AnimationPlayer>("Animation Player");
 			DisplayNativeScriptsInPopup();
 			ImGui::EndPopup();
 		}
@@ -162,6 +164,58 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		DisplaySpriteTexture(sprite);
 
 		DisplaySubTexture(sprite);
+	});
+
+	DisplayComponentInInspector<Component::AnimationPlayer>("Animation Player", entity, true, [&]() {
+		Component::AnimationPlayer& ap = entity.Get<Component::AnimationPlayer>();
+
+		ImGuiUtils::PrefixLabel("Current");
+		if (ImGuiUtils::AssetButton<Animation>(ap.CurrentAnimation)) {
+			m_AnimationEditorPanel->SetAnimation(ap.CurrentAnimation);
+		}
+
+		ImGuiUtils::PrefixLabel("Paused");
+		ImGui::Checkbox("##APPaused", &ap.Paused);
+		ImGuiUtils::PrefixLabel("Time");
+		ImGui::DragFloat("##APTime", &ap.CurrentTime);
+		
+
+		constexpr ImGuiTreeNodeFlags tree_node_flags = ImGuiTreeNodeFlags_OpenOnDoubleClick |
+			ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
+		if (!ImGui::TreeNodeEx("Animations", tree_node_flags)){
+			return;
+		}
+
+		for (auto it = ap.Animations.begin(); it != ap.Animations.end(); ++it) {
+			AssetHandle handle = it->second;
+			ImGui::PushID(&it->first);
+
+			ImGuiUtils::PrefixLabel(it->first);
+			if (ImGuiUtils::AssetButton<Animation>(handle) && handle) {
+				Ref<Animation> anim = AssetManager::GetAsset<Animation>(handle);
+				m_AnimationEditorPanel->SetAnimation(handle);
+				ap.Animations[anim->Name] = handle;
+				ImGui::PopID();
+				break; // modified the map, should break
+			}
+			if (!handle || !AssetManager::IsAssetHandleValid(handle)) {
+				ap.Animations.erase(it);
+				ImGui::PopID();
+				break; // modified the map, should break
+			}
+			ImGui::PopID();
+		}
+
+		static AssetHandle new_handle = 0;
+		ImGuiUtils::PrefixLabel("");
+		ImGuiUtils::AssetButton<Animation>(new_handle);
+		if (new_handle && AssetManager::IsAssetHandleValid(new_handle)) {
+			Ref<Animation> new_animation = AssetManager::GetAsset<Animation>(new_handle);
+			ap.Animations[new_animation->Name] = new_handle;
+			new_handle = 0;
+		}
+
+		ImGui::TreePop();
 	});
 
 	DisplayComponentInInspector<Component::RigidBody>("Rigid Body", entity, true, [&]() {
@@ -328,6 +382,15 @@ void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity
 		pushed_color++;
 	} else if constexpr (std::is_same<T, Component::NativeScript>::value) {
 		COLOR(EditorColors::orange);
+		pushed_color++;
+	} else if constexpr (std::is_same<T, Component::SpriteRenderer>::value) {
+		COLOR(EditorColors::cyan);
+		pushed_color++;
+	} else if constexpr (std::is_same<T, Component::AnimationPlayer>::value) {
+		COLOR(EditorColors::purple);
+		pushed_color++;
+	} else if constexpr (std::is_same<T, Component::AudioSources>::value) {
+		COLOR(EditorColors::teal);
 		pushed_color++;
 	}
 
@@ -605,39 +668,46 @@ void InspectorPanel::DisplayNativeScript(Component::NativeScript& script) {
 				continue;
 			}
 			case FieldType::ENTITY: {
-				uint64_t* id = static_cast<uint64_t*>(field.Value);
-
-				std::string entity_name;
-
-				if (Entity entity = m_Context->FindEntityByUUID(*id)) {
-					entity_name = entity.GetTag();
+				UUID& id = *static_cast<UUID*>(field.Value);
+				if (EntityButton(id)) {
+					m_SceneTreePanel->SetSelectedEntityWithUUID(id);
 				}
-				else {
-					entity_name = "[Entity]";
-				}
-
-				if (ImGui::Button(entity_name.c_str())) {
-					m_SceneTreePanel->SetSelectedEntityWithUUID(*id);
-				}
-
-				if (ImGui::BeginDragDropTarget()) {
-					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_ENTITY")) {
-						auto payload_id = static_cast<const UUID*>(payload->Data);
-						if (payload_id != nullptr) {
-							*id = *payload_id;
-						}
-					}
-					ImGui::EndDragDropTarget();
-				}
-
-				if (ImGui::IsItemHovered()){
-					ImGui::SetTooltip("%s", std::to_string(*id).c_str());
-				}
-
 				continue;
 			}
 		}
 	}
 }
+
+
+bool InspectorPanel::EntityButton(UUID& id) {
+	bool pressed = false;
+	std::string entity_name;
+
+	if (Entity entity = m_Context->FindEntityByUUID(id)) {
+		entity_name = entity.GetTag();
+	}
+	else {
+		entity_name = "[Entity]";
+	}
+
+	if (ImGui::Button(entity_name.c_str())) {
+		pressed = true;
+	}
+	if (ImGui::BeginDragDropTarget()) {
+		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_ENTITY")) {
+			auto payload_id = static_cast<const UUID*>(payload->Data);
+			if (payload_id != nullptr) {
+				id = *payload_id;
+			}
+		}
+		ImGui::EndDragDropTarget();
+	}
+	if (ImGui::IsItemHovered()){
+		ImGui::SetTooltip("%s", std::to_string(id).c_str());
+	}
+
+	return pressed;
+}
+
 
 }

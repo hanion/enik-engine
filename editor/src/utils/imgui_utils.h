@@ -50,6 +50,13 @@ bool AssetButton(AssetHandle& handle) {
 		}
 	}
 
+	if (ImGui::BeginDragDropSource()) {
+		const AssetMetadata& metadata = Project::GetAssetManagerEditor()->GetMetadata(handle);
+		ImGui::SetDragDropPayload("DND_FILE_PATH", metadata.FilePath.string().c_str(), metadata.FilePath.string().length() + 1);
+		ImGui::Text("%s", metadata.FilePath.filename().string().c_str());
+		ImGui::EndDragDropSource();
+	}
+
 	if (ImGui::IsItemHovered()){
 		ImGui::SetTooltip(tooltip.c_str());
 		if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
@@ -81,7 +88,6 @@ bool AssetButton(AssetHandle& handle) {
 			std::filesystem::path path = std::filesystem::path(static_cast<const char*>(payload->Data));
 			if (path.has_extension() && path.extension() == FileMetadata::GetFileExtension<T>()) {
 				handle = Project::GetAssetManagerEditor()->ImportAsset(Project::GetAbsolutePath(path));
-				pressed = true;
 			}
 		}
 		ImGui::EndDragDropTarget();

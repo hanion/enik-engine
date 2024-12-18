@@ -246,6 +246,7 @@ void EditorLayer::OpenAsset(const std::filesystem::path& path) {
 	} else if (ext == ".enik" or
 		ext == ".txt" or
 		ext == ".png" or
+		ext == ".anim" or
 		ext == ".wav") {
 		tab = std::static_pointer_cast<EditorTab>(CreateRef<TextEditorTab>(path));
 	}

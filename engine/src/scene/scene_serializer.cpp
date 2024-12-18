@@ -670,6 +670,22 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::EndMap;
 	}
 
+	if (entity.Has<Component::AnimationPlayer>()) {
+		out << YAML::Key << "Component::AnimationPlayer";
+		out << YAML::BeginMap;
+		auto& component = entity.Get<Component::AnimationPlayer>();
+		out << YAML::Key << "CurrentAnimation" << YAML::Value << component.CurrentAnimation;
+
+		out << YAML::Key << "Animations" << YAML::Value << YAML::BeginMap;
+		for (auto const& [key, val] : component.Animations) {
+			out << YAML::Key << key;
+			out << YAML::Value << val;
+		}
+		out << YAML::EndMap;
+
+		out << YAML::EndMap;
+	}
+
 	out << YAML::EndMap;
 }
 
@@ -829,6 +845,23 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 		}
 	}
 
+	auto animation_player = entity["Component::AnimationPlayer"];
+	if (animation_player) {
+		auto& anim = deserialized_entity.Add<Component::AnimationPlayer>();
+
+		if (animation_player["CurrentAnimation"]) {
+			anim.CurrentAnimation = animation_player["CurrentAnimation"].as<uint64_t>();
+		}
+
+		if (animation_player["Animations"]) {
+			auto animations_node = animation_player["Animations"];
+			for (auto it = animations_node.begin(); it != animations_node.end(); ++it) {
+				std::string key = it->first.as<std::string>();
+				AssetHandle value = it->second.as<uint64_t>();
+				anim.Animations[key] = value;
+			}
+		}
+	}
 
 }
 

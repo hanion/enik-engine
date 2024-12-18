@@ -2,6 +2,7 @@
 #include <base.h>
 
 #include "editor_panel.h"
+#include "panels/animation_editor.h"
 #include "scene/entity.h"
 #include "scene/scene.h"
 #include "scene_tree.h"
@@ -14,7 +15,7 @@ public:
 	InspectorPanel() : EditorPanel("Inspector") {}
 	~InspectorPanel() {}
 
-	void SetContext(const Ref<Scene>& context, SceneTreePanel* scene_tree_panel = nullptr);
+	void SetContext(const Ref<Scene>& context, SceneTreePanel* scene_tree_panel = nullptr, AnimationEditorPanel* animation_panel = nullptr);
 
 private:
 	virtual void RenderContent() override final;
@@ -34,10 +35,13 @@ private:
 	void DisplayNativeScriptsInPopup();
 	void DisplayNativeScript(Component::NativeScript& script);
 
+
+	bool EntityButton(UUID& id);
 private:
 	Ref<Scene> m_Context;
 
 	SceneTreePanel* m_SceneTreePanel;
+	AnimationEditorPanel* m_AnimationEditorPanel;
 };
 
 }

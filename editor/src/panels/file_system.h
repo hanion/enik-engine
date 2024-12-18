@@ -40,7 +40,7 @@ private:
 
 	bool m_HasSearched = false;
 
-	const std::vector<std::string> m_Filters = {".escn", ".png", ".enik", ".prefab", ".wav"};
+	const std::vector<std::string> m_Filters = {".escn", ".png", ".enik", ".prefab", ".wav", ".anim"};
 
 };
 

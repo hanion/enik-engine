@@ -112,6 +112,7 @@ void FileSystemPanel::ShowDirectoriesTable() {
 						ext == ".enik" or
 						ext == ".png" or
 						ext == ".wav" or
+						ext == ".anim" or
 						ext == ".txt" ) {
 						if (ImGui::MenuItem("Open File")) {
 							if (m_EditorLayer) {
