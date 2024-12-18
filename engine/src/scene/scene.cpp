@@ -88,6 +88,16 @@ void Scene::OnUpdateEditor(Timestep ts, OrthographicCameraController& camera) {
 		}
 	}
 
+	{
+		EN_PROFILE_SECTION("Render Text");
+		auto group = m_Registry.group<Component::Text>(entt::get<Component::Transform>);
+		for (auto entity : group) {
+			Component::Transform& transform = group.get<Component::Transform>(entity);
+			Component::Text& text = group.get<Component::Text>(entity);
+			Renderer2D::DrawText(transform, text, (int32_t)entity);
+		}
+	}
+
 	Renderer2D::EndScene();
 }
 
@@ -149,6 +159,16 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 			Component::SpriteRenderer& sprite = group.get<Component::SpriteRenderer>(entity);
 
 			Renderer2D::DrawQuad(transform, sprite, (int32_t)entity);
+		}
+	}
+
+	{
+		EN_PROFILE_SECTION("Render Text");
+		auto group = m_Registry.group<Component::Text>(entt::get<Component::Transform>);
+		for (auto entity : group) {
+			Component::Transform& transform = group.get<Component::Transform>(entity);
+			Component::Text& text = group.get<Component::Text>(entity);
+			Renderer2D::DrawText(transform, text, (int32_t)entity);
 		}
 	}
 

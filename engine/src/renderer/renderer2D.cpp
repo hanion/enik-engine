@@ -6,6 +6,7 @@
 
 #include "asset/asset_manager.h"
 #include "core/asserter.h"
+#include "renderer/font.h"
 #include "renderer/render_command.h"
 #include "renderer/shader.h"
 #include "renderer/texture.h"
@@ -294,6 +295,64 @@ void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::Sp
 	s_Data.QuadIndexCount += 6;
 
 	s_Data.Stats.QuadCount++;
+}
+
+void Renderer2D::DrawText(const Component::Transform& transform, const Component::Text& text, int32_t entityID) {
+	EN_PROFILE_SCOPE;
+
+	if (text.Data.empty() || !text.Font || !AssetManager::IsAssetHandleValid(text.Font)) {
+		return;
+	}
+	EN_VERIFY(text.Font);
+
+	Ref<FontAsset> font_asset = AssetManager::GetAsset<FontAsset>(text.Font);
+	float texture_index = GetTextureIndex(font_asset->AtlasTexture);
+
+	if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
+		Flush();
+		StartBatch();
+	}
+
+	glm::mat4 trans = transform.GetTransform();
+	glm::vec2 start_pos = glm::vec2(0);
+	float scale = text.Scale * 0.001f;
+
+	size_t draw_until = std::min(text.Data.size(), (size_t)(text.Data.size() * text.Visible));
+
+	for (size_t i = 0; i < draw_until; ++i) {
+		if (text.Data[i] == '\n') {
+			start_pos.x = 0;
+			start_pos.y -= scale * font_asset->TextHeight;
+			continue;
+		}
+		int character = static_cast<unsigned char>(text.Data[i]) - 32;
+		if (character < 0 || size_t(character) >= font_asset->Glyphs.size()) {
+			continue;
+		}
+
+		const Glyph& glyph = font_asset->Glyphs[character];
+		glm::vec2 positions[4] = {
+			{start_pos.x + glyph.positions[0].x * scale, start_pos.y - glyph.positions[0].y * scale},
+			{start_pos.x + glyph.positions[1].x * scale, start_pos.y - glyph.positions[1].y * scale},
+			{start_pos.x + glyph.positions[2].x * scale, start_pos.y - glyph.positions[2].y * scale},
+			{start_pos.x + glyph.positions[3].x * scale, start_pos.y - glyph.positions[3].y * scale}
+		};
+
+		for (size_t j = 0; j < 4; j++) {
+			s_Data.QuadVertexBufferPtr->Position = trans * glm::vec4(positions[j], 0.0f, 1.0f);
+			s_Data.QuadVertexBufferPtr->Color = text.Color;
+			s_Data.QuadVertexBufferPtr->TexCoord = glyph.tex_coords[j];
+			s_Data.QuadVertexBufferPtr->TexIndex = texture_index;
+			s_Data.QuadVertexBufferPtr->TileScale = 1.0f;
+			s_Data.QuadVertexBufferPtr->a_EntityID = entityID;
+			s_Data.QuadVertexBufferPtr++;
+		}
+
+		start_pos.x += glyph.Advance * scale;
+
+		s_Data.QuadIndexCount += 6;
+		s_Data.Stats.QuadCount++;
+	}
 }
 
 void Renderer2D::DrawLine(const glm::vec2& p0, const glm::vec2& p1, const glm::vec4& color) {

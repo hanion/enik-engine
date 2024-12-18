@@ -1,4 +1,5 @@
 #include "asset_importer.h"
+#include "asset/importer/font_importer.h"
 #include "asset/importer/texture_importer.h"
 #include "asset/importer/animation_importer.h"
 #include "core/asserter.h"
@@ -11,6 +12,7 @@ using AssetImportFunction = std::function<Ref<Asset>(AssetHandle, const AssetMet
 static std::map<AssetType, AssetImportFunction> s_AssetImportFunctions = {
 	{ AssetType::Texture2D, TextureImporter::ImportTexture2D },
 	{ AssetType::Animation, AnimationImporter::ImportAnimation },
+	{ AssetType::Font,      FontImporter::ImportFont },
 };
 
 Ref<Asset> AssetImporter::ImportAsset(AssetHandle handle, const AssetMetadata& metadata) {

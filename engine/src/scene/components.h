@@ -224,6 +224,15 @@ struct AnimationPlayer {
 	void Update(const Timestep& dt);
 };
 
+
+struct Text {
+	std::string Data;
+	AssetHandle Font = 0;
+	glm::vec4 Color = glm::vec4(1.0f);
+	float Scale = 10.0f;
+	float Visible = 1.0f;
+};
+
 }
 
 }

@@ -8,6 +8,7 @@
 #include "asset/asset_manager_editor.h"
 #include "dialogs/dialog_file.h"
 #include "project/project.h"
+#include "renderer/font.h"
 #include "scene/components.h"
 #include "script_system/script_system.h"
 #include "core/input.h"
@@ -19,6 +20,10 @@
 #define COLOR(color) ImGui::PushStyleColor(ImGuiCol_Text, color)
 
 namespace Enik {
+
+constexpr ImGuiTreeNodeFlags inner_tree_node_flags = ImGuiTreeNodeFlags_OpenOnDoubleClick |
+	ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
+
 
 void InspectorPanel::SetContext(const Ref<Scene>& context, SceneTreePanel* scene_tree_panel, AnimationEditorPanel* animation_panel) {
 	m_Context = context;
@@ -89,6 +94,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			DisplayComponentInPopup<Component::Collider>("Collider");
 			DisplayComponentInPopup<Component::AudioSources>("Audio Sources");
 			DisplayComponentInPopup<Component::AnimationPlayer>("Animation Player");
+			DisplayComponentInPopup<Component::Text>("Text");
 			DisplayNativeScriptsInPopup();
 			ImGui::EndPopup();
 		}
@@ -180,9 +186,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		ImGui::DragFloat("##APTime", &ap.CurrentTime);
 		
 
-		constexpr ImGuiTreeNodeFlags tree_node_flags = ImGuiTreeNodeFlags_OpenOnDoubleClick |
-			ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
-		if (!ImGui::TreeNodeEx("Animations", tree_node_flags)){
+		if (!ImGui::TreeNodeEx("Animations", inner_tree_node_flags)){
 			return;
 		}
 
@@ -228,10 +232,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		ImGui::Checkbox("##UseGravity", &rigid_body.UseGravity);
 
 		/* Debug */ {
-			constexpr ImGuiTreeNodeFlags tree_node_flags = ImGuiTreeNodeFlags_OpenOnDoubleClick |
-				ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth |
-				ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_AllowItemOverlap;
-			if (ImGui::TreeNodeEx("##RBDebug", tree_node_flags, "Debug")) {
+			if (ImGui::TreeNodeEx("##RBDebug", inner_tree_node_flags, "Debug")) {
 				ImGuiUtils::PrefixLabel("Velocity");
 				ImGui::DragFloat3("##Velocity", glm::value_ptr(rigid_body.Velocity), 0.01f, 0.01f);
 				ImGuiUtils::PrefixLabel("Force");
@@ -355,6 +356,41 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			sources.SourcePaths.erase(sources.SourcePaths.begin() + to_remove_index);
 		}
 
+	});
+
+	DisplayComponentInInspector<Component::Text>("Text", entity, true, [&]() {
+		Component::Text& text = entity.Get<Component::Text>();
+
+		ImGuiUtils::PrefixLabel("Color");
+		ImGui::ColorEdit4("##TextColor", glm::value_ptr(text.Color));
+
+		ImGuiUtils::PrefixLabel("Font");
+		ImGuiUtils::AssetButton<FontAsset>(text.Font);
+
+		if (text.Font) {
+			if (ImGui::TreeNodeEx("Atlas", inner_tree_node_flags)) {
+				Ref<Texture2D> texture = AssetManager::GetAsset<FontAsset>(text.Font)->AtlasTexture;
+				ImTextureID tex_id = reinterpret_cast<ImTextureID>(static_cast<uint32_t>(texture->GetRendererID()));
+				ImVec2 tex_size = ImGui::GetContentRegionAvail();
+				tex_size.y = tex_size.x;
+				ImGui::Image(tex_id, tex_size);
+				ImGui::TreePop();
+			}
+		}
+
+		ImGuiUtils::PrefixLabel("Scale");
+		ImGui::DragFloat("##TextScale", &text.Scale, 0.1f, 0.1f, 100.0f, "%.1f");
+
+		ImGuiUtils::PrefixLabel("Visible");
+		ImGui::DragFloat("##Visible", &text.Visible, 0.001f, 0.0f, 1.0f, "%.3f");
+
+		ImGuiUtils::PrefixLabel("Data");
+		char buffer[256];
+		memset(buffer, 0, sizeof(buffer));
+		strcpy(buffer, text.Data.c_str());
+		if (ImGui::InputTextMultiline("##TextData", buffer, sizeof(buffer))) {
+			text.Data = std::string(buffer);
+		}
 	});
 
 	ImGui::PopStyleColor(pushed_style_color);

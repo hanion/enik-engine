@@ -20,6 +20,7 @@ static std::map<std::filesystem::path, AssetType> s_AssetToExtensionMap = {
 	{ ".prefab", AssetType::Prefab },
 	{ ".wav", AssetType::Audio },
 	{ ".anim", AssetType::Animation },
+	{ ".ttf", AssetType::Font },
 };
 static AssetType GetTypeFromExtension(const std::filesystem::path& ext) {
 	if (s_AssetToExtensionMap.find(ext) != s_AssetToExtensionMap.end()) {

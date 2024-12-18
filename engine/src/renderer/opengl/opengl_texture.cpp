@@ -1,4 +1,5 @@
 #include "opengl_texture.h"
+#include <cstdint>
 #include <pch.h>
 
 
@@ -7,6 +8,7 @@ static GLenum ImageFormatToGLDataFormat(ImageFormat format) {
 	switch (format) {
 		case ImageFormat::RGB8:  return GL_RGB;
 		case ImageFormat::RGBA8: return GL_RGBA;
+		case ImageFormat::R8:    return GL_RED;
 		default: {
 			EN_CORE_ASSERT(false);
 			return 0;
@@ -18,6 +20,7 @@ static GLenum ImageFormatToGLInternalFormat(ImageFormat format) {
 	switch (format) {
 		case ImageFormat::RGB8:  return GL_RGB8;
 		case ImageFormat::RGBA8: return GL_RGBA8;
+		case ImageFormat::R8:    return GL_R8;
 		default: {
 			EN_CORE_ASSERT(false);
 			return 0;
@@ -51,11 +54,20 @@ OpenGLTexture2D::~OpenGLTexture2D() {
 	glDeleteTextures(1, &m_RendererID);
 }
 
+uint32_t get_bpp(GLenum format) {
+	switch (format) {
+		case GL_RGBA: return 4;
+		case GL_RGB: return 3;
+		case GL_R: return 1;
+		default: return 1;
+	}
+}
+
 void OpenGLTexture2D::SetData(Buffer data) {
 	EN_PROFILE_SCOPE;
 
 #ifdef EN_ENABLE_ASSERTS
-	uint32_t bpp = (m_DataFormat == GL_RGBA) ? 4 : 3;
+	uint32_t bpp = get_bpp(m_DataFormat);
 	EN_CORE_ASSERT(data.Size == m_Width * m_Height * bpp, "Data must be entire texture!");
 #endif
 	glTextureSubImage2D(m_RendererID, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data.Data);

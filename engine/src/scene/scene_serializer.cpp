@@ -686,6 +686,22 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::EndMap;
 	}
 
+	if (entity.Has<Component::Text>()) {
+		out << YAML::Key << "Component::Text";
+		out << YAML::BeginMap;
+
+		auto& text = entity.Get<Component::Text>();
+		out << YAML::Key << "Font" << YAML::Value << text.Font;
+		out << YAML::Key << "Color" << YAML::Value << text.Color;
+		out << YAML::Key << "Scale" << YAML::Value << text.Scale;
+		out << YAML::Key << "Visible" << YAML::Value << text.Visible;
+		if (!text.Data.empty()) {
+			out << YAML::Key << "Data" << YAML::Value << text.Data;
+		}
+
+		out << YAML::EndMap;
+	}
+
 	out << YAML::EndMap;
 }
 
@@ -860,6 +876,17 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 				AssetHandle value = it->second.as<uint64_t>();
 				anim.Animations[key] = value;
 			}
+		}
+	}
+
+	if (auto text_node = entity["Component::Text"]) {
+		auto& text = deserialized_entity.Add<Component::Text>();
+		text.Font = text_node["Font"].as<uint64_t>();
+		text.Color = text_node["Color"].as<glm::vec4>();
+		text.Scale = text_node["Scale"].as<float>();
+		text.Visible = text_node["Visible"].as<float>();
+		if (text_node["Data"]) {
+			text.Data = text_node["Data"].as<std::string>();
 		}
 	}
 

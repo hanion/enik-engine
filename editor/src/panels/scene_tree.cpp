@@ -162,6 +162,9 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 	} else if (entity.Has<Component::SpriteRenderer>()) {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::cyan);
 		pushed_style_color_count++;
+	} else if (entity.Has<Component::Text>()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::pale_pink);
+		pushed_style_color_count++;
 	}
 
 	bool node_open = ImGui::TreeNodeEx((void*)(uint64_t)entity, flags, "%s", entity.GetTag().c_str());

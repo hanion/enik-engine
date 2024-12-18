@@ -1,6 +1,7 @@
 #pragma once
 #include "imgui.h"
 #include <typeindex>
+#include "renderer/font.h"
 #include "utils/editor_colors.h"
 #include "asset/asset.h"
 #include "audio/audio.h"
@@ -22,6 +23,7 @@ static const std::unordered_map<std::type_index, FileInfo> FileInfoMap = {
 	{typeid(Texture2D), {".png",    "[Texture2D]", EditorColors::cyan}},
 	{typeid(Audio),     {".wav",    "[Audio]",     EditorColors::teal}},
 	{typeid(Animation), {".anim",   "[Animation]", EditorColors::purple}},
+	{typeid(FontAsset), {".ttf",    "[Font]",      EditorColors::pale_pink}},
 // 	{typeid(Prefab),    {".prefab", "[Prefab]",    EditorColors::blue}},
 // 	{typeid(Scene),     {".escn",   "[Scene]",     EditorColors::green}},
 // 	{typeid(Project),   {".enik",   "[Project]",   EditorColors::yellow}},
@@ -31,6 +33,7 @@ static const std::unordered_map<std::string, ImVec4> ExtensionColorMap = {
 	{".png",    EditorColors::cyan},
 	{".wav",    EditorColors::teal},
 	{".anim",   EditorColors::purple},
+	{".ttf",    EditorColors::pale_pink},
 	{".prefab", EditorColors::blue},
 	{".escn",   EditorColors::green},
 	{".enik",   EditorColors::yellow}

@@ -12,6 +12,7 @@ enum class AssetType : uint16_t {
 	None = 0,
 	Scene, Prefab,
 	Texture2D,
+	Font,
 	Audio,
 	Animation,
 };
