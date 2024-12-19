@@ -34,7 +34,7 @@ void AnimationEditorPanel::DrawPreviewTimeline(float timeline_start, float timel
 	ImVec2 handle_max = ImVec2(handle_center.x + handle_size / 2, handle_center.y + handle_size / 2);
 	draw_list->AddRectFilled(handle_min, handle_max, accent_color);
 
-	ImGui::SetCursorScreenPos(timeline_start_pos);
+	ImGui::SetCursorScreenPos(ImVec2(timeline_start_pos.x, timeline_start_pos.y - track_height));
 	ImGui::InvisibleButton("PreviewTimeline", ImVec2(timeline_width, track_height + handle_size));
 
 	if (ImGui::IsItemActive()) {
