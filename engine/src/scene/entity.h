@@ -120,6 +120,10 @@ public:
 		m_Scene->CloseApplication();
 	}
 
+	void ChangeScene(const std::string& path) {
+		m_Scene->ChangeScene(path);
+	}
+
 private:
 	entt::entity m_Handle{entt::null};
 	Scene* m_Scene = nullptr;

@@ -44,6 +44,8 @@ public:
 	void CloseApplication() { m_Entity.CloseApplication(); }
 
 
+	void ChangeScene(const std::string& path) { m_Entity.ChangeScene(path); }
+
 	Entity m_Entity;
 
 public:

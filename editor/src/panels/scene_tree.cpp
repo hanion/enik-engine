@@ -150,6 +150,9 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 			ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::blue_a);
 		}
 		pushed_style_color_count++;
+	} else if (entity.Has<Component::SceneControl>()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::persistent);
+		pushed_style_color_count++;
 	} else if (entity.Has<Component::NativeScript>()) {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::orange);
 		pushed_style_color_count++;

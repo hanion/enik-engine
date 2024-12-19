@@ -711,6 +711,13 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::EndMap;
 	}
 
+	if (entity.Has<Component::SceneControl>()) {
+		out << YAML::Key << "Component::SceneControl";
+		out << YAML::BeginMap;
+		out << YAML::Key << "Persistent" << YAML::Value << entity.Get<Component::SceneControl>().Persistent;
+		out << YAML::EndMap;
+	}
+
 	out << YAML::EndMap;
 }
 
@@ -722,6 +729,13 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 	}
 	else {
 		deserialized_entity = m_Scene->CreateEntityWithUUID(uuid, name);
+	}
+
+	// do not deserialize persistent entity twice
+	if (deserialized_entity.Has<Component::SceneControl>()) {
+		if (deserialized_entity.Get<Component::SceneControl>().Persistent) {
+			return;
+		}
 	}
 
 
@@ -905,6 +919,11 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 		if (text_node["Data"]) {
 			text.Data = text_node["Data"].as<std::string>();
 		}
+	}
+
+	if (auto node = entity["Component::SceneControl"]) {
+		auto& sc = deserialized_entity.Add<Component::SceneControl>();
+		sc.Persistent = node["Persistent"].as<bool>();
 	}
 
 }

@@ -235,6 +235,10 @@ struct Text {
 	float Visible = 1.0f;
 };
 
+struct SceneControl {
+	bool Persistent = true;
+};
+
 }
 
 }

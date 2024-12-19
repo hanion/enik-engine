@@ -88,6 +88,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			ImGui::SetTooltip("Add Component");
 		}
 		if (ImGui::BeginPopup("AddComponent")) {
+			DisplayComponentInPopup<Component::SceneControl>("SceneControl");
 			DisplayComponentInPopup<Component::Camera>("Camera");
 			DisplayComponentInPopup<Component::SpriteRenderer>("Sprite Renderer");
 			DisplayComponentInPopup<Component::RigidBody>("Rigid Body");
@@ -101,6 +102,13 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	}
 
 	ImGui::Spacing();
+
+
+	DisplayComponentInInspector<Component::SceneControl>("Scene Control", entity, true, [&]() {
+		auto& sc = entity.Get<Component::SceneControl>();
+		ImGuiUtils::PrefixLabel("Persistent");
+		ImGui::Checkbox("##Persistent", &sc.Persistent);
+	});
 
 	DisplayComponentInInspector<Component::Prefab>("Prefab", entity, true, [&]() {
 		auto& pref = entity.Get<Component::Prefab>();
@@ -427,6 +435,12 @@ void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity
 		pushed_color++;
 	} else if constexpr (std::is_same<T, Component::AudioSources>::value) {
 		COLOR(EditorColors::teal);
+		pushed_color++;
+	} else if constexpr (std::is_same<T, Component::Text>::value) {
+		COLOR(EditorColors::pale_pink);
+		pushed_color++;
+	} else if constexpr (std::is_same<T, Component::SceneControl>::value) {
+		COLOR(EditorColors::persistent);
 		pushed_color++;
 	}
 

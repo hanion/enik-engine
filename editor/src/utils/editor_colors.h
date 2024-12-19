@@ -28,6 +28,7 @@ constexpr ImVec4 purple = ImVec4(0.75f, 0.5f, 1.0f, 1.0f);
 // .ttf
 constexpr ImVec4 pale_pink = ImVec4(1.0f, 0.75f, 0.75f, 1.0f);
 
+constexpr ImVec4 persistent = green;
 
 }
 

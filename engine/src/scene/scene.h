@@ -55,6 +55,14 @@ public:
 
 	void CloseApplication();
 
+	void ChangeScene(const std::string& path);
+
+private:
+	void ChangeToDeferredScene();
+
+public:
+	bool NeedViewportResize = false;
+
 private:
 	entt::registry m_Registry;
 
@@ -66,11 +74,15 @@ private:
 	bool m_IsPaused = false;
 	int m_StepFrames = 0;
 
+	bool m_deferred_scene_change = false;
+	std::string m_deferred_scene_path = "";
+
 	friend class Entity;
 	friend class SceneTreePanel;
 	friend class InspectorPanel;
 	friend class SceneSerializer;
 	friend class PrefabEditorTab;
+	friend class SceneEditorTab;
 };
 
 }

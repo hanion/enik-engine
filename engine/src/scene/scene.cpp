@@ -99,6 +99,10 @@ void Scene::OnUpdateEditor(Timestep ts, OrthographicCameraController& camera) {
 	}
 
 	Renderer2D::EndScene();
+
+	if (m_deferred_scene_change) {
+		ChangeToDeferredScene();
+	}
 }
 
 void Scene::OnUpdateRuntime(Timestep ts) {
@@ -173,6 +177,10 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 	}
 
 	Renderer2D::EndScene();
+
+	if (m_deferred_scene_change) {
+		ChangeToDeferredScene();
+	}
 }
 
 void Scene::OnFixedUpdate() {
@@ -274,8 +282,9 @@ void Scene::OnViewportResize(glm::vec2 position, uint32_t width, uint32_t height
 }
 
 void Scene::DestroyScriptableEntities() {
-	m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
-		if (ns.Instance) {
+	m_Registry.view<Component::NativeScript>().each([=](entt::entity entity, Component::NativeScript& ns) {
+		if (ns.Instance && m_Registry.valid(entity)) {
+			// NOTE: is this needed ?
 			ns.Instance->OnDestroy();
 			ns.DestroyScript(&ns);
 		}
@@ -354,6 +363,49 @@ void Scene::CloseApplication() {
 #else
 	SetPaused(true);
 #endif
+}
+
+void Scene::ChangeScene(const std::string& path) {
+	if (m_deferred_scene_change) {
+		return;
+	}
+
+	const std::filesystem::path absolute = Project::GetAbsolutePath(path);
+	if (!std::filesystem::exists(absolute)) {
+		return;
+	}
+	m_deferred_scene_path = absolute.string();
+	m_deferred_scene_change = true;
+}
+
+
+void Scene::ChangeToDeferredScene() {
+	if (!m_deferred_scene_change || m_deferred_scene_path.empty()) {
+		return;
+	}
+
+	// destroy every entity except for Persistent ones
+	m_Registry.each([&](entt::entity entity) {
+		if (m_Registry.any_of<Component::SceneControl>(entity)) {
+			const auto& sc = m_Registry.get<Component::SceneControl>(entity);
+			if (sc.Persistent) {
+				return;
+			}
+		}
+		m_Registry.destroy(entity);
+	});
+
+
+	SceneSerializer serializer = SceneSerializer(this);
+	if (serializer.Deserialize(m_deferred_scene_path)) {
+		ScriptSystem::SetSceneContext(this);
+		PhysicsWorld::InitPhysicsWorld(&m_Registry);
+		NeedViewportResize = true;
+		EN_CORE_INFO("Changed Scene to '{}'", m_deferred_scene_path.c_str());
+	}
+
+	m_deferred_scene_path.clear();
+	m_deferred_scene_change = false;
 }
 
 }
