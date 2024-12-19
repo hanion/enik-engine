@@ -18,7 +18,7 @@ public:
 	static void Flush();
 
 	static void DrawQuad(const Component::Transform& transform, const Component::SpriteRenderer& sprite, int32_t entityID = -1);
-	static void DrawText(const Component::Transform& transform, const Component::Text& text, int32_t entityID = -1);
+	static void DrawText2D(const Component::Transform& transform, const Component::Text& text, int32_t entityID = -1);
 
 	static void DrawLine(const glm::vec2& p0, const glm::vec2& p1, const glm::vec4& color);
 	static void DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color);

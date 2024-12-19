@@ -297,7 +297,7 @@ void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::Sp
 	s_Data.Stats.QuadCount++;
 }
 
-void Renderer2D::DrawText(const Component::Transform& transform, const Component::Text& text, int32_t entityID) {
+void Renderer2D::DrawText2D(const Component::Transform& transform, const Component::Text& text, int32_t entityID) {
 	EN_PROFILE_SCOPE;
 
 	if (text.Data.empty() || !text.Font || !AssetManager::IsAssetHandleValid(text.Font)) {

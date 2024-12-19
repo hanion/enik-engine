@@ -94,7 +94,7 @@ void Scene::OnUpdateEditor(Timestep ts, OrthographicCameraController& camera) {
 		for (auto entity : group) {
 			Component::Transform& transform = group.get<Component::Transform>(entity);
 			Component::Text& text = group.get<Component::Text>(entity);
-			Renderer2D::DrawText(transform, text, (int32_t)entity);
+			Renderer2D::DrawText2D(transform, text, (int32_t)entity);
 		}
 	}
 
@@ -168,7 +168,7 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 		for (auto entity : group) {
 			Component::Transform& transform = group.get<Component::Transform>(entity);
 			Component::Text& text = group.get<Component::Text>(entity);
-			Renderer2D::DrawText(transform, text, (int32_t)entity);
+			Renderer2D::DrawText2D(transform, text, (int32_t)entity);
 		}
 	}
 
