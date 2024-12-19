@@ -12,7 +12,7 @@ Ref<Animation> AnimationImporter::ImportAnimation(AssetHandle handle, const Asse
 Ref<Animation> AnimationImporter::DeserializeAnimation(const std::filesystem::path& path) {
 	YAML::Node data;
 	try {
-		data = YAML::LoadFile(path);
+		data = YAML::LoadFile(path.string());
 	}
 	catch (const YAML::ParserException& e) {
 		EN_CORE_ERROR("Failed to load .anim file '{0}'\n	{1}", path, e.what());
