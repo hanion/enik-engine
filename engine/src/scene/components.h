@@ -72,6 +72,8 @@ struct SpriteRenderer {
 	AssetHandle Handle = 0;
 	float TileScale = 1.0f;
 
+	Ref<SubTexture2D> SubTexture = nullptr;
+
 	SpriteRenderer() = default;
 	SpriteRenderer(const SpriteRenderer&) = default;
 	SpriteRenderer(const glm::vec4& color)

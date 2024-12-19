@@ -529,29 +529,25 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 }
 
 void InspectorPanel::DisplaySubTexture(Component::SpriteRenderer& sprite) {
-#if 0
-	if (sprite.Texture == nullptr) {
+	if (sprite.Handle == 0) {
 		return;
 	}
+
 	if (sprite.SubTexture == nullptr) {
 		ImVec2 fill_width = ImVec2(ImGui::GetContentRegionAvail().x, 0);
 		if (ImGui::Button("Create Sub Texture", fill_width)) {
 			sprite.SubTexture = SubTexture2D::CreateFromTileIndex(
-				sprite.Texture, glm::vec2(18), glm::vec2(0), glm::vec2(2));
+				sprite.Handle, glm::vec2(18), glm::vec2(0), glm::vec2(2));
 		}
 		return;
 	}
-
-	static ImGuiTreeNodeFlags tree_node_flags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_OpenOnArrow;
-	tree_node_flags |= ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen;
-	tree_node_flags |= ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_AllowItemOverlap;
 
 	ImGui::TableNextRow();
 	ImGui::TableSetColumnIndex(0);
 
 	bool remove_sub_texture = false;
 
-	if (ImGui::TreeNodeEx("##DisplaySubTexture", tree_node_flags, "Sub Texture")) {
+	if (ImGui::TreeNodeEx("Sub Texture", inner_tree_node_flags | ImGuiTreeNodeFlags_AllowItemOverlap)) {
 		if (Input::IsMouseButtonPressed(1) and ImGui::IsItemHovered()) {
 			ImGui::OpenPopup("SubTextureSettings");
 		}
@@ -568,17 +564,21 @@ void InspectorPanel::DisplaySubTexture(Component::SpriteRenderer& sprite) {
 			ImGui::EndPopup();
 		}
 
+
 		ImGuiUtils::PrefixLabel("Tile Size");
-		if (ImGui::DragFloat2("##TileSize", glm::value_ptr(sprite.SubTexture->GetTileSize()), 0.01f)) {
-			sprite.SubTexture->UpdateSubTexture2D();
+		if (ImGui::DragFloat2("##TileSize", glm::value_ptr(sprite.SubTexture->TileSize), 0.01f)) {
+			Ref<Texture2D> texture = AssetManager::GetAsset<Texture2D>(sprite.Handle);
+			sprite.SubTexture->UpdateSubTexture2D(texture);
 		}
 		ImGuiUtils::PrefixLabel("Tile Index");
-		if (ImGui::DragFloat2("##TileIndex", glm::value_ptr(sprite.SubTexture->GetTileIndex()), 0.01f)) {
-			sprite.SubTexture->UpdateSubTexture2D();
+		if (ImGui::DragFloat2("##TileIndex", glm::value_ptr(sprite.SubTexture->TileIndex), 0.01f)) {
+			Ref<Texture2D> texture = AssetManager::GetAsset<Texture2D>(sprite.Handle);
+			sprite.SubTexture->UpdateSubTexture2D(texture);
 		}
 		ImGuiUtils::PrefixLabel("Tile Separation");
-		if (ImGui::DragFloat2("##TileSeparation", glm::value_ptr(sprite.SubTexture->GetTileSeparation()), 0.01f)) {
-			sprite.SubTexture->UpdateSubTexture2D();
+		if (ImGui::DragFloat2("##TileSeparation", glm::value_ptr(sprite.SubTexture->TileSeparation), 0.01f)) {
+			Ref<Texture2D> texture = AssetManager::GetAsset<Texture2D>(sprite.Handle);
+			sprite.SubTexture->UpdateSubTexture2D(texture);
 		}
 
 		ImGui::TreePop();
@@ -587,7 +587,6 @@ void InspectorPanel::DisplaySubTexture(Component::SpriteRenderer& sprite) {
 	if (remove_sub_texture) {
 		sprite.SubTexture.reset();
 	}
-#endif
 }
 
 void InspectorPanel::DisplayNativeScriptsInPopup() {

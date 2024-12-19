@@ -244,17 +244,20 @@ void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::Sp
 	if (!sprite.Handle) {return;}
 	EN_VERIFY(sprite.Handle);
 
-	const glm::vec2 defaultTextureCoords[] = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
-	const glm::vec2* textureCoords = defaultTextureCoords;
+	constexpr glm::vec2 default_texture_coords[] = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
+	const glm::vec2* texture_coords = default_texture_coords;
 
-	float textureIndex = 0.0f;
+	float texture_index = 0.0f;
 
 	if (sprite.Handle) {
 		Ref<Texture2D> texture = AssetManager::GetAsset<Texture2D>(sprite.Handle);
 		if (!texture) {
 			texture = s_ErrorTexture;
 		}
-		textureIndex = GetTextureIndex(texture);
+		texture_index = GetTextureIndex(texture);
+		if (sprite.SubTexture) {
+			texture_coords = sprite.SubTexture->GetTextureCoords();
+		}
 	}
 
 	if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
@@ -285,8 +288,8 @@ void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::Sp
 			s_Data.QuadVertexBufferPtr->Position = positions[i];
 		}
 		s_Data.QuadVertexBufferPtr->Color = sprite.Color;
-		s_Data.QuadVertexBufferPtr->TexCoord = textureCoords[i];
-		s_Data.QuadVertexBufferPtr->TexIndex = textureIndex;
+		s_Data.QuadVertexBufferPtr->TexCoord = texture_coords[i];
+		s_Data.QuadVertexBufferPtr->TexIndex = texture_index;
 		s_Data.QuadVertexBufferPtr->TileScale = sprite.TileScale;
 		s_Data.QuadVertexBufferPtr->a_EntityID = entityID;
 		s_Data.QuadVertexBufferPtr++;
