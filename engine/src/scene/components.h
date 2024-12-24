@@ -91,6 +91,7 @@ struct Camera {
 
 struct NativeScript {
 	ScriptableEntity* Instance = nullptr;
+	bool Called_OnCreate = false;
 
 	std::function<ScriptableEntity*()> InstantiateScript;
 	std::function<void(NativeScript*)> DestroyScript;

@@ -113,16 +113,22 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 
 	/* Update Scripts */
 	if (not m_IsPaused or m_StepFrames-- > 0) {
-		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
+		m_Registry.view<Component::NativeScript>().each([=](auto entity, Component::NativeScript& ns) {
 			if (not ns.Instance or ns.Instance == nullptr) {
 				if (ns.InstantiateScript and ns.InstantiateScript != nullptr) {
 					ns.Instance = ns.InstantiateScript();
 					ns.Instance->m_Entity = Entity(entity, this);
 					ns.ApplyNativeScriptFieldsToInstance();
+					ns.Called_OnCreate = true;
 					ns.Instance->OnCreate();
 				}
-			}
-			else {
+			// NOTE: reason: we need to be able to get script instance
+			// right after doing InstantiateScript
+			} else if (!ns.Called_OnCreate) {
+				EN_ASSERT(ns.Instance);
+				ns.Called_OnCreate = true;
+				ns.Instance->OnCreate();
+			} else {
 				ns.Instance->OnUpdate(ts);
 			}
 		});
@@ -191,10 +197,14 @@ void Scene::OnFixedUpdate() {
 					ns.Instance = ns.InstantiateScript();
 					ns.Instance->m_Entity = Entity(entity, this);
 					ns.ApplyNativeScriptFieldsToInstance();
+					ns.Called_OnCreate = true;
 					ns.Instance->OnCreate();
 				}
-			}
-			else {
+			} else if (!ns.Called_OnCreate) {
+				EN_ASSERT(ns.Instance);
+				ns.Called_OnCreate = true;
+				ns.Instance->OnCreate();
+			} else {
 				ns.Instance->OnFixedUpdate();
 			}
 		});

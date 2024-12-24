@@ -519,6 +519,19 @@ Entity SceneSerializer::InstantiatePrefab(const std::string& filepath, UUID inst
 		}
 	}
 
+
+	// NOTE: reason: we need to be able to get script instance
+	// right after doing InstantiateScript
+	m_Scene->m_Registry.view<Component::NativeScript>().each([=](auto e, auto& ns) {
+		if (not ns.Instance or ns.Instance == nullptr) {
+			if (ns.InstantiateScript and ns.InstantiateScript != nullptr) {
+				ns.Instance = ns.InstantiateScript();
+				ns.Instance->m_Entity = Entity(e, m_Scene);
+				ns.ApplyNativeScriptFieldsToInstance();
+			}
+		}
+	});
+
 	return root_entity;
 }
 
