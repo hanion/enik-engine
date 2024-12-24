@@ -240,6 +240,7 @@ void AnimationEditorPanel::DrawKeyframeDetailsPanel(const Ref<Animation>& animat
 		case TrackProperty::ColorB:
 		case TrackProperty::ColorA:
 		case TrackProperty::Rotation:
+		case TrackProperty::CameraSize:
 			ImGui::DragFloat("##Value", &std::get<float>(m_selected_keyframe->Value), 0.01f);
 			break;
 		case TrackProperty::Position:

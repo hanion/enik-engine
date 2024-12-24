@@ -20,6 +20,8 @@ enum class TrackProperty {
 	PositionX, PositionY, PositionZ,
 	ScaleX, ScaleY,
 	ColorR, ColorG, ColorB, ColorA,
+
+	CameraSize,
 };
 extern const std::map<std::string, TrackProperty> StringToTrackProperty;
 using AnimationKeyValue = std::variant<float, int, bool, std::string, glm::vec2, glm::vec3, glm::vec4>;

@@ -19,7 +19,8 @@ const std::map<std::string, TrackProperty> StringToTrackProperty = {
 	{"ColorR", TrackProperty::ColorR},
 	{"ColorG", TrackProperty::ColorG},
 	{"ColorB", TrackProperty::ColorB},
-	{"ColorA", TrackProperty::ColorA}
+	{"ColorA", TrackProperty::ColorA},
+	{"CameraSize", TrackProperty::CameraSize},
 };
 
 
@@ -37,6 +38,7 @@ void Keyframe::InitializeZero(TrackProperty property) {
 		case TrackProperty::ColorB:
 		case TrackProperty::ColorA:
 		case TrackProperty::Rotation:
+		case TrackProperty::CameraSize:
 			Value = 0.0f;
 			break;
 		case TrackProperty::Position:
@@ -85,6 +87,9 @@ bool Animation::HasProperty(const Entity& entity, const TrackProperty& property)
 		case TrackProperty::ColorB:
 		case TrackProperty::ColorA:
 			return (entity.Has<Component::SpriteRenderer>());
+		case TrackProperty::CameraSize:
+			return (entity.Has<Component::Camera>());
+
 		
 	}
 	return false;
@@ -115,6 +120,10 @@ void Animation::ApplyPropertyValue(const Entity& entity, const TrackProperty& pr
 		case TrackProperty::ColorG: if(!sprite){break;} sprite->Color.g = std::get<float>(value);   break;
 		case TrackProperty::ColorB: if(!sprite){break;} sprite->Color.b = std::get<float>(value);   break;
 		case TrackProperty::ColorA: if(!sprite){break;} sprite->Color.a = std::get<float>(value);   break;
+
+		case TrackProperty::CameraSize:
+			entity.Get<Component::Camera>().Cam.SetSize(std::get<float>(value));
+			break;
 	}
 }
 
