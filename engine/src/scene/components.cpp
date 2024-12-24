@@ -267,7 +267,7 @@ bool Component::Family::HasEntityAsChild(const Entity& entity) {
 
 void Component::AudioSources::Play(const std::string& name) {
 	for (size_t i = 0; i < SourcePaths.size(); i++) {
-		if (SourcePaths[i].stem() == name) {
+		if (SourcePaths[i].stem().string() == name) {
 			Audio::Play(Project::GetAbsolutePath(SourcePaths[i]));
 		}
 	}

@@ -26,7 +26,7 @@ void Audio::Play(const char* filepath) {
 }
 
 void Audio::Play(const std::filesystem::path& filepath) {
-	Audio::Play(filepath.c_str());
+	Audio::Play(filepath.string().c_str());
 }
 
 Audio::~Audio() {
