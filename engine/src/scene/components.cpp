@@ -306,6 +306,11 @@ void Component::AnimationPlayer::End() {
 	anim->Update((*BoundEntity.get()), CurrentTime);
 	Paused = true;
 	CurrentTime = 0.0f;
+
+	if (OnEndCallback) {
+		OnEndCallback(anim->Name);
+		OnEndCallback = nullptr;
+	}
 }
 
 void Component::AnimationPlayer::Kill() {
@@ -333,9 +338,12 @@ void Component::AnimationPlayer::Update(const Timestep& dt) {
 			CurrentTime = 0.0f;
 		} else {
 			Paused = true;
-			// TODO: send on animation finished event
+			if (OnEndCallback) {
+				OnEndCallback(anim->Name);
+				OnEndCallback = nullptr;
+			}
 		}
-	}	
+	}
 }
 
 }

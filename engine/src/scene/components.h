@@ -217,6 +217,8 @@ struct AnimationPlayer {
 	float CurrentTime = 0;
 	bool Paused = false;
 
+	std::function<void(const std::string&)> OnEndCallback = nullptr;
+
 	void Start(const std::string& name);
 	// fast forwards to the end
 	void End();
