@@ -394,17 +394,32 @@ void Scene::ChangeToDeferredScene() {
 		return;
 	}
 
-	// destroy every entity except for Persistent ones
+
+	std::unordered_set<entt::entity> entities_to_keep;
 	m_Registry.each([&](entt::entity entity) {
 		if (m_Registry.any_of<Component::SceneControl>(entity)) {
 			const auto& sc = m_Registry.get<Component::SceneControl>(entity);
 			if (sc.Persistent) {
-				return;
+				std::function<void(entt::entity)> collect_children = [&](entt::entity parent) {
+					entities_to_keep.insert(parent);
+					if (m_Registry.any_of<Component::Family>(parent)) {
+						const auto& family = m_Registry.get<Component::Family>(parent);
+						for (const auto& child : family.Children) {
+							collect_children(child.m_Handle);
+						}
+					}
+				};
+				collect_children(entity);
 			}
 		}
-		m_Registry.destroy(entity);
 	});
 
+	// destroy every entity except for Persistent ones
+	m_Registry.each([&](entt::entity entity) {
+		if (entities_to_keep.find(entity) == entities_to_keep.end()) {
+			m_Registry.destroy(entity);
+		}
+	});
 
 	SceneSerializer serializer = SceneSerializer(this);
 	if (serializer.Deserialize(m_deferred_scene_path)) {

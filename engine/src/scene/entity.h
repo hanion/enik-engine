@@ -127,6 +127,7 @@ public:
 private:
 	entt::entity m_Handle{entt::null};
 	Scene* m_Scene = nullptr;
+friend class Scene;
 };
 
 }
