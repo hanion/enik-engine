@@ -69,6 +69,22 @@ public:
 	static Ref<Project> Load(const std::filesystem::path& path);
 	static void         Save(const std::filesystem::path& path);
 
+
+
+	static std::string FindAssetPath(std::string str)  {
+		str = "./assets/" + str;
+		if (std::filesystem::exists(str)) {
+			return str;
+		}
+
+		str = "../../editor/" + str;
+		if (std::filesystem::exists(str)) {
+			return str;
+		}
+
+		return "";
+	}
+
 private:
 	ProjectConfig m_Config;
 

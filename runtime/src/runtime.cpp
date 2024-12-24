@@ -17,14 +17,15 @@ void RuntimeLayer::OnAttach() {
 	specification.Attachments = { FrameBufferTextureFormat::RGBA8, FrameBufferTextureFormat::Depth };
 	m_FrameBuffer = FrameBuffer::Create(specification);
 
-	std::filesystem::path project = PROJECT_PATH;
-
-	if (not std::filesystem::exists(project)) {
+	const std::filesystem::path project = "./project.enik";
+	if (std::filesystem::exists(project)) {
+		LoadProject(project);
+	} else if (std::filesystem::exists(PROJECT_PATH)) {
+		LoadProject(PROJECT_PATH);
+	} else {
 		EN_CORE_ERROR("Project not found! {}", project.string());
 		return;
 	}
-
-	LoadProject(project);
 }
 
 void RuntimeLayer::OnDetach() {

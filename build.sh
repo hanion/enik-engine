@@ -2,11 +2,12 @@
 
 print_usage() {
 	echo
-	echo "Usage: $0 [clean] [run] [config] [target]"
-	echo "    clean: Clean build"
-	echo "    run: Run the executable after build"
-	echo "    config: debug  | release | min"
-	echo "    target: editor | runtime"
+	echo "Usage: $0 [clean] [config] [run] [target] [static]"
+	echo "    clean   : Clean the build directory"
+	echo "    config  : Build configuration (debug | release | min)"
+	echo "    run     : Run the executable after build"
+	echo "    target  : Build target (editor | runtime)"
+	echo "    static  : Link the script module statically"
 }
 
 clean_build() {
@@ -21,12 +22,19 @@ configure_project() {
 	print_job "Configuring project:"
 	print_job "    cmake -DCMAKE_BUILD_TYPE:STRING=$cmake_config -S./ -B./build -G Ninja"
 
+	if [ -z "$PROJECT_TITLE" ]; then
+		PROJECT_TITLE="enik-project"
+	fi
+
 	cmake --no-warn-unused-cli \
 		-DCMAKE_BUILD_TYPE:STRING=$cmake_config \
 		-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE \
 		-DCMAKE_C_COMPILER:FILEPATH=gcc \
 		-DCMAKE_CXX_COMPILER:FILEPATH=g++ \
 		-DCMAKE_CXX_FLAGS="-std=c++17" \
+		-DPROJECT_ROOT=$PROJECT_ROOT \
+		-DPROJECT_TITLE=$PROJECT_TITLE \
+		-DEN_STATIC_SCRIPT_MODULE=$en_static_script_module \
 		-S./ -B./build -G Ninja
 
 	if [ $? -eq 0 ]; then
@@ -82,20 +90,9 @@ print_colored() {
 	fi
 }
 
-print_success() {
-	local message=$1
-	print_colored "32" "$message"
-}
-
-print_error() {
-	local message=$1
-	print_colored "91" "$message"
-}
-
-print_job() {
-	local message=$1
-	print_colored "96" "$message"
-}
+print_success() { print_colored "32" "$1"; }
+print_error() { print_colored "91" "$1"; }
+print_job() { print_colored "96" "$1"; }
 
 
 
@@ -105,6 +102,7 @@ print_job() {
 clean_build=false
 run_after_build=false
 configure_first=false
+en_static_script_module=OFF
 config="debug"
 target="editor"
 
@@ -127,6 +125,10 @@ while [[ $# -gt 0 ]]; do
 			;;
 		editor|runtime)
 			target="$1"
+			shift
+			;;
+		static)
+			en_static_script_module=ON
 			shift
 			;;
 		*)

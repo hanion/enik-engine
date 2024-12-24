@@ -34,9 +34,11 @@ void EditorLayer::OnAttach() {
 
 	EditorAssets::LoadEditorAssets();
 
-	std::filesystem::path project = PROJECT_PATH;
+	const std::filesystem::path project = "./project.enik";
 	if (std::filesystem::exists(project)) {
 		LoadProject(project);
+	} else if (std::filesystem::exists(PROJECT_PATH)) {
+		LoadProject(PROJECT_PATH);
 	}
 }
 

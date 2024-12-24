@@ -2,6 +2,8 @@
 
 #include <base.h>
 
+
+#include "project/project.h"
 #include "core/application.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -29,10 +31,15 @@ void ImGuiLayer::OnAttach() {
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
-#if !EN_DIST_BUILD
-	io.FontDefault = io.Fonts->AddFontFromFileTTF(EN_ASSETS_PATH("fonts/Noto_Sans/NotoSans-Regular.ttf").c_str(), 16.0f);
-	io.Fonts->AddFontFromFileTTF(EN_ASSETS_PATH("fonts/Noto_Sans_Mono/NotoSansMono-VariableFont_wdth,wght.ttf").c_str(), 20.0f);
-#endif
+	std::string font_0 = Project::FindAssetPath("fonts/Noto_Sans/NotoSans-Regular.ttf");
+	if (!font_0.empty()) {
+		io.FontDefault = io.Fonts->AddFontFromFileTTF(font_0.c_str(), 16.0f);
+	}
+
+	std::string font_1 = Project::FindAssetPath("fonts/Noto_Sans_Mono/NotoSansMono-VariableFont_wdth,wght.ttf");
+	if (!font_1.empty()) {
+		io.Fonts->AddFontFromFileTTF(font_1.c_str(), 20.0f);
+	}
 
 	io.IniFilename = NULL;
 	io.LogFilename = NULL;

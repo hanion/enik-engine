@@ -1,5 +1,6 @@
 #include "editor_assets.h"
 #include "asset/importer/texture_importer.h"
+#include "project/project.h"
 
 namespace Enik {
 
@@ -14,7 +15,7 @@ Ref<Texture2D> EditorAssets::Rotate;
 
 
 Ref<Texture2D> Load(const std::string& path) {
-	return TextureImporter::LoadTexture2D(EN_ASSETS_PATH(path));
+	return TextureImporter::LoadTexture2D(Project::FindAssetPath(path));
 }
 
 void EditorAssets::LoadEditorAssets() {

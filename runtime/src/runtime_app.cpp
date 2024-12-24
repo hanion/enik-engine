@@ -7,7 +7,7 @@ using namespace Enik;
 
 class RuntimeApp : public Application {
 public:
-	RuntimeApp() : Application("runtime") {
+	RuntimeApp() : Application(PROJECT_TITLE) {
 		EN_TRACE("Runtime Created");
 		PushLayer(new RuntimeLayer());
 	}

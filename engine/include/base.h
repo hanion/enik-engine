@@ -1,17 +1,10 @@
 #pragma once
 
-#define EN_DIST_BUILD 0
-
-
-#if EN_DIST_BUILD
-	#define PROJECT_PATH std::filesystem::path("./project.enik")
-#else
-	#define PROJECT_PATH std::filesystem::path("./project.enik")
-#endif
+#define EN_DIST_BUILD 1
+#define PROJECT_PATH (std::filesystem::path(PROJECT_PATH_STR))
 
 
 #include <cstdint>
-#include <memory>
 #include "core/log.h"
 
 
@@ -97,10 +90,4 @@ constexpr Ref<T> CreateRef(Args&& ... args) {
 	#endif
 #endif
 
-
-#if EN_DIST_BUILD
-	#define EN_ASSETS_PATH(x) (std::string("./src/assets/") + x)
-#else
-	#define EN_ASSETS_PATH(x) (std::string("../../editor/assets/") + x)
-#endif
 

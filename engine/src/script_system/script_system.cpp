@@ -3,6 +3,9 @@
 #include "script_system/script_registry.h"
 #include "project/project.h"
 
+#if EN_STATIC_SCRIPT_MODULE
+extern "C" void RegisterAllScripts();
+#endif
 
 #ifdef EN_PLATFORM_LINUX
 #include <dlfcn.h>
@@ -14,12 +17,17 @@ namespace Enik {
 
 static ScriptSystem::ScriptSystemData s_Data;
 
+#if !EN_STATIC_SCRIPT_MODULE
 // same signature as in the script module lib
 typedef void (*register_all_fn)();
 static register_all_fn register_all;
 static void* script_module_handle;
+#endif
 
 void ScriptSystem::LoadScriptModuleFirstTime() {
+#if EN_STATIC_SCRIPT_MODULE
+	RegisterAllScripts();
+#else
 	if (Project::GetActive()->GetConfig().script_module_path.empty()) {
 		return;
 	}
@@ -29,6 +37,7 @@ void ScriptSystem::LoadScriptModuleFirstTime() {
 
 	auto sm_path = Project::GetAbsolutePath(Project::GetActive()->GetConfig().script_module_path);
 	s_Data.file_watcher = CreateScope<filewatch::FileWatch<std::string>>(sm_path.string(), OnFileWatcherEvent);
+#endif
 }
 
 void ScriptSystem::ReloadScriptModule() {
@@ -52,6 +61,7 @@ void ScriptSystem::ReloadScriptModule() {
 
 
 void ScriptSystem::LoadScriptModule(const std::filesystem::path& script_module_path) {
+#if !EN_STATIC_SCRIPT_MODULE
 
 	if (script_module_path.empty() or not std::filesystem::exists(script_module_path)) {
 		EN_CORE_ERROR("Error while opening script module: Invalid Path\n    '{0}'", script_module_path.string());
@@ -83,7 +93,7 @@ void ScriptSystem::LoadScriptModule(const std::filesystem::path& script_module_p
 		return;
 	}
 #elif defined(EN_PLATFORM_WINDOWS)
-	symbol = GetProcAddress((HMODULE)script_module_handle, "RegisterAllScripts");
+	symbol = reinterpret_cast<void*>(GetProcAddress((HMODULE)script_module_handle, "RegisterAllScripts"));
 #endif
 
 	if (symbol and symbol != nullptr) {
@@ -94,9 +104,11 @@ void ScriptSystem::LoadScriptModule(const std::filesystem::path& script_module_p
 		s_Data.current_script_module_path = script_module_path;
 		EN_CORE_INFO("Loaded script module '{0}'", script_module_path.string());
 	}
+#endif
 }
 
 void ScriptSystem::UnloadScriptModule() {
+#if !EN_STATIC_SCRIPT_MODULE
 	// close the library
 	if (script_module_handle and script_module_handle != nullptr) {
 #ifdef EN_PLATFORM_LINUX
@@ -118,6 +130,7 @@ void ScriptSystem::UnloadScriptModule() {
 			std::filesystem::remove(s_Data.current_script_module_path);
 		}
 	}
+#endif
 }
 
 void ScriptSystem::ClearOnScriptModuleReloadEvents() {

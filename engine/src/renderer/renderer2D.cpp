@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "asset/asset_manager.h"
+#include "base.h"
 #include "core/asserter.h"
 #include "renderer/font.h"
 #include "renderer/render_command.h"
@@ -123,11 +124,11 @@ void Renderer2D::Init() {
 	s_Data.LineVertexBuffer->SetLayout(line_layout);
 	s_Data.LineVertexArray->AddVertexBuffer(s_Data.LineVertexBuffer);
 
-	s_Data.LineShader = Shader::Create(EN_ASSETS_PATH("shaders/line_shader.glsl"));
+	s_Data.LineShader = Shader::Create(Project::FindAssetPath("shaders/line_shader.glsl"));
 	s_Data.LineShader->Bind();
 
 
-	s_Data.TextureColorShader = Shader::Create(EN_ASSETS_PATH("shaders/texture_color.glsl"));
+	s_Data.TextureColorShader = Shader::Create(Project::FindAssetPath("shaders/texture_color.glsl"));
 
 	TextureSpecification spec;
 	s_Data.WhiteTexture = Texture2D::Create(spec);
