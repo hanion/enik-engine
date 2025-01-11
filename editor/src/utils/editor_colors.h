@@ -28,7 +28,22 @@ constexpr ImVec4 purple = ImVec4(0.75f, 0.5f, 1.0f, 1.0f);
 // .ttf
 constexpr ImVec4 pale_pink = ImVec4(1.0f, 0.75f, 0.75f, 1.0f);
 
+constexpr ImVec4 project = yellow;
+constexpr ImVec4 scene = green;
 constexpr ImVec4 persistent = green;
+constexpr ImVec4 prefab = blue;
+constexpr ImVec4 prefab_child = blue_a;
+constexpr ImVec4 image = cyan;
+constexpr ImVec4 script = orange;
+constexpr ImVec4 audio = teal;
+constexpr ImVec4 anim = purple;
+constexpr ImVec4 font = pale_pink;
+
+
+constexpr float color_dark  = 19.0f / 255.0f;
+constexpr float color_light = 26.0f / 255.0f;
+constexpr ImVec4 bg_dark  = ImVec4(color_dark, color_dark, color_dark, 1.0f);
+constexpr ImVec4 bg_light = ImVec4(color_light, color_light, color_light, 1.0f);
 
 }
 

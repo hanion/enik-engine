@@ -25,6 +25,11 @@ public:
 
 	void RequestOpenAsset(const std::filesystem::path& path);
 
+	void CreateNewScene();
+	void CreateNewProject();
+	void LoadProject(const std::filesystem::path &path);
+	void ExitEditor();
+
 private:
 	void ProcessOpenAssetRequests();
 	void OpenAsset(const std::filesystem::path& path);
@@ -33,10 +38,7 @@ private:
 	void RenderContent();
 	void InitializeMainDockspace();
 
-	void CreateNewScene();
 
-	void CreateNewProject();
-	void LoadProject(const std::filesystem::path &path);
 	void SaveProject();
 	void ReloadProject();
 	void ReloadTab();
@@ -46,9 +48,6 @@ private:
 	void UpdateWindowTitle();
 
 	void OnOverlayRender();
-
-
-	void ExitEditor();
 
 private:
 	std::vector<Ref<EditorTab>> m_EditorTabs;

@@ -14,6 +14,7 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 #include "tabs/editor_tab.h"
+#include "tabs/home_tab.h"
 #include "tabs/prefab_editor_tab.h"
 #include "tabs/scene_editor_tab.h"
 #include "tabs/text_editor_tab.h"
@@ -96,7 +97,7 @@ void EditorLayer::OnImGuiRender() {
 	// closing tabs
 	m_EditorTabs.erase(
 		std::remove_if(m_EditorTabs.begin(), m_EditorTabs.end(),
-			[](const auto& tab) {
+			[](const Ref<EditorTab>& tab) {
 				if (tab->ShouldClose()) {
 					return true;
 				}
@@ -105,6 +106,10 @@ void EditorLayer::OnImGuiRender() {
 		),
 		m_EditorTabs.end()
 	);
+
+	if (m_EditorTabs.size() == 0 && m_OpenAssetRequests.size() == 0) {
+		RequestOpenAsset("Home");
+	}
 
 	DialogFile::Show();
 	DialogConfirm::Show();
@@ -116,7 +121,7 @@ bool EditorLayer::BeginMainDockspace() {
 	ImGui::SetNextWindowPos(viewport->WorkPos);
 	ImGui::SetNextWindowSize(viewport->WorkSize);
 	ImGui::SetNextWindowViewport(viewport->ID);
-	constexpr ImGuiWindowFlags main_window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking
+	constexpr ImGuiWindowFlags main_window_flags = ImGuiWindowFlags_NoDocking //| ImGuiWindowFlags_MenuBar
 		| ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize
 		| ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus
 		| ImGuiWindowFlags_NoBackground;
@@ -138,45 +143,6 @@ bool EditorLayer::BeginMainDockspace() {
 		ImGui::DockSpace(m_MainDockspaceID, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_NoDockingSplitMe);
 	}
 	ImGui::PopStyleVar();
-
-
-	if (ImGui::BeginMenuBar()) {
-		if (ImGui::BeginMenu("File")) {
-			if (ImGui::BeginMenu("Project")) {
-				if (ImGui::MenuItem("Reload Project")) {
-					ReloadProject();
-				}
-				if (ImGui::MenuItem("Open Project")) {
-					DialogFile::OpenDialog(DialogType::OPEN_FILE,
-						[&](){
-							LoadProject(DialogFile::GetSelectedPath());
-						}
-						, ".enik"
-					);
-				}
-				if (ImGui::MenuItem("Save Project")) {
-					SaveProject();
-				}
-				ImGui::EndMenu();
-			}
-			if (ImGui::BeginMenu("Scene")) {
-				if (ImGui::MenuItem("Open Scene")) {
-					DialogFile::OpenDialog(DialogType::OPEN_FILE,
-						[&](){
-							RequestOpenAsset(Project::GetRelativePath(DialogFile::GetSelectedPath()));
-						}
-						, ".escn"
-					);
-				}
-				if (ImGui::MenuItem("New Scene")) {
-					CreateNewScene();
-				}
-				ImGui::EndMenu();
-			}
-			ImGui::EndMenu();
-		}
-		ImGui::EndMenuBar();
-	}
 
 	return true;
 }
@@ -251,6 +217,8 @@ void EditorLayer::OpenAsset(const std::filesystem::path& path) {
 		ext == ".anim" or
 		ext == ".wav") {
 		tab = std::static_pointer_cast<EditorTab>(CreateRef<TextEditorTab>(path));
+	} else if (path == "Home") {
+		tab = std::static_pointer_cast<EditorTab>(CreateRef<HomeTab>());
 	}
 
 	if (tab) {
@@ -384,9 +352,7 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 
 		case Key::T:
 			if (control) {
-				if (Project::GetActive()){
-					RequestOpenAsset(Project::GetActive()->GetConfig().start_scene);
-				}
+ 					RequestOpenAsset("Home");
 			}
 			break;
 

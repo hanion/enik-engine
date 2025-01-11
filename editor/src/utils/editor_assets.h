@@ -10,6 +10,7 @@ public:
 public:
 	static Ref<Texture2D> Play, Stop, Pause, Step;
 	static Ref<Texture2D> Select, Move, Scale, Rotate;
+	static Ref<Texture2D> Banner;
 };
 
 }

@@ -20,23 +20,23 @@ struct FileInfo {
 };
 
 static const std::unordered_map<std::type_index, FileInfo> FileInfoMap = {
-	{typeid(Texture2D), {".png",    "[Texture2D]", EditorColors::cyan}},
-	{typeid(Audio),     {".wav",    "[Audio]",     EditorColors::teal}},
-	{typeid(Animation), {".anim",   "[Animation]", EditorColors::purple}},
-	{typeid(FontAsset), {".ttf",    "[Font]",      EditorColors::pale_pink}},
+	{typeid(Texture2D), {".png",    "[Texture2D]", EditorColors::image}},
+	{typeid(Audio),     {".wav",    "[Audio]",     EditorColors::audio}},
+	{typeid(Animation), {".anim",   "[Animation]", EditorColors::anim}},
+	{typeid(FontAsset), {".ttf",    "[Font]",      EditorColors::font}},
 // 	{typeid(Prefab),    {".prefab", "[Prefab]",    EditorColors::blue}},
 // 	{typeid(Scene),     {".escn",   "[Scene]",     EditorColors::green}},
 // 	{typeid(Project),   {".enik",   "[Project]",   EditorColors::yellow}},
 };
 
 static const std::unordered_map<std::string, ImVec4> ExtensionColorMap = {
-	{".png",    EditorColors::cyan},
-	{".wav",    EditorColors::teal},
-	{".anim",   EditorColors::purple},
-	{".ttf",    EditorColors::pale_pink},
-	{".prefab", EditorColors::blue},
-	{".escn",   EditorColors::green},
-	{".enik",   EditorColors::yellow}
+	{".png",    EditorColors::image},
+	{".wav",    EditorColors::audio},
+	{".anim",   EditorColors::anim},
+	{".ttf",    EditorColors::font},
+	{".prefab", EditorColors::prefab},
+	{".escn",   EditorColors::scene},
+	{".enik",   EditorColors::project}
 };
 
 template <typename T>

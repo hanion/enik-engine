@@ -12,6 +12,7 @@ Ref<Texture2D> EditorAssets::Select;
 Ref<Texture2D> EditorAssets::Move;
 Ref<Texture2D> EditorAssets::Scale;
 Ref<Texture2D> EditorAssets::Rotate;
+Ref<Texture2D> EditorAssets::Banner;
 
 
 Ref<Texture2D> Load(const std::string& path) {
@@ -28,6 +29,8 @@ void EditorAssets::LoadEditorAssets() {
 	Move   = Load("icons/tool_move.png");
 	Scale  = Load("icons/tool_scale.png");
 	Rotate = Load("icons/tool_rotate.png");
+
+	Banner = Load("icons/banner.png");
 }
 
 }
