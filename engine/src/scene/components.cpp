@@ -1,6 +1,7 @@
 #include "components.h"
 
 #include "asset/asset_manager.h"
+#include "gtc/quaternion.hpp"
 #include "scene/scriptable_entity.h"
 #include "audio/audio.h"
 #include "project/project.h"
@@ -203,8 +204,7 @@ void Component::Family::Reparent(Entity this_entity, Entity new_parent) {
 	SetParent(new_parent);
 }
 
-
-void Component::Family::SetChildrenGlobalTransformRecursive(Component::Transform& transform) {
+void Component::Family::SetChildrenGlobalTransformRecursive(const Component::Transform& transform) {
 	for (Entity& child : Children) {
 		Component::Transform& child_transform = child.Get<Component::Transform>();
 
@@ -212,10 +212,14 @@ void Component::Family::SetChildrenGlobalTransformRecursive(Component::Transform
 
 		glm::vec3 skew;
 		glm::vec4 perspective;
-		glm::quat rotation;
-		glm::decompose(child_global_transform, child_transform.GlobalScale, rotation, child_transform.GlobalPosition, skew, perspective);
+		glm::decompose(child_global_transform,
+			child_transform.GlobalScale,
+			child_transform.GlobalRotation,
+			child_transform.GlobalPosition,
+			skew, perspective
+		);
 
-		child_transform.GlobalRotation = glm::eulerAngles(rotation).z;
+
 		child.Get<Component::Family>().SetChildrenGlobalTransformRecursive(child_transform);
 	}
 }
@@ -262,6 +266,34 @@ bool Component::Family::HasEntityAsChild(const Entity& entity) {
 		}
 	}
 	return false;
+}
+
+void Component::Family::SetGlobalPositionRotation(Component::Transform& tr, const glm::vec3& global_pos, const glm::quat& global_rot) {
+	if (HasParent()) {
+		const auto& parent_transform = GetParent().Get<Component::Transform>();
+		tr.LocalPosition = glm::inverse(parent_transform.GlobalRotation) * (global_pos- parent_transform.GlobalPosition);
+		tr.LocalRotation = glm::inverse(parent_transform.GlobalRotation) * global_rot;
+	} else {
+		tr.LocalPosition = global_pos;
+		tr.LocalRotation = global_rot;
+	}
+}
+
+void Component::Family::SetGlobalPosition(Component::Transform& tr, const glm::vec3& global) {
+	if (HasParent()) {
+		const auto& parent_transform = GetParent().Get<Component::Transform>();
+		tr.LocalPosition = glm::inverse(parent_transform.GlobalRotation) * (global- parent_transform.GlobalPosition);
+	} else {
+		tr.LocalPosition = global;
+	}
+}
+void Component::Family::SetGlobalRotation(Component::Transform& tr, const glm::quat& global) {
+	if (HasParent()) {
+		const auto& parent_transform = GetParent().Get<Component::Transform>();
+		tr.LocalRotation = glm::inverse(parent_transform.GlobalRotation) * global;
+	} else {
+		tr.LocalRotation = global;
+	}
 }
 
 

@@ -4,6 +4,7 @@
 #include <stack>
 
 #include "core/log.h"
+#include "gtc/type_ptr.hpp"
 #include "project/project.h"
 #include "scene/components.h"
 #include "script_system/script_registry.h"
@@ -76,6 +77,30 @@ struct convert<glm::vec4> {
 	}
 };
 
+template <>
+struct convert<glm::quat> {
+	static Node encode(const glm::quat& quat) {
+		Node node;
+		node.push_back(quat.x);
+		node.push_back(quat.y);
+		node.push_back(quat.z);
+		node.push_back(quat.w);
+		node.SetStyle(EmitterStyle::Flow);
+		return node;
+	};
+
+	static bool decode(const Node& node, glm::quat& quat) {
+		if (not node.IsSequence() or node.size() != 4) {
+			return false;
+		}
+		quat.x = node[0].as<float>();
+		quat.y = node[1].as<float>();
+		quat.z = node[2].as<float>();
+		quat.w = node[3].as<float>();
+		return true;
+	}
+};
+
 YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec2& vec) {
 	out << YAML::Flow;
 	out << YAML::BeginSeq << vec.x << vec.y << YAML::EndSeq;
@@ -89,6 +114,11 @@ YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec3& vec) {
 YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec4& vec) {
 	out << YAML::Flow;
 	out << YAML::BeginSeq << vec.x << vec.y << vec.z << vec.w << YAML::EndSeq;
+	return out;
+}
+YAML::Emitter& operator<<(YAML::Emitter& out, const glm::quat& quat) {
+	out << YAML::Flow;
+	out << YAML::BeginSeq << quat.x << quat.y << quat.z << quat.w << YAML::EndSeq;
 	return out;
 }
 }
@@ -619,18 +649,44 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::Key << "Component::RigidBody";
 		out << YAML::BeginMap;
 
-		auto& rigid_body = entity.Get<Component::RigidBody>();
-		out << YAML::Key << "Mass"       << YAML::Value << rigid_body.Mass;
-		out << YAML::Key << "UseGravity" << YAML::Value << rigid_body.UseGravity;
+		auto& body = entity.Get<Component::RigidBody>();
+		out << YAML::Key << "UseGravity" << YAML::Value << body.UseGravity;
+		out << YAML::Key << "MotionType" << YAML::Value << MotionTypeToString(body.MotionType);
+		out << YAML::Key << "Layer" << YAML::Value << body.Layer;
+		out << YAML::Key << "IsSensor" << YAML::Value << body.IsSensor;
 
 		out << YAML::EndMap;
 	}
 
-	if (entity.Has<Component::Collider>()) {
+	if (entity.Has<Component::StaticBody>()) {
+		out << YAML::Key << "Component::StaticBody";
+		out << YAML::BeginMap;
+
+ 		auto& body = entity.Get<Component::StaticBody>();
+		out << YAML::Key << "MotionType" << YAML::Value << MotionTypeToString(body.MotionType);
+		out << YAML::Key << "Layer" << YAML::Value << body.Layer;
+		out << YAML::Key << "IsSensor" << YAML::Value << body.IsSensor;
+
+		out << YAML::EndMap;
+	}
+
+	if (entity.Has<Component::TriggerBody>()) {
+		out << YAML::Key << "Component::TriggerBody";
+		out << YAML::BeginMap;
+
+ 		auto& body = entity.Get<Component::TriggerBody>();
+		out << YAML::Key << "MotionType" << YAML::Value << MotionTypeToString(body.MotionType);
+		out << YAML::Key << "Layer" << YAML::Value << body.Layer;
+		out << YAML::Key << "IsSensor" << YAML::Value << body.IsSensor;
+
+		out << YAML::EndMap;
+	}
+
+	if (entity.Has<Component::CollisionShape>()) {
 		out << YAML::Key << "Component::Collider";
 		out << YAML::BeginMap;
 
-		auto& collider = entity.Get<Component::Collider>();
+		auto& collider = entity.Get<Component::CollisionShape>();
 		out << YAML::Key << "Shape"  << YAML::Value << collider.Shape;
 		out << YAML::Key << "Float"  << YAML::Value << collider.Float;
 		out << YAML::Key << "Vector" << YAML::Value << collider.Vector;
@@ -773,7 +829,11 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 				auto transform = entity["Component::Transform"];
 				if (transform) {
 					trans.LocalPosition = transform["Position"].as<glm::vec3>();
-					trans.LocalRotation = transform["Rotation"].as<float>();
+					if (transform["Rotation"].size() != 4) {
+						trans.LocalRotation = glm::quat(glm::vec3(0,0,transform["Rotation"].as<float>()));
+					} else {
+						trans.LocalRotation = transform["Rotation"].as<glm::quat>();
+					}
 
 					if (transform["Scale"].size() == 2) {
 						glm::vec2 scale = transform["Scale"].as<glm::vec2>();
@@ -801,7 +861,13 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 	if (transform) {
 		auto& trans = deserialized_entity.Get<Component::Transform>();
 		trans.LocalPosition = transform["Position"].as<glm::vec3>();
-		trans.LocalRotation = transform["Rotation"].as<float>();
+
+		if (transform["Rotation"].size() != 4) {
+			trans.LocalRotation = glm::quat(glm::vec3(0,0,transform["Rotation"].as<float>()));
+		} else {
+			trans.LocalRotation = transform["Rotation"].as<glm::quat>();
+		}
+
 		if (transform["Scale"].size() == 2) {
 			glm::vec2 scale = transform["Scale"].as<glm::vec2>();
 			trans.LocalScale.x = scale.x;
@@ -845,16 +911,50 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 
 	DeserializeNativeScript(entity, deserialized_entity);
 
-	auto rigid_body = entity["Component::RigidBody"];
-	if (rigid_body) {
+	if (auto node = entity["Component::RigidBody"]) {
 		auto& body = deserialized_entity.Add<Component::RigidBody>();
-		body.Mass = rigid_body["Mass"].as<float>();
-		body.UseGravity = rigid_body["UseGravity"].as<bool>();
+// 		body.Mass = rigid_body["Mass"].as<float>();
+		body.UseGravity = node["UseGravity"].as<bool>();
+		if (node["MotionType"]) {
+			body.MotionType = MotionTypeFromString(node["MotionType"].as<std::string>());
+		}
+		if (node["Layer"]) {
+			body.Layer = node["Layer"].as<int>();
+		}
+		if (node["IsSensor"]) {
+			body.IsSensor = node["IsSensor"].as<bool>();
+		}
+	}
+
+	if (auto node = entity["Component::StaticBody"]) {
+		auto& body = deserialized_entity.Add<Component::StaticBody>();
+		if (node["MotionType"]) {
+			body.MotionType = MotionTypeFromString(node["MotionType"].as<std::string>());
+		}
+		if (node["Layer"]) {
+			body.Layer = node["Layer"].as<int>();
+		}
+		if (node["IsSensor"]) {
+			body.IsSensor = node["IsSensor"].as<bool>();
+		}
+	}
+
+	if (auto node = entity["Component::TriggerBody"]) {
+		auto& body = deserialized_entity.Add<Component::TriggerBody>();
+		if (node["MotionType"]) {
+			body.MotionType = MotionTypeFromString(node["MotionType"].as<std::string>());
+		}
+		if (node["Layer"]) {
+			body.Layer = node["Layer"].as<int>();
+		}
+		if (node["IsSensor"]) {
+			body.IsSensor = node["IsSensor"].as<bool>();
+		}
 	}
 
 	auto collider = entity["Component::Collider"];
 	if (collider) {
-		auto& col = deserialized_entity.Add<Component::Collider>();
+		auto& col = deserialized_entity.Add<Component::CollisionShape>();
 		col.Shape  = (Component::ColliderShape)collider["Shape"].as<int>();
 		col.Float  = collider["Float"].as<float>();
 		col.Vector = collider["Vector"].as<glm::vec3>();

@@ -9,6 +9,7 @@
 #include "dialogs/dialog_confirm.h"
 
 #include "editor_layer.h"
+#include "script_system/extern_functions.h"
 #include "utils/editor_assets.h"
 
 #define BIND_FUNC_EVENT(fn) std::bind(&SceneEditorTab::fn, this, std::placeholders::_1)
@@ -42,7 +43,7 @@ SceneEditorTab::~SceneEditorTab() {
 
 void SceneEditorTab::SetPanelsContext() {
 	m_SceneTreePanel.SetContext(m_ActiveScene);
-	m_FileSystemPanel.SetContext(m_EditorLayer);
+	m_FileSystemPanel.SetContext(m_EditorLayer, this);
 	m_ToolbarPanel.SetContext(m_ActiveScene, &m_SceneTreePanel);
 	m_InspectorPanel.SetContext(m_ActiveScene, &m_SceneTreePanel, &m_AnimationeditorPanel);
 }
@@ -129,7 +130,9 @@ void SceneEditorTab::RenderContent() {
 	m_SceneTreePanel.OnImGuiRender();
 	m_InspectorPanel.OnImGuiRender();
 	m_FileSystemPanel.OnImGuiRender();
-	m_AnimationeditorPanel.OnImGuiRender();
+	if (m_AnimationeditorPanel.HasAnimation()) {
+		m_AnimationeditorPanel.OnImGuiRender();
+	}
 
 	bool is_viewport_open = false;
 
@@ -556,19 +559,21 @@ void SceneEditorTab::OnOverlayRender() {
 	}
 
 	if (m_ShowColliders) {
-		auto view = m_ActiveScene->Reg().view<Component::Collider, Component::Transform>();
+		auto view = m_ActiveScene->Reg().view<Component::CollisionShape, Component::Transform>();
 		for(auto& entity : view) {
-			auto [transform, collider] = view.get<Component::Transform, Component::Collider>(entity);
+			auto [transform, collider] = view.get<Component::Transform, Component::CollisionShape>(entity);
 			switch (collider.Shape) {
 				case Component::ColliderShape::CIRCLE: {
-					Renderer2D::DrawCircle(
-						glm::vec3(
-							transform.GlobalPosition.x + collider.Vector.x,
-							transform.GlobalPosition.y + collider.Vector.y,
-							0.999f),
-						transform.LocalScale.x * collider.Float,
-						32,
-						glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
+					for (int t = 0; t < 5; ++t) {
+						Renderer2D::DrawCircle(
+							glm::vec3(
+								transform.GlobalPosition.x + collider.Vector.x,
+								transform.GlobalPosition.y + collider.Vector.y,
+								0.999f),
+							transform.LocalScale.x * collider.Float + t*0.001f,
+							32,
+							glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
+					}
 					break;
 				}
 				case Component::ColliderShape::PLANE: {
@@ -608,15 +613,15 @@ void SceneEditorTab::OnOverlayRender() {
 			auto transform = m_SceneTreePanel.GetSelectedEntity().Get<Component::Transform>();
 			transform.GlobalPosition.z = 0.999f;
 
-			float increase_amount = 0.004f * m_EditorCameraController.GetZoomLevel();
+			float increase_amount = 0.002f * m_EditorCameraController.GetZoomLevel();
 
 			for (int i = 0; i < m_SelectionOutlineWidth; i++) {
 				Renderer2D::DrawRect(
 					transform,
 					m_SelectionOutlineColor
 				);
-				transform.LocalScale.x += increase_amount;
-				transform.LocalScale.y += increase_amount;
+				transform.GlobalScale.x += increase_amount;
+				transform.GlobalScale.y += increase_amount;
 			}
 		}
 	}

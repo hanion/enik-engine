@@ -109,7 +109,9 @@ void Animation::ApplyPropertyValue(const Entity& entity, const TrackProperty& pr
 		case TrackProperty::PositionY: transform.LocalPosition.y = std::get<float>(value);   break;
 		case TrackProperty::PositionZ: transform.LocalPosition.z = std::get<float>(value);   break;
 
-		case TrackProperty::Rotation: transform.LocalRotation = std::get<float>(value); break;
+		// TODO: quat
+// 		case TrackProperty::Rotation: transform.LocalRotation = std::get<glm::quat>(value); break;
+		case TrackProperty::Rotation: break;
 
 		case TrackProperty::Scale:  transform.LocalScale = std::get<glm::vec3>(value); break;
 		case TrackProperty::ScaleX: transform.LocalScale.x = std::get<float>(value);   break;

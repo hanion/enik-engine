@@ -5,6 +5,7 @@
 #include "core/uuid.h"
 #include <entt/entt.hpp>
 #include "events/key_event.h"
+#include "physics/physics.h"
 
 namespace Enik {
 
@@ -65,6 +66,7 @@ public:
 
 private:
 	entt::registry m_Registry;
+	Physics m_Physics;
 
 	uint32_t m_ViewportWidth;
 	uint32_t m_ViewportHeight;

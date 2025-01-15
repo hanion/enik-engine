@@ -4,7 +4,7 @@
 
 #include "core/input.h"
 #include "renderer/renderer.h"
-#include "physics/physics_world.h"
+#include "physics/physics.h"
 #include "audio/audio.h"
 
 namespace Enik {
@@ -49,7 +49,7 @@ void Application::PushOverlay(Layer* overlay) {
 }
 
 void Application::Run() {
-	const double dt = physics_update_rate;
+	const double dt = PHYSICS_UPDATE_RATE;
 	double accumulator = 0.0;
 
 	while (m_Running) {
@@ -133,12 +133,6 @@ bool Application::OnWindowResize(WindowResizeEvent& e) {
 }
 
 bool Application::OnKeyPressed(KeyPressedEvent& e) {
-	bool control = Input::IsKeyPressed(Key::LeftControl) or Input::IsKeyPressed(Key::RightControl);
-
-	if (control and e.GetKeyCode() == Key::P) {
-		m_Minimized = !m_Minimized;
-		EN_CORE_WARN("Paused Render (Ctrl+P)");
-	}
 	return false;
 }
 

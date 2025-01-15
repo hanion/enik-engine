@@ -6,6 +6,7 @@
 #include <map>
 #include "scene/native_script_fields.h"
 #include "scene/animation.h"
+#include "physics/physics_body.h"
 
 #include <filesystem>
 #include <glm/glm.hpp>
@@ -45,22 +46,22 @@ struct Tag {
 
 struct Transform {
 	glm::vec3 LocalPosition = glm::vec3(0.0f);
-	float     LocalRotation = 0.0f;
+	glm::quat LocalRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 	glm::vec3 LocalScale    = glm::vec3(1.0f);
 
 	glm::vec3 GlobalPosition = LocalPosition;
-	float     GlobalRotation = LocalRotation;
+	glm::quat GlobalRotation = LocalRotation;
 	glm::vec3 GlobalScale    = LocalScale;
 
 	Transform() = default;
 	Transform(const Transform&) = default;
-	Transform(const glm::vec3& position, float rotation = 0.0f, const glm::vec3& scale = glm::vec3(1.0f))
+	Transform(const glm::vec3& position, const glm::quat& rotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f), const glm::vec3& scale = glm::vec3(1.0f))
 	: LocalPosition(position), LocalRotation(rotation), LocalScale(scale) {}
 
 	glm::mat4 GetTransform() const {
 		glm::mat4 transform = glm::mat4(1.0f);
 		transform = glm::translate(transform, GlobalPosition);
-		transform = glm::rotate(transform, GlobalRotation, glm::vec3(0.0f, 0.0f, 1.0f));
+		transform *= glm::mat4_cast(GlobalRotation);
 		transform = glm::scale(transform, GlobalScale);
 		return transform;
 	}
@@ -105,53 +106,54 @@ struct NativeScript {
 };
 
 
-struct RigidBody {
-	glm::vec3 Velocity;
-	glm::vec3 Force;
-	float Mass = 1.0f;
 
-	bool Awake = true;
+struct PhysicsBodyBase {
+	PhysicsBody* body = nullptr;
+	bool IsSensor = false;
+	uint16_t Layer = 1;
+	JPH::EMotionType MotionType = JPH::EMotionType::Dynamic;
+
+	PhysicsBodyBase() = default;
+	PhysicsBodyBase(const PhysicsBodyBase&) = default;
+};
+struct RigidBody : PhysicsBodyBase {
 	bool UseGravity = false;
 
 	RigidBody() = default;
 	RigidBody(const RigidBody&) = default;
-
-	static constexpr float epsilon = 0.001f;
-
-	void ApplyForce(const glm::vec3& force) {
-		if (force.length() < epsilon) {
-			return;
-		}
-
-		Awake = true;
-		Force += force;
-	}
-
-	void ApplyImpulse(const glm::vec3& impulse) {
-		if (impulse.length() < epsilon) {
-			return;
-		}
-
-		if (Mass != 0.0f) {
-			Awake = true;
-			Velocity += impulse / Mass;
-		}
-	}
 };
 
+struct StaticBody : PhysicsBodyBase {
+	StaticBody() {
+		Layer = 0;
+		MotionType = JPH::EMotionType::Static;
+	}
+	StaticBody(const StaticBody&) = default;
+};
+
+struct TriggerBody : PhysicsBodyBase {
+	TriggerBody() {
+		IsSensor = true;
+		Layer = 1;
+		MotionType = JPH::EMotionType::Static;
+	}
+	TriggerBody(const TriggerBody&) = default;
+};
 
 
 enum ColliderShape {
 	CIRCLE, PLANE, BOX
 };
-struct Collider {
-	ColliderShape Shape = ColliderShape::CIRCLE;
+struct CollisionShape {
+	JPH::Ref<JPH::Shape> shape = nullptr;
+
+	ColliderShape Shape = ColliderShape::BOX;
 	glm::vec3 Vector = glm::vec3(0,0,0);
 	float Float = 0.5f;
 	bool IsArea = false;
 
-	Collider() = default;
-	Collider(const Collider&) = default;
+	CollisionShape() = default;
+	CollisionShape(const CollisionShape&) = default;
 
 	const std::string String() const {
 		switch (Shape) {
@@ -177,9 +179,13 @@ public:
 
 	void Reparent(Entity this_entity, Entity new_parent);
 
-	void SetChildrenGlobalTransformRecursive(Component::Transform& transform);
+	void SetChildrenGlobalTransformRecursive(const Component::Transform& transform);
 
 	bool HasEntityAsChild(const Entity& entity);
+
+	void SetGlobalPositionRotation(Component::Transform& tr, const glm::vec3& global_pos, const glm::quat& global_rot);
+	void SetGlobalPosition(Component::Transform& tr, const glm::vec3& global);
+	void SetGlobalRotation(Component::Transform& tr, const glm::quat& global);
 
 private:
 	Ref<Entity> Parent;

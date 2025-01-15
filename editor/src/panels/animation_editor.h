@@ -14,6 +14,7 @@ public:
 	AnimationEditorPanel() : EditorPanel("Animation Editor") {}
 
 	void SetAnimation(const AssetHandle& handle) { m_EditingAnimation = handle; }
+	bool HasAnimation() { return m_EditingAnimation != 0; }
 
 private:
 	virtual void RenderContent() override final;
@@ -26,7 +27,7 @@ private:
 	void DrawKeyframeDetailsPanel(const Ref<Animation>& animation);
 
 private:
-	AssetHandle m_EditingAnimation;
+	AssetHandle m_EditingAnimation = 0;
 	float m_left_panel_width = 0.8f;
 	float m_current_time = 0.0f;
 	bool m_playing = false;

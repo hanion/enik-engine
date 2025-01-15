@@ -17,7 +17,6 @@
 #include "renderer/renderer2D.h"
 #include "utils/imgui_utils.h"
 
-#define COLOR(color) ImGui::PushStyleColor(ImGuiCol_Text, color)
 
 namespace Enik {
 
@@ -43,6 +42,34 @@ void InspectorPanel::RenderContent() {
 	}
 
 	ImGui::EndTable();
+}
+
+template <typename T>
+int color_component() {
+	if constexpr (std::is_same<T, Component::Prefab>::value) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::blue);
+	} else if constexpr (std::is_same<T, Component::NativeScript>::value) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::orange);
+	} else if constexpr (std::is_same<T, Component::SpriteRenderer>::value) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::cyan);
+	} else if constexpr (std::is_same<T, Component::AnimationPlayer>::value) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::purple);
+	} else if constexpr (std::is_same<T, Component::AudioSources>::value) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::teal);
+	} else if constexpr (std::is_same<T, Component::Text>::value) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::pale_pink);
+	} else if constexpr (std::is_same<T, Component::SceneControl>::value) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::persistent);
+	} else if constexpr (std::is_same<T, Component::RigidBody>::value) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::rigidbody);
+	} else if constexpr (std::is_same<T, Component::StaticBody>::value) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::rigidbody);
+	} else if constexpr (std::is_same<T, Component::TriggerBody>::value) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::rigidbody);
+	} else {
+		return 0;
+	}
+	return 1;
 }
 
 void InspectorPanel::DrawEntityInInspector(Entity entity) {
@@ -79,7 +106,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 
 
 	/* Add Component Button */ {
-		ImGui::SameLine(ImGui::GetContentRegionAvail().x - GImGui->Style.FramePadding.x * 3.0f);
+		ImGui::SameLine(ImGui::GetContentRegionAvail().x - GImGui->Font->FontSize);
 		float line_width = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
 		if (ImGui::Button("+", ImVec2(line_width, 0))) {
 			ImGui::OpenPopup("AddComponent");
@@ -92,7 +119,9 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			DisplayComponentInPopup<Component::Camera>("Camera");
 			DisplayComponentInPopup<Component::SpriteRenderer>("Sprite Renderer");
 			DisplayComponentInPopup<Component::RigidBody>("Rigid Body");
-			DisplayComponentInPopup<Component::Collider>("Collider");
+			DisplayComponentInPopup<Component::StaticBody>("Static Body");
+			DisplayComponentInPopup<Component::TriggerBody>("Trigger Body");
+			DisplayComponentInPopup<Component::CollisionShape>("Collision Shape");
 			DisplayComponentInPopup<Component::AudioSources>("Audio Sources");
 			DisplayComponentInPopup<Component::AnimationPlayer>("Animation Player");
 			DisplayComponentInPopup<Component::Text>("Text");
@@ -128,13 +157,19 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		ImGui::DragFloat3("##Position", glm::value_ptr(transform.LocalPosition), 0.01f);
 
 		ImGuiUtils::PrefixLabel("Rotation");
-		float rot = glm::degrees(transform.LocalRotation);
-		if (ImGui::DragFloat("##Rotation", &rot, 0.1f)) {
-			transform.LocalRotation = glm::radians(rot);
+		glm::vec3 euler_angles = glm::degrees(glm::eulerAngles(transform.LocalRotation));
+		if (ImGui::DragFloat3("##Rotation", glm::value_ptr(euler_angles), 0.1f)) {
+			glm::vec3 swapped_euler_angles = glm::vec3(euler_angles.x, euler_angles.y, euler_angles.z);
+			transform.LocalRotation = glm::quat(glm::radians(swapped_euler_angles));
+		}
+		ImGuiUtils::PrefixLabel("RotationQ");
+		glm::quat grot = (transform.LocalRotation);
+		if (ImGui::DragFloat4("##RotationQ", glm::value_ptr(grot), 0.1f)) {
+			transform.LocalRotation = (grot);
 		}
 
 		ImGuiUtils::PrefixLabel("Scale");
-		ImGui::DragFloat2("##Scale", glm::value_ptr(transform.LocalScale), 0.01f);
+		ImGui::DragFloat3("##Scale", glm::value_ptr(transform.LocalScale), 0.01f);
 	});
 
 	if (entity.Has<Component::NativeScript>()) {
@@ -231,34 +266,30 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	});
 
 	DisplayComponentInInspector<Component::RigidBody>("Rigid Body", entity, true, [&]() {
-		auto& rigid_body = entity.Get<Component::RigidBody>();
-
-		ImGuiUtils::PrefixLabel("Mass");
-		ImGui::DragFloat("##Mass", &rigid_body.Mass, 0.01f, 0.01f);
-
-		ImGuiUtils::PrefixLabel("UseGravity");
-		ImGui::Checkbox("##UseGravity", &rigid_body.UseGravity);
-
-		/* Debug */ {
-			if (ImGui::TreeNodeEx("##RBDebug", inner_tree_node_flags, "Debug")) {
-				ImGuiUtils::PrefixLabel("Velocity");
-				ImGui::DragFloat3("##Velocity", glm::value_ptr(rigid_body.Velocity), 0.01f, 0.01f);
-				ImGuiUtils::PrefixLabel("Force");
-				ImGui::DragFloat3("##Force", glm::value_ptr(rigid_body.Force), 0.01f, 0.01f);
-				ImGuiUtils::PrefixLabel("Awake");
-				ImGui::Checkbox("##Awake", &rigid_body.Awake);
-				ImGui::TreePop();
-			}
-		}
+		auto& rb = entity.Get<Component::RigidBody>();
+		DisplayPhysicsBodyInInspector(rb);
 	});
 
-	DisplayComponentInInspector<Component::Collider>("Collider", entity, true, [&]() {
-		auto& collider = entity.Get<Component::Collider>();
+	DisplayComponentInInspector<Component::StaticBody>("Static Body", entity, true, [&]() {
+		auto& body = entity.Get<Component::StaticBody>();
+		DisplayPhysicsBodyInInspector(body);
+	});
+	DisplayComponentInInspector<Component::TriggerBody>("Trigger Body", entity, true, [&]() {
+		auto& body = entity.Get<Component::TriggerBody>();
+		DisplayPhysicsBodyInInspector(body);
+	});
+
+	DisplayComponentInInspector<Component::CollisionShape>("CollisionShape", entity, true, [&]() {
+		auto& collider = entity.Get<Component::CollisionShape>();
 
 		std::string text = collider.String();
 
 		ImGuiUtils::PrefixLabel("Shape");
 		if (ImGui::BeginCombo("##ColliderShape", text.c_str())) {
+			if (ImGui::Selectable("Box",
+				collider.Shape == Component::ColliderShape::BOX)) {
+				collider.Shape =  Component::ColliderShape::BOX;
+			}
 			if (ImGui::Selectable("Circle",
 				collider.Shape == Component::ColliderShape::CIRCLE)) {
 				collider.Shape =  Component::ColliderShape::CIRCLE;
@@ -266,10 +297,6 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			if (ImGui::Selectable("Plane",
 				collider.Shape == Component::ColliderShape::PLANE)) {
 				collider.Shape =  Component::ColliderShape::PLANE;
-			}
-			if (ImGui::Selectable("Box",
-				collider.Shape == Component::ColliderShape::BOX)) {
-				collider.Shape =  Component::ColliderShape::BOX;
 			}
 			ImGui::EndCombo();
 		}
@@ -329,7 +356,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			}
 
 			if (ImGui::IsItemHovered()){
-				ImGui::SetTooltip("%s", file.c_str());
+				ImGui::SetTooltip("%s", file.string().c_str());
 
 				if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
 					to_remove_index = i;
@@ -420,29 +447,7 @@ void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity
 
 	bool remove_component = false;
 	
-	int pushed_color = 0;
-	if constexpr (std::is_same<T, Component::Prefab>::value) {
-		COLOR(EditorColors::blue);
-		pushed_color++;
-	} else if constexpr (std::is_same<T, Component::NativeScript>::value) {
-		COLOR(EditorColors::orange);
-		pushed_color++;
-	} else if constexpr (std::is_same<T, Component::SpriteRenderer>::value) {
-		COLOR(EditorColors::cyan);
-		pushed_color++;
-	} else if constexpr (std::is_same<T, Component::AnimationPlayer>::value) {
-		COLOR(EditorColors::purple);
-		pushed_color++;
-	} else if constexpr (std::is_same<T, Component::AudioSources>::value) {
-		COLOR(EditorColors::teal);
-		pushed_color++;
-	} else if constexpr (std::is_same<T, Component::Text>::value) {
-		COLOR(EditorColors::pale_pink);
-		pushed_color++;
-	} else if constexpr (std::is_same<T, Component::SceneControl>::value) {
-		COLOR(EditorColors::persistent);
-		pushed_color++;
-	}
+	int pushed_color = color_component<T>();
 
 	bool open = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), tree_node_flags, "%s", name.c_str());
 
@@ -455,9 +460,10 @@ void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity
 				ImGui::OpenPopup("ComponentSettings");
 			}
 
-			ImGui::SameLine(ImGui::GetContentRegionAvail().x - GImGui->Style.FramePadding.x * 1.0f);
-			float line_width = GImGui->Font->FontSize + GImGui->Style.FramePadding.x * 2.0f;
-			if (ImGui::Button("...", ImVec2(line_width, 0))) {
+			float avail_width = ImGui::GetContentRegionAvail().x;
+			float button_width = GImGui->Font->FontSize + GImGui->Style.FramePadding.x * 2.0f;
+			ImGui::SameLine(avail_width - button_width);
+			if (ImGui::Button("...", ImVec2(button_width, 0))) {
 				ImGui::OpenPopup("ComponentSettings");
 			}
 			if (ImGui::BeginPopup("ComponentSettings")) {
@@ -480,7 +486,28 @@ void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity
 
 template <typename T>
 void InspectorPanel::DisplayComponentInPopup(const std::string& name) {
-	ImGui::BeginDisabled(m_SceneTreePanel->GetSelectedEntity().Has<T>());
+	Entity s = m_SceneTreePanel->GetSelectedEntity();
+	bool disabled = s.Has<T>();
+
+	if (!disabled) {
+		bool has_rb = s.Has<Component::RigidBody>();
+		bool has_sb = s.Has<Component::StaticBody>();
+		bool has_tb = s.Has<Component::TriggerBody>();
+		if (std::is_same<T, Component::RigidBody>::value) {
+			disabled = has_sb || has_tb;
+		} else if (std::is_same<T, Component::StaticBody>::value) {
+			disabled = has_rb || has_tb;
+		} else if (std::is_same<T, Component::TriggerBody>::value) {
+			disabled = has_rb || has_sb;
+		}
+	}
+
+	if (disabled) {
+		return;
+	}
+
+	int pushed = color_component<T>();
+	ImGui::BeginDisabled(disabled);
 
 	if (ImGui::MenuItem(name.c_str())) {
 		m_SceneTreePanel->GetSelectedEntity().Add<T>();
@@ -491,6 +518,7 @@ void InspectorPanel::DisplayComponentInPopup(const std::string& name) {
 	}
 
 	ImGui::EndDisabled();
+	ImGui::PopStyleColor(pushed);
 }
 
 
@@ -548,6 +576,7 @@ void InspectorPanel::DisplaySubTexture(Component::SpriteRenderer& sprite) {
 	}
 
 	if (sprite.SubTexture == nullptr) {
+		ImGuiUtils::PrefixLabel("Sub Texture");
 		ImVec2 fill_width = ImVec2(ImGui::GetContentRegionAvail().x, 0);
 		if (ImGui::Button("Create Sub Texture", fill_width)) {
 			sprite.SubTexture = SubTexture2D::CreateFromTileIndex(
@@ -668,7 +697,7 @@ void InspectorPanel::DisplayNativeScript(Component::NativeScript& script) {
 				ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::blue);
 				ImGui::Button(file.filename().string().c_str());
 				if (ImGui::IsItemHovered()){
-					ImGui::SetTooltip("%s", file.c_str());
+					ImGui::SetTooltip("%s", file.string().c_str());
 				}
 				ImGui::PopStyleColor();
 
@@ -756,6 +785,28 @@ bool InspectorPanel::EntityButton(UUID& id) {
 	}
 
 	return pressed;
+}
+
+
+void InspectorPanel::DisplayPhysicsBodyInInspector(Component::PhysicsBodyBase& body) {
+	ImGuiUtils::PrefixLabel("Motion Type");
+	if (ImGui::BeginCombo("##MotionType", MotionTypeToString(body.MotionType))) {
+		if (ImGui::Selectable("Static"))    { body.MotionType = JPH::EMotionType::Static; }
+		if (ImGui::Selectable("Dynamic"))   { body.MotionType = JPH::EMotionType::Dynamic; }
+		if (ImGui::Selectable("Kinematic")) { body.MotionType = JPH::EMotionType::Kinematic; }
+		ImGui::EndCombo();
+	}
+
+	ImGuiUtils::PrefixLabel("Layer");
+	if (ImGui::BeginCombo("##Layer", std::to_string(body.Layer).c_str())) {
+		if (ImGui::Selectable("0")) { body.Layer = 0; }
+		if (ImGui::Selectable("1")) { body.Layer = 1; }
+		if (ImGui::Selectable("2")) { body.Layer = 2; }
+		ImGui::EndCombo();
+	}
+
+	ImGuiUtils::PrefixLabel("Is Sensor");
+	ImGui::Checkbox("##IsSensor", &body.IsSensor);
 }
 
 

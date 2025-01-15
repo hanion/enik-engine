@@ -11,12 +11,14 @@
 #include "audio/audio.h"
 #include "utils/editor_colors.h"
 #include "editor_layer.h"
+#include "tabs/scene_editor_tab.h"
 
 
 namespace Enik {
 
-void FileSystemPanel::SetContext(EditorLayer* editor) {
+void FileSystemPanel::SetContext(EditorLayer* editor, SceneEditorTab* tab) {
 	m_EditorLayer = editor;
+	m_EditorTab = tab;
 	if (m_CurrentDirectory.empty()) {
 		ChangeDirectory(Project::GetProjectDirectory());
 	}
@@ -96,6 +98,10 @@ void FileSystemPanel::ShowDirectoriesTable() {
 					auto ext = path.extension();
 					if (ext == ".wav") {
 						Audio::Play(path);
+					} else if (ext == ".anim") {
+						if (m_EditorTab) {
+							m_EditorTab->m_AnimationeditorPanel.SetAnimation(Project::GetAssetManagerEditor()->ImportAsset(path));
+						}
 					}
 				}
 			}

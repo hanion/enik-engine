@@ -8,7 +8,7 @@
 #include "tabs/editor_tab.h"
 
 
-using namespace Enik;
+namespace Enik {
 
 class EditorLayer : public Layer {
 public:
@@ -60,3 +60,5 @@ private:
 	std::vector<std::filesystem::path> m_OpenAssetRequests;
 
 };
+
+}

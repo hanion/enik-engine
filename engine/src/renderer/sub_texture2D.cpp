@@ -14,6 +14,7 @@ Ref<SubTexture2D> SubTexture2D::CreateFromTileIndex(const AssetHandle& texture, 
 }
 
 void SubTexture2D::UpdateSubTexture2D(const Ref<Texture2D>& texture) {
+	if (texture == nullptr) { return; }
 	glm::vec2 atlas_size = glm::vec2(texture->GetWidth(), texture->GetHeight());
 	glm::vec2 sep = TileIndex * TileSeparation;
 

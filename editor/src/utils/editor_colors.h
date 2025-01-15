@@ -28,6 +28,9 @@ constexpr ImVec4 purple = ImVec4(0.75f, 0.5f, 1.0f, 1.0f);
 // .ttf
 constexpr ImVec4 pale_pink = ImVec4(1.0f, 0.75f, 0.75f, 1.0f);
 
+constexpr ImVec4 magenta = ImVec4(0.75f, 0.3f, 0.7f, 1.0f);
+
+
 constexpr ImVec4 project = yellow;
 constexpr ImVec4 scene = green;
 constexpr ImVec4 persistent = green;
@@ -38,6 +41,7 @@ constexpr ImVec4 script = orange;
 constexpr ImVec4 audio = teal;
 constexpr ImVec4 anim = purple;
 constexpr ImVec4 font = pale_pink;
+constexpr ImVec4 rigidbody = magenta;
 
 
 constexpr float color_dark  = 19.0f / 255.0f;

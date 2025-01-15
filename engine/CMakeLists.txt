@@ -121,6 +121,9 @@ add_subdirectory(external/imgui)
 add_subdirectory(external/glm)
 add_subdirectory(external/yaml-cpp)
 
+add_subdirectory(external/jolt/Build)
+set_target_properties(Jolt PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
 # automatically set platform globally
 if(UNIX AND NOT APPLE)
   set(EN_PLATFORM_LINUX 1)
@@ -160,6 +163,7 @@ target_include_directories(
          external/imgui
          external/glm/glm
          external/yaml-cpp
+         external/jolt
          external
          src
          include)
@@ -167,7 +171,7 @@ target_include_directories(
 target_link_options(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)
 target_link_libraries(
   ${PROJECT_NAME}
-  PUBLIC spdlog glfw glad imgui glm yaml-cpp
+  PUBLIC spdlog glfw glad imgui glm yaml-cpp Jolt
   PRIVATE)
 
 target_precompile_headers(${PROJECT_NAME} PUBLIC include/pch.h)

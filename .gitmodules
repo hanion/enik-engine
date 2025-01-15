@@ -17,3 +17,6 @@
 [submodule "engine/external/yaml-cpp"]
 	path = engine/external/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git
+[submodule "engine/external/jolt"]
+	path = engine/external/jolt
+	url = https://github.com/jrouwe/JoltPhysics.git

@@ -15,7 +15,7 @@ struct TextureSpecification {
 	uint32_t Width = 1;
 	uint32_t Height = 1;
 	ImageFormat Format = ImageFormat::RGBA8;
-	bool MagFilterLinear = true;
+	bool MagFilterLinear = false;
 };
 
 class Texture : public Asset {

@@ -1,11 +1,11 @@
 #include "extern_functions.h"
 
 #include "script_system/script_system.h"
-#include "physics/physics_world.h"
+#include "physics/physics.h"
 
 namespace Enik {
 const float GetFixedUpdateRate() {
-    return PhysicsWorld::GetFixedUpdateRate();
+    return PHYSICS_UPDATE_RATE;
 }
 
 Entity FindEntityByUUID(UUID uuid) {

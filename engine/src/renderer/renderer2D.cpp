@@ -266,28 +266,14 @@ void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::Sp
 		StartBatch();
 	}
 
-	glm::mat4 transform;
-	glm::vec3 positions[4];
-
-	if (trans.GlobalRotation) {
-		transform = trans.GetTransform();
-	}
-	else {
-		glm::vec2 half_scale = trans.GlobalScale / 2.0f;
-
-		positions[0] = {trans.GlobalPosition.x - half_scale.x, trans.GlobalPosition.y - half_scale.y, trans.GlobalPosition.z};
-		positions[1] = {trans.GlobalPosition.x + half_scale.x, trans.GlobalPosition.y - half_scale.y, trans.GlobalPosition.z};
-		positions[2] = {trans.GlobalPosition.x + half_scale.x, trans.GlobalPosition.y + half_scale.y, trans.GlobalPosition.z};
-		positions[3] = {trans.GlobalPosition.x - half_scale.x, trans.GlobalPosition.y + half_scale.y, trans.GlobalPosition.z};
+	glm::vec3 transformed_positions[4];
+	glm::mat4 transform = trans.GetTransform();
+	for (size_t i = 0; i < 4; i++) {
+		transformed_positions[i] = transform * s_Data.QuadVertexPositions[i];
 	}
 
 	for (size_t i = 0; i < 4; i++) {
-		if (trans.GlobalRotation) {
-			s_Data.QuadVertexBufferPtr->Position = transform * s_Data.QuadVertexPositions[i];
-		}
-		else {
-			s_Data.QuadVertexBufferPtr->Position = positions[i];
-		}
+		s_Data.QuadVertexBufferPtr->Position = transformed_positions[i];
 		s_Data.QuadVertexBufferPtr->Color = sprite.Color;
 		s_Data.QuadVertexBufferPtr->TexCoord = texture_coords[i];
 		s_Data.QuadVertexBufferPtr->TexIndex = texture_index;

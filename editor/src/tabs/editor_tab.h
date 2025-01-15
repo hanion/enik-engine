@@ -6,9 +6,9 @@
 #include <imgui/imgui.h>
 #include <imgui/imgui_internal.h>
 
-class EditorLayer;
-
 namespace Enik {
+
+class EditorLayer;
 
 class EditorTab {
 public:

@@ -22,6 +22,7 @@
 #include "utils/editor_colors.h"
 
 
+namespace Enik {
 
 #define BIND_FUNC(fn) std::bind(&EditorLayer::fn, this)
 #define BIND_FUNC_EVENT(fn) std::bind(&EditorLayer::fn, this, std::placeholders::_1)
@@ -379,4 +380,6 @@ void EditorLayer::ExitEditor() {
 			Application::Get().Close();
 		}
 	);
+}
+
 }

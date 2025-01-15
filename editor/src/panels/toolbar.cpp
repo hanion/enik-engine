@@ -262,7 +262,8 @@ void ToolbarPanel::Rotating() {
 		// ? zoom level does not matter while rotating, intuitively
 		diff *= 1.1f / m_EditorCamera->GetZoomLevel();
 
-		m_SceneTreePanel->GetSelectedEntity().Get<Component::Transform>().LocalRotation += diff.x - diff.y;
+		// TODO: quat
+// 		m_SceneTreePanel->GetSelectedEntity().Get<Component::Transform>().LocalRotation += diff.x - diff.y;
 	}
 }
 

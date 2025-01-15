@@ -6,7 +6,6 @@
 #include "scene/components.h"
 #include "scene/entity.h"
 #include "script_system/script_system.h"
-#include "physics/physics_world.h"
 #include "scene/scene_serializer.h"
 #include "core/application.h"
 #include "scene/tween.h"
@@ -15,20 +14,15 @@ namespace Enik {
 
 Scene::Scene() {
 	ScriptSystem::SetSceneContext(this);
-	PhysicsWorld::InitPhysicsWorld(&m_Registry);
 }
 
 Scene::~Scene() {
+	m_Physics.Uninitialize();
 	DestroyScriptableEntities();
 }
 
 Entity Scene::CreateEntity(const std::string& name) {
-	Entity entity = Entity(m_Registry.create(), this);
-	entity.Add<Component::ID>();
-	entity.Add<Component::Transform>();
-	auto& tag = entity.Add<Component::Tag>();
-	tag.Text = name.empty() ? "Empty Entity" : name;
-	return entity;
+	return CreateEntityWithUUID(UUID());
 }
 
 Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name) {
@@ -191,6 +185,8 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 
 void Scene::OnFixedUpdate() {
 	if (not m_IsPaused or m_StepFrames > 0) {
+		SetGlobalTransforms();
+
 		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
 			if (not ns.Instance or ns.Instance == nullptr) {
 				if (ns.InstantiateScript and ns.InstantiateScript != nullptr) {
@@ -209,8 +205,11 @@ void Scene::OnFixedUpdate() {
 			}
 		});
 
-		SetGlobalTransforms();
-		PhysicsWorld::Step();
+		if (!m_Physics.m_is_initialized) {
+			m_Physics.Initialize(m_Registry, this);
+			m_Physics.CreatePhysicsWorld();
+		}
+		m_Physics.UpdatePhysics();
 	}
 }
 
@@ -368,10 +367,10 @@ void Scene::SetGlobalTransforms() {
 }
 
 void Scene::CloseApplication() {
-#if EN_DIST_BUILD
-	Application::Get().Close();
-#else
+#ifdef EN_DEBUG
 	SetPaused(true);
+#else
+	Application::Get().Close();
 #endif
 }
 
@@ -424,7 +423,6 @@ void Scene::ChangeToDeferredScene() {
 	SceneSerializer serializer = SceneSerializer(this);
 	if (serializer.Deserialize(m_deferred_scene_path)) {
 		ScriptSystem::SetSceneContext(this);
-		PhysicsWorld::InitPhysicsWorld(&m_Registry);
 		NeedViewportResize = true;
 		EN_CORE_INFO("Changed Scene to '{}'", m_deferred_scene_path.c_str());
 	}

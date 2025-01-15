@@ -9,6 +9,7 @@
 #include "scene/scene_serializer.h"
 #include "project/project.h"
 #include "utils/editor_colors.h"
+#include "utils/file_metadata.h"
 
 namespace Enik {
 
@@ -76,7 +77,7 @@ void SceneTreePanel::RenderContent() {
 
 
 	/* Add Entity Button */ {
-		ImGui::SameLine(ImGui::GetContentRegionAvail().x - GImGui->Style.FramePadding.x * 3.0f);
+		ImGui::SameLine(ImGui::GetContentRegionAvail().x - GImGui->Font->FontSize);
 		float line_width = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
 		if (ImGui::Button("+", ImVec2(line_width, 0))) {
 			ImGui::OpenPopup("AddEntity");
@@ -122,6 +123,37 @@ void SceneTreePanel::OnMouseButtonReleased(MouseButtonReleasedEvent& event) {
 	}
 }
 
+int color_entity(Entity entity) {
+	if (entity.Has<Component::Prefab>()) {
+		if (entity.Get<Component::Prefab>().RootPrefab) {
+			ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::prefab);
+		} else {
+			ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::prefab_child);
+		}
+	} else if (entity.Has<Component::SceneControl>()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::persistent);
+	} else if (entity.Has<Component::NativeScript>()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::script);
+	} else if (entity.Has<Component::RigidBody>()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::rigidbody);
+	} else if (entity.Has<Component::StaticBody>()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::rigidbody);
+	} else if (entity.Has<Component::TriggerBody>()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::rigidbody);
+	} else if (entity.Has<Component::AnimationPlayer>()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::anim);
+	} else if (entity.Has<Component::AudioSources>()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::audio);
+	} else if (entity.Has<Component::SpriteRenderer>()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::image);
+	} else if (entity.Has<Component::Text>()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::font);
+	} else {
+		return 0;
+	}
+	return 1;
+}
+
 void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 	ImGui::PushID(entity.GetID());
 
@@ -142,33 +174,8 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 	}
 
 	// color entities with components
-	int pushed_style_color_count = 0;
-	if (entity.Has<Component::Prefab>()) {
-		if (entity.Get<Component::Prefab>().RootPrefab) {
-			ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::blue);
-		} else {
-			ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::blue_a);
-		}
-		pushed_style_color_count++;
-	} else if (entity.Has<Component::SceneControl>()) {
-		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::persistent);
-		pushed_style_color_count++;
-	} else if (entity.Has<Component::NativeScript>()) {
-		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::orange);
-		pushed_style_color_count++;
-	} else if (entity.Has<Component::AnimationPlayer>()) {
-		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::purple);
-		pushed_style_color_count++;
-	} else if (entity.Has<Component::AudioSources>()) {
-		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::teal);
-		pushed_style_color_count++;
-	} else if (entity.Has<Component::SpriteRenderer>()) {
-		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::cyan);
-		pushed_style_color_count++;
-	} else if (entity.Has<Component::Text>()) {
-		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::pale_pink);
-		pushed_style_color_count++;
-	}
+	int pushed_style_color_count = color_entity(entity);
+
 
 	bool node_open = ImGui::TreeNodeEx((void*)(uint64_t)entity, flags, "%s", entity.GetTag().c_str());
 
