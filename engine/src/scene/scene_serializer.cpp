@@ -650,40 +650,27 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::BeginMap;
 
 		auto& body = entity.Get<Component::RigidBody>();
+		out << YAML::Key << "Layer" << YAML::Value << body.Layer;
+		out << YAML::Key << "IsKinematic" << YAML::Value << (body.MotionType == JPH::EMotionType::Kinematic);
 		out << YAML::Key << "UseGravity" << YAML::Value << body.UseGravity;
-		out << YAML::Key << "MotionType" << YAML::Value << MotionTypeToString(body.MotionType);
-		out << YAML::Key << "Layer" << YAML::Value << body.Layer;
-		out << YAML::Key << "IsSensor" << YAML::Value << body.IsSensor;
 
 		out << YAML::EndMap;
 	}
 
-	if (entity.Has<Component::StaticBody>()) {
-		out << YAML::Key << "Component::StaticBody";
+	if (entity.Has<Component::CollisionBody>()) {
+		out << YAML::Key << "Component::CollisionBody";
 		out << YAML::BeginMap;
 
- 		auto& body = entity.Get<Component::StaticBody>();
-		out << YAML::Key << "MotionType" << YAML::Value << MotionTypeToString(body.MotionType);
+ 		auto& body = entity.Get<Component::CollisionBody>();
 		out << YAML::Key << "Layer" << YAML::Value << body.Layer;
-		out << YAML::Key << "IsSensor" << YAML::Value << body.IsSensor;
-
-		out << YAML::EndMap;
-	}
-
-	if (entity.Has<Component::TriggerBody>()) {
-		out << YAML::Key << "Component::TriggerBody";
-		out << YAML::BeginMap;
-
- 		auto& body = entity.Get<Component::TriggerBody>();
-		out << YAML::Key << "MotionType" << YAML::Value << MotionTypeToString(body.MotionType);
-		out << YAML::Key << "Layer" << YAML::Value << body.Layer;
+		out << YAML::Key << "IsStatic" << YAML::Value << (body.MotionType == JPH::EMotionType::Static);
 		out << YAML::Key << "IsSensor" << YAML::Value << body.IsSensor;
 
 		out << YAML::EndMap;
 	}
 
 	if (entity.Has<Component::CollisionShape>()) {
-		out << YAML::Key << "Component::Collider";
+		out << YAML::Key << "Component::CollisionShape";
 		out << YAML::BeginMap;
 
 		auto& collider = entity.Get<Component::CollisionShape>();
@@ -913,46 +900,21 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 
 	if (auto node = entity["Component::RigidBody"]) {
 		auto& body = deserialized_entity.Add<Component::RigidBody>();
+		body.Layer = node["Layer"].as<int>();
+		body.MotionType = (node["IsKinematic"].as<bool>() ? JPH::EMotionType::Kinematic : JPH::EMotionType::Dynamic);
 // 		body.Mass = rigid_body["Mass"].as<float>();
 		body.UseGravity = node["UseGravity"].as<bool>();
-		if (node["MotionType"]) {
-			body.MotionType = MotionTypeFromString(node["MotionType"].as<std::string>());
-		}
-		if (node["Layer"]) {
-			body.Layer = node["Layer"].as<int>();
-		}
-		if (node["IsSensor"]) {
-			body.IsSensor = node["IsSensor"].as<bool>();
-		}
 	}
 
-	if (auto node = entity["Component::StaticBody"]) {
-		auto& body = deserialized_entity.Add<Component::StaticBody>();
-		if (node["MotionType"]) {
-			body.MotionType = MotionTypeFromString(node["MotionType"].as<std::string>());
-		}
-		if (node["Layer"]) {
-			body.Layer = node["Layer"].as<int>();
-		}
-		if (node["IsSensor"]) {
-			body.IsSensor = node["IsSensor"].as<bool>();
-		}
-	}
-
-	if (auto node = entity["Component::TriggerBody"]) {
-		auto& body = deserialized_entity.Add<Component::TriggerBody>();
-		if (node["MotionType"]) {
-			body.MotionType = MotionTypeFromString(node["MotionType"].as<std::string>());
-		}
-		if (node["Layer"]) {
-			body.Layer = node["Layer"].as<int>();
-		}
-		if (node["IsSensor"]) {
-			body.IsSensor = node["IsSensor"].as<bool>();
-		}
+	if (auto node = entity["Component::CollisionBody"]) {
+		auto& body = deserialized_entity.Add<Component::CollisionBody>();
+		body.Layer = node["Layer"].as<int>();
+		body.MotionType = (node["IsStatic"].as<bool>() ? JPH::EMotionType::Static : JPH::EMotionType::Kinematic);
+		body.IsSensor = node["IsSensor"].as<bool>();
 	}
 
 	auto collider = entity["Component::Collider"];
+	collider = collider ? collider : entity["Component::CollisionShape"];
 	if (collider) {
 		auto& col = deserialized_entity.Add<Component::CollisionShape>();
 		col.Shape  = (Component::ColliderShape)collider["Shape"].as<int>();

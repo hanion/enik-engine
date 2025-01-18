@@ -109,35 +109,34 @@ struct NativeScript {
 
 struct PhysicsBodyBase {
 	PhysicsBody* body = nullptr;
-	bool IsSensor = false;
 	uint16_t Layer = 1;
 	JPH::EMotionType MotionType = JPH::EMotionType::Dynamic;
+	bool IsSensor = false;
 
 	PhysicsBodyBase() = default;
 	PhysicsBodyBase(const PhysicsBodyBase&) = default;
 };
+
 struct RigidBody : PhysicsBodyBase {
 	bool UseGravity = false;
 
 	RigidBody() = default;
 	RigidBody(const RigidBody&) = default;
+
+	void SetKinematic(bool is_kinematic) {
+		MotionType = is_kinematic ? JPH::EMotionType::Kinematic : JPH::EMotionType::Dynamic;
+	}
 };
 
-struct StaticBody : PhysicsBodyBase {
-	StaticBody() {
-		Layer = 0;
-		MotionType = JPH::EMotionType::Static;
+struct CollisionBody : PhysicsBodyBase {
+	CollisionBody() {
+		MotionType = JPH::EMotionType::Kinematic;
 	}
-	StaticBody(const StaticBody&) = default;
-};
+	CollisionBody(const CollisionBody&) = default;
 
-struct TriggerBody : PhysicsBodyBase {
-	TriggerBody() {
-		IsSensor = true;
-		Layer = 1;
-		MotionType = JPH::EMotionType::Static;
+	void SetStatic(bool is_static) {
+		MotionType = is_static ? JPH::EMotionType::Static : JPH::EMotionType::Kinematic;
 	}
-	TriggerBody(const TriggerBody&) = default;
 };
 
 

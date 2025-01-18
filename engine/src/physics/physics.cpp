@@ -153,7 +153,6 @@ public:
 
 
 void Physics::Initialize(entt::registry& Registry, class Scene* scene, float delta_time) {
-	EN_CORE_INFO("init physics");
 	m_delta_time = delta_time;
 	m_Registry = &Registry;
 	m_Scene = scene;
@@ -191,7 +190,6 @@ void Physics::Initialize(entt::registry& Registry, class Scene* scene, float del
 }
 
 void Physics::Uninitialize() {
-	EN_CORE_INFO("uninit physics");
 	if (!m_is_initialized) {
 		return;
 	}
@@ -213,18 +211,16 @@ void Physics::Uninitialize() {
 			auto& body = m_Registry->get<Component::RigidBody>(entity);
 			body.body = nullptr;
 		}
-		if (m_Registry->any_of<Component::StaticBody>(entity)) {
-			auto& body = m_Registry->get<Component::StaticBody>(entity);
-			body.body = nullptr;
-		}
-		if (m_Registry->any_of<Component::TriggerBody>(entity)) {
-			auto& body = m_Registry->get<Component::TriggerBody>(entity);
+		if (m_Registry->any_of<Component::CollisionBody>(entity)) {
+			auto& body = m_Registry->get<Component::CollisionBody>(entity);
 			body.body = nullptr;
 		}
 		if (m_Registry->any_of<Component::CollisionShape>(entity)) {
 			auto& cs = m_Registry->get<Component::CollisionShape>(entity);
-			cs.shape->Release();
-			cs.shape = nullptr;
+			if (cs.shape != nullptr) {
+				cs.shape->Release();
+				cs.shape = nullptr;
+			}
 		}
 	});
 }
@@ -239,8 +235,7 @@ void Physics::UpdatePhysics() {
 	m_PhysicsSystem->Update(m_delta_time, 2, &m_temp_allocator, m_job_system);
 
 	SyncTransforms<Component::RigidBody>();
-	SyncTransforms<Component::StaticBody>();
-	SyncTransforms<Component::TriggerBody>();
+	SyncTransforms<Component::CollisionBody>();
 }
 
 template<typename T>
@@ -276,10 +271,8 @@ void Physics::CreatePhysicsWorld() {
 		auto& tr = e.Get<Component::Transform>();
 		if (e.Has<Component::RigidBody>()) {
 			CreatePhysicsBody(e, tr, e.Get<Component::RigidBody>());
-		} else if (e.Has<Component::StaticBody>()) {
-			CreatePhysicsBody(e, tr, e.Get<Component::StaticBody>());
-		} else if (e.Has<Component::TriggerBody>()) {
-			CreatePhysicsBody(e, tr, e.Get<Component::TriggerBody>());
+		} else if (e.Has<Component::CollisionBody>()) {
+			CreatePhysicsBody(e, tr, e.Get<Component::CollisionBody>());
 		}
 	});
 

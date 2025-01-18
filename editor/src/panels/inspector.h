@@ -38,8 +38,6 @@ private:
 
 	bool EntityButton(UUID& id);
 
-	void DisplayPhysicsBodyInInspector(Component::PhysicsBodyBase& body);
-
 private:
 	Ref<Scene> m_Context;
 

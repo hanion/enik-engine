@@ -62,9 +62,7 @@ int color_component() {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::persistent);
 	} else if constexpr (std::is_same<T, Component::RigidBody>::value) {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::rigidbody);
-	} else if constexpr (std::is_same<T, Component::StaticBody>::value) {
-		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::rigidbody);
-	} else if constexpr (std::is_same<T, Component::TriggerBody>::value) {
+	} else if constexpr (std::is_same<T, Component::CollisionBody>::value) {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::rigidbody);
 	} else {
 		return 0;
@@ -119,8 +117,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			DisplayComponentInPopup<Component::Camera>("Camera");
 			DisplayComponentInPopup<Component::SpriteRenderer>("Sprite Renderer");
 			DisplayComponentInPopup<Component::RigidBody>("Rigid Body");
-			DisplayComponentInPopup<Component::StaticBody>("Static Body");
-			DisplayComponentInPopup<Component::TriggerBody>("Trigger Body");
+			DisplayComponentInPopup<Component::CollisionBody>("Collision Body");
 			DisplayComponentInPopup<Component::CollisionShape>("Collision Shape");
 			DisplayComponentInPopup<Component::AudioSources>("Audio Sources");
 			DisplayComponentInPopup<Component::AnimationPlayer>("Animation Player");
@@ -138,6 +135,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		ImGuiUtils::PrefixLabel("Persistent");
 		ImGui::Checkbox("##Persistent", &sc.Persistent);
 	});
+
 
 	DisplayComponentInInspector<Component::Prefab>("Prefab", entity, true, [&]() {
 		auto& pref = entity.Get<Component::Prefab>();
@@ -159,13 +157,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		ImGuiUtils::PrefixLabel("Rotation");
 		glm::vec3 euler_angles = glm::degrees(glm::eulerAngles(transform.LocalRotation));
 		if (ImGui::DragFloat3("##Rotation", glm::value_ptr(euler_angles), 0.1f)) {
-			glm::vec3 swapped_euler_angles = glm::vec3(euler_angles.x, euler_angles.y, euler_angles.z);
-			transform.LocalRotation = glm::quat(glm::radians(swapped_euler_angles));
-		}
-		ImGuiUtils::PrefixLabel("RotationQ");
-		glm::quat grot = (transform.LocalRotation);
-		if (ImGui::DragFloat4("##RotationQ", glm::value_ptr(grot), 0.1f)) {
-			transform.LocalRotation = (grot);
+			transform.LocalRotation = glm::quat(glm::radians(euler_angles));
 		}
 
 		ImGuiUtils::PrefixLabel("Scale");
@@ -266,17 +258,42 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	});
 
 	DisplayComponentInInspector<Component::RigidBody>("Rigid Body", entity, true, [&]() {
-		auto& rb = entity.Get<Component::RigidBody>();
-		DisplayPhysicsBodyInInspector(rb);
+		auto& body = entity.Get<Component::RigidBody>();
+
+		ImGuiUtils::PrefixLabel("Layer");
+		if (ImGui::BeginCombo("##Layer", std::to_string(body.Layer).c_str())) {
+			if (ImGui::Selectable("0")) { body.Layer = 0; }
+			if (ImGui::Selectable("1")) { body.Layer = 1; }
+			if (ImGui::Selectable("2")) { body.Layer = 2; }
+			ImGui::EndCombo();
+		}
+
+		ImGuiUtils::PrefixLabel("Is Kinematic");
+		bool is_kinematic = body.MotionType == JPH::EMotionType::Kinematic;
+		if (ImGui::Checkbox("##IsKine", &is_kinematic)) {
+			body.MotionType = is_kinematic ? JPH::EMotionType::Kinematic : JPH::EMotionType::Dynamic;
+		}
 	});
 
-	DisplayComponentInInspector<Component::StaticBody>("Static Body", entity, true, [&]() {
-		auto& body = entity.Get<Component::StaticBody>();
-		DisplayPhysicsBodyInInspector(body);
-	});
-	DisplayComponentInInspector<Component::TriggerBody>("Trigger Body", entity, true, [&]() {
-		auto& body = entity.Get<Component::TriggerBody>();
-		DisplayPhysicsBodyInInspector(body);
+	DisplayComponentInInspector<Component::CollisionBody>("Collision Body", entity, true, [&]() {
+		auto& body = entity.Get<Component::CollisionBody>();
+
+		ImGuiUtils::PrefixLabel("Layer");
+		if (ImGui::BeginCombo("##Layer", std::to_string(body.Layer).c_str())) {
+			if (ImGui::Selectable("0")) { body.Layer = 0; }
+			if (ImGui::Selectable("1")) { body.Layer = 1; }
+			if (ImGui::Selectable("2")) { body.Layer = 2; }
+			ImGui::EndCombo();
+		}
+
+		ImGuiUtils::PrefixLabel("Is Static");
+		bool is_static = body.MotionType == JPH::EMotionType::Static;
+		if (ImGui::Checkbox("##IsStatic", &is_static)) {
+			body.MotionType = is_static ? JPH::EMotionType::Static : JPH::EMotionType::Kinematic;
+		}
+
+		ImGuiUtils::PrefixLabel("Is Sensor");
+		ImGui::Checkbox("##IsSensor", &body.IsSensor);
 	});
 
 	DisplayComponentInInspector<Component::CollisionShape>("CollisionShape", entity, true, [&]() {
@@ -454,28 +471,27 @@ void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity
 	ImGui::PopStyleColor(pushed_color);
 
 
-	if (open) {
-		if (can_delete) {
-			if (Input::IsMouseButtonPressed(1) and ImGui::IsItemHovered()) {
-				ImGui::OpenPopup("ComponentSettings");
-			}
-
-			float avail_width = ImGui::GetContentRegionAvail().x;
-			float button_width = GImGui->Font->FontSize + GImGui->Style.FramePadding.x * 2.0f;
-			ImGui::SameLine(avail_width - button_width);
-			if (ImGui::Button("...", ImVec2(button_width, 0))) {
-				ImGui::OpenPopup("ComponentSettings");
-			}
-			if (ImGui::BeginPopup("ComponentSettings")) {
-				if (ImGui::MenuItem("Delete Component")) {
-					remove_component = true;
-				}
-				ImGui::EndPopup();
-			}
+	if (can_delete) {
+		if (Input::IsMouseButtonPressed(1) and ImGui::IsItemHovered()) {
+			ImGui::OpenPopup("ComponentSettings");
 		}
 
-		lambda();
+		float avail_width = ImGui::GetContentRegionAvail().x;
+		float button_width = GImGui->Font->FontSize + GImGui->Style.FramePadding.x * 2.0f;
+		ImGui::SameLine(avail_width - button_width);
+		if (ImGui::Button("...", ImVec2(button_width, 0))) {
+			ImGui::OpenPopup("ComponentSettings");
+		}
+		if (ImGui::BeginPopup("ComponentSettings")) {
+			if (ImGui::MenuItem("Delete Component")) {
+				remove_component = true;
+			}
+			ImGui::EndPopup();
+		}
+	}
 
+	if (open) {
+		lambda();
 		ImGui::TreePop();
 	}
 
@@ -490,15 +506,10 @@ void InspectorPanel::DisplayComponentInPopup(const std::string& name) {
 	bool disabled = s.Has<T>();
 
 	if (!disabled) {
-		bool has_rb = s.Has<Component::RigidBody>();
-		bool has_sb = s.Has<Component::StaticBody>();
-		bool has_tb = s.Has<Component::TriggerBody>();
 		if (std::is_same<T, Component::RigidBody>::value) {
-			disabled = has_sb || has_tb;
-		} else if (std::is_same<T, Component::StaticBody>::value) {
-			disabled = has_rb || has_tb;
-		} else if (std::is_same<T, Component::TriggerBody>::value) {
-			disabled = has_rb || has_sb;
+			disabled = s.Has<Component::CollisionBody>();
+		} else if (std::is_same<T, Component::CollisionBody>::value) {
+			disabled = s.Has<Component::RigidBody>();
 		}
 	}
 
@@ -589,25 +600,25 @@ void InspectorPanel::DisplaySubTexture(Component::SpriteRenderer& sprite) {
 	ImGui::TableSetColumnIndex(0);
 
 	bool remove_sub_texture = false;
+	bool open = ImGui::TreeNodeEx("Sub Texture", inner_tree_node_flags | ImGuiTreeNodeFlags_AllowItemOverlap);
 
-	if (ImGui::TreeNodeEx("Sub Texture", inner_tree_node_flags | ImGuiTreeNodeFlags_AllowItemOverlap)) {
-		if (Input::IsMouseButtonPressed(1) and ImGui::IsItemHovered()) {
-			ImGui::OpenPopup("SubTextureSettings");
+	if (Input::IsMouseButtonPressed(1) and ImGui::IsItemHovered()) {
+		ImGui::OpenPopup("SubTextureSettings");
+	}
+	float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
+	ImGui::SameLine(ImGui::GetContentRegionAvail().x - GImGui->Style.FramePadding.x);
+	if (ImGui::Button("...", ImVec2(lineHeight, lineHeight))) {
+		ImGui::OpenPopup("SubTextureSettings");
+	}
+
+	if (ImGui::BeginPopup("SubTextureSettings")) {
+		if (ImGui::MenuItem("Delete SubTexture")) {
+			remove_sub_texture = true;
 		}
+		ImGui::EndPopup();
+	}
 
-		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-		ImGui::SameLine(ImGui::GetContentRegionAvail().x - GImGui->Style.FramePadding.x);
-		if (ImGui::Button("...", ImVec2(lineHeight, lineHeight))) {
-			ImGui::OpenPopup("SubTextureSettings");
-		}
-		if (ImGui::BeginPopup("SubTextureSettings")) {
-			if (ImGui::MenuItem("Delete SubTexture")) {
-				remove_sub_texture = true;
-			}
-			ImGui::EndPopup();
-		}
-
-
+	if (open) {
 		ImGuiUtils::PrefixLabel("Tile Size");
 		if (ImGui::DragFloat2("##TileSize", glm::value_ptr(sprite.SubTexture->TileSize), 0.01f)) {
 			Ref<Texture2D> texture = AssetManager::GetAsset<Texture2D>(sprite.Handle);
@@ -785,28 +796,6 @@ bool InspectorPanel::EntityButton(UUID& id) {
 	}
 
 	return pressed;
-}
-
-
-void InspectorPanel::DisplayPhysicsBodyInInspector(Component::PhysicsBodyBase& body) {
-	ImGuiUtils::PrefixLabel("Motion Type");
-	if (ImGui::BeginCombo("##MotionType", MotionTypeToString(body.MotionType))) {
-		if (ImGui::Selectable("Static"))    { body.MotionType = JPH::EMotionType::Static; }
-		if (ImGui::Selectable("Dynamic"))   { body.MotionType = JPH::EMotionType::Dynamic; }
-		if (ImGui::Selectable("Kinematic")) { body.MotionType = JPH::EMotionType::Kinematic; }
-		ImGui::EndCombo();
-	}
-
-	ImGuiUtils::PrefixLabel("Layer");
-	if (ImGui::BeginCombo("##Layer", std::to_string(body.Layer).c_str())) {
-		if (ImGui::Selectable("0")) { body.Layer = 0; }
-		if (ImGui::Selectable("1")) { body.Layer = 1; }
-		if (ImGui::Selectable("2")) { body.Layer = 2; }
-		ImGui::EndCombo();
-	}
-
-	ImGuiUtils::PrefixLabel("Is Sensor");
-	ImGui::Checkbox("##IsSensor", &body.IsSensor);
 }
 
 

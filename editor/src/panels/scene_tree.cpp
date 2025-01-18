@@ -136,9 +136,7 @@ int color_entity(Entity entity) {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::script);
 	} else if (entity.Has<Component::RigidBody>()) {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::rigidbody);
-	} else if (entity.Has<Component::StaticBody>()) {
-		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::rigidbody);
-	} else if (entity.Has<Component::TriggerBody>()) {
+	} else if (entity.Has<Component::CollisionBody>()) {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::rigidbody);
 	} else if (entity.Has<Component::AnimationPlayer>()) {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::anim);
