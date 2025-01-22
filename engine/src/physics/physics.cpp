@@ -128,9 +128,9 @@ class MyContactListener : public ContactListener
 public:
 	virtual void OnContactAdded(const Body &inBody1, const JPH::Body &inBody2, const JPH::ContactManifold &inManifold, JPH::ContactSettings &ioSettings) override
 	{
-		Entity e1 = FindEntityByUUID(inBody1.GetUserData());
-		Entity e2 = FindEntityByUUID(inBody2.GetUserData());
-		EN_CORE_INFO("Collision {}, {}", e1.GetTag(), e2.GetTag());
+// 		Entity e1 = FindEntityByUUID(inBody1.GetUserData());
+// 		Entity e2 = FindEntityByUUID(inBody2.GetUserData());
+// 		EN_CORE_INFO("Collision {}, {}", e1.GetTag(), e2.GetTag());
 	}
 
 // 	virtual void OnContactPersisted(const Body &inBody1, const JPH::Body &inBody2, const JPH::ContactManifold &inManifold, JPH::ContactSettings &ioSettings) override
@@ -140,7 +140,6 @@ public:
 
 	virtual void OnContactRemoved(const SubShapeIDPair &inSubShapePair) override
 	{
-// 		std::cout << "A contact was removed" << std::endl;
 	}
 };
 

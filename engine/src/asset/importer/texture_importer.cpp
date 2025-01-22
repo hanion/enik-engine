@@ -18,7 +18,7 @@ Ref<Texture2D> TextureImporter::LoadTexture2D(const std::filesystem::path& path)
 	stbi_set_flip_vertically_on_load(1);
 	Buffer data;
 
-	EN_CORE_TRACE("ti lt - {}", path.string());
+// 	EN_CORE_TRACE("ti lt - {}", path.string());
 	std::string path_str = path.string();
 	{
 		EN_PROFILE_SECTION("stbi_load - TextureImporter::ImportTexture2D");
