@@ -31,6 +31,8 @@ public:
 	bool IsFocused() const { return m_IsOpen and m_IsFocused; }
 	bool IsDirty() const { return m_IsDirty; }
 
+	void MarkToBeClosed() { if (not m_IsDirty) { m_IsOpen = false; } }
+
 	virtual void SetContext(EditorLayer* editor) {
 		m_EditorLayer = editor;
 	}

@@ -341,6 +341,15 @@ bool EditorLayer::OnKeyPressed(KeyPressedEvent& event) {
 			}
 			break;
 
+
+		case Key::W: {
+			if (control) {
+				if (m_FocusedTab) {
+					m_FocusedTab->MarkToBeClosed();
+				}
+			}
+			break;
+		}
 		case Key::Q:
 			if (control) {
 				ExitEditor();
