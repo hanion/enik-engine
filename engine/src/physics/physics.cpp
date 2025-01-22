@@ -289,7 +289,7 @@ void Physics::CreatePhysicsBody(Entity entity, const Component::Transform& tr, C
 	BodyCreationSettings bcs{
 		shape,
 		RVec3Arg(tr.GlobalPosition.x, tr.GlobalPosition.y, tr.GlobalPosition.z),
-		QuatArg(tr.GlobalRotation.w, tr.GlobalRotation.x, tr.GlobalRotation.y, tr.GlobalRotation.z),
+		QuatArg(tr.GlobalRotation.x, tr.GlobalRotation.y, tr.GlobalRotation.z, tr.GlobalRotation.w),
 		body.MotionType,
 		static_cast<ObjectLayer>(body.Layer)
 	};
