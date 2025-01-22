@@ -64,7 +64,7 @@ void ToolbarPanel::ShowToolbar() {
 
 	constexpr ImGuiWindowFlags flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse |
 		ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDecoration |
-		ImGuiWindowFlags_NoDocking;
+		ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoNavInputs;
 
 	if (not ImGui::Begin("##Toolbar", nullptr, flags)) {
 		ImGui::End();

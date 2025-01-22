@@ -9,6 +9,7 @@ struct DialogConfirmData {
 	std::string description;
 
 	std::function<void()> call_function;
+	bool should_focus_confirm = true;
 };
 
 class DialogConfirm {

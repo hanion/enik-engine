@@ -15,7 +15,10 @@ public:
 	InspectorPanel() : EditorPanel("Inspector") {}
 	~InspectorPanel() {}
 
-	void SetContext(const Ref<Scene>& context, SceneTreePanel* scene_tree_panel = nullptr, AnimationEditorPanel* animation_panel = nullptr);
+	void SetContext(const Ref<Scene>& context,
+		SceneTreePanel* scene_tree_panel,
+		AnimationEditorPanel* animation_panel,
+		class EditorLayer* el);
 
 private:
 	virtual void RenderContent() override final;
@@ -41,8 +44,9 @@ private:
 private:
 	Ref<Scene> m_Context;
 
-	SceneTreePanel* m_SceneTreePanel;
-	AnimationEditorPanel* m_AnimationEditorPanel;
+	SceneTreePanel* m_SceneTreePanel = nullptr;
+	AnimationEditorPanel* m_AnimationEditorPanel = nullptr;
+	class EditorLayer* m_EditorLayer = nullptr;
 };
 
 }

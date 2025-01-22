@@ -44,8 +44,6 @@ void FileSystemPanel::RenderContent() {
 	ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "%s", m_CurrentDirectoryText.c_str());
 
 	ImGui::Spacing();
-	ImGui::Separator();
-	ImGui::Spacing();
 
 	ShowDirectoriesTable();
 }
@@ -100,7 +98,7 @@ void FileSystemPanel::ShowDirectoriesTable() {
 						Audio::Play(path);
 					} else if (ext == ".anim") {
 						if (m_EditorTab) {
-							m_EditorTab->m_AnimationeditorPanel.SetAnimation(Project::GetAssetManagerEditor()->ImportAsset(path));
+							m_EditorTab->m_AnimationEditorPanel.SetAnimation(Project::GetAssetManagerEditor()->ImportAsset(path));
 						}
 					}
 				}
@@ -161,11 +159,12 @@ void FileSystemPanel::ShowDirectoriesTable() {
 
 					// Display preview (could be anything, e.g. when dragging an image we could decide to display
 					// the filename and a small preview of the image, etc.)
-					ImGui::Text(filename.c_str());
+					ImGui::Text("%s", filename.c_str());
 					ImGui::EndDragDropSource();
 				}
 			}
 		}
+		ImGui::Dummy(ImVec2(0,30));
 		ImGui::EndTable();
 	}
 	ImGui::EndChild();

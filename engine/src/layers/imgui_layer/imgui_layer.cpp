@@ -33,12 +33,12 @@ void ImGuiLayer::OnAttach() {
 
 	std::string font_0 = Project::FindAssetPath("fonts/Noto_Sans/NotoSans-Regular.ttf");
 	if (!font_0.empty()) {
-		io.FontDefault = io.Fonts->AddFontFromFileTTF(font_0.c_str(), 16.0f);
+		io.FontDefault = io.Fonts->AddFontFromFileTTF(font_0.c_str(), 18.0f);
 	}
 
 	std::string font_1 = Project::FindAssetPath("fonts/Noto_Sans_Mono/NotoSansMono-VariableFont_wdth,wght.ttf");
 	if (!font_1.empty()) {
-		io.Fonts->AddFontFromFileTTF(font_1.c_str(), 20.0f);
+		io.Fonts->AddFontFromFileTTF(font_1.c_str(), 24.0f);
 	}
 
 	io.IniFilename = NULL;

@@ -16,6 +16,7 @@
 #include "audio/audio.h"
 #include "renderer/renderer2D.h"
 #include "utils/imgui_utils.h"
+#include "editor_layer.h"
 
 
 namespace Enik {
@@ -24,10 +25,11 @@ constexpr ImGuiTreeNodeFlags inner_tree_node_flags = ImGuiTreeNodeFlags_OpenOnDo
 	ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_FramePadding;
 
 
-void InspectorPanel::SetContext(const Ref<Scene>& context, SceneTreePanel* scene_tree_panel, AnimationEditorPanel* animation_panel) {
+void InspectorPanel::SetContext(const Ref<Scene>& context, SceneTreePanel* scene_tree_panel, AnimationEditorPanel* animation_panel, EditorLayer* el) {
 	m_Context = context;
 	m_SceneTreePanel = scene_tree_panel;
 	m_AnimationEditorPanel = animation_panel;
+	m_EditorLayer = el;
 }
 
 void InspectorPanel::RenderContent() {
@@ -139,14 +141,17 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 
 	DisplayComponentInInspector<Component::Prefab>("Prefab", entity, true, [&]() {
 		auto& pref = entity.Get<Component::Prefab>();
-		ImGuiUtils::PrefixLabel("RootPrefab");
-		ImGui::Checkbox("##RootPrefab", &pref.RootPrefab);
-
-		ImGuiUtils::PrefixLabel("PrefabPath");
-		char buffer[256];
-		memset(buffer, 0, sizeof(buffer));
-		strcpy(buffer, pref.PrefabPath.string().c_str());
-		ImGui::InputText("##PrefabPath", buffer, sizeof(buffer));
+		if (pref.RootPrefab) {
+			ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::prefab);
+			ImGuiUtils::PrefixLabel("Prefab");
+			if (ImGui::Button(pref.PrefabPath.filename().string().c_str())) {
+				m_EditorLayer->RequestOpenAsset(pref.PrefabPath);
+			}
+			if (ImGui::IsItemHovered()){
+				ImGui::SetTooltip("%s", pref.PrefabPath.string().c_str());
+			}
+			ImGui::PopStyleColor();
+		}
 	});
 
 	DisplayComponentInInspector<Component::Transform>("Transform", entity, false, [&]() {

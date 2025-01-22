@@ -158,6 +158,8 @@ void AnimationEditorPanel::RenderContent() {
 			m_playing = false;
 		}
 	}
+
+	ImGui::Spacing();
 	
 	ImVec2 panel_size = ImGui::GetContentRegionAvail();
 	float timeline_width = m_left_panel_width * panel_size.x;

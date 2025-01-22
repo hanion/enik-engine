@@ -16,6 +16,7 @@ namespace Enik {
 
 class SceneEditorTab : public EditorTab {
 public:
+	// TODO: name is the window name, this should also require an AssetHandle, which is the scene itself
 	SceneEditorTab(const std::filesystem::path& name);
 	virtual ~SceneEditorTab();
 
@@ -28,9 +29,9 @@ private:
 
 	virtual void OnEvent(Event& event) override final;
 
-	virtual void SetContext(EditorLayer* editor) override final {
-		EditorTab::SetContext(editor);
-		m_FileSystemPanel.SetContext(editor, this);
+	virtual void SetContext(EditorLayer* editor) override {
+		m_EditorLayer = editor;
+		SetPanelsContext();
 	}
 
 private:
@@ -50,8 +51,8 @@ private:
 	void OnOverlayRender();
 
 public:
-	void OnScenePlay();
-	void OnSceneStop();
+	virtual void OnScenePlay();
+	virtual void OnSceneStop();
 	void OnScenePause(bool is_paused = false);
 
 
@@ -80,7 +81,7 @@ private:
 	FileSystemPanel m_FileSystemPanel;
 	ToolbarPanel m_ToolbarPanel;
 	DebugInfoPanel m_DebugInfoPanel;
-	AnimationEditorPanel m_AnimationeditorPanel;
+	AnimationEditorPanel m_AnimationEditorPanel;
 
 	std::filesystem::path m_ActiveScenePath = std::filesystem::canonical(".");
 
@@ -93,6 +94,8 @@ private:
 	bool m_ShowSelectionOutline = true;
 	glm::vec4 m_SelectionOutlineColor = glm::vec4(1.0f, 0.44f, 0.1f, 0.84f);
 	int m_SelectionOutlineWidth = 6;
+
+	bool m_Appearing = true;
 
 friend class PrefabEditorTab;
 friend class FileSystemPanel;

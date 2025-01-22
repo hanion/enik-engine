@@ -48,6 +48,7 @@ DialogConfirm::DialogConfirmResult DialogConfirm::ShowPopup() {
 
 	if (ImGui::Button("Cancel")) {
 		s_Data.is_open = false;
+		s_Data.should_focus_confirm = true;
 		return DialogConfirm::DialogConfirmResult::CANCEL;
 	}
 
@@ -55,8 +56,14 @@ DialogConfirm::DialogConfirmResult DialogConfirm::ShowPopup() {
 
 	if (ImGui::Button("Confirm")) {
 		s_Data.is_open = false;
+		s_Data.should_focus_confirm = true;
 		s_Data.call_function();
 		return DialogConfirm::DialogConfirmResult::CONFIRM;
+	}
+
+	if (s_Data.should_focus_confirm and not ImGui::IsAnyItemActive() and not ImGui::IsItemActive()) {
+		ImGui::SetKeyboardFocusHere(-1);
+		s_Data.should_focus_confirm = false;
 	}
 
 	return DialogConfirm::DialogConfirmResult::CANCEL;

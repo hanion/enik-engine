@@ -43,7 +43,12 @@ DialogFileResult DialogFile::Show() {
 
 	ImGui::OpenPopup(widnow_name.c_str());
 	if (ImGui::BeginPopupModal(widnow_name.c_str(), &s_Data.is_open)) {
-		DialogFileResult result = ShowPopup();
+		DialogFileResult result;
+		try {
+			result = ShowPopup();
+		} catch (const std::filesystem::filesystem_error& ex) {
+			s_Data.current_directory = Project::GetProjectDirectory();
+		}
 		ImGui::EndPopup();
 		return result;
 	}
