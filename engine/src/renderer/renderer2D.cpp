@@ -130,11 +130,10 @@ void Renderer2D::Init() {
 
 	s_Data.TextureColorShader = Shader::Create(Project::FindAssetPath("shaders/texture_color.glsl"));
 
-	TextureSpecification spec;
-	s_Data.WhiteTexture = Texture2D::Create(spec);
-	Buffer tex = Buffer(sizeof(uint32_t));
-	*tex.Data = (uint8_t)0xffffffff;
-	s_Data.WhiteTexture->SetData(tex);
+	TextureSpecification spec {1,1,ImageFormat::RGBA8,false};
+	uint32_t white_texture_data = (uint32_t)0xffffffff;
+	Buffer data = Buffer(&white_texture_data, sizeof(uint32_t));
+	s_Data.WhiteTexture = Texture2D::Create(spec, data);
 
 	s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 	s_Data.TextureSlots[0]->Bind();
@@ -148,6 +147,8 @@ void Renderer2D::Init() {
 }
 
 void Renderer2D::Shutdown() {
+	delete[] s_Data.QuadVertexBufferBase;
+	delete[] s_Data.LineVertexBufferBase;
 }
 
 void Renderer2D::BeginScene(const Camera& camera, const glm::mat4& transform) {

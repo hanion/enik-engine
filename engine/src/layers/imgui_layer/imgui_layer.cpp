@@ -58,6 +58,8 @@ void ImGuiLayer::OnAttach() {
 void ImGuiLayer::OnDetach() {
 	EN_PROFILE_SCOPE;
 
+	ImGui::GetIO().Fonts->ClearFonts();
+	ImGui_ImplOpenGL3_DestroyFontsTexture();
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();

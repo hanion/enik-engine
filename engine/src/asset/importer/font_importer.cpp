@@ -134,7 +134,8 @@ Ref<FontAsset> FontImporter::ImportFont(AssetHandle handle, const AssetMetadata&
 	font_asset->Glyphs = std::move(glyphs);
 	font_asset->TextHeight = static_cast<uint32_t>(font_size);
 
-    delete[] font_data_buffer;
+	delete[] font_data_buffer;
+	delete[] font_atlas_texture_data;
 
 	return font_asset;
 }

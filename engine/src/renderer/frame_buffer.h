@@ -27,7 +27,7 @@ struct FrameBufferAttachmentSpecification {
 		: Attachments(attachments) {
 	}
 
-	std::vector<FrameBufferTextureSpecification> Attachments;
+	std::vector<FrameBufferTextureSpecification> Attachments = {};
 };
 
 struct FrameBufferSpecification {

@@ -29,7 +29,7 @@ void Audio::Play(const std::filesystem::path& filepath) {
 	Audio::Play(filepath.string().c_str());
 }
 
-Audio::~Audio() {
+void Audio::Shutdown() {
 	ma_engine_uninit(&s_Instance->m_AudioEngine->engine);
 }
 

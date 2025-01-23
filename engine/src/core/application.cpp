@@ -24,7 +24,6 @@ Application::Application(const std::string& name) {
 	m_Window->SetVsync(true);
 
 	Renderer::Init();
-
 	Audio::Init();
 
 	m_ImGuiLayer = new ImGuiLayer();
@@ -32,6 +31,8 @@ Application::Application(const std::string& name) {
 }
 
 Application::~Application() {
+	Renderer::Shutdown();
+	Audio::Shutdown();
 }
 
 void Application::PushLayer(Layer* layer) {
