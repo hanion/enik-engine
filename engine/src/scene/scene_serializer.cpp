@@ -233,7 +233,7 @@ bool SceneSerializer::DeserializeRuntime(const std::string& filepath) {
 
 const UUID SceneSerializer::DuplicateEntity(const std::string& filepath, UUID uuid) {
 	YAML::Node data = YAML::LoadFile(filepath);
-	if (not data.IsMap() or not data["Scene"]) {
+	if (not data.IsMap() or not (data["Scene"] or data["Prefab"])) {
 		return -1;
 	}
 

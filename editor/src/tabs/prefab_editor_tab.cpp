@@ -19,24 +19,36 @@ void PrefabEditorTab::LoadScene(const std::filesystem::path& path) {
 	}
 
 	m_PrefabSourcePath = path;
-
-	Ref<Scene> new_scene = CreateRef<Scene>();
+	Ref<Scene> new_scene = CreateNewScene();
 	m_EditorScene = new_scene;
 	m_ActiveScene = m_EditorScene;
-	m_ActiveScenePath = "";
-	m_ActiveScene->OnViewportResize(m_ViewportPosition, (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
-	SetPanelsContext();
+	m_ActiveScenePath = m_PrefabSourcePath;
+	m_EditorRootEntity = m_ActiveRootEntity;
+}
+
+void PrefabEditorTab::SaveScene() {
+	SceneSerializer serializer(m_EditorScene);
+	serializer.CreatePrefab(m_PrefabSourcePath.string(), m_EditorRootEntity);
+	m_EditorScene->SetName(m_EditorRootEntity.Get<Component::Tag>().Text);
+	Project::GetAssetManagerEditor()->SerializeAssetRegistry();
+}
+
+Ref<Scene> PrefabEditorTab::CreateNewScene() {
+	if (m_PrefabSourcePath.empty()) {
+		return nullptr;
+	}
+
+	Ref<Scene> new_scene = CreateRef<Scene>();
+	new_scene->OnViewportResize(m_ViewportPosition, (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
 
 	SceneSerializer serializer(new_scene);
-	m_RootEntity = serializer.InstantiatePrefab(path.string(), 0, true);
+	m_ActiveRootEntity = serializer.InstantiatePrefab(m_PrefabSourcePath.string(), 0, true);
 
-	m_RootEntity.Remove<Component::Prefab>();
-	new_scene->SetName(m_RootEntity.Get<Component::Tag>().Text);
-	m_SceneTreePanel.SetSelectedEntity(m_RootEntity);
-
+	m_ActiveRootEntity.Remove<Component::Prefab>();
+	new_scene->SetName(m_ActiveRootEntity.Get<Component::Tag>().Text);
 
 	std::stack<Entity> all_entities;
-	all_entities.push(m_RootEntity);
+	all_entities.push(m_ActiveRootEntity);
 
 	while (not all_entities.empty()) {
 		Entity current_entity = all_entities.top();
@@ -51,14 +63,40 @@ void PrefabEditorTab::LoadScene(const std::filesystem::path& path) {
 			}
 		}
 	}
+	return new_scene;
 }
 
-void PrefabEditorTab::SaveScene() {
-	SceneSerializer serializer(m_EditorScene);
-	serializer.CreatePrefab(m_PrefabSourcePath.string(), m_RootEntity);
-	m_EditorScene->SetName(m_RootEntity.Get<Component::Tag>().Text);
-	Project::GetAssetManagerEditor()->SerializeAssetRegistry();
-}
 
+void PrefabEditorTab::OnScenePlay() {
+	if (m_ActiveScenePath.empty() || m_PrefabSourcePath.empty()) {
+		return;
+	}
+ 	SaveScene();
+
+	Enik::UUID current_selected_entity = m_SceneTreePanel.GetSelectedEntityUUID();
+
+	m_ActiveScene = CreateNewScene();
+	m_ActiveScene->OnViewportResize(m_ViewportPosition, (uint32_t)m_ViewportSize.x, (uint32_t)m_ViewportSize.y);
+	SetPanelsContext();
+
+	m_SceneTreePanel.SetSelectedEntityWithUUID(current_selected_entity);
+	ImGui::SetWindowFocus(m_ViewportPanelName.c_str());
+
+ 	OnScenePause(false);
+	m_SceneState = SceneState::Play;
+}
+void PrefabEditorTab::OnSceneStop() {
+	OnScenePause(false);
+	m_SceneState = SceneState::Edit;
+
+	Tween::ResetData();
+
+	Enik::UUID current_selected_entity = m_SceneTreePanel.GetSelectedEntityUUID();
+
+	m_ActiveScene = m_EditorScene;
+	SetPanelsContext();
+
+	m_SceneTreePanel.SetSelectedEntityWithUUID(current_selected_entity);
+}
 
 }
