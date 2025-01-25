@@ -66,10 +66,10 @@ void DebugInfoPanel::ShowDebugInfoPanel(Timestep timestep, glm::vec2 viewport_si
 
 		ImGui::TextColored(color, "Project");
 		ImGui::Text("	Name: %s",  config.project_name.c_str());
-		ImGui::Text("	Path: %s",  Project::GetAbsolutePath(".").c_str());
-		ImGui::Text("	Start Scene: %s",  config.start_scene.c_str());
-		ImGui::Text("	Script Module: %s",  config.script_module_path.c_str());
-		ImGui::Text("	Asset Registry: %s",  config.asset_registry_path.c_str());
+		ImGui::Text("	Path: %s",  Project::GetAbsolutePath(".").string().c_str());
+		ImGui::Text("	Start Scene: %s",  config.start_scene.string().c_str());
+		ImGui::Text("	Script Module: %s",  config.script_module_path.string().c_str());
+		ImGui::Text("	Asset Registry: %s",  config.asset_registry_path.string().c_str());
 	}
 
 	if (m_ShowViewport) {

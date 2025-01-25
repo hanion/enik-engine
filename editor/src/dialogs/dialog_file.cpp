@@ -65,7 +65,7 @@ DialogFileResult DialogFile::ShowPopup() {
 	}
 
 	ImGui::SameLine();
-	ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "%s", s_Data.current_directory.c_str());
+	ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "%s", s_Data.current_directory.string().c_str());
 
 	ImGui::Spacing();
 	ImGui::Separator();
