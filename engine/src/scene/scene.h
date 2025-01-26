@@ -18,6 +18,7 @@ public:
 
 	Entity CreateEntity(const std::string& name = std::string());
 	Entity CreateEntityWithUUID(UUID uuid, const std::string& name = std::string());
+	// defers the deletion to end of the frame
 	void DestroyEntity(Entity entity);
 
 	Entity InstantiatePrefab(const std::filesystem::path& path, UUID instance_uuid = UUID());
@@ -61,6 +62,9 @@ public:
 private:
 	void ChangeToDeferredScene();
 
+	void DestroyDeferredEntities();
+	void DestroyEntityImmediatelyInternal(Entity entity);
+
 public:
 	bool NeedViewportResize = false;
 
@@ -78,6 +82,8 @@ private:
 
 	bool m_deferred_scene_change = false;
 	std::string m_deferred_scene_path = "";
+
+	std::vector<class Entity> m_deferred_destroy;
 
 	friend class Entity;
 	friend class SceneTreePanel;

@@ -34,9 +34,23 @@ Entity Scene::CreateEntityWithUUID(UUID uuid, const std::string& name) {
 	return entity;
 }
 
-// recursive
 void Scene::DestroyEntity(Entity entity) {
-	if (entity and entity.HasFamily()) {
+	m_deferred_destroy.push_back(entity);
+}
+
+void Scene::DestroyDeferredEntities() {
+	while (m_deferred_destroy.size() > 0) {
+		Entity entity = m_deferred_destroy.back();
+		m_deferred_destroy.pop_back();
+		DestroyEntityImmediatelyInternal(entity);
+	}
+	m_deferred_destroy.clear();
+}
+
+void Scene::DestroyEntityImmediatelyInternal(Entity entity) {
+	if (!entity) { return; }
+
+	if (entity.HasFamily()) {
 		entity.Reparent({});
 
 		std::vector<Entity> children;
@@ -44,7 +58,7 @@ void Scene::DestroyEntity(Entity entity) {
 			children.push_back(child);
 		}
 		for (const auto& child : children) {
-			DestroyEntity(child);
+			DestroyEntityImmediatelyInternal(child);
 		}
 	}
 
@@ -181,6 +195,7 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 	if (m_deferred_scene_change) {
 		ChangeToDeferredScene();
 	}
+	DestroyDeferredEntities();
 }
 
 void Scene::OnFixedUpdate() {
