@@ -91,6 +91,7 @@ private:
 	friend class SceneSerializer;
 	friend class PrefabEditorTab;
 	friend class SceneEditorTab;
+	friend struct Component::PhysicsBodyBase;
 };
 
 }

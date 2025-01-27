@@ -278,6 +278,22 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		if (ImGui::Checkbox("##IsKine", &is_kinematic)) {
 			body.MotionType = is_kinematic ? JPH::EMotionType::Kinematic : JPH::EMotionType::Dynamic;
 		}
+
+		ImGuiUtils::PrefixLabel("Mass");
+		float mass = body.GetMass();
+		if (ImGui::DragFloat("##Mass", &mass, 0.01f, 0.001f)) {
+			if (mass > 0.0f) {
+				body.SetMass(mass);
+			}
+		}
+
+		if (!is_kinematic) {
+			ImGuiUtils::PrefixLabel("Gravity Factor");
+			float gf = body.GetGravityFactor();
+			if (ImGui::DragFloat("##GF", &gf, 0.01f)) {
+				body.SetGravityFactor(gf);
+			}
+		}
 	});
 
 	DisplayComponentInInspector<Component::CollisionBody>("Collision Body", entity, true, [&]() {
@@ -302,52 +318,33 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	});
 
 	DisplayComponentInInspector<Component::CollisionShape>("CollisionShape", entity, true, [&]() {
-		auto& collider = entity.Get<Component::CollisionShape>();
+		auto& cs = entity.Get<Component::CollisionShape>();
 
-		std::string text = collider.String();
+		std::string text = cs.ToString();
 
 		ImGuiUtils::PrefixLabel("Shape");
 		if (ImGui::BeginCombo("##ColliderShape", text.c_str())) {
 			if (ImGui::Selectable("Box",
-				collider.Shape == Component::ColliderShape::BOX)) {
-				collider.Shape =  Component::ColliderShape::BOX;
+				cs.Shape == Component::CollisionShape::Type::BOX)) {
+				cs.Shape =  Component::CollisionShape::Type::BOX;
 			}
 			if (ImGui::Selectable("Circle",
-				collider.Shape == Component::ColliderShape::CIRCLE)) {
-				collider.Shape =  Component::ColliderShape::CIRCLE;
-			}
-			if (ImGui::Selectable("Plane",
-				collider.Shape == Component::ColliderShape::PLANE)) {
-				collider.Shape =  Component::ColliderShape::PLANE;
+				cs.Shape == Component::CollisionShape::Type::CIRCLE)) {
+				cs.Shape =  Component::CollisionShape::Type::CIRCLE;
 			}
 			ImGui::EndCombo();
 		}
 
-		ImGuiUtils::PrefixLabel("Is Area");
-		ImGui::Checkbox("##IsArea", &collider.IsArea);
-
-		switch (collider.Shape) {
-			case Component::ColliderShape::CIRCLE: {
+		switch (cs.Shape) {
+			case Component::CollisionShape::Type::CIRCLE: {
 				ImGuiUtils::PrefixLabel("Radius");
-				ImGui::DragFloat("##Radius", &collider.Float, 0.01f);
-
-				ImGuiUtils::PrefixLabel("Center");
-				ImGui::DragFloat3("##Center", glm::value_ptr(collider.Vector), 0.01f);
-				break;
-			}
-			case Component::ColliderShape::PLANE: {
-				ImGuiUtils::PrefixLabel("Thickness");
-				ImGui::DragFloat("##Thickness", &collider.Float, 0.01f);
-
-				ImGuiUtils::PrefixLabel("Normal");
-				ImGui::DragFloat3("##Normal", glm::value_ptr(collider.Vector), 0.01f);
-				break;
-			}
-			case Component::ColliderShape::BOX: {
-				ImGuiUtils::PrefixLabel("Center");
-				ImGui::DragFloat3("##Center", glm::value_ptr(collider.Vector), 0.01f);
-				break;
-			}
+				ImGui::DragFloat("##Radius", &cs.CircleRadius, 0.01f);
+			} break;
+			case Component::CollisionShape::Type::BOX: {
+				ImGuiUtils::PrefixLabel("Scale");
+				ImGui::DragFloat3("##Scale", glm::value_ptr(cs.BoxScale), 0.01f);
+			} break;
+			case Component::CollisionShape::Type::NONE: break;
 		}
 
 	});

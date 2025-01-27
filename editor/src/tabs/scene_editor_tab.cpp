@@ -567,43 +567,31 @@ void SceneEditorTab::OnOverlayRender() {
 		for(auto& entity : view) {
 			auto [transform, collider] = view.get<Component::Transform, Component::CollisionShape>(entity);
 			switch (collider.Shape) {
-				case Component::ColliderShape::CIRCLE: {
+				case Component::CollisionShape::Type::CIRCLE: {
 					for (int t = 0; t < 5; ++t) {
 						Renderer2D::DrawCircle(
 							glm::vec3(
-								transform.GlobalPosition.x + collider.Vector.x,
-								transform.GlobalPosition.y + collider.Vector.y,
+								transform.GlobalPosition.x + collider.CircleCenter.x,
+								transform.GlobalPosition.y + collider.CircleCenter.y,
 								0.999f),
-							transform.LocalScale.x * collider.Float + t*0.001f,
+							transform.LocalScale.x * collider.CircleRadius + t*0.001f,
 							32,
 							glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
 					}
 					break;
 				}
-				case Component::ColliderShape::PLANE: {
-					Component::Transform trans;
-					trans.GlobalPosition = transform.GlobalPosition;
-					trans.GlobalRotation = transform.GlobalRotation;
-					trans.GlobalScale = transform.GlobalScale * collider.Float * 2.0f;
-					trans.GlobalPosition.z = 0.999f;
-					Renderer2D::DrawRect(trans, glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
-					Renderer2D::DrawLine(
-						trans.GlobalPosition,
-						trans.GlobalPosition + glm::vec3(collider.Vector.x, collider.Vector.y, 0),
-						glm::vec4(0.8f, 0.3f, 0.3f, 1.0f));
-					break;
-				}
-				case Component::ColliderShape::BOX: {
+				case Component::CollisionShape::Type::BOX: {
 					Component::Transform trans;
 					trans.GlobalPosition = glm::vec3(
-							transform.GlobalPosition.x + collider.Vector.x,
-							transform.GlobalPosition.y + collider.Vector.y,
+							transform.GlobalPosition.x,
+							transform.GlobalPosition.y,
 							0.999f);
 					trans.GlobalRotation = transform.GlobalRotation;
-					trans.GlobalScale = transform.GlobalScale * collider.Float * 2.0f;
+					trans.GlobalScale = transform.GlobalScale * collider.BoxScale * 2.0f;
 					Renderer2D::DrawRect(trans, glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
 					break;
 				}
+				case Component::CollisionShape::Type::NONE: break;
 
 			}
 

@@ -2,6 +2,7 @@
 
 #include "Jolt/Jolt.h"
 #include "Jolt/Physics/Body/Body.h"
+#include "Jolt/Physics/Body/BodyInterface.h"
 
 
 namespace Enik {

@@ -7,6 +7,7 @@
 #include "scene/native_script_fields.h"
 #include "scene/animation.h"
 #include "physics/physics_body.h"
+#include <Jolt/Physics/PhysicsSystem.h>
 
 #include <filesystem>
 #include <glm/glm.hpp>
@@ -111,27 +112,51 @@ struct PhysicsBodyBase {
 	PhysicsBody* body = nullptr;
 	uint16_t Layer = 1;
 	JPH::EMotionType MotionType = JPH::EMotionType::Dynamic;
-	bool IsSensor = false;
 
 	PhysicsBodyBase() = default;
 	PhysicsBodyBase(const PhysicsBodyBase&) = default;
+	virtual ~PhysicsBodyBase() = default;
+
+
+	glm::vec3 GetLinearVelocity() const;
+	void      SetLinearVelocity(const glm::vec3& velocity);
+
+	glm::quat GetRotation() const;
+
+	glm::vec3 GetAngularVelocity() const;
+	void      SetAngularVelocity(const glm::vec3& angular_velocity);
+
+	void SetPosition(const glm::vec3& position);
+protected:
+	JPH::PhysicsSystem* GetPhysicsSystem() const;
+	JPH::BodyInterface& GetBodyInterface() const;
 };
 
 struct RigidBody : PhysicsBodyBase {
-	bool UseGravity = false;
-
 	RigidBody() = default;
 	RigidBody(const RigidBody&) = default;
 
-	void SetKinematic(bool is_kinematic) {
-		MotionType = is_kinematic ? JPH::EMotionType::Kinematic : JPH::EMotionType::Dynamic;
-	}
+	void SetKinematic(bool is_kinematic);
+
+	void AddForce(const glm::vec3& force);
+	void AddImpulse(const glm::vec3& impulse);
+	void AddTorque(const glm::vec3& torque);
+
+	float GetMass() const { return Mass; }
+	void  SetMass(float mass);
+
+	float GetGravityFactor() const { return GravityFactor; }
+	void  SetGravityFactor(float gravity_factor);
+
+private:
+	float Mass = 1.0f;
+	float GravityFactor = 1.0f;
 };
 
 struct CollisionBody : PhysicsBodyBase {
-	CollisionBody() {
-		MotionType = JPH::EMotionType::Kinematic;
-	}
+	bool IsSensor = false;
+
+	CollisionBody() { MotionType = JPH::EMotionType::Kinematic; }
 	CollisionBody(const CollisionBody&) = default;
 
 	void SetStatic(bool is_static) {
@@ -140,27 +165,44 @@ struct CollisionBody : PhysicsBodyBase {
 };
 
 
-enum ColliderShape {
-	CIRCLE, PLANE, BOX
-};
 struct CollisionShape {
 	JPH::Ref<JPH::Shape> shape = nullptr;
 
-	ColliderShape Shape = ColliderShape::BOX;
-	glm::vec3 Vector = glm::vec3(0,0,0);
-	float Float = 0.5f;
+	enum class Type {
+		NONE, BOX, CIRCLE
+	};
+	Type Shape = Type::BOX;
+
+	union {
+		glm::vec3 Vector = glm::vec3(0,0,0);
+		glm::vec3 BoxScale;
+		glm::vec3 CircleCenter;
+	};
+	union {
+		float Float = 0.5f;
+		float CircleRadius;
+	};
 	bool IsArea = false;
 
 	CollisionShape() = default;
 	CollisionShape(const CollisionShape&) = default;
 
-	const std::string String() const {
-		switch (Shape) {
-			case ColliderShape::CIRCLE: return "Circle";
-			case ColliderShape::PLANE:  return "Plane";
-			case ColliderShape::BOX:    return "Box";
+	const std::string ToString() const { return TypeToString(Shape); }
+
+	static std::string TypeToString(Type shape) {
+		switch (shape) {
+			case Type::NONE:   return "NONE";
+			case Type::BOX:    return "Box";
+			case Type::CIRCLE: return "Circle";
 		}
 		return std::string();
+	}
+
+	static Type TypeFromString(const std::string& str) {
+		if      (str.empty())     { return Type::NONE; }
+		else if (str == "Box")    { return Type::BOX; }
+		else if (str == "Circle") { return Type::CIRCLE; }
+		return Type::NONE;
 	}
 };
 

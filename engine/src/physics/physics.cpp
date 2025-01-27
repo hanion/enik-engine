@@ -265,21 +265,54 @@ void Physics::SyncTransforms() {
 
 
 void Physics::CreatePhysicsWorld() {
-	m_Registry->each([&](entt::entity entity) {
-		Entity e = Entity(entity, m_Scene);
-		auto& tr = e.Get<Component::Transform>();
-		if (e.Has<Component::RigidBody>()) {
-			CreatePhysicsBody(e, tr, e.Get<Component::RigidBody>());
-		} else if (e.Has<Component::CollisionBody>()) {
-			CreatePhysicsBody(e, tr, e.Get<Component::CollisionBody>());
+	{
+		auto group = m_Registry->group<Component::RigidBody>(entt::get<Component::Transform>);
+		for (auto entity : group) {
+			Component::Transform& tr = group.get<Component::Transform>(entity);
+			Component::RigidBody& rb = group.get<Component::RigidBody>(entity);
+			if (rb.body == nullptr) {
+				CreatePhysicsBody(Entity(entity, m_Scene), tr, rb);
+			}
 		}
-	});
-
+	}
+	{
+		auto group = m_Registry->group<Component::CollisionBody>(entt::get<Component::Transform>);
+		for (auto entity : group) {
+			Component::Transform& tr = group.get<Component::Transform>(entity);
+			Component::CollisionBody& cb = group.get<Component::CollisionBody>(entity);
+			if (cb.body == nullptr) {
+				CreatePhysicsBody(Entity(entity, m_Scene), tr, cb);
+			}
+		}
+	}
 	m_PhysicsSystem->OptimizeBroadPhase();
 }
 
 
-void Physics::CreatePhysicsBody(Entity entity, const Component::Transform& tr, Component::PhysicsBodyBase& body) {
+void Physics::CreatePhysicsBody(Entity entity, const Component::Transform& tr, Component::RigidBody& body) {
+	Shape* shape = CreateShapeForBody(entity);
+	if (shape == nullptr) {
+		return;
+	}
+
+	BodyCreationSettings bcs{
+		shape,
+		RVec3Arg(tr.GlobalPosition.x, tr.GlobalPosition.y, tr.GlobalPosition.z),
+		QuatArg(tr.GlobalRotation.x, tr.GlobalRotation.y, tr.GlobalRotation.z, tr.GlobalRotation.w),
+		body.MotionType,
+		static_cast<ObjectLayer>(body.Layer)
+	};
+	bcs.mAllowedDOFs = EAllowedDOFs::Plane2D;
+	bcs.mGravityFactor = body.GetGravityFactor();
+
+	Body* new_body = m_PhysicsSystem->GetBodyInterface().CreateBody(bcs);
+	new_body->GetMotionProperties()->ScaleToMass(body.GetMass());
+	new_body->SetUserData(entity.GetID());
+	m_PhysicsSystem->GetBodyInterface().AddBody(new_body->GetID(), EActivation::Activate);
+
+	body.body = new_body;
+}
+void Physics::CreatePhysicsBody(Entity entity, const Component::Transform& tr, Component::CollisionBody& body) {
 	Shape* shape = CreateShapeForBody(entity);
 	if (shape == nullptr) {
 		return;
@@ -299,7 +332,6 @@ void Physics::CreatePhysicsBody(Entity entity, const Component::Transform& tr, C
 	new_body->SetUserData(entity.GetID());
 	m_PhysicsSystem->GetBodyInterface().AddBody(new_body->GetID(), EActivation::Activate);
 
-
 	body.body = new_body;
 }
 
@@ -312,24 +344,20 @@ JPH::Ref<JPH::Shape> Physics::CreateShapeForBody(Entity entity) {
 		Component::Transform& tr = entity.Get<Component::Transform>();
 
 		switch (cs.Shape) {
-			case Component::BOX: {
-				BoxShapeSettings shape(Vec3(tr.GlobalScale.x*0.5f, tr.GlobalScale.y*0.5f, tr.GlobalScale.z*0.5f));
+			case Component::CollisionShape::Type::BOX: {
+				auto scale = cs.BoxScale * tr.GlobalScale;
+				BoxShapeSettings shape(Vec3(scale.x, scale.y, scale.z));
 				cs.shape = shape.Create().Get();
 				cs.shape->AddRef();
 				return cs.shape;
 			}
-			case Component::CIRCLE: {
-				SphereShapeSettings shape(cs.Float);
+			case Component::CollisionShape::Type::CIRCLE: {
+				SphereShapeSettings shape(cs.CircleRadius);
 				cs.shape = shape.Create().Get();
 				cs.shape->AddRef();
 				return cs.shape;
 			}
-			case Component::PLANE: {
-				BoxShapeSettings shape(Vec3(tr.GlobalScale.x*0.5f, tr.GlobalScale.y*0.5f, tr.GlobalScale.z*0.5f));
-				cs.shape = shape.Create().Get();
-				cs.shape->AddRef();
-				return cs.shape;
-			}
+			case Component::CollisionShape::Type::NONE: break;
 		}
 	}
 

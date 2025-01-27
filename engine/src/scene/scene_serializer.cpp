@@ -652,7 +652,8 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		auto& body = entity.Get<Component::RigidBody>();
 		out << YAML::Key << "Layer" << YAML::Value << body.Layer;
 		out << YAML::Key << "IsKinematic" << YAML::Value << (body.MotionType == JPH::EMotionType::Kinematic);
-		out << YAML::Key << "UseGravity" << YAML::Value << body.UseGravity;
+		out << YAML::Key << "GravityFactor" << YAML::Value << body.GetGravityFactor();
+		out << YAML::Key << "Mass" << YAML::Value << body.GetMass();
 
 		out << YAML::EndMap;
 	}
@@ -673,11 +674,11 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 		out << YAML::Key << "Component::CollisionShape";
 		out << YAML::BeginMap;
 
-		auto& collider = entity.Get<Component::CollisionShape>();
-		out << YAML::Key << "Shape"  << YAML::Value << collider.Shape;
-		out << YAML::Key << "Float"  << YAML::Value << collider.Float;
-		out << YAML::Key << "Vector" << YAML::Value << collider.Vector;
-		out << YAML::Key << "IsArea" << YAML::Value << collider.IsArea;
+		auto& cs = entity.Get<Component::CollisionShape>();
+		out << YAML::Key << "Shape"  << YAML::Value << cs.ToString();
+		out << YAML::Key << "Float"  << YAML::Value << cs.Float;
+		out << YAML::Key << "Vector" << YAML::Value << cs.Vector;
+		out << YAML::Key << "IsArea" << YAML::Value << cs.IsArea;
 
 		out << YAML::EndMap;
 	}
@@ -797,7 +798,7 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 
 	auto prefab = entity["Component::Prefab"];
 	if (prefab) {
-		m_Scene->DestroyEntity(deserialized_entity);
+		m_Scene->DestroyEntityImmediatelyInternal(deserialized_entity);
 		if (prefab["RootPrefab"].as<bool>()) {
 			if (prefab["PrefabPath"]) {
 				std::filesystem::path prefab_path = prefab["PrefabPath"].as<std::string>();
@@ -902,8 +903,8 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 		auto& body = deserialized_entity.Add<Component::RigidBody>();
 		body.Layer = node["Layer"].as<int>();
 		body.MotionType = (node["IsKinematic"].as<bool>() ? JPH::EMotionType::Kinematic : JPH::EMotionType::Dynamic);
-// 		body.Mass = rigid_body["Mass"].as<float>();
-		body.UseGravity = node["UseGravity"].as<bool>();
+		body.SetGravityFactor(node["GravityFactor"].as<float>());
+		body.SetMass(node["Mass"].as<float>());
 	}
 
 	if (auto node = entity["Component::CollisionBody"]) {
@@ -913,14 +914,12 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 		body.IsSensor = node["IsSensor"].as<bool>();
 	}
 
-	auto collider = entity["Component::Collider"];
-	collider = collider ? collider : entity["Component::CollisionShape"];
-	if (collider) {
-		auto& col = deserialized_entity.Add<Component::CollisionShape>();
-		col.Shape  = (Component::ColliderShape)collider["Shape"].as<int>();
-		col.Float  = collider["Float"].as<float>();
-		col.Vector = collider["Vector"].as<glm::vec3>();
-		col.IsArea = collider["IsArea"].as<bool>();
+	if (auto node = entity["Component::CollisionShape"]) {
+		auto& cs = deserialized_entity.Add<Component::CollisionShape>();
+		cs.Shape  = Component::CollisionShape::TypeFromString(node["Shape"].as<std::string>());
+		cs.Float  = node["Float"].as<float>();
+		cs.Vector = node["Vector"].as<glm::vec3>();
+		cs.IsArea = node["IsArea"].as<bool>();
 	}
 
 

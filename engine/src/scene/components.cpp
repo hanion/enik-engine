@@ -1,10 +1,11 @@
 #include "components.h"
-
 #include "asset/asset_manager.h"
+#include "base.h"
 #include "gtc/quaternion.hpp"
 #include "scene/scriptable_entity.h"
 #include "audio/audio.h"
 #include "project/project.h"
+#include "script_system/script_system.h"
 
 namespace Enik {
 
@@ -378,4 +379,114 @@ void Component::AnimationPlayer::Update(const Timestep& dt) {
 	}
 }
 
+namespace Component {
+
+
+glm::vec3 PhysicsBodyBase::GetLinearVelocity() const {
+	EN_CORE_ASSERT(MotionType != JPH::EMotionType::Static,
+		"PhysicsBodyBase::GetLinearVelocity can only be used on non-static bodies.");
+
+	if (body) {
+		auto v = body->GetLinearVelocity();
+		return glm::vec3(v.GetX(), v.GetY(), v.GetZ());
+	}
+	return glm::vec3(0.0f);
+}
+
+void PhysicsBodyBase::SetLinearVelocity(const glm::vec3& velocity) {
+	EN_CORE_ASSERT(MotionType != JPH::EMotionType::Static,
+		"PhysicsBodyBase::SetLinearVelocity can only be used on non-static bodies.");
+
+	if (body) {
+		body->SetLinearVelocityClamped({velocity.x, velocity.y, velocity.z});
+	}
+}
+
+glm::quat PhysicsBodyBase::GetRotation() const {
+	if (body) {
+		auto rotation = body->GetRotation();
+		return {rotation.GetW(), rotation.GetX(), rotation.GetY(), rotation.GetZ()};
+	}
+	return glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+}
+
+void PhysicsBodyBase::SetAngularVelocity(const glm::vec3& angular_velocity) {
+	EN_CORE_ASSERT(MotionType != JPH::EMotionType::Static,
+		"PhysicsBodyBase::SetAngularVelocity can only be used on non-static bodies.");
+
+	if (body) {
+		body->SetAngularVelocity({angular_velocity.x, angular_velocity.y, angular_velocity.z});
+	}
+}
+
+glm::vec3 PhysicsBodyBase::GetAngularVelocity() const {
+	EN_CORE_ASSERT(MotionType != JPH::EMotionType::Static,
+		"PhysicsBodyBase::GetAngularVelocity can only be used on non-static bodies.");
+
+	if (body) {
+		auto angular_velocity = body->GetAngularVelocity();
+		return {angular_velocity.GetX(), angular_velocity.GetY(), angular_velocity.GetZ()};
+	}
+	return glm::vec3(0.0f);
+}
+
+void PhysicsBodyBase::SetPosition(const glm::vec3& position) {
+	if (body) {
+		GetBodyInterface().SetPosition(body->GetID(), {position.x, position.y, position.z}, JPH::EActivation::Activate);
+	}
+}
+
+JPH::BodyInterface& PhysicsBodyBase::GetBodyInterface() const {
+	return ScriptSystem::GetSceneContext()->m_Physics.GetPhysicsSystem()->GetBodyInterface();
+}
+
+
+void RigidBody::SetKinematic(bool is_kinematic) {
+	MotionType = is_kinematic ? JPH::EMotionType::Kinematic : JPH::EMotionType::Dynamic;
+}
+
+void RigidBody::AddForce(const glm::vec3& force) {
+	EN_CORE_ASSERT(MotionType == JPH::EMotionType::Dynamic,
+		"PhysicsBodyBase::AddForce can only be used on Dynamic bodies.");
+
+	if (body) {
+		GetBodyInterface().AddForce(body->GetID(), {force.x, force.y, force.z});
+// 		body->AddForce({force.x, force.y, force.z});
+	}
+}
+void RigidBody::AddImpulse(const glm::vec3& impulse) {
+	EN_CORE_ASSERT(MotionType == JPH::EMotionType::Dynamic,
+		"PhysicsBodyBase::AddImpulse can only be used on Dynamic bodies.");
+
+	if (body) {
+		GetBodyInterface().AddImpulse(body->GetID(), {impulse.x, impulse.y, impulse.z});
+	}
+}
+
+void RigidBody::AddTorque(const glm::vec3& torque) {
+	if (body) {
+		GetBodyInterface().AddTorque(body->GetID(), {torque.x, torque.y, torque.z});
+	}
+}
+
+void RigidBody::SetMass(float mass) {
+	if (mass <= 0.0f) {
+		return;
+	}
+	Mass = mass;
+	if (body) {
+		body->GetMotionProperties()->ScaleToMass(Mass);
+	}
+}
+
+void RigidBody::SetGravityFactor(float gravity_factor) {
+	GravityFactor = gravity_factor;
+	if (body) {
+		body->GetMotionProperties()->SetGravityFactor(GravityFactor);
+	}
+}
+
+
+
+}
 }

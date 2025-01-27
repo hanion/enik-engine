@@ -23,10 +23,14 @@ public:
 	void UpdatePhysics();
 	void CreatePhysicsWorld();
 
+
+	JPH::PhysicsSystem* GetPhysicsSystem() const { return m_PhysicsSystem; }
+
 private:
 	template<typename T>
 	void SyncTransforms();
-	void CreatePhysicsBody(Entity entity, const Component::Transform& tr, Component::PhysicsBodyBase& body);
+	void CreatePhysicsBody(Entity entity, const Component::Transform& tr, Component::RigidBody& body);
+	void CreatePhysicsBody(Entity entity, const Component::Transform& tr, Component::CollisionBody& body);
 	JPH::Ref<JPH::Shape> CreateShapeForBody(Entity entity);
 
 private:
