@@ -23,6 +23,8 @@ public:
 	void UpdatePhysics();
 	void CreatePhysicsWorld();
 
+	void RemovePhysicsBody(JPH::BodyID bodyID);
+	void RemovePhysicsBody(JPH::Body* body);
 
 	JPH::PhysicsSystem* GetPhysicsSystem() const { return m_PhysicsSystem; }
 

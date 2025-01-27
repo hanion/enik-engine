@@ -62,6 +62,16 @@ void Scene::DestroyEntityImmediatelyInternal(Entity entity) {
 		}
 	}
 
+	if (entity.Has<Component::RigidBody>()) {
+		auto& b = entity.Get<Component::RigidBody>();
+		m_Physics.RemovePhysicsBody(b.body);
+		b.body = nullptr;
+	} else if (entity.Has<Component::CollisionBody>()) {
+		auto& b = entity.Get<Component::CollisionBody>();
+		m_Physics.RemovePhysicsBody(b.body);
+		b.body = nullptr;
+	}
+
 	if (m_Registry.valid  ((entt::entity)entity)) {
 		m_Registry.destroy((entt::entity)entity);
 	}
@@ -111,6 +121,7 @@ void Scene::OnUpdateEditor(Timestep ts, OrthographicCameraController& camera) {
 	if (m_deferred_scene_change) {
 		ChangeToDeferredScene();
 	}
+	DestroyDeferredEntities();
 }
 
 void Scene::OnUpdateRuntime(Timestep ts) {

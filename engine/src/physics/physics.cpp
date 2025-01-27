@@ -335,6 +335,17 @@ void Physics::CreatePhysicsBody(Entity entity, const Component::Transform& tr, C
 	body.body = new_body;
 }
 
+void Physics::RemovePhysicsBody(JPH::BodyID bodyID) {
+	m_PhysicsSystem->GetBodyInterface().RemoveBody (bodyID);
+	m_PhysicsSystem->GetBodyInterface().DestroyBody(bodyID);
+}
+void Physics::RemovePhysicsBody(JPH::Body* body) {
+	if (body != nullptr) {
+		RemovePhysicsBody(body->GetID());
+	}
+}
+
+
 
 JPH::Ref<JPH::Shape> Physics::CreateShapeForBody(Entity entity) {
 	// TODO: composite shapes
