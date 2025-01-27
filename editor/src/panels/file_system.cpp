@@ -63,7 +63,7 @@ void FileSystemPanel::ShowDirectoriesTable() {
 	ImGui::BeginChild("ScrollableTable", ImVec2(0, 0), true);
 
 
-	if (ImGui::IsMouseDown(1) && ImGui::IsWindowHovered()) {
+	if (ImGui::IsMouseClicked(1) && ImGui::IsWindowHovered()) {
 		ImGui::OpenPopup("pop_directories_table");
 	}
 	if (ImGui::BeginPopup("pop_directories_table")) {
@@ -78,6 +78,7 @@ void FileSystemPanel::ShowDirectoriesTable() {
 			auto& path = entry.path();
 			std::string filename = path.filename().string();
 
+			ImGui::PushID(&entry);
 			ImGui::TableNextRow();
 			ImGui::TableSetColumnIndex(0);
 
@@ -108,7 +109,10 @@ void FileSystemPanel::ShowDirectoriesTable() {
 
 			static std::string rename_file_name;
 
-			if (ImGui::BeginPopupContextItem()) {
+			if (ImGui::IsItemHovered() and ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+				ImGui::OpenPopup("fscm");
+			}
+			if (ImGui::BeginPopup("fscm")) {
 				if (entry.is_regular_file() and path.has_extension()) {
 					auto ext = path.extension();
 					if (ext == ".escn" or
@@ -163,6 +167,7 @@ void FileSystemPanel::ShowDirectoriesTable() {
 					ImGui::EndDragDropSource();
 				}
 			}
+			ImGui::PopID();
 		}
 		ImGui::Dummy(ImVec2(0,30));
 		ImGui::EndTable();

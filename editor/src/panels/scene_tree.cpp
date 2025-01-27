@@ -113,6 +113,7 @@ void SceneTreePanel::RenderContent() {
 		m_SelectionContext = {};
 	}
 
+	ImGui::Dummy(ImVec2(0,60));
 	ImGui::EndTable();
 	m_MouseReleased = false;
 }
@@ -209,12 +210,14 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 		ImGui::EndDragDropTarget();
 	}
 
-	if (m_MouseReleased and ImGui::IsItemFocused() and ImGui::IsItemHovered()) {
+	if (ImGui::IsMouseClicked(0) and ImGui::IsItemFocused() and ImGui::IsItemHovered()) {
 		SetSelectedEntity(entity);
 		m_MouseReleased = false;
 	}
-
-	if (ImGui::BeginPopupContextItem()) {
+	if (ImGui::IsItemHovered() and ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
+		ImGui::OpenPopup("stcm");
+	}
+	if (ImGui::BeginPopup("stcm")) {
 		if (ImGui::MenuItem("Create Entity")) {
 			Entity new_entity = m_Context->CreateEntity("Empty Entity");
 			new_entity.Reparent(entity);

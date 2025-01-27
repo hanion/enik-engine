@@ -474,7 +474,7 @@ void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity
 
 
 	if (can_delete) {
-		if (Input::IsMouseButtonPressed(1) and ImGui::IsItemHovered()) {
+		if (ImGui::IsMouseClicked(1) and ImGui::IsItemHovered()) {
 			ImGui::OpenPopup("ComponentSettings");
 		}
 
@@ -604,7 +604,7 @@ void InspectorPanel::DisplaySubTexture(Component::SpriteRenderer& sprite) {
 	bool remove_sub_texture = false;
 	bool open = ImGui::TreeNodeEx("Sub Texture", inner_tree_node_flags | ImGuiTreeNodeFlags_AllowItemOverlap);
 
-	if (Input::IsMouseButtonPressed(1) and ImGui::IsItemHovered()) {
+	if (ImGui::IsMouseClicked(1) and ImGui::IsItemHovered()) {
 		ImGui::OpenPopup("SubTextureSettings");
 	}
 	float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
