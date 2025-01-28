@@ -24,6 +24,7 @@ public:
 
 	static void SetSceneContext(Scene* scene);
 	static Scene* GetSceneContext();
+	static Physics& GetPhysicsContext();
 
 	struct ScriptSystemData {
 		Scope<filewatch::FileWatch<std::string>> file_watcher;

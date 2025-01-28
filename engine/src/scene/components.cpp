@@ -437,7 +437,7 @@ void PhysicsBodyBase::SetPosition(const glm::vec3& position) {
 }
 
 JPH::BodyInterface& PhysicsBodyBase::GetBodyInterface() const {
-	return ScriptSystem::GetSceneContext()->m_Physics.GetPhysicsSystem()->GetBodyInterface();
+	return ScriptSystem::GetPhysicsContext().GetPhysicsSystem()->GetBodyInterface();
 }
 
 

@@ -147,6 +147,9 @@ void ScriptSystem::SetSceneContext(Scene* scene) {
 Scene* ScriptSystem::GetSceneContext() {
     return s_Data.scene_context;
 }
+Physics& ScriptSystem::GetPhysicsContext() {
+	return GetSceneContext()->m_Physics;
+}
 
 void ScriptSystem::OnFileWatcherEvent(const std::string& path, const filewatch::Event change_type) {
 	switch (change_type) {

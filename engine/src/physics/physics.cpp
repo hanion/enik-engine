@@ -3,6 +3,7 @@
 #include "core/log.h"
 #include "scene/components.h"
 #include "scene/entity.h"
+#include "scene/scriptable_entity.h"
 #include "script_system/extern_functions.h"
 
 #include "Jolt/Math/MathTypes.h"
@@ -12,6 +13,7 @@
 #include "Jolt/Physics/Collision/BroadPhase/BroadPhaseLayer.h"
 #include "Jolt/Physics/Collision/ObjectLayer.h"
 #include "Jolt/Physics/EActivation.h"
+#include "script_system/script_system.h"
 #include <Jolt/Core/Factory.h>
 #include <Jolt/Physics/Body/BodyActivationListener.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
@@ -128,22 +130,71 @@ class MyContactListener : public ContactListener
 public:
 	virtual void OnContactAdded(const Body &inBody1, const JPH::Body &inBody2, const JPH::ContactManifold &inManifold, JPH::ContactSettings &ioSettings) override
 	{
-// 		Entity e1 = FindEntityByUUID(inBody1.GetUserData());
-// 		Entity e2 = FindEntityByUUID(inBody2.GetUserData());
-// 		EN_CORE_INFO("Collision {}, {}", e1.GetTag(), e2.GetTag());
+		Entity e1 = FindEntityByUUID(inBody1.GetUserData());
+		Entity e2 = FindEntityByUUID(inBody2.GetUserData());
+		if (e1.Has<Component::NativeScript>()) {
+			if (ScriptableEntity* se = e1.GetScriptInstance()) {
+				if (ioSettings.mIsSensor) {
+					se->OnSensorEnter(e2);
+				} else {
+					se->OnCollisionEnter(e2);
+				}
+			}
+		}
+		if (e2.Has<Component::NativeScript>()) {
+			if (ScriptableEntity* se = e2.GetScriptInstance()) {
+				if (ioSettings.mIsSensor) {
+					se->OnSensorEnter(e1);
+				} else {
+					se->OnCollisionEnter(e1);
+				}
+			}
+		}
 	}
 
-// 	virtual void OnContactPersisted(const Body &inBody1, const JPH::Body &inBody2, const JPH::ContactManifold &inManifold, JPH::ContactSettings &ioSettings) override
-// 	{
-// // 		std::cout << "A contact was persisted" << std::endl;
-// 	}
-
-	virtual void OnContactRemoved(const SubShapeIDPair &inSubShapePair) override
-	{
+	virtual void OnContactRemoved(const SubShapeIDPair &inSubShapePair) override {
+		ScriptSystem::GetPhysicsContext().DeferRemoveContact(inSubShapePair.GetBody1ID(), inSubShapePair.GetBody2ID());
 	}
 };
 
 
+void Physics::DeferRemoveContact(JPH::BodyID a, JPH::BodyID b) {
+	std::lock_guard<std::mutex> lock(m_DeferredContactsMutex);
+	m_DeferredRemovedContacts.emplace_back(a,b);
+}
+
+void Physics::ProcessDeferredRemoveContactSignals() {
+	for (auto rc : m_DeferredRemovedContacts) {
+		auto& bi = m_PhysicsSystem->GetBodyInterface();
+		Entity e1 = FindEntityByUUID(bi.GetUserData(rc.first));
+		Entity e2 = FindEntityByUUID(bi.GetUserData(rc.second));
+
+
+		if (!e1 || !e2) { return; }
+
+		if (e1.Has<Component::NativeScript>()) {
+			if (ScriptableEntity* se = e1.GetScriptInstance()) {
+				bool is_sensor = e1.Has<Component::CollisionBody>() && e1.Get<Component::CollisionBody>().IsSensor;
+				if (is_sensor) {
+					se->OnSensorExit(e2);
+				} else {
+					se->OnCollisionExit(e2);
+				}
+			}
+		}
+		if (e2.Has<Component::NativeScript>()) {
+			if (ScriptableEntity* se = e2.GetScriptInstance()) {
+				bool is_sensor = e2.Has<Component::CollisionBody>() && e2.Get<Component::CollisionBody>().IsSensor;
+				if (is_sensor) {
+					se->OnSensorExit(e1);
+				} else {
+					se->OnCollisionExit(e1);
+				}
+			}
+		}
+	}
+	m_DeferredRemovedContacts.clear();
+}
 
 
 
@@ -235,6 +286,8 @@ void Physics::UpdatePhysics() {
 
 	SyncTransforms<Component::RigidBody>();
 	SyncTransforms<Component::CollisionBody>();
+
+	ProcessDeferredRemoveContactSignals();
 }
 
 template<typename T>
@@ -259,6 +312,9 @@ void Physics::SyncTransforms() {
 				tr.LocalPosition = global_pos;
 				tr.LocalRotation = global_rot;
 			}
+		} else {
+			// component is new
+			CreatePhysicsBody(Entity(entity, m_Scene), tr, body);
 		}
 	}
 }

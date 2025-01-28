@@ -53,13 +53,15 @@ public:
 		return std::vector<NativeScriptField>{};
 	}
 
-protected:
 	virtual void OnCreate() {}
 	virtual void OnDestroy() {}
 	virtual void OnUpdate(Timestep ts) {}
 	virtual void OnFixedUpdate() {}
 
-	virtual void OnCollision(Entity& other) {}
+	virtual void OnCollisionEnter(Entity& other) {}
+	virtual void OnCollisionExit (Entity& other) {}
+	virtual void OnSensorEnter   (Entity& other) {}
+	virtual void OnSensorExit    (Entity& other) {}
 
 	virtual void OnKeyPressed (const KeyPressedEvent&  event) { }
 	virtual void OnKeyReleased(const KeyReleasedEvent& event) { }
@@ -69,7 +71,6 @@ protected:
 
 private:
 	friend class Scene;
-	friend class PhysicsWorld;
 };
 
 }

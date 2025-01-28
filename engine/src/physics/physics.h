@@ -28,12 +28,15 @@ public:
 
 	JPH::PhysicsSystem* GetPhysicsSystem() const { return m_PhysicsSystem; }
 
+	void DeferRemoveContact(JPH::BodyID a, JPH::BodyID b);
+
 private:
 	template<typename T>
 	void SyncTransforms();
 	void CreatePhysicsBody(Entity entity, const Component::Transform& tr, Component::RigidBody& body);
 	void CreatePhysicsBody(Entity entity, const Component::Transform& tr, Component::CollisionBody& body);
 	JPH::Ref<JPH::Shape> CreateShapeForBody(Entity entity);
+	void ProcessDeferredRemoveContactSignals();
 
 private:
 	JPH::PhysicsSystem* m_PhysicsSystem = nullptr;
@@ -56,6 +59,10 @@ private:
 	JPH::ObjectVsBroadPhaseLayerFilter* m_object_vs_broadphase_layer_filter;
 	JPH::ObjectLayerPairFilter*         m_object_vs_object_layer_filter;
 	JPH::ContactListener*               m_contact_listener;
+
+	std::vector<std::pair<JPH::BodyID, JPH::BodyID>> m_DeferredRemovedContacts = {};
+	std::mutex m_DeferredContactsMutex;
+
 };
 
 
