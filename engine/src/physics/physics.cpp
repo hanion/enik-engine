@@ -125,56 +125,41 @@ public:
 	}
 };
 
-class MyContactListener : public ContactListener
-{
+class MyContactListener : public ContactListener {
 public:
-	virtual void OnContactAdded(const Body &inBody1, const JPH::Body &inBody2, const JPH::ContactManifold &inManifold, JPH::ContactSettings &ioSettings) override
-	{
-		Entity e1 = FindEntityByUUID(inBody1.GetUserData());
-		Entity e2 = FindEntityByUUID(inBody2.GetUserData());
-		if (e1.Has<Component::NativeScript>()) {
-			if (ScriptableEntity* se = e1.GetScriptInstance()) {
-				if (ioSettings.mIsSensor) {
-					se->OnSensorEnter(e2);
-				} else {
-					se->OnCollisionEnter(e2);
-				}
-			}
-		}
-		if (e2.Has<Component::NativeScript>()) {
-			if (ScriptableEntity* se = e2.GetScriptInstance()) {
-				if (ioSettings.mIsSensor) {
-					se->OnSensorEnter(e1);
-				} else {
-					se->OnCollisionEnter(e1);
-				}
-			}
-		}
+	virtual void OnContactAdded(const Body &inBody1, const JPH::Body &inBody2, const JPH::ContactManifold &inManifold, JPH::ContactSettings &ioSettings) override {
+		ScriptSystem::GetPhysicsContext().DeferOnEnter(inBody1, inBody2);
 	}
 
 	virtual void OnContactRemoved(const SubShapeIDPair &inSubShapePair) override {
-		ScriptSystem::GetPhysicsContext().DeferRemoveContact(inSubShapePair.GetBody1ID(), inSubShapePair.GetBody2ID());
+		ScriptSystem::GetPhysicsContext().DeferOnExit(inSubShapePair.GetBody1ID(), inSubShapePair.GetBody2ID());
 	}
 };
 
 
-void Physics::DeferRemoveContact(JPH::BodyID a, JPH::BodyID b) {
-	std::lock_guard<std::mutex> lock(m_DeferredContactsMutex);
-	m_DeferredRemovedContacts.emplace_back(a,b);
+void Physics::DeferOnExit(JPH::BodyID a, JPH::BodyID b) {
+	std::lock_guard<std::mutex> lock(m_DeferredOnExitMutex);
+	m_DeferredOnExits.emplace_back(a,b);
 }
 
-void Physics::ProcessDeferredRemoveContactSignals() {
-	for (auto rc : m_DeferredRemovedContacts) {
-		auto& bi = m_PhysicsSystem->GetBodyInterface();
-		Entity e1 = FindEntityByUUID(bi.GetUserData(rc.first));
-		Entity e2 = FindEntityByUUID(bi.GetUserData(rc.second));
+void Physics::DeferOnEnter(const JPH::Body& a, const JPH::Body& b) {
+	std::lock_guard<std::mutex> lock(m_DeferredOnEnterMutex);
+	m_DeferredOnEnters.emplace_back(&a,&b);
+}
 
+void Physics::ProcessDeferredOnExitSignals() {
+	for (auto pair : m_DeferredOnExits) {
+		auto& bi = m_PhysicsSystem->GetBodyInterface();
+		Entity e1 = FindEntityByUUID(bi.GetUserData(pair.first));
+		Entity e2 = FindEntityByUUID(bi.GetUserData(pair.second));
 
 		if (!e1 || !e2) { return; }
 
+		bool is_sensor =   (e1.Has<Component::CollisionBody>() && e1.Get<Component::CollisionBody>().IsSensor)
+						|| (e2.Has<Component::CollisionBody>() && e2.Get<Component::CollisionBody>().IsSensor);
+
 		if (e1.Has<Component::NativeScript>()) {
 			if (ScriptableEntity* se = e1.GetScriptInstance()) {
-				bool is_sensor = e1.Has<Component::CollisionBody>() && e1.Get<Component::CollisionBody>().IsSensor;
 				if (is_sensor) {
 					se->OnSensorExit(e2);
 				} else {
@@ -184,7 +169,6 @@ void Physics::ProcessDeferredRemoveContactSignals() {
 		}
 		if (e2.Has<Component::NativeScript>()) {
 			if (ScriptableEntity* se = e2.GetScriptInstance()) {
-				bool is_sensor = e2.Has<Component::CollisionBody>() && e2.Get<Component::CollisionBody>().IsSensor;
 				if (is_sensor) {
 					se->OnSensorExit(e1);
 				} else {
@@ -193,7 +177,39 @@ void Physics::ProcessDeferredRemoveContactSignals() {
 			}
 		}
 	}
-	m_DeferredRemovedContacts.clear();
+	m_DeferredOnExits.clear();
+}
+
+void Physics::ProcessDeferredOnEnterSignals() {
+	for (auto pair : m_DeferredOnEnters) {
+		Entity e1 = FindEntityByUUID(pair.first->GetUserData());
+		Entity e2 = FindEntityByUUID(pair.second->GetUserData());
+
+		if (!e1 || !e2) { return; }
+
+		bool is_sensor =   (e1.Has<Component::CollisionBody>() && e1.Get<Component::CollisionBody>().IsSensor)
+						|| (e2.Has<Component::CollisionBody>() && e2.Get<Component::CollisionBody>().IsSensor);
+
+		if (e1.Has<Component::NativeScript>()) {
+			if (ScriptableEntity* se = e1.GetScriptInstance()) {
+				if (is_sensor) {
+					se->OnSensorEnter(e2);
+				} else {
+					se->OnCollisionEnter(e2);
+				}
+			}
+		}
+		if (e2.Has<Component::NativeScript>()) {
+			if (ScriptableEntity* se = e2.GetScriptInstance()) {
+				if (is_sensor) {
+					se->OnSensorEnter(e1);
+				} else {
+					se->OnCollisionEnter(e1);
+				}
+			}
+		}
+	}
+	m_DeferredOnEnters.clear();
 }
 
 
@@ -287,7 +303,8 @@ void Physics::UpdatePhysics() {
 	SyncTransforms<Component::RigidBody>();
 	SyncTransforms<Component::CollisionBody>();
 
-	ProcessDeferredRemoveContactSignals();
+	ProcessDeferredOnExitSignals();
+	ProcessDeferredOnEnterSignals();
 }
 
 template<typename T>

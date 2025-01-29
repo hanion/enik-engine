@@ -28,7 +28,8 @@ public:
 
 	JPH::PhysicsSystem* GetPhysicsSystem() const { return m_PhysicsSystem; }
 
-	void DeferRemoveContact(JPH::BodyID a, JPH::BodyID b);
+	void DeferOnExit(JPH::BodyID a, JPH::BodyID b);
+	void DeferOnEnter(const JPH::Body& a, const JPH::Body& b);
 
 private:
 	template<typename T>
@@ -36,7 +37,9 @@ private:
 	void CreatePhysicsBody(Entity entity, const Component::Transform& tr, Component::RigidBody& body);
 	void CreatePhysicsBody(Entity entity, const Component::Transform& tr, Component::CollisionBody& body);
 	JPH::Ref<JPH::Shape> CreateShapeForBody(Entity entity);
-	void ProcessDeferredRemoveContactSignals();
+
+	void ProcessDeferredOnExitSignals();
+	void ProcessDeferredOnEnterSignals();
 
 private:
 	JPH::PhysicsSystem* m_PhysicsSystem = nullptr;
@@ -60,8 +63,10 @@ private:
 	JPH::ObjectLayerPairFilter*         m_object_vs_object_layer_filter;
 	JPH::ContactListener*               m_contact_listener;
 
-	std::vector<std::pair<JPH::BodyID, JPH::BodyID>> m_DeferredRemovedContacts = {};
-	std::mutex m_DeferredContactsMutex;
+	std::vector<std::pair<JPH::BodyID, JPH::BodyID>> m_DeferredOnExits = {};
+	std::vector<std::pair<const JPH::Body*, const JPH::Body*>> m_DeferredOnEnters = {};
+	std::mutex m_DeferredOnExitMutex;
+	std::mutex m_DeferredOnEnterMutex;
 
 };
 
