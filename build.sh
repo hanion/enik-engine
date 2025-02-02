@@ -8,6 +8,7 @@ print_usage() {
 	echo "    run     : Run the executable after build"
 	echo "    target  : Build target (editor | runtime)"
 	echo "    static  : Link the script module statically"
+	echo "    mingw   : Use mingw toolchain"
 }
 
 clean_build() {
@@ -26,16 +27,28 @@ configure_project() {
 		PROJECT_TITLE="enik-project"
 	fi
 
-	cmake --no-warn-unused-cli \
-		-DCMAKE_BUILD_TYPE:STRING=$cmake_config \
-		-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE \
-		-DCMAKE_C_COMPILER:FILEPATH=gcc \
-		-DCMAKE_CXX_COMPILER:FILEPATH=g++ \
-		-DCMAKE_CXX_FLAGS="-std=c++17" \
-		-DPROJECT_ROOT=$PROJECT_ROOT \
-		-DPROJECT_TITLE=$PROJECT_TITLE \
-		-DEN_STATIC_SCRIPT_MODULE=$en_static_script_module \
-		-S./ -B./build -G Ninja
+
+	if [[ "$mingw" == true ]]; then
+		cmake --no-warn-unused-cli \
+			-DCMAKE_BUILD_TYPE:STRING=$cmake_config \
+			-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE \
+			-DCMAKE_TOOLCHAIN_FILE=./mingw.cmake \
+			-DPROJECT_ROOT=$PROJECT_ROOT \
+			-DPROJECT_TITLE=$PROJECT_TITLE \
+			-DEN_STATIC_SCRIPT_MODULE=ON \
+			-S./ -B./build -G Ninja
+	else
+		cmake --no-warn-unused-cli \
+			-DCMAKE_BUILD_TYPE:STRING=$cmake_config \
+			-DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE \
+			-DCMAKE_C_COMPILER:FILEPATH=gcc \
+			-DCMAKE_CXX_COMPILER:FILEPATH=g++ \
+			-DCMAKE_CXX_FLAGS="-std=c++17" \
+			-DPROJECT_ROOT=$PROJECT_ROOT \
+			-DPROJECT_TITLE=$PROJECT_TITLE \
+			-DEN_STATIC_SCRIPT_MODULE=$en_static_script_module \
+			-S./ -B./build -G Ninja
+	fi
 
 	if [ $? -eq 0 ]; then
 		print_success "Configuring done"
@@ -47,10 +60,10 @@ configure_project() {
 
 build_project() {
 	print_job "Building project:"
-	print_job "    cmake --build ./build --target all -- -j $(nproc)"
+	print_job "    cmake --build ./build"
 
 	start_time_ms=$(date +%s%3N)
-	cmake --build ./build --target all -- -j $(nproc)
+	cmake --build ./build
 	build_success=$?
 	end_time_ms=$(date +%s%3N)
 
@@ -105,6 +118,7 @@ configure_first=false
 en_static_script_module=OFF
 config="debug"
 target="editor"
+mingw=false
 
 while [[ $# -gt 0 ]]; do
 	key="$1"
@@ -129,6 +143,11 @@ while [[ $# -gt 0 ]]; do
 			;;
 		static)
 			en_static_script_module=ON
+			shift
+			;;
+		mingw)
+			mingw=true
+			configure_first=true
 			shift
 			;;
 		*)

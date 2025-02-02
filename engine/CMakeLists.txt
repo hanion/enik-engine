@@ -3,11 +3,9 @@ cmake_minimum_required(VERSION 3.26.4)
 project(enik-engine)
 
 if(MSVC)
-  set(CMAKE_CXX_FLAGS "/w /FS /wd4820 /wd4996 ${CMAKE_CXX_FLAGS_INIT}"
-  )# Suppress all warnings on MSVC
+	set(CMAKE_CXX_FLAGS "/w /FS /wd4820 /wd4996 ${CMAKE_CXX_FLAGS_INIT}") # Suppress all warnings on MSVC
 else()
-  set(CMAKE_CXX_FLAGS
-      "${CMAKE_CXX_FLAGS} -Wall -Wno-dangling-reference  -Wl,-E")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-dangling-reference  -Wl,-E")
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_C99_STD_AT_QUICK_EXIT=0")
@@ -61,57 +59,48 @@ file(
   "${source_dir}/asset/importer/*.h"
   "${source_dir}/audio/*.h")
 
+
 if(NOT DEFINED PROJECT_PATH_STR)
-  if(DEFINED PROJECT_ROOT AND NOT PROJECT_ROOT STREQUAL "")
-    set(PROJECT_PATH_STR "${PROJECT_ROOT}/project.enik")
-  else()
-    set(PROJECT_PATH_STR "./project.enik")
-  endif()
+	if(DEFINED PROJECT_ROOT AND NOT PROJECT_ROOT STREQUAL "")
+		set(PROJECT_PATH_STR "${PROJECT_ROOT}/project.enik")
+	else()
+		set(PROJECT_PATH_STR "./project.enik")
+	endif()
 endif()
 
 if(NOT DEFINED PROJECT_TITLE OR PROJECT_TITLE STREQUAL "")
-  set(PROJECT_TITLE
-      "enik-project"
-      CACHE STRING "Project title")
+	set(PROJECT_TITLE "enik-project" CACHE STRING "Project title")
 endif()
+
+target_compile_definitions(editor PRIVATE PROJECT_PATH_STR="${PROJECT_PATH_STR}")
+target_compile_definitions(runtime PRIVATE PROJECT_PATH_STR="${PROJECT_PATH_STR}")
+target_compile_definitions(runtime PRIVATE PROJECT_TITLE="${PROJECT_TITLE}")
 
 option(EN_STATIC_SCRIPT_MODULE "Enable static script module" OFF)
-
 if(EN_STATIC_SCRIPT_MODULE)
-  if(NOT DEFINED PROJECT_ROOT OR PROJECT_ROOT STREQUAL "")
-    message(
-      FATAL_ERROR
-        "EN_STATIC_SCRIPT_MODULE is enabled, but PROJECT_ROOT is not set. Please provide it using -DPROJECT_ROOT=/path/to/project"
-    )
-  endif()
+	if(NOT DEFINED PROJECT_ROOT OR PROJECT_ROOT STREQUAL "")
+		message(FATAL_ERROR "EN_STATIC_SCRIPT_MODULE is enabled, but PROJECT_ROOT is not set. "
+			"Please provide it using -DPROJECT_ROOT=/path/to/project")
+	endif()
 
-  target_compile_definitions(editor
-                             PRIVATE PROJECT_PATH_STR="${PROJECT_PATH_STR}")
-  target_compile_definitions(runtime
-                             PRIVATE PROJECT_PATH_STR="${PROJECT_PATH_STR}")
-  target_compile_definitions(runtime PRIVATE PROJECT_TITLE="${PROJECT_TITLE}")
+	file(GLOB_RECURSE project_source_files "${PROJECT_ROOT}/src/*.cpp")
+	list(APPEND source_files ${project_source_files})
+	file(GLOB_RECURSE project_include_files "${PROJECT_ROOT}/src/*.h")
+	list(APPEND include_files ${project_include_files})
 
-  file(GLOB_RECURSE project_source_files "${PROJECT_ROOT}/src/*.cpp")
-  list(APPEND source_files ${project_source_files})
-
-  file(GLOB_RECURSE project_include_files "${PROJECT_ROOT}/src/*.h")
-  list(APPEND include_files ${project_include_files})
+	add_library(${PROJECT_NAME} STATIC ${source_files} ${include_files})
 else()
-  target_compile_definitions(editor
-                             PRIVATE PROJECT_PATH_STR="${PROJECT_PATH_STR}")
-  target_compile_definitions(runtime
-                             PRIVATE PROJECT_PATH_STR="${PROJECT_PATH_STR}")
-  target_compile_definitions(runtime PRIVATE PROJECT_TITLE="${PROJECT_TITLE}")
+	if(NOT (MINGW OR MSVC))
+		add_library(${PROJECT_NAME} SHARED ${source_files} ${include_files})
+	else()
+		add_library(${PROJECT_NAME} STATIC ${source_files} ${include_files})
+	endif()
 endif()
 
-if(UNIX)
-  add_library(${PROJECT_NAME} SHARED ${source_files} ${include_files})
-endif()
-if(WIN32)
-  add_library(${PROJECT_NAME} STATIC ${source_files} ${include_files})
-endif()
 
 set(BUILD_SHARED_LIBS OFF)
+set(YAML_CPP_BUILD_CONTRIB OFF)
+set(YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
 set(YAML_BUILD_SHARED_LIBS OFF)
 
 add_subdirectory(external/spdlog)

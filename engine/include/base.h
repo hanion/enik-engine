@@ -1,6 +1,5 @@
 #pragma once
 
-#define EN_DIST_BUILD 1
 #define PROJECT_PATH (std::filesystem::path(PROJECT_PATH_STR))
 
 
@@ -64,6 +63,7 @@ constexpr Ref<T> CreateRef(Args&& ... args) {
 
 
 #ifdef EN_PLATFORM_WINDOWS
+#ifdef _MSC_VER
 	#ifndef and
 		#define and &&
 	#endif
@@ -75,6 +75,8 @@ constexpr Ref<T> CreateRef(Args&& ... args) {
 	#endif
 
 	#define NOMINMAX
+#endif
+
 	#ifdef max
 		#undef max
 	#endif
