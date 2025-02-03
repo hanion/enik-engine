@@ -273,12 +273,6 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			ImGui::EndCombo();
 		}
 
-		ImGuiUtils::PrefixLabel("Is Kinematic");
-		bool is_kinematic = body.MotionType == JPH::EMotionType::Kinematic;
-		if (ImGui::Checkbox("##IsKine", &is_kinematic)) {
-			body.MotionType = is_kinematic ? JPH::EMotionType::Kinematic : JPH::EMotionType::Dynamic;
-		}
-
 		ImGuiUtils::PrefixLabel("Mass");
 		float mass = body.GetMass();
 		if (ImGui::DragFloat("##Mass", &mass, 0.01f, 0.001f)) {
@@ -287,12 +281,10 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			}
 		}
 
-		if (!is_kinematic) {
-			ImGuiUtils::PrefixLabel("Gravity Factor");
-			float gf = body.GetGravityFactor();
-			if (ImGui::DragFloat("##GF", &gf, 0.01f)) {
-				body.SetGravityFactor(gf);
-			}
+		ImGuiUtils::PrefixLabel("Gravity Factor");
+		float gf = body.GetGravityFactor();
+		if (ImGui::DragFloat("##GF", &gf, 0.01f)) {
+			body.SetGravityFactor(gf);
 		}
 	});
 
@@ -317,7 +309,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 		ImGui::Checkbox("##IsSensor", &body.IsSensor);
 	});
 
-	DisplayComponentInInspector<Component::CollisionShape>("CollisionShape", entity, true, [&]() {
+	DisplayComponentInInspector<Component::CollisionShape>("Collision Shape", entity, true, [&]() {
 		auto& cs = entity.Get<Component::CollisionShape>();
 
 		std::string text = cs.ToString();

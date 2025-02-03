@@ -651,7 +651,6 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 
 		auto& body = entity.Get<Component::RigidBody>();
 		out << YAML::Key << "Layer" << YAML::Value << body.Layer;
-		out << YAML::Key << "IsKinematic" << YAML::Value << (body.MotionType == JPH::EMotionType::Kinematic);
 		out << YAML::Key << "GravityFactor" << YAML::Value << body.GetGravityFactor();
 		out << YAML::Key << "Mass" << YAML::Value << body.GetMass();
 
@@ -902,7 +901,7 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 	if (auto node = entity["Component::RigidBody"]) {
 		auto& body = deserialized_entity.Add<Component::RigidBody>();
 		body.Layer = node["Layer"].as<int>();
-		body.MotionType = (node["IsKinematic"].as<bool>() ? JPH::EMotionType::Kinematic : JPH::EMotionType::Dynamic);
+		body.MotionType = JPH::EMotionType::Dynamic;
 		body.SetGravityFactor(node["GravityFactor"].as<float>());
 		body.SetMass(node["Mass"].as<float>());
 	}

@@ -440,18 +440,12 @@ JPH::BodyInterface& PhysicsBodyBase::GetBodyInterface() const {
 	return ScriptSystem::GetPhysicsContext().GetPhysicsSystem()->GetBodyInterface();
 }
 
-
-void RigidBody::SetKinematic(bool is_kinematic) {
-	MotionType = is_kinematic ? JPH::EMotionType::Kinematic : JPH::EMotionType::Dynamic;
-}
-
 void RigidBody::AddForce(const glm::vec3& force) {
 	EN_CORE_ASSERT(MotionType == JPH::EMotionType::Dynamic,
 		"PhysicsBodyBase::AddForce can only be used on Dynamic bodies.");
 
 	if (body) {
 		GetBodyInterface().AddForce(body->GetID(), {force.x, force.y, force.z});
-// 		body->AddForce({force.x, force.y, force.z});
 	}
 }
 void RigidBody::AddImpulse(const glm::vec3& impulse) {

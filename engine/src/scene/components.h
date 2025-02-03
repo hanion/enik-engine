@@ -136,8 +136,6 @@ struct RigidBody : PhysicsBodyBase {
 	RigidBody() = default;
 	RigidBody(const RigidBody&) = default;
 
-	void SetKinematic(bool is_kinematic);
-
 	void AddForce(const glm::vec3& force);
 	void AddImpulse(const glm::vec3& impulse);
 	void AddTorque(const glm::vec3& torque);
@@ -161,6 +159,9 @@ struct CollisionBody : PhysicsBodyBase {
 
 	void SetStatic(bool is_static) {
 		MotionType = is_static ? JPH::EMotionType::Static : JPH::EMotionType::Kinematic;
+	}
+	void SetKinematic(bool is_kinematic) {
+		SetStatic(!is_kinematic);
 	}
 };
 
