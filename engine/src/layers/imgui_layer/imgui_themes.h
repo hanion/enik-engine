@@ -23,8 +23,8 @@ public:
 		style.Colors[ImGuiCol_TitleBgCollapsed]      = ImVec4(0.00f, 0.00f, 0.00f, 0.51f);
 		style.Colors[ImGuiCol_MenuBarBg]             = style.Colors[ImGuiCol_TitleBg];
 		style.Colors[ImGuiCol_DockingEmptyBg]        = style.Colors[ImGuiCol_TitleBg];
-		style.Colors[ImGuiCol_ScrollbarBg]           = ImVec4(0.02f, 0.02f, 0.02f, 0.53f);
-		style.Colors[ImGuiCol_ScrollbarGrab]         = ImVec4(0.31f, 0.31f, 0.31f, 1.00f);
+		style.Colors[ImGuiCol_ScrollbarBg]           = style.Colors[ImGuiCol_WindowBg];
+		style.Colors[ImGuiCol_ScrollbarGrab]         = style.Colors[ImGuiCol_FrameBg];
 		style.Colors[ImGuiCol_ScrollbarGrabHovered]  = ImVec4(0.41f, 0.41f, 0.41f, 1.00f);
 		style.Colors[ImGuiCol_ScrollbarGrabActive]   = ImVec4(0.51f, 0.51f, 0.51f, 1.00f);
 		style.Colors[ImGuiCol_CheckMark]             = ImVec4(0.10f, 1.00f, 0.00f, 1.00f);
@@ -68,6 +68,7 @@ public:
 		style.TabRounding              = 3.0f;
 		style.ChildRounding            = 3.0f;
 		style.PopupRounding            = 3.0f;
+		style.ScrollbarRounding        = 3.0f;
 
 		style.IndentSpacing            = 10;
 		style.DockingSeparatorSize     = 1;
