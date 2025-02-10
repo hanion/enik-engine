@@ -54,16 +54,9 @@ void SceneTreePanel::SetSelectedEntityWithUUID(const UUID& uuid) {
 }
 
 void SceneTreePanel::RenderContent() {
-	if (!ImGui::BeginTable("SceneTreeTable", 1) or m_Context == nullptr) {
-		ImGui::EndTable();
-		ImGui::End();
+	if (m_Context == nullptr) {
 		return;
 	}
-
-
-
-	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0);
 
 	char buffer[256];
 	memset(buffer, 0, sizeof(buffer));
@@ -108,6 +101,16 @@ void SceneTreePanel::RenderContent() {
 
 	ImGui::Spacing();
 
+	if (!ImGui::BeginChild("scenetree_child")) {
+		return;
+	}
+
+	if (!ImGui::BeginTable("SceneTreeTable", 1)) {
+		ImGui::EndChild();
+		return;
+	}
+
+
 	m_Context->m_Registry.each([&](auto entityID) {
 		Entity entity = Entity(entityID, m_Context.get());
 		if (entity.Has<Component::Family>()) {
@@ -125,8 +128,9 @@ void SceneTreePanel::RenderContent() {
 		m_SelectionContext = {};
 	}
 
-	ImGui::Dummy(ImVec2(0,60));
 	ImGui::EndTable();
+	ImGui::Dummy(ImVec2(0,60));
+	ImGui::EndChild();
 	m_MouseReleased = false;
 }
 

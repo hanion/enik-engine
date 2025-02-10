@@ -33,17 +33,10 @@ void InspectorPanel::SetContext(const Ref<Scene>& context, SceneTreePanel* scene
 }
 
 void InspectorPanel::RenderContent() {
-	if (!ImGui::BeginTable("InspectorTable", 1)) {
-		ImGui::EndTable();
-		return;
-	}
-
 	Entity selectedEntity = m_SceneTreePanel->GetSelectedEntity();
 	if (selectedEntity) {
 		DrawEntityInInspector(selectedEntity);
 	}
-
-	ImGui::EndTable();
 }
 
 template <typename T>
@@ -87,9 +80,6 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 
 
 	/* Tag */ {
-		ImGui::TableNextRow();
-		ImGui::TableSetColumnIndex(0);
-
 		std::string& text = entity.GetTag();
 
 		char buffer[256];
@@ -130,6 +120,17 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	}
 
 	ImGui::Spacing();
+
+	if (!ImGui::BeginChild("inpsector_child")) {
+		ImGui::PopStyleColor(pushed_style_color);
+		return;
+	}
+
+	if (!ImGui::BeginTable("InspectorTable", 1)) {
+		ImGui::EndChild();
+		ImGui::PopStyleColor(pushed_style_color);
+		return;
+	}
 
 
 	DisplayComponentInInspector<Component::SceneControl>("Scene Control", entity, true, [&]() {
@@ -440,6 +441,9 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	});
 
 	ImGui::PopStyleColor(pushed_style_color);
+	ImGui::EndTable();
+	ImGui::Dummy(ImVec2(0,60));
+	ImGui::EndChild();
 	ImGui::PopID();
 }
 
