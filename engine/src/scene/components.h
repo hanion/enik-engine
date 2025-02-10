@@ -117,6 +117,10 @@ struct PhysicsBodyBase {
 	PhysicsBodyBase(const PhysicsBodyBase&) = default;
 	virtual ~PhysicsBodyBase() = default;
 
+	bool IsStatic() const {
+		return MotionType == JPH::EMotionType::Static;
+	}
+
 
 	glm::vec3 GetLinearVelocity() const;
 	void      SetLinearVelocity(const glm::vec3& velocity);

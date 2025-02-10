@@ -1,6 +1,7 @@
 #include "physics.h"
 
 #include "core/log.h"
+#include "physics/raycast.h"
 #include "scene/components.h"
 #include "scene/entity.h"
 #include "scene/scriptable_entity.h"
@@ -11,7 +12,13 @@
 #include "Jolt/Physics/Body/BodyCreationSettings.h"
 #include "Jolt/Physics/Body/MotionType.h"
 #include "Jolt/Physics/Collision/BroadPhase/BroadPhaseLayer.h"
+#include "Jolt/Physics/Collision/BroadPhase/BroadPhaseLayerInterfaceTable.h"
+#include "Jolt/Physics/Collision/BroadPhase/BroadPhaseQuery.h"
+#include "Jolt/Physics/Collision/BroadPhase/ObjectVsBroadPhaseLayerFilterTable.h"
+#include "Jolt/Physics/Collision/CastResult.h"
+#include "Jolt/Physics/Collision/CollisionCollectorImpl.h"
 #include "Jolt/Physics/Collision/ObjectLayer.h"
+#include "Jolt/Physics/Collision/RayCast.h"
 #include "Jolt/Physics/EActivation.h"
 #include "script_system/script_system.h"
 #include <Jolt/Core/Factory.h>
@@ -218,14 +225,17 @@ void Physics::ProcessDeferredOnEnterSignals() {
 
 
 
-void Physics::Initialize(entt::registry& Registry, class Scene* scene, float delta_time) {
-	m_delta_time = delta_time;
+void Physics::Initialize(entt::registry& Registry, class Scene* scene) {
+	EN_PROFILE_SECTION("Physics::Initialize");
+
 	m_Registry = &Registry;
 	m_Scene = scene;
 
 	RegisterDefaultAllocator();
 	Factory::sInstance = new Factory();
 	RegisterTypes();
+
+	m_temp_allocator = new TempAllocatorImpl(32 * 1024 * 1024);
 
 	m_broad_phase_layer_interface = new BPLayerInterfaceImpl();
 
@@ -250,7 +260,8 @@ void Physics::Initialize(entt::registry& Registry, class Scene* scene, float del
 
 	m_PhysicsSystem->SetContactListener(m_contact_listener);
 
-	m_job_system = new JobSystemThreadPool(cMaxPhysicsJobs, cMaxPhysicsBarriers, thread::hardware_concurrency() - 1);
+	m_job_system = new JobSystemThreadPool(cMaxPhysicsJobs, cMaxPhysicsBarriers, std::max(1u,thread::hardware_concurrency()-4));
+
 
 	m_is_initialized = true;
 }
@@ -270,6 +281,7 @@ void Physics::Uninitialize() {
 	delete m_object_vs_broadphase_layer_filter;
 	delete m_object_vs_object_layer_filter;
 	delete m_contact_listener;
+	delete m_temp_allocator;
 
 
 	m_Registry->each([&](entt::entity entity) {
@@ -294,11 +306,16 @@ void Physics::Uninitialize() {
 
 
 void Physics::UpdatePhysics() {
+	EN_PROFILE_SECTION("Physics::UpdatePhysics");
+
 	if (!m_is_initialized) {
 		return;
 	}
 
-	m_PhysicsSystem->Update(m_delta_time, 2, &m_temp_allocator, m_job_system);
+	{
+		EN_PROFILE_SECTION("Jolt Physics System Update");
+		m_PhysicsSystem->Update(PHYSICS_UPDATE_RATE, 1, m_temp_allocator, m_job_system);
+	}
 
 	SyncTransforms<Component::RigidBody>();
 	SyncTransforms<Component::CollisionBody>();
@@ -309,6 +326,8 @@ void Physics::UpdatePhysics() {
 
 template<typename T>
 void Physics::SyncTransforms() {
+	EN_PROFILE_SECTION("Physics::SyncTransforms");
+
 	auto group = m_Registry->group<T>(entt::get<Component::Transform>);
 	for (auto entity : group) {
 		auto& tr = group.template get<Component::Transform>(entity);
@@ -316,6 +335,10 @@ void Physics::SyncTransforms() {
 		T& body = group.template get<T>(entity);
 
 		if (body.body != nullptr) {
+			if (body.IsStatic()) {
+				continue;
+			}
+
 			const Vec3& pos = body.body->GetPosition();
 			const Quat& rot = body.body->GetRotation();
 
@@ -338,6 +361,8 @@ void Physics::SyncTransforms() {
 
 
 void Physics::CreatePhysicsWorld() {
+	EN_PROFILE_SECTION("Physics::CreatePhysicsWorld");
+
 	{
 		auto group = m_Registry->group<Component::RigidBody>(entt::get<Component::Transform>);
 		for (auto entity : group) {
@@ -403,7 +428,7 @@ void Physics::CreatePhysicsBody(Entity entity, const Component::Transform& tr, C
 
 	Body* new_body = m_PhysicsSystem->GetBodyInterface().CreateBody(bcs);
 	new_body->SetUserData(entity.GetID());
-	m_PhysicsSystem->GetBodyInterface().AddBody(new_body->GetID(), EActivation::Activate);
+	m_PhysicsSystem->GetBodyInterface().AddBody(new_body->GetID(), EActivation::DontActivate);
 
 	body.body = new_body;
 }
@@ -436,7 +461,8 @@ JPH::Ref<JPH::Shape> Physics::CreateShapeForBody(Entity entity) {
 				return cs.shape;
 			}
 			case Component::CollisionShape::Type::CIRCLE: {
-				SphereShapeSettings shape(cs.CircleRadius);
+				auto scale = cs.CircleRadius * max(tr.GlobalScale.x, tr.GlobalScale.y);
+				SphereShapeSettings shape(scale);
 				cs.shape = shape.Create().Get();
 				cs.shape->AddRef();
 				return cs.shape;
@@ -449,6 +475,27 @@ JPH::Ref<JPH::Shape> Physics::CreateShapeForBody(Entity entity) {
 	auto s = shape.Create().Get();
 	s->AddRef();
 	return s;
+}
+
+
+RaycastResult Physics::CastRay(const Raycast& ray) {
+	assert(ray.layer < Layers::NUM_LAYERS);
+
+	JPH::Vec3 jolt_from(ray.from.x, ray.from.y, ray.from.z);
+	JPH::Vec3 jolt_to(ray.to.x, ray.to.y, ray.to.z);
+	JPH::RRayCast jolt_ray(jolt_from, jolt_to);
+
+
+	JPH::RayCastResult result;
+	auto& npq = m_PhysicsSystem->GetNarrowPhaseQuery();
+	if (npq.CastRay(jolt_ray, result) && result.mFraction <= 1.0f) {
+		Entity e = FindEntityByUUID(m_PhysicsSystem->GetBodyInterface().GetUserData(result.mBodyID));
+		JPH::Vec3 hit_position = jolt_ray.GetPointOnRay(result.mFraction);
+		glm::vec3 p = { hit_position.GetX(), hit_position.GetY(), hit_position.GetZ() };
+		return RaycastResult{e, p};
+	}
+
+	return {};
 }
 
 

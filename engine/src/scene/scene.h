@@ -10,6 +10,7 @@
 namespace Enik {
 
 class Entity;
+class ScriptableEntity;
 
 class Scene {
 public:
@@ -92,6 +93,7 @@ private:
 	friend class PrefabEditorTab;
 	friend class SceneEditorTab;
 	friend class ScriptSystem;
+	friend class ScriptableEntity;
 };
 
 }

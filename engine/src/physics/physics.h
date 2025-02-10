@@ -11,13 +11,17 @@
 
 namespace Enik {
 
-constexpr double PHYSICS_UPDATE_RATE = 1.0/144.0;
+constexpr float PHYSICS_UPDATE_RATE = 1.0/60.0;
+
+
+struct RaycastResult;
+struct Raycast;
 
 
 class Physics {
 public:
 	bool m_is_initialized = false;
-	void Initialize(entt::registry& Registry, class Scene* scene, float delta_time = PHYSICS_UPDATE_RATE);
+	void Initialize(entt::registry& Registry, class Scene* scene);
 	void Uninitialize();
 
 	void UpdatePhysics();
@@ -30,6 +34,8 @@ public:
 
 	void DeferOnExit(JPH::BodyID a, JPH::BodyID b);
 	void DeferOnEnter(const JPH::Body& a, const JPH::Body& b);
+
+	RaycastResult CastRay(const Raycast& ray);
 
 private:
 	template<typename T>
@@ -44,19 +50,16 @@ private:
 private:
 	JPH::PhysicsSystem* m_PhysicsSystem = nullptr;
 	JPH::JobSystemThreadPool* m_job_system;
-	JPH::TempAllocatorMalloc m_temp_allocator;
-// 	JPH::TempAllocatorImpl m_temp_allocator;
+	JPH::TempAllocator * m_temp_allocator = nullptr;
 
 	entt::registry* m_Registry = nullptr;
 	class Scene* m_Scene = nullptr;
 
-	float m_delta_time = PHYSICS_UPDATE_RATE;
-
 
 	const int m_max_bodies = 1024;
 	const int m_num_body_mutexes = 0;
-	const int m_max_body_pairs = 1024;
-	const int m_max_contact_constraints = 1024;
+	const int m_max_body_pairs = 4096;
+	const int m_max_contact_constraints = 4096;
 
 	JPH::BroadPhaseLayerInterface*      m_broad_phase_layer_interface;
 	JPH::ObjectVsBroadPhaseLayerFilter* m_object_vs_broadphase_layer_filter;

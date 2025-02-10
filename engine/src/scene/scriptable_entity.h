@@ -2,6 +2,7 @@
 
 #include "scene/entity.h"
 #include "scene/native_script_fields.h"
+#include "physics/raycast.h"
 
 namespace Enik {
 
@@ -68,6 +69,8 @@ public:
 	virtual void OnMouseButtonPressed (const MouseButtonPressedEvent&  event) { }
 	virtual void OnMouseButtonReleased(const MouseButtonReleasedEvent& event) { }
 	virtual void OnMouseScrolled(const MouseScrolledEvent& event) { }
+
+	RaycastResult CastRay(Raycast ray);
 
 private:
 	friend class Scene;
