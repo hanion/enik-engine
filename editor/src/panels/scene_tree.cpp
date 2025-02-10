@@ -16,6 +16,18 @@ namespace Enik {
 void SceneTreePanel::SetContext(const Ref<Scene>& context) {
 	m_Context = context;
 	m_SelectionContext = {};
+
+	// select the first root entity
+	if (m_Context && m_Context->m_Registry.size() > 0) {
+		auto view = m_Context->m_Registry.view<Component::ID>();
+		if (!view.empty()) {
+			Entity e = Entity(*view.begin(), m_Context.get());
+			while (e.HasParent()) {
+				e = e.GetParent();
+			}
+			SetSelectedEntity(e);
+		}
+	}
 }
 
 UUID SceneTreePanel::GetSelectedEntityUUID() {
