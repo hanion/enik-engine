@@ -436,6 +436,30 @@ void PhysicsBodyBase::SetPosition(const glm::vec3& position) {
 	}
 }
 
+void PhysicsBodyBase::SetFriction(float friction) {
+	if (body) {
+		body->SetFriction(friction);
+	}
+}
+float PhysicsBodyBase::GetFriction() {
+	if (body) {
+		return body->GetFriction();
+	}
+	return 0.5f;
+}
+void PhysicsBodyBase::SetRestitution(float restitution) {
+	if (body) {
+		body->SetRestitution(restitution);
+	}
+}
+float PhysicsBodyBase::GetRestitution() {
+	if (body) {
+		return body->GetRestitution();
+	}
+	return 0.5f;
+}
+
+
 JPH::BodyInterface& PhysicsBodyBase::GetBodyInterface() const {
 	return ScriptSystem::GetPhysicsContext().GetPhysicsSystem()->GetBodyInterface();
 }
@@ -477,6 +501,13 @@ void RigidBody::SetGravityFactor(float gravity_factor) {
 	GravityFactor = gravity_factor;
 	if (body) {
 		body->GetMotionProperties()->SetGravityFactor(GravityFactor);
+	}
+}
+
+void CollisionBody::SetIsSensor(bool is_sensor) {
+	IsSensor = is_sensor;
+	if (body) {
+		body->SetIsSensor(IsSensor);
 	}
 }
 

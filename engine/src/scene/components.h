@@ -66,6 +66,11 @@ struct Transform {
 		transform = glm::scale(transform, GlobalScale);
 		return transform;
 	}
+
+	glm::vec3  GetLocalRotationEuler() const { return glm::eulerAngles(LocalRotation); }
+	glm::vec3 GetGlobalRotationEuler() const { return glm::eulerAngles(GlobalRotation); }
+	glm::vec3  GetLocalRotationEulerDegrees() const { return glm::degrees(glm::eulerAngles(LocalRotation)); }
+	glm::vec3 GetGlobalRotationEulerDegrees() const { return glm::degrees(glm::eulerAngles(GlobalRotation)); }
 };
 
 struct SpriteRenderer {
@@ -131,6 +136,13 @@ struct PhysicsBodyBase {
 	void      SetAngularVelocity(const glm::vec3& angular_velocity);
 
 	void SetPosition(const glm::vec3& position);
+
+	void  SetFriction(float friction);
+	float GetFriction();
+
+	void  SetRestitution(float restution);
+	float GetRestitution();
+
 protected:
 	JPH::PhysicsSystem* GetPhysicsSystem() const;
 	JPH::BodyInterface& GetBodyInterface() const;
@@ -167,6 +179,8 @@ struct CollisionBody : PhysicsBodyBase {
 	void SetKinematic(bool is_kinematic) {
 		SetStatic(!is_kinematic);
 	}
+
+	void SetIsSensor(bool is_sensor);
 };
 
 
