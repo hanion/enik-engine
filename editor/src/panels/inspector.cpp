@@ -546,7 +546,7 @@ void InspectorPanel::DisplaySpriteTexture(Component::SpriteRenderer& sprite) {
 		return;
 	}
 
-	Ref<Texture2D> texture = Renderer2D::s_ErrorTexture;
+	Ref<Texture2D> texture = Renderer2D::GetErrorTexture();
 	if (sprite.Handle and AssetManager::IsAssetHandleValid(sprite.Handle)) {
 		texture = AssetManager::GetAsset<Texture2D>(sprite.Handle);
 	}

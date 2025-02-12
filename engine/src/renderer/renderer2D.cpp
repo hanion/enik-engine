@@ -61,10 +61,11 @@ struct Renderer2DData {
 	uint32_t TextureSlotIndex = 1;
 
 	Renderer2D::Statistics Stats;
+
+	Ref<Texture2D> ErrorTexture;
 };
 
 static Renderer2DData s_Data;
-Ref<Texture2D> Renderer2D::s_ErrorTexture;
 
 const glm::vec4 Renderer2DData::QuadVertexPositions[] = {
 	glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f),
@@ -251,15 +252,13 @@ void Renderer2D::DrawQuad(const Component::Transform& trans, const Component::Sp
 
 	float texture_index = 0.0f;
 
-	if (sprite.Handle) {
-		Ref<Texture2D> texture = AssetManager::GetAsset<Texture2D>(sprite.Handle);
-		if (!texture) {
-			texture = s_ErrorTexture;
-		}
-		texture_index = GetTextureIndex(texture);
-		if (sprite.SubTexture) {
-			texture_coords = sprite.SubTexture->GetTextureCoords();
-		}
+	Ref<Texture2D> texture = AssetManager::GetAsset<Texture2D>(sprite.Handle);
+	if (!texture) {
+		texture = Renderer2D::GetErrorTexture();
+	}
+	texture_index = GetTextureIndex(texture);
+	if (sprite.SubTexture) {
+		texture_coords = sprite.SubTexture->GetTextureCoords();
 	}
 
 	if (s_Data.QuadIndexCount >= Renderer2DData::MaxIndices) {
@@ -346,56 +345,64 @@ void Renderer2D::DrawText2D(const Component::Transform& transform, const Compone
 	}
 }
 
-void Renderer2D::DrawLine(const glm::vec2& p0, const glm::vec2& p1, const glm::vec4& color) {
-	DrawLine(glm::vec3(p0.x, p0.y, 0.99f), glm::vec3(p1.x, p1.y, 0.99f), color);
+void Renderer2D::DrawLine(const glm::vec2& p0, const glm::vec2& p1, const glm::vec4& color, float thickness) {
+	DrawLine(glm::vec3(p0.x, p0.y, 0.99f), glm::vec3(p1.x, p1.y, 0.99f), color, thickness);
 }
 
-void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color) {
-	s_Data.LineVertexBufferPtr->Position = p0;
-	s_Data.LineVertexBufferPtr->Color = color;
-	s_Data.LineVertexBufferPtr++;
+void Renderer2D::DrawLine(const glm::vec3& p0, const glm::vec3& p1, const glm::vec4& color, float thickness) {
+	glm::vec3 line_dir = glm::normalize(p1 - p0);
+	glm::vec3 perp_dir = glm::normalize(glm::vec3(-line_dir.y, line_dir.x, 0.0f));
 
-	s_Data.LineVertexBufferPtr->Position = p1;
-	s_Data.LineVertexBufferPtr->Color = color;
-	s_Data.LineVertexBufferPtr++;
+	glm::vec3 offset = perp_dir * (thickness * 0.5f);
 
-	s_Data.LineVertexCount += 2;
+	glm::vec3 quad[4];
+	quad[0] = p0 - offset;
+	quad[1] = p1 - offset;
+	quad[2] = p1 + offset;
+	quad[3] = p0 + offset;
+
+	for (int i = 0; i < 4; ++i) {
+		s_Data.LineVertexBufferPtr->Position = quad[i];
+		s_Data.LineVertexBufferPtr->Color = color;
+		s_Data.LineVertexBufferPtr++;
+		s_Data.LineVertexCount++;
+	}
 }
 
-void Renderer2D::DrawRect(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color) {
-	DrawRect(glm::vec3(position.x, position.y, 0.99f), size, color);
+void Renderer2D::DrawRect(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color, float thickness) {
+	DrawRect(glm::vec3(position.x, position.y, 0.99f), size, color, thickness);
 }
 
-void Renderer2D::DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color) {
+void Renderer2D::DrawRect(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, float thickness) {
     glm::vec3 p0 = glm::vec3(position.x - size.x * 0.5f, position.y - size.y * 0.5f, position.z);
     glm::vec3 p1 = glm::vec3(position.x + size.x * 0.5f, position.y - size.y * 0.5f, position.z);
     glm::vec3 p2 = glm::vec3(position.x + size.x * 0.5f, position.y + size.y * 0.5f, position.z);
     glm::vec3 p3 = glm::vec3(position.x - size.x * 0.5f, position.y + size.y * 0.5f, position.z);
 
-    DrawLine(p0, p1, color);
-    DrawLine(p1, p2, color);
-    DrawLine(p2, p3, color);
-    DrawLine(p3, p0, color);
+    DrawLine(p0, p1, color, thickness);
+    DrawLine(p1, p2, color, thickness);
+    DrawLine(p2, p3, color, thickness);
+    DrawLine(p3, p0, color, thickness);
 }
 
-void Renderer2D::DrawRect(const glm::mat4& transform, const glm::vec4& color) {
+void Renderer2D::DrawRect(const glm::mat4& transform, const glm::vec4& color, float thickness) {
 	glm::vec3 line_vertices[4];
 
 	for (size_t i = 0; i < 4; i++) {
 		line_vertices[i] = transform * s_Data.QuadVertexPositions[i];
 	}
 
-	DrawLine(line_vertices[0], line_vertices[1], color);
-	DrawLine(line_vertices[1], line_vertices[2], color);
-	DrawLine(line_vertices[2], line_vertices[3], color);
-	DrawLine(line_vertices[3], line_vertices[0], color);
+	DrawLine(line_vertices[0], line_vertices[1], color, thickness);
+	DrawLine(line_vertices[1], line_vertices[2], color, thickness);
+	DrawLine(line_vertices[2], line_vertices[3], color, thickness);
+	DrawLine(line_vertices[3], line_vertices[0], color, thickness);
 }
 
-void Renderer2D::DrawRect(const Component::Transform& transform, const glm::vec4& color) {
-	DrawRect(transform.GetTransform(), color);
+void Renderer2D::DrawRect(const Component::Transform& transform, const glm::vec4& color, float thickness) {
+	DrawRect(transform.GetTransform(), color, thickness);
 }
 
-void Renderer2D::DrawCircle(const glm::vec2& position, float radius, int segments, const glm::vec4& color) {
+void Renderer2D::DrawCircle(const glm::vec2& position, float radius, int segments, const glm::vec4& color, float thickness) {
 	float angle_increment = 2.0f * glm::pi<float>() / static_cast<float>(segments);
 	glm::vec2 p0, p1;
 
@@ -409,7 +416,7 @@ void Renderer2D::DrawCircle(const glm::vec2& position, float radius, int segment
 		p1.x = position.x + radius * glm::cos(angle1);
 		p1.y = position.y + radius * glm::sin(angle1);
 
-		DrawLine(p0, p1, color);
+		DrawLine(p0, p1, color, thickness);
 	}
 }
 
@@ -435,7 +442,10 @@ void Renderer2D::CreateErrorTexture() {
 	Buffer data;
 	data.Data = _s_ErrorTextureData;
 	data.Size = sizeof(_s_ErrorTextureData);
-	s_ErrorTexture = Texture2D::Create(spec, data);
+	s_Data.ErrorTexture = Texture2D::Create(spec, data);
+}
+const Ref<Texture2D> Renderer2D::GetErrorTexture() {
+	return s_Data.ErrorTexture;
 }
 
 }

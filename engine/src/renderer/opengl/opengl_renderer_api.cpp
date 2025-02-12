@@ -36,7 +36,7 @@ void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertex_array, uint32
 
 void OpenGLRendererAPI::DrawLine(const Ref<VertexArray>& vertex_array, uint32_t vertex_count) {
 	vertex_array->Bind();
-	glDrawArrays(GL_LINES, 0, vertex_count);
+	glDrawArrays(GL_QUADS, 0, vertex_count);
 }
 
 }

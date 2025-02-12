@@ -563,32 +563,35 @@ void SceneEditorTab::OnOverlayRender() {
 	}
 
 	if (m_ShowColliders) {
+		const float line_thickness = std::clamp(m_EditorCameraController.GetZoomLevel()*0.01f, 0.01f, 0.3f);
 		auto view = m_ActiveScene->Reg().view<Component::CollisionShape, Component::Transform>();
 		for(auto& entity : view) {
 			auto [transform, collider] = view.get<Component::Transform, Component::CollisionShape>(entity);
 			switch (collider.Shape) {
 				case Component::CollisionShape::Type::CIRCLE: {
-					for (int t = 0; t < 5; ++t) {
-						Renderer2D::DrawCircle(
-							glm::vec3(
-								transform.GlobalPosition.x + collider.CircleCenter.x,
-								transform.GlobalPosition.y + collider.CircleCenter.y,
-								0.999f),
-							transform.LocalScale.x * collider.CircleRadius + t*0.001f,
-							32,
-							glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
-					}
+					Renderer2D::DrawCircle(
+						glm::vec3(
+							transform.GlobalPosition.x + collider.CircleCenter.x,
+							transform.GlobalPosition.y + collider.CircleCenter.y,
+							0.998f
+						),
+						transform.LocalScale.x * collider.CircleRadius,
+						32,
+						glm::vec4(0.3f, 0.8f, 0.3f, 1.0f),
+						line_thickness
+					);
 					break;
 				}
 				case Component::CollisionShape::Type::BOX: {
 					Component::Transform trans;
 					trans.GlobalPosition = glm::vec3(
-							transform.GlobalPosition.x,
-							transform.GlobalPosition.y,
-							0.999f);
+						transform.GlobalPosition.x,
+						transform.GlobalPosition.y,
+						0.998f
+					);
 					trans.GlobalRotation = transform.GlobalRotation;
 					trans.GlobalScale = transform.GlobalScale * collider.BoxScale * 2.0f;
-					Renderer2D::DrawRect(trans, glm::vec4(0.3f, 0.8f, 0.3f, 1.0f));
+					Renderer2D::DrawRect(trans, glm::vec4(0.3f, 0.8f, 0.3f, 1.0f), line_thickness);
 					break;
 				}
 				case Component::CollisionShape::Type::NONE: break;
@@ -599,22 +602,13 @@ void SceneEditorTab::OnOverlayRender() {
 
 	}
 
-
 	if (m_ShowSelectionOutline) {
 		if (m_SceneTreePanel.IsSelectedEntityValid()) {
-			auto transform = m_SceneTreePanel.GetSelectedEntity().Get<Component::Transform>();
+			Entity selected = m_SceneTreePanel.GetSelectedEntity();
+			Component::Transform transform = selected.Get<Component::Transform>();
 			transform.GlobalPosition.z = 0.999f;
 
-			float increase_amount = 0.002f * m_EditorCameraController.GetZoomLevel();
-
-			for (int i = 0; i < m_SelectionOutlineWidth; i++) {
-				Renderer2D::DrawRect(
-					transform,
-					m_SelectionOutlineColor
-				);
-				transform.GlobalScale.x += increase_amount;
-				transform.GlobalScale.y += increase_amount;
-			}
+			Renderer2D::DrawRect(transform, m_SelectionOutlineColor, m_EditorCameraController.GetZoomLevel()*0.018f);
 		}
 	}
 
