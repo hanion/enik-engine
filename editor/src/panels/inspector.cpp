@@ -90,7 +90,11 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			text = std::string(buffer);
 		}
 		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal)){
+#if EN_PLATFORM_LINUX
 			ImGui::SetTooltip("%lu", (uint64_t)entity.Get<Component::ID>());
+#else
+			ImGui::SetTooltip("%llu", (uint64_t)entity.Get<Component::ID>());
+#endif
 		}
 	}
 
@@ -121,14 +125,11 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 
 	ImGui::Spacing();
 
-	if (!ImGui::BeginChild("inpsector_child")) {
+	bool open = ImGui::BeginChild("inpsector_child") && ImGui::BeginTable("InspectorTable", 1);
+	if (!open) {
 		ImGui::PopStyleColor(pushed_style_color);
-		return;
-	}
-
-	if (!ImGui::BeginTable("InspectorTable", 1)) {
 		ImGui::EndChild();
-		ImGui::PopStyleColor(pushed_style_color);
+		ImGui::PopID();
 		return;
 	}
 
@@ -459,25 +460,24 @@ void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity
 
 	ImGui::TableNextRow();
 	ImGui::TableSetColumnIndex(0);
+	ImGui::PushID(((void*)typeid(T).hash_code()));
 
 	bool remove_component = false;
 	
 	int pushed_color = color_component<T>();
 
-	bool open = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), tree_node_flags, "%s", name.c_str());
+	bool close_button_value = true;
+	bool* close_button = can_delete ? &close_button_value : NULL;
+	bool open = ImGui::CollapsingHeader(name.c_str(), close_button, tree_node_flags);
 
 	ImGui::PopStyleColor(pushed_color);
 
 
 	if (can_delete) {
-		if (ImGui::IsMouseClicked(1) and ImGui::IsItemHovered()) {
+		if (!close_button_value) {
 			ImGui::OpenPopup("ComponentSettings");
 		}
-
-		float avail_width = ImGui::GetContentRegionAvail().x;
-		float button_width = GImGui->Font->FontSize + GImGui->Style.FramePadding.x * 2.0f;
-		ImGui::SameLine(avail_width - button_width);
-		if (ImGui::Button("...", ImVec2(button_width, 0))) {
+		if (ImGui::IsMouseClicked(1) and ImGui::IsItemHovered()) {
 			ImGui::OpenPopup("ComponentSettings");
 		}
 		if (ImGui::BeginPopup("ComponentSettings")) {
@@ -490,8 +490,8 @@ void InspectorPanel::DisplayComponentInInspector(const std::string& name, Entity
 
 	if (open) {
 		lambda();
-		ImGui::TreePop();
 	}
+	ImGui::PopID();
 
 	if (remove_component) {
 		entity.Remove<T>();
@@ -642,8 +642,11 @@ void InspectorPanel::DisplaySubTexture(Component::SpriteRenderer& sprite) {
 }
 
 void InspectorPanel::DisplayNativeScriptsInPopup() {
-	if (ImGui::BeginMenu("Native Script")) {
+	ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::script);
+	bool open = ImGui::BeginMenu("Native Script");
+	ImGui::PopStyleColor();
 
+	if (open) {
 		ImGui::BeginDisabled(m_SceneTreePanel->GetSelectedEntity().Has<Component::NativeScript>());
 		for (auto& pair : ScriptRegistry::GetRegistry()) {
 			if (ImGui::MenuItem(pair.first.c_str())) {

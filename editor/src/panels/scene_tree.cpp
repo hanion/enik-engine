@@ -101,14 +101,15 @@ void SceneTreePanel::RenderContent() {
 
 	ImGui::Spacing();
 
-	if (!ImGui::BeginChild("scenetree_child")) {
-		return;
-	}
-
-	if (!ImGui::BeginTable("SceneTreeTable", 1)) {
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(7, 3));
+	bool child_open = ImGui::BeginChild("scenetree_child", ImVec2(0, 0), false, ImGuiWindowFlags_AlwaysUseWindowPadding);
+	bool table_open = child_open && ImGui::BeginTable("SceneTreeTable", 1);
+	if (!table_open) {
+		ImGui::PopStyleVar();
 		ImGui::EndChild();
 		return;
 	}
+	ImGui::PopStyleVar();
 
 
 	m_Context->m_Registry.each([&](auto entityID) {
@@ -121,7 +122,6 @@ void SceneTreePanel::RenderContent() {
 			DrawEntityInSceneTree(entity);
 		}
 	});
-
 
 
 	if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered()) {
@@ -172,10 +172,6 @@ int color_entity(Entity entity) {
 void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 	ImGui::PushID(entity.GetID());
 
-	ImGui::TableNextRow();
-	ImGui::TableSetColumnIndex(0);
-	ImGui::AlignTextToFramePadding();
-
 	ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth
 		| ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_DefaultOpen
 		| ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_AllowOverlap;
@@ -188,12 +184,12 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 		flags |= ImGuiTreeNodeFlags_Leaf;
 	}
 
+	ImGui::TableNextRow();
+	ImGui::TableSetColumnIndex(0);
+
 	// color entities with components
 	int pushed_style_color_count = color_entity(entity);
-
-
 	bool node_open = ImGui::TreeNodeEx((void*)(uint64_t)entity, flags, "%s", entity.GetTag().c_str());
-
 	ImGui::PopStyleColor(pushed_style_color_count);
 
 	if (ImGui::BeginDragDropSource()) {
@@ -226,7 +222,7 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 		ImGui::EndDragDropTarget();
 	}
 
-	if (ImGui::IsMouseClicked(0) and ImGui::IsItemFocused() and ImGui::IsItemHovered()) {
+	if (m_MouseReleased && ImGui::IsItemFocused() and ImGui::IsItemHovered()) {
 		SetSelectedEntity(entity);
 		m_MouseReleased = false;
 	}
