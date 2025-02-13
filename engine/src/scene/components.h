@@ -302,6 +302,10 @@ struct Text {
 	glm::vec4 Color = glm::vec4(1.0f);
 	float Scale = 10.0f;
 	float Visible = 1.0f;
+
+	glm::vec2 GetBoundingBox();
+	float GetWidth();
+	float GetHeight();
 };
 
 struct SceneControl {

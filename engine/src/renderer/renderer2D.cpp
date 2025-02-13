@@ -304,8 +304,8 @@ void Renderer2D::DrawText2D(const Component::Transform& transform, const Compone
 	}
 
 	glm::mat4 trans = transform.GetTransform();
-	glm::vec2 start_pos = glm::vec2(0);
 	float scale = text.Scale * 0.001f;
+	glm::vec2 start_pos = glm::vec2(0,-1) * (font_asset->TextHeight * scale);
 
 	size_t draw_until = std::min(text.Data.size(), (size_t)(text.Data.size() * text.Visible));
 

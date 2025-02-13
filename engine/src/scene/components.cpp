@@ -2,6 +2,7 @@
 #include "asset/asset_manager.h"
 #include "base.h"
 #include "gtc/quaternion.hpp"
+#include "renderer/font.h"
 #include "scene/scriptable_entity.h"
 #include "audio/audio.h"
 #include "project/project.h"
@@ -509,6 +510,56 @@ void CollisionBody::SetIsSensor(bool is_sensor) {
 	if (body) {
 		body->SetIsSensor(IsSensor);
 	}
+}
+
+
+glm::vec2 Text::GetBoundingBox() {
+	if (Font == 0 || Data.empty()) {
+		return glm::vec2(0.0f);
+	}
+
+	Ref<FontAsset> font_asset = AssetManager::GetAsset<FontAsset>(Font);
+	if (!font_asset) {
+		return glm::vec2(0.0f);
+	}
+
+	glm::vec2 start_pos = glm::vec2(0);
+	float scale = Scale * 0.001f;
+	float max_width = 0.0f;
+	float current_width = 0.0f;
+	float total_height = font_asset->TextHeight * scale;
+
+	size_t draw_until = std::min(Data.size(), static_cast<size_t>(Data.size() * Visible));
+
+	for (size_t i = 0; i < draw_until; ++i) {
+		if (Data[i] == '\n') {
+			max_width = std::max(max_width, current_width);
+			current_width = 0.0f;
+			start_pos.x = 0;
+			start_pos.y -= font_asset->TextHeight * scale;
+			total_height += font_asset->TextHeight * scale;
+			continue;
+		}
+
+		int character = static_cast<unsigned char>(Data[i]) - 32;
+		if (character < 0 || size_t(character) >= font_asset->Glyphs.size()) {
+			continue;
+		}
+
+		const Glyph& glyph = font_asset->Glyphs[character];
+		current_width += glyph.Advance * scale;
+		max_width = std::max(max_width, current_width);
+	}
+
+	return glm::vec2(max_width, total_height);
+}
+
+float Text::GetWidth() {
+	return GetBoundingBox().x;
+}
+
+float Text::GetHeight() {
+	return GetBoundingBox().y;
 }
 
 

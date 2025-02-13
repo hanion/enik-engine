@@ -608,6 +608,17 @@ void SceneEditorTab::OnOverlayRender() {
 			Component::Transform transform = selected.Get<Component::Transform>();
 			transform.GlobalPosition.z = 0.999f;
 
+			if (selected.Has<Component::Text>()) {
+				glm::vec2 bb = selected.Get<Component::Text>().GetBoundingBox();
+				bb = glm::max(glm::vec2{1}, bb);
+
+				transform.GlobalScale.y = bb.y;
+				transform.GlobalPosition.y -= bb.y * 0.5f;
+
+				transform.GlobalScale.x = -bb.x;
+				transform.GlobalPosition.x += bb.x * 0.5f;
+			}
+
 			Renderer2D::DrawRect(transform, m_SelectionOutlineColor, m_EditorCameraController.GetZoomLevel()*0.018f);
 		}
 	}
