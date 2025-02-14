@@ -122,10 +122,11 @@ struct PhysicsBodyBase {
 	PhysicsBodyBase(const PhysicsBodyBase&) = default;
 	virtual ~PhysicsBodyBase() = default;
 
-	bool IsStatic() const {
-		return MotionType == JPH::EMotionType::Static;
-	}
+	bool IsStatic()    const { return MotionType == JPH::EMotionType::Static; }
+	bool IsKinematic() const { return MotionType == JPH::EMotionType::Kinematic; }
 
+	void SetStatic();
+	void SetKinematic();
 
 	glm::vec3 GetLinearVelocity() const;
 	void      SetLinearVelocity(const glm::vec3& velocity);
@@ -170,15 +171,8 @@ private:
 struct CollisionBody : PhysicsBodyBase {
 	bool IsSensor = false;
 
-	CollisionBody() { MotionType = JPH::EMotionType::Kinematic; }
+	CollisionBody() { SetStatic(); }
 	CollisionBody(const CollisionBody&) = default;
-
-	void SetStatic(bool is_static) {
-		MotionType = is_static ? JPH::EMotionType::Static : JPH::EMotionType::Kinematic;
-	}
-	void SetKinematic(bool is_kinematic) {
-		SetStatic(!is_kinematic);
-	}
 
 	void SetIsSensor(bool is_sensor);
 };
@@ -193,7 +187,7 @@ struct CollisionShape {
 	Type Shape = Type::BOX;
 
 	union {
-		glm::vec3 Vector = glm::vec3(0,0,0);
+		glm::vec3 Vector = glm::vec3(0.5f,0.5f,0.5f);
 		glm::vec3 BoxScale;
 		glm::vec3 CircleCenter;
 	};
@@ -201,7 +195,6 @@ struct CollisionShape {
 		float Float = 0.5f;
 		float CircleRadius;
 	};
-	bool IsArea = false;
 
 	CollisionShape() = default;
 	CollisionShape(const CollisionShape&) = default;

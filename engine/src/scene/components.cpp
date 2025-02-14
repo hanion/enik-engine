@@ -383,6 +383,19 @@ void Component::AnimationPlayer::Update(const Timestep& dt) {
 namespace Component {
 
 
+void PhysicsBodyBase::SetStatic() {
+	MotionType = JPH::EMotionType::Static;
+	if (body) {
+		body->SetMotionType(MotionType);
+	}
+}
+void PhysicsBodyBase::SetKinematic() {
+	MotionType = JPH::EMotionType::Kinematic;
+	if (body) {
+		body->SetMotionType(MotionType);
+	}
+}
+
 glm::vec3 PhysicsBodyBase::GetLinearVelocity() const {
 	EN_CORE_ASSERT(MotionType != JPH::EMotionType::Static,
 		"PhysicsBodyBase::GetLinearVelocity can only be used on non-static bodies.");
