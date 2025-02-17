@@ -259,11 +259,17 @@ void ToolbarPanel::Rotating() {
 
 	if (m_SceneTreePanel->IsSelectedEntityValid()) {
 		glm::vec2 diff = GetMouseDelta();
-		// ? zoom level does not matter while rotating, intuitively
-		diff *= 1.1f / m_EditorCamera->GetZoomLevel();
 
-		// TODO: quat
-// 		m_SceneTreePanel->GetSelectedEntity().Get<Component::Transform>().LocalRotation += diff.x - diff.y;
+		float rotation_direction = (diff.x-diff.y > 0) ? 1.0f : -1.0f;
+
+		const float sensitivity = 0.05f;
+		float rotation_angle = glm::length(diff) * rotation_direction * sensitivity;
+
+		glm::vec3 rotation_axis = glm::vec3(0.0f, 0.0f, 1.0f);
+		glm::quat rotation_quat = glm::angleAxis(rotation_angle, rotation_axis);
+
+		auto& transform = m_SceneTreePanel->GetSelectedEntity().Get<Component::Transform>();
+		transform.LocalRotation = rotation_quat * transform.LocalRotation;
 	}
 }
 
