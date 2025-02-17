@@ -598,17 +598,17 @@ void InspectorPanel::DisplaySubTexture(Component::SpriteRenderer& sprite) {
 	ImGui::TableSetColumnIndex(0);
 
 	bool remove_sub_texture = false;
-	bool open = ImGui::TreeNodeEx("Sub Texture", inner_tree_node_flags | ImGuiTreeNodeFlags_AllowItemOverlap);
+
+	ImGui::Indent();
+	bool close_button_value = true;
+	bool open = ImGui::CollapsingHeader("Sub Texture", &close_button_value, inner_tree_node_flags);
 
 	if (ImGui::IsMouseClicked(1) and ImGui::IsItemHovered()) {
 		ImGui::OpenPopup("SubTextureSettings");
 	}
-	float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y * 2.0f;
-	ImGui::SameLine(ImGui::GetContentRegionAvail().x - GImGui->Style.FramePadding.x);
-	if (ImGui::Button("...", ImVec2(lineHeight, lineHeight))) {
+	if (!close_button_value) {
 		ImGui::OpenPopup("SubTextureSettings");
 	}
-
 	if (ImGui::BeginPopup("SubTextureSettings")) {
 		if (ImGui::MenuItem("Delete SubTexture")) {
 			remove_sub_texture = true;
@@ -632,9 +632,9 @@ void InspectorPanel::DisplaySubTexture(Component::SpriteRenderer& sprite) {
 			Ref<Texture2D> texture = AssetManager::GetAsset<Texture2D>(sprite.Handle);
 			sprite.SubTexture->UpdateSubTexture2D(texture);
 		}
-
-		ImGui::TreePop();
 	}
+
+	ImGui::Unindent();
 
 	if (remove_sub_texture) {
 		sprite.SubTexture.reset();
