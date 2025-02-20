@@ -2,6 +2,7 @@
 #include "asset/importer/font_importer.h"
 #include "asset/importer/texture_importer.h"
 #include "asset/importer/animation_importer.h"
+#include "asset/importer/sound_importer.h"
 #include "core/asserter.h"
 #include <functional>
 #include <map>
@@ -13,6 +14,7 @@ static std::map<AssetType, AssetImportFunction> s_AssetImportFunctions = {
 	{ AssetType::Texture2D, TextureImporter::ImportTexture2D },
 	{ AssetType::Animation, AnimationImporter::ImportAnimation },
 	{ AssetType::Font,      FontImporter::ImportFont },
+	{ AssetType::Sound,     SoundImporter::ImportSound },
 };
 
 Ref<Asset> AssetImporter::ImportAsset(AssetHandle handle, const AssetMetadata& metadata) {

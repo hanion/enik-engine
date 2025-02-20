@@ -260,13 +260,13 @@ struct Prefab {
 
 
 struct AudioSources {
-	std::vector<std::filesystem::path> SourcePaths;
+	std::map<std::string, AssetHandle> Sounds = {};
 
 	AudioSources() = default;
 	AudioSources(const AudioSources&) = default;
 
+	void Play(AssetHandle sound_handle);
 	void Play(const std::string& name);
-	void Play(int index);
 };
 
 

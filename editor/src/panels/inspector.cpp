@@ -232,33 +232,34 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 			return;
 		}
 
+		static AssetHandle new_asset_handle = 0;
+
 		for (auto it = ap.Animations.begin(); it != ap.Animations.end(); ++it) {
 			AssetHandle handle = it->second;
 			ImGui::PushID(&it->first);
 
 			ImGuiUtils::PrefixLabel(it->first);
-			if (ImGuiUtils::AssetButton<Animation>(handle) && handle) {
-				Ref<Animation> anim = AssetManager::GetAsset<Animation>(handle);
+			if (ImGuiUtils::AssetButton<Animation>(handle)) {
 				m_AnimationEditorPanel->SetAnimation(handle);
-				ap.Animations[anim->Name] = handle;
-				ImGui::PopID();
-				break; // modified the map, should break
 			}
-			if (!handle || !AssetManager::IsAssetHandleValid(handle)) {
-				ap.Animations.erase(it);
-				ImGui::PopID();
-				break; // modified the map, should break
+			if (handle != it->second) {
+				if (handle && AssetManager::IsAssetHandleValid(handle)) {
+					new_asset_handle = handle;
+				} else {
+					ap.Animations.erase(it);
+					ImGui::PopID();
+					break; // modified the map, should break
+				}
 			}
 			ImGui::PopID();
 		}
 
-		static AssetHandle new_handle = 0;
 		ImGuiUtils::PrefixLabel("");
-		ImGuiUtils::AssetButton<Animation>(new_handle);
-		if (new_handle && AssetManager::IsAssetHandleValid(new_handle)) {
-			Ref<Animation> new_animation = AssetManager::GetAsset<Animation>(new_handle);
-			ap.Animations[new_animation->Name] = new_handle;
-			new_handle = 0;
+		ImGuiUtils::AssetButton<Animation>(new_asset_handle);
+		if (new_asset_handle && AssetManager::IsAssetHandleValid(new_asset_handle)) {
+			Ref<Animation> new_animation = AssetManager::GetAsset<Animation>(new_asset_handle);
+			ap.Animations[new_animation->Name] = new_asset_handle;
+			new_asset_handle = 0;
 		}
 
 		ImGui::TreePop();
@@ -344,66 +345,37 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	});
 
 	DisplayComponentInInspector<Component::AudioSources>("Audio Sources", entity, true, [&]() {
-		auto& sources = entity.Get<Component::AudioSources>();
+		auto& as = entity.Get<Component::AudioSources>();
+		static AssetHandle new_asset_handle = 0;
 
-		size_t to_remove_index = SIZE_MAX;
+		for (auto it = as.Sounds.begin(); it != as.Sounds.end(); ++it) {
+			AssetHandle handle = it->second;
+			ImGui::PushID(handle);
 
-		for (size_t i = 0; i < sources.SourcePaths.size(); i++) {
-			char buffer[256];
-			memset(buffer, 0, sizeof(buffer));
-			strcpy(buffer, sources.SourcePaths[i].string().c_str());
-
-			auto file = std::filesystem::path(buffer);
-			if (file.empty()) {
-				file = "[AudioSource]";
-				ImGuiUtils::PrefixLabel("Source");
+			ImGuiUtils::PrefixLabel(it->first);
+			if (ImGuiUtils::AssetButton<SoundAsset>(handle)) {
+				Audio::Play(handle);
 			}
-			else {
-				ImGuiUtils::PrefixLabel(file.stem().string());
-			}
-
-
-			ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::teal);
-			if (ImGui::Button(file.filename().string().c_str())) {
-				sources.Play(sources.SourcePaths[i].stem().string());
-			}
-
-			if (ImGui::IsItemHovered()){
-				ImGui::SetTooltip("%s", file.string().c_str());
-
-				if (ImGui::IsMouseClicked(ImGuiMouseButton_Right)) {
-					to_remove_index = i;
+			if (handle != it->second) {
+				if (handle && AssetManager::IsAssetHandleValid(handle)) {
+					new_asset_handle = handle;
+				} else {
+					as.Sounds.erase(it);
+					ImGui::PopID();
+					break; // modified the map, should break
 				}
 			}
-			ImGui::PopStyleColor();
-
-			if (ImGui::BeginDragDropTarget()) {
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_FILE_PATH")) {
-					if (payload->DataSize > 0) {
-						char* payload_data = new char[payload->DataSize];
-						if (payload_data != nullptr) {
-							memcpy(payload_data, payload->Data, payload->DataSize);
-							strcpy(buffer, reinterpret_cast<const char*>(payload_data));
-							std::filesystem::path path = { buffer };
-							if (path.has_extension() and path.extension() == ".wav") {
-								sources.SourcePaths[i] = path;
-							}
-							delete[] payload_data;
-						}
-					}
-				}
-				ImGui::EndDragDropTarget();
-			}
+			ImGui::PopID();
 		}
 
-		if (ImGui::Button("Add", ImVec2(-1,0))) {
-			sources.SourcePaths.emplace_back("");
+		ImGuiUtils::PrefixLabel("");
+		ImGuiUtils::AssetButton<SoundAsset>(new_asset_handle);
+		if (new_asset_handle && AssetManager::IsAssetHandleValid(new_asset_handle)) {
+			const AssetMetadata& metadata = Project::GetAssetManagerEditor()->GetMetadata(new_asset_handle);
+			auto label = metadata.FilePath.stem().string();
+			as.Sounds[label] = new_asset_handle;
+			new_asset_handle = 0;
 		}
-
-		if (to_remove_index != SIZE_MAX) {
-			sources.SourcePaths.erase(sources.SourcePaths.begin() + to_remove_index);
-		}
-
 	});
 
 	DisplayComponentInInspector<Component::Text>("Text", entity, true, [&]() {

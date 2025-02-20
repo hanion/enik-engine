@@ -21,7 +21,7 @@ struct FileInfo {
 
 static const std::unordered_map<std::type_index, FileInfo> FileInfoMap = {
 	{typeid(Texture2D), {".png",    "[Texture2D]", EditorColors::image}},
-	{typeid(Audio),     {".wav",    "[Audio]",     EditorColors::audio}},
+	{typeid(SoundAsset),{".wav",    "[Sound]",     EditorColors::sound}},
 	{typeid(Animation), {".anim",   "[Animation]", EditorColors::anim}},
 	{typeid(FontAsset), {".ttf",    "[Font]",      EditorColors::font}},
 // 	{typeid(Prefab),    {".prefab", "[Prefab]",    EditorColors::blue}},
@@ -31,7 +31,7 @@ static const std::unordered_map<std::type_index, FileInfo> FileInfoMap = {
 
 static const std::unordered_map<std::string, ImVec4> ExtensionColorMap = {
 	{".png",    EditorColors::image},
-	{".wav",    EditorColors::audio},
+	{".wav",    EditorColors::sound},
 	{".anim",   EditorColors::anim},
 	{".ttf",    EditorColors::font},
 	{".prefab", EditorColors::prefab},

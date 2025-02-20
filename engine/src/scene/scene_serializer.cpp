@@ -722,14 +722,12 @@ void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
 
 		auto& sources = entity.Get<Component::AudioSources>();
 
-		out << YAML::Key << "SourcePaths";
-		out << YAML::Value << YAML::BeginSeq;
-		for (size_t i = 0; i < sources.SourcePaths.size(); i++) {
-			if (not sources.SourcePaths[i].empty()) {
-				out << YAML::Value << sources.SourcePaths[i].string();
-			}
+		out << YAML::Key << "Sounds" << YAML::Value << YAML::BeginMap;
+		for (auto const& [key, val] : sources.Sounds) {
+			out << YAML::Key << key;
+			out << YAML::Value << val;
 		}
-		out << YAML::EndSeq;
+		out << YAML::EndMap;
 
 		out << YAML::EndMap;
 	}
@@ -953,12 +951,11 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 	if (audio_sources) {
 		auto& sources = deserialized_entity.Add<Component::AudioSources>();
 
-		if (audio_sources["SourcePaths"]) {
-			for (auto source_path_node : audio_sources["SourcePaths"]) {
-				auto path = std::filesystem::path(source_path_node.as<std::string>());
-				if (not path.empty()) {
-					sources.SourcePaths.emplace_back(path);
-				}
+		if (auto sounds_node = audio_sources["Sounds"]) {
+			for (auto it = sounds_node.begin(); it != sounds_node.end(); ++it) {
+				std::string key = it->first.as<std::string>();
+				AssetHandle value = it->second.as<uint64_t>();
+				sources.Sounds[key] = value;
 			}
 		}
 	}

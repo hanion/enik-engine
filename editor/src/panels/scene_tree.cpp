@@ -158,7 +158,7 @@ int color_entity(Entity entity) {
 	} else if (entity.Has<Component::AnimationPlayer>()) {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::anim);
 	} else if (entity.Has<Component::AudioSources>()) {
-		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::audio);
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::sound);
 	} else if (entity.Has<Component::SpriteRenderer>()) {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::image);
 	} else if (entity.Has<Component::Text>()) {

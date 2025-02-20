@@ -1,22 +1,18 @@
 #pragma once
 #include <base.h>
+#include "audio/sound.h"
 
 
 namespace Enik {
+namespace Audio {
 
-struct AudioEngine;
+void Init();
+void Shutdown();
 
-class Audio {
-public:
-	static void Init();
-	static void Shutdown();
+Ref<SoundAsset> CreateSound(const char* filepath);
+void UninitSound(void* sound);
 
-	static void Play(const char* filepath);
-	static void Play(const std::filesystem::path& filepath);
+void Play(AssetHandle sound_handle);
 
-private:
-	static Scope<Audio> s_Instance;
-	Scope<AudioEngine> m_AudioEngine;
-};
-
+}
 }

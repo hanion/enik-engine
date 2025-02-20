@@ -299,28 +299,23 @@ void Component::Family::SetGlobalRotation(Component::Transform& tr, const glm::q
 }
 
 
-void Component::AudioSources::Play(const std::string& name) {
-	for (size_t i = 0; i < SourcePaths.size(); i++) {
-		if (SourcePaths[i].stem().string() == name) {
-			Audio::Play(Project::GetAbsolutePath(SourcePaths[i]));
-		}
-	}
+
+void Component::AudioSources::Play(AssetHandle sound_handle) {
+	Audio::Play(sound_handle);
 }
-
-void Component::AudioSources::Play(int index) {
-	if (index < 0 or index >= (int)SourcePaths.size()) {
-		EN_CORE_ERROR("Component::AudioSources::Play invalid index: {}", index);
-		return;
+void Component::AudioSources::Play(const std::string& name) {
+	auto it = Sounds.find(name);
+	if (it != Sounds.end()) {
+		Audio::Play(it->second);
 	}
-
-	Audio::Play(Project::GetAbsolutePath(SourcePaths[index]));
 }
 
 
 
 void Component::AnimationPlayer::Start(const std::string& name) {
-	if (Animations.find(name) != Animations.end()) {
-		CurrentAnimation = Animations[name];
+	auto it = Animations.find(name);
+	if (it != Animations.end()) {
+		CurrentAnimation = it->second;
 		CurrentTime = 0.0f;
 		Paused = false;
 	}

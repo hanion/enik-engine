@@ -18,7 +18,7 @@ static std::map<std::filesystem::path, AssetType> s_AssetToExtensionMap = {
 	{ ".jpeg", AssetType::Texture2D },
 	{ ".escn", AssetType::Scene },
 	{ ".prefab", AssetType::Prefab },
-	{ ".wav", AssetType::Audio },
+	{ ".wav", AssetType::Sound },
 	{ ".anim", AssetType::Animation },
 	{ ".ttf", AssetType::Font },
 };

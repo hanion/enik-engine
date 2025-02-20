@@ -95,9 +95,7 @@ void FileSystemPanel::ShowDirectoriesTable() {
 				}
 				else if (entry.is_regular_file() and path.has_extension()) {
 					auto ext = path.extension();
-					if (ext == ".wav") {
-						Audio::Play(path);
-					} else if (ext == ".anim") {
+					if (ext == ".anim") {
 						if (m_EditorTab) {
 							m_EditorTab->m_AnimationEditorPanel.SetAnimation(Project::GetAssetManagerEditor()->ImportAsset(path));
 						}
