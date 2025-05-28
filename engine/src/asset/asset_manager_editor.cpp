@@ -127,6 +127,9 @@ void AssetManagerEditor::SerializeAssetRegistry() {
 		out << YAML::Key << "AssetRegistry" << YAML::Value;
 		out << YAML::BeginSeq;
 		for (const auto&[handle, metadata] : m_AssetRegistry) {
+			if (!std::filesystem::exists(metadata.FilePath)) {
+				continue;
+			}
 			out << YAML::BeginMap;
 			out << YAML::Key << "Handle" << YAML::Value << (uint64_t)handle;
 			out << YAML::Key << "Type" << YAML::Value << AssetTypeToString(metadata.Type);
@@ -171,7 +174,17 @@ bool AssetManagerEditor::DeserializeAssetRegistry() {
 		AssetHandle handle = node["Handle"].as<uint64_t>();
 		AssetMetadata& metadata =  m_AssetRegistry[handle];
 		metadata.Type = AssetTypeFromString(node["Type"].as<std::string>());
-		metadata.FilePath = Project::GetAbsolutePath(node["FilePath"].as<std::string>());
+
+		std::string asset_path = node["FilePath"].as<std::string>();
+		metadata.FilePath = Project::GetAbsolutePath(asset_path);
+
+		if (!std::filesystem::exists(metadata.FilePath)) {
+			EN_CORE_ERROR(
+				"Asset Registry: Missing file '{}'. "
+				"\n\tAsset [{}] with Handle [{}] will be removed from the registry.",
+				asset_path, AssetTypeToString(metadata.Type), (uint64_t)handle
+			);
+		}
 	}
 
 
