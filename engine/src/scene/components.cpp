@@ -467,6 +467,11 @@ float PhysicsBodyBase::GetRestitution() {
 	}
 	return 0.5f;
 }
+void PhysicsBodyBase::ActivateBody() {
+	if (body) {
+		GetBodyInterface().ActivateBody(body->GetID());
+	}
+}
 
 
 JPH::BodyInterface& PhysicsBodyBase::GetBodyInterface() const {

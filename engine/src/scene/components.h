@@ -144,6 +144,8 @@ struct PhysicsBodyBase {
 	void  SetRestitution(float restution);
 	float GetRestitution();
 
+	void ActivateBody();
+
 protected:
 	JPH::PhysicsSystem* GetPhysicsSystem() const;
 	JPH::BodyInterface& GetBodyInterface() const;
