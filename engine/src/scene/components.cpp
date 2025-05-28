@@ -206,21 +206,13 @@ void Component::Family::Reparent(Entity this_entity, Entity new_parent) {
 	SetParent(new_parent);
 }
 
-void Component::Family::SetChildrenGlobalTransformRecursive(const Component::Transform& transform) {
+void Component::Family::SetChildrenGlobalTransformRecursive(const Component::Transform& parent_transform) {
 	for (Entity& child : Children) {
 		Component::Transform& child_transform = child.Get<Component::Transform>();
 
-		glm::mat4 child_global_transform = transform.GetTransform() * child_transform.GetTransform();
-
-		glm::vec3 skew;
-		glm::vec4 perspective;
-		glm::decompose(child_global_transform,
-			child_transform.GlobalScale,
-			child_transform.GlobalRotation,
-			child_transform.GlobalPosition,
-			skew, perspective
-		);
-
+		child_transform.GlobalPosition = parent_transform.GlobalRotation * (parent_transform.GlobalScale * child_transform.LocalPosition) + parent_transform.GlobalPosition;
+		child_transform.GlobalRotation = glm::normalize(parent_transform.GlobalRotation * child_transform.LocalRotation);
+		child_transform.GlobalScale = parent_transform.GlobalScale * child_transform.LocalScale;
 
 		child.Get<Component::Family>().SetChildrenGlobalTransformRecursive(child_transform);
 	}

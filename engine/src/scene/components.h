@@ -234,7 +234,7 @@ public:
 
 	void Reparent(Entity this_entity, Entity new_parent);
 
-	void SetChildrenGlobalTransformRecursive(const Component::Transform& transform);
+	void SetChildrenGlobalTransformRecursive(const Component::Transform& parent_transform);
 
 	bool HasEntityAsChild(const Entity& entity);
 
