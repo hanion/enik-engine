@@ -442,7 +442,7 @@ void Scene::ChangeToDeferredScene() {
 	// destroy every entity except for Persistent ones
 	m_Registry.each([&](entt::entity entity) {
 		if (entities_to_keep.find(entity) == entities_to_keep.end()) {
-			m_Registry.destroy(entity);
+			DestroyEntityImmediatelyInternal(Entity(entity, this));
 		}
 	});
 
