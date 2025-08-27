@@ -132,7 +132,7 @@ void HomeTab::RenderContent() {
 
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::project);
 		if (ImGui::MenuItem("Project")) {
-			// TODO: implement new project creation
+			m_StartShowingNewProject = true;
 		}
 		ImGui::PopStyleColor();
 
@@ -140,10 +140,77 @@ void HomeTab::RenderContent() {
 	}
 	ImGui::PopFont();
 	ImGui::End();
+
+	ShowNewProject();
 }
 
 void HomeTab::InitializeDockspace() {
 	ImGui::DockBuilderDockWindow("Home", m_DockspaceID);
+}
+
+void HomeTab::ShowNewProject() {
+	if (m_StartShowingNewProject) {
+		ImGui::OpenPopup("Create New Project");
+		m_StartShowingNewProject = false;
+	}
+
+	static const auto create_project = [this](){
+		std::filesystem::path new_path = DialogFile::GetSelectedPath();
+
+		if (!std::filesystem::exists(new_path)) {
+			std::filesystem::create_directories(new_path);
+		}
+
+		std::filesystem::path proj = s_TemplatePath;
+		switch (m_NewProjType) {
+			case NewProjType::EMPTY:            proj = s_TemplatePath;     break;
+			case NewProjType::EXAMPLE_SNAKE:    proj = s_ExampleSnakeGame; break;
+			case NewProjType::EXAMPLE_SQUAREUP: proj = s_ExampleSquareUp;  break;
+		}
+
+		std::filesystem::copy(proj, new_path,
+			std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing);
+
+		m_EditorLayer->LoadProject(new_path / "project.enik");
+		m_IsOpen = false;
+	};
+
+	if (ImGui::BeginPopupModal("Create New Project", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+		if (ImGui::Button("Empty Project", ImVec2(200, 0))) {
+			m_NewProjType = NewProjType::EMPTY;
+			DialogFile::OpenDialog(DialogType::SELECT_DIR, create_project);
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		ImGui::Text("Example Projects:");
+		ImGui::Spacing();
+
+		if (ImGui::Button("Square Up", ImVec2(200, 0))) {
+			m_NewProjType = NewProjType::EXAMPLE_SQUAREUP;
+			DialogFile::OpenDialog(DialogType::SELECT_DIR, create_project);
+			ImGui::CloseCurrentPopup();
+		}
+
+		if (ImGui::Button("Snake", ImVec2(200, 0))) {
+			m_NewProjType = NewProjType::EXAMPLE_SNAKE;
+			DialogFile::OpenDialog(DialogType::SELECT_DIR, create_project);
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::Spacing();
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		if (ImGui::Button("Cancel", ImVec2(200, 0))) {
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
 }
 
 }

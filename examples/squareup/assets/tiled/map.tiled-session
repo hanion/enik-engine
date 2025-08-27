@@ -1,0 +1,43 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "map.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "1bit.tsx": {
+            "scaleInDock": 2.4276,
+            "scaleInEditor": 6.8732
+        },
+        "map.tmx": {
+            "scale": 2.7553,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 178.38347911298223,
+                "y": 14.880412296301671
+            }
+        }
+    },
+    "last.imagePath": "/home/han/dev/25/oyp/assets/textures",
+    "map.fixedSize": false,
+    "map.lastUsedFormat": "tmx",
+    "openFiles": [
+        "map.tmx",
+        "1bit.tsx"
+    ],
+    "project": "map.tiled-project",
+    "recentFiles": [
+        "1bit.tsx",
+        "map.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.margin": 0,
+    "tileset.spacing": 1,
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    }
+}

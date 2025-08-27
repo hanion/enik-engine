@@ -1,0 +1,25 @@
+AssetRegistry:
+  - Handle: 630364574745815495
+    Type: Sound
+    FilePath: assets/audio/shoot.wav
+  - Handle: 3900830093375380881
+    Type: Sound
+    FilePath: assets/audio/select.wav
+  - Handle: 4896288288452018437
+    Type: Texture2D
+    FilePath: assets/tiled/map.png
+  - Handle: 5970876485832236626
+    Type: Font
+    FilePath: assets/fonts/FunnelDisplay-Medium.ttf
+  - Handle: 6933991905519114827
+    Type: Sound
+    FilePath: assets/audio/hit.wav
+  - Handle: 9317313015698012859
+    Type: Texture2D
+    FilePath: assets/textures/white.png
+  - Handle: 9692094284884949353
+    Type: Texture2D
+    FilePath: assets/textures/1bit.png
+  - Handle: 16875132979633895541
+    Type: Sound
+    FilePath: assets/audio/hover.wav

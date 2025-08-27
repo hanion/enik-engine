@@ -13,7 +13,8 @@ namespace Enik {
 
 enum DialogType {
 	OPEN_FILE = 1,
-	SAVE_FILE = 2
+	SAVE_FILE = 2,
+	SELECT_DIR = 3
 };
 
 struct DialogFileData {
@@ -31,11 +32,12 @@ struct DialogFileData {
 	std::function<void()> call_function;
 };
 
-enum DialogFileResult {
+enum class DialogFileResult {
 	NONE = 0,
 	CANCEL,
 	ACCEPT_SAVE,
-	ACCEPT_OPEN
+	ACCEPT_OPEN,
+	SELECTED_DIR,
 };
 
 class DialogFile {

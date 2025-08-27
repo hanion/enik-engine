@@ -1,0 +1,14 @@
+Prefab: part
+Root: 18296753096676540133
+Entities:
+  - Entity: 18296753096676540133
+    Component::Tag:
+      Text: part
+    Component::Transform:
+      Position: [-11, 10, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::SpriteRenderer:
+      Color: [0.0799937099, 0.61181438, 0.0516299121, 1]
+      TileScale: 1
+      TextureHandle: 11505637482745298867

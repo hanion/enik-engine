@@ -61,7 +61,9 @@ bool ProjectSerializer::Deserialize(std::filesystem::path path) {
 	config.start_scene  = data["StartScene"].as<std::string>();
 
 	if (data["ScriptModule"]) {
-		config.script_module_path  = data["ScriptModule"].as<std::string>();
+		if (!data["ScriptModule"].IsNull() && data["ScriptModule"].IsDefined()) {
+			config.script_module_path  = data["ScriptModule"].as<std::string>();
+		}
 	}
 
 	if (data["AssetRegistry"]) {

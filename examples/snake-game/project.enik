@@ -1,0 +1,16 @@
+Project: snake-game
+StartScene: assets/scenes/main.escn
+AssetRegistry: asset.registry
+ScriptModule: module/libmodule.so
+
+# this was the first ever project built with enik-engine
+# there was no
+#   text rendering
+#   scene management
+#   position inheritance
+#   asset registry
+#   physics system
+#   animation system
+#
+# i have updated it so that it works fine
+# but this project should not be looked at as a good example

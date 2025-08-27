@@ -1,0 +1,5 @@
+Project: project
+StartScene: assets/scenes/scene.escn
+AssetRegistry: asset.registry
+ScriptModule:
+

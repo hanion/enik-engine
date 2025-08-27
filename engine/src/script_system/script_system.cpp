@@ -31,11 +31,18 @@ void ScriptSystem::LoadScriptModuleFirstTime() {
 	if (Project::GetActive()->GetConfig().script_module_path.empty()) {
 		return;
 	}
+	auto sm_path = Project::GetAbsolutePath(Project::GetActive()->GetConfig().script_module_path);
+	if (sm_path.empty()) {
+		EN_CORE_ERROR("Script module not found: '{}'", Project::GetActive()->GetConfig().script_module_path.string().c_str());
+		EN_CORE_ERROR("\tDid you forget to build?");
+		auto buildsh = Project::GetActive()->GetProjectDirectory() / "build.sh";
+		EN_CORE_ERROR("\tYou can build it by running the build script '{}'", buildsh.string().c_str());
+		return;
+	}
 
 	s_Data.reload_pending = true;
 	ReloadScriptModule();
 
-	auto sm_path = Project::GetAbsolutePath(Project::GetActive()->GetConfig().script_module_path);
 	s_Data.file_watcher = CreateScope<filewatch::FileWatch<std::string>>(sm_path.string(), OnFileWatcherEvent);
 #endif
 }

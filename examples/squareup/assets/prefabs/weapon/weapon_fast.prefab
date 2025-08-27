@@ -1,0 +1,45 @@
+Prefab: weapon_fast
+Root: 2011532545824715669
+Entities:
+  - Entity: 2011532545824715669
+    Component::Tag:
+      Text: weapon_fast
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: 0
+      Scale: [1, 1, 1]
+    Component::NativeScript:
+      ScriptName: Weapon
+      ScriptFields:
+        Bullet Prefab:
+          Type: prefab
+          Value: assets/prefabs/weapon/bullet_fast.prefab
+        Hit Damage:
+          Type: float
+          Value: 5
+        owner:
+          Type: entity
+          Value: 0
+    Component::Family:
+      Children:
+        - 7160028873120884892
+    Component::AudioSources:
+      SourcePaths:
+        - assets/audios/shoot.wav
+  - Entity: 7160028873120884892
+    Component::Tag:
+      Text: sprite
+    Component::Transform:
+      Position: [0.60654968, -0.0927499831, 0]
+      Rotation: 0
+      Scale: [1, 0.129999995, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 0]
+      TileScale: 1
+      TextureHandle: 16605253515342983545
+      SubTexture:
+        TileSize: [16, 16]
+        TileIndex: [2, 0]
+        TileSeparation: [1, 1]
+    Component::Family:
+      Parent: 2011532545824715669

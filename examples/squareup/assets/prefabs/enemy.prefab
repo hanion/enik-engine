@@ -1,0 +1,135 @@
+Prefab: enemy
+Root: 3361442294891190092
+Entities:
+  - Entity: 3361442294891190092
+    Component::Tag:
+      Text: enemy
+    Component::Transform:
+      Position: [-6.50999975, 1.41999996, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::NativeScript:
+      ScriptName: Enemy
+      ScriptFields:
+        Accel Air:
+          Type: float
+          Value: 0.100000001
+        Accel Ground:
+          Type: float
+          Value: 0.300000012
+        Bullet Speed:
+          Type: float
+          Value: 0.5
+        Cooldown:
+          Type: float
+          Value: 1
+        EnemyType:
+          Type: int
+          Value: 1
+        Health:
+          Type: float
+          Value: 30
+        Jump Force:
+          Type: float
+          Value: 20
+        Jump In Air:
+          Type: int
+          Value: 1
+        MaxVelocity:
+          Type: float
+          Value: 12
+        Move Speed:
+          Type: float
+          Value: 3
+        Shoot Dist.:
+          Type: float
+          Value: 10
+        Sprite:
+          Type: entity
+          Value: 456713252246783324
+        State:
+          Type: int
+          Value: 1
+        Weapon:
+          Type: entity
+          Value: 6195454039688862585
+    Component::RigidBody:
+      Layer: 1
+      GravityFactor: 1
+      Mass: 1
+    Component::CollisionShape:
+      Shape: Box
+      Float: 0.5
+      Vector: [0.379999995, 0.379999995, 0.5]
+    Component::Family:
+      Children:
+        - 6195454039688862585
+        - 456713252246783324
+    Component::AudioSources:
+      Sounds:
+        hit: 6933991905519114827
+  - Entity: 456713252246783324
+    Component::Tag:
+      Text: sprite
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [0.75, 0.75, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 1]
+      TileScale: 1
+      TextureHandle: 9692094284884949353
+      SubTexture:
+        TileSize: [16, 16]
+        TileIndex: [48, 10]
+        TileSeparation: [1, 1]
+    Component::Family:
+      Parent: 3361442294891190092
+  - Entity: 6195454039688862585
+    Component::Tag:
+      Text: weapon
+    Component::Transform:
+      Position: [0, 0, 0.0599999987]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::NativeScript:
+      ScriptName: Weapon
+      ScriptFields:
+        Bullet Prefab:
+          Type: prefab
+          Value: assets/prefabs/bullet.prefab
+        Hit Damage:
+          Type: float
+          Value: 10
+        owner:
+          Type: entity
+          Value: 0
+    Component::Family:
+      Parent: 3361442294891190092
+      Children:
+        - 5039031207886716024
+    Component::Prefab:
+      RootPrefab: true
+      PrefabPath: assets/prefabs/weapon/weapon_base.prefab
+    Component::AudioSources:
+      Sounds:
+        shoot: 630364574745815495
+  - Entity: 5039031207886716024
+    Component::Tag:
+      Text: sprite
+    Component::Transform:
+      Position: [0.746999979, -0.0599999987, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [0.629999995, 0.629999995, 0.629999995]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 1]
+      TileScale: 1
+      TextureHandle: 9692094284884949353
+      SubTexture:
+        TileSize: [16, 16]
+        TileIndex: [37, 12]
+        TileSeparation: [1, 1]
+    Component::Family:
+      Parent: 6195454039688862585
+    Component::Prefab:
+      RootPrefab: false

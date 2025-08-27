@@ -1,0 +1,79 @@
+AssetRegistry:
+  - Handle: 373619893689149175
+    Type: Texture2D
+    FilePath: assets/textures/ui/numbers/0.png
+  - Handle: 957712296370726917
+    Type: Texture2D
+    FilePath: assets/textures/ui/numbers/6.png
+  - Handle: 1079879674470029773
+    Type: Texture2D
+    FilePath: assets/textures/ui/numbers/5.png
+  - Handle: 1487792230196743199
+    Type: Sound
+    FilePath: assets/audio/select.wav
+  - Handle: 1820559933353187749
+    Type: Texture2D
+    FilePath: assets/textures/snakes/snake.png
+  - Handle: 2377302553305039392
+    Type: Texture2D
+    FilePath: assets/textures/ui/play.png
+  - Handle: 3035025617591708350
+    Type: Texture2D
+    FilePath: assets/textures/checkerboard.png
+  - Handle: 3229405147037378834
+    Type: Texture2D
+    FilePath: assets/textures/ui/numbers/2.png
+  - Handle: 3979599291746054452
+    Type: Sound
+    FilePath: assets/audio/positive_2.wav
+  - Handle: 4212970473599504579
+    Type: Sound
+    FilePath: assets/audio/positive_1.wav
+  - Handle: 7833139338962673215
+    Type: Texture2D
+    FilePath: assets/textures/box.png
+  - Handle: 8415148821519796466
+    Type: Texture2D
+    FilePath: assets/textures/ui/numbers/4.png
+  - Handle: 8870526040211385897
+    Type: Texture2D
+    FilePath: assets/textures/ui/hanion_dev.png
+  - Handle: 9441902590966102963
+    Type: Sound
+    FilePath: assets/audio/hover.wav
+  - Handle: 9800773651181323282
+    Type: Texture2D
+    FilePath: assets/textures/ui/numbers/8.png
+  - Handle: 10941222610388400032
+    Type: Sound
+    FilePath: assets/audio/positive_0.wav
+  - Handle: 11505637482745298867
+    Type: Texture2D
+    FilePath: assets/textures/white.png
+  - Handle: 11529389359977004650
+    Type: Texture2D
+    FilePath: assets/textures/ui/numbers/3.png
+  - Handle: 11687298063920830361
+    Type: Texture2D
+    FilePath: assets/textures/ui/numbers/7.png
+  - Handle: 12991609291906324354
+    Type: Texture2D
+    FilePath: assets/textures/ui/numbers/1.png
+  - Handle: 14659631107489633829
+    Type: Texture2D
+    FilePath: assets/textures/ui/numbers/9.png
+  - Handle: 15147842343709921040
+    Type: Texture2D
+    FilePath: assets/textures/circle.png
+  - Handle: 15769834276783381674
+    Type: Texture2D
+    FilePath: assets/textures/ui/quit.png
+  - Handle: 16228077541460797308
+    Type: Texture2D
+    FilePath: assets/textures/ui/snake-p.png
+  - Handle: 16859251825127710893
+    Type: Texture2D
+    FilePath: assets/textures/ui/back.png
+  - Handle: 17100312566818709663
+    Type: Texture2D
+    FilePath: assets/textures/snakes/snake2.png

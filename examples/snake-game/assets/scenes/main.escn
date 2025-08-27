@@ -1,0 +1,281 @@
+Scene: main
+Entities:
+  - Entity: 2132653730569864852
+    Component::Tag:
+      Text: camera
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Camera:
+      Camera:
+        Size: 22
+        Near: -1
+        Far: 1
+      Primary: true
+      FixedAspectRatio: false
+  - Entity: 15021366220654284055
+    Component::Tag:
+      Text: logo_text
+    Component::Transform:
+      Position: [0, 5, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [3.92000008, 1.34000003, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 0.996078432]
+      TileScale: 1
+      TextureHandle: 16228077541460797308
+    Component::Family:
+      Parent: 16518041686435105983
+  - Entity: 8983108493764794871
+    Component::Tag:
+      Text: head
+    Component::Transform:
+      Position: [-2.4000001, 5, 0.699999988]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::SpriteRenderer:
+      Color: [0.650980413, 0.650980413, 0.650980413, 1]
+      TileScale: 1
+      TextureHandle: 1820559933353187749
+    Component::Family:
+      Parent: 16518041686435105983
+  - Entity: 11418021043819719902
+    Component::Tag:
+      Text: credit
+    Component::Transform:
+      Position: [0, -9, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [3.5999999, 0.675000012, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 0.392156869]
+      TileScale: 1
+      TextureHandle: 8870526040211385897
+    Component::Family:
+      Parent: 14754566043556900244
+  - Entity: 16518041686435105983
+    Component::Tag:
+      Text: logo
+    Component::Transform:
+      Position: [0.449999988, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Family:
+      Parent: 14754566043556900244
+      Children:
+        - 15021366220654284055
+        - 8983108493764794871
+  - Entity: 11087963825418169879
+    Component::Tag:
+      Text: quit
+    Component::Transform:
+      Position: [0, -4.5, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [3.51999998, 1.59000003, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 0.996078432]
+      TileScale: 1
+      TextureHandle: 15769834276783381674
+    Component::Family:
+      Parent: 14538920606096017748
+  - Entity: 4577823642183920939
+    Component::Tag:
+      Text: play
+    Component::Transform:
+      Position: [0, -1.5, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [3.51999998, 1.61000001, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 0.996078432]
+      TileScale: 1
+      TextureHandle: 2377302553305039392
+    Component::Family:
+      Parent: 14538920606096017748
+  - Entity: 14754566043556900244
+    Component::Tag:
+      Text: main_menu
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Family:
+      Children:
+        - 14538920606096017748
+        - 16518041686435105983
+        - 11418021043819719902
+  - Entity: 14538920606096017748
+    Component::Tag:
+      Text: menu
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::NativeScript:
+      ScriptName: MainMenu
+      ScriptFields:
+        Camera:
+          Type: entity
+          Value: 2132653730569864852
+        Game:
+          Type: entity
+          Value: 9572273705420249825
+    Component::Family:
+      Parent: 14754566043556900244
+      Children:
+        - 11206667489210854705
+        - 4577823642183920939
+        - 11087963825418169879
+    Component::AudioSources:
+      Sounds:
+        hover: 9441902590966102963
+        select: 1487792230196743199
+  - Entity: 11206667489210854705
+    Component::Tag:
+      Text: back
+    Component::Transform:
+      Position: [-12, -22, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 1]
+      TileScale: 1
+      TextureHandle: 16859251825127710893
+    Component::Family:
+      Parent: 14538920606096017748
+  - Entity: 11192741792902890237
+    Component::Tag:
+      Text: num_display
+    Component::Transform:
+      Position: [11, 8, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::NativeScript:
+      ScriptName: NumberDisplay
+      ScriptFields:
+        digit:
+          Type: prefab
+          Value: assets/prefabs/digit.prefab
+        offset:
+          Type: float
+          Value: 0.800000012
+        value:
+          Type: int
+          Value: 4
+    Component::Family:
+      Parent: 3844067379213621830
+  - Entity: 14791749693365980722
+    Component::Tag:
+      Text: head
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::SpriteRenderer:
+      Color: [0.650980413, 0.650980413, 0.650980413, 1]
+      TileScale: 1
+      TextureHandle: 1820559933353187749
+    Component::Family:
+      Parent: 3844067379213621830
+  - Entity: 3586478920750272724
+    Component::Tag:
+      Text: food
+    Component::Transform:
+      Position: [30, -30, 1]
+      Rotation: [0, 0, 0, 1]
+      Scale: [0.800000012, 0.800000012, 1]
+    Component::SpriteRenderer:
+      Color: [0.987341762, 0.299951941, 0.299951941, 1]
+      TileScale: 1
+      TextureHandle: 15147842343709921040
+    Component::Family:
+      Parent: 3844067379213621830
+  - Entity: 12884372242609155853
+    Component::Tag:
+      Text: snake
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::NativeScript:
+      ScriptName: Snake
+      ScriptFields:
+        color:
+          Type: int
+          Value: 0
+        direction:
+          Type: int
+          Value: 0
+        head:
+          Type: entity
+          Value: 14791749693365980722
+        length:
+          Type: int
+          Value: 4
+        part:
+          Type: prefab
+          Value: assets/prefabs/part.prefab
+    Component::Family:
+      Parent: 3844067379213621830
+    Component::AudioSources:
+      Sounds:
+        positive_0: 10941222610388400032
+        positive_1: 4212970473599504579
+        positive_2: 3979599291746054452
+  - Entity: 9572273705420249825
+    Component::Tag:
+      Text: manager
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::NativeScript:
+      ScriptName: GameManager
+      ScriptFields:
+        food:
+          Type: entity
+          Value: 3586478920750272724
+        queue:
+          Type: int
+          Value: 0
+        score:
+          Type: entity
+          Value: 11192741792902890237
+        snake:
+          Type: entity
+          Value: 12884372242609155853
+        wait time:
+          Type: float
+          Value: 100
+        walls kill:
+          Type: bool
+          Value: false
+    Component::Family:
+      Parent: 3844067379213621830
+  - Entity: 3844067379213621830
+    Component::Tag:
+      Text: game
+    Component::Transform:
+      Position: [0, -30, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Family:
+      Children:
+        - 13170851294550712117
+        - 12884372242609155853
+        - 9572273705420249825
+        - 3586478920750272724
+        - 14791749693365980722
+        - 11192741792902890237
+  - Entity: 13170851294550712117
+    Component::Tag:
+      Text: background
+    Component::Transform:
+      Position: [-0.5, -0.5, -0.99000001]
+      Rotation: [0, 0, 0, 1]
+      Scale: [20, 20, 1]
+    Component::SpriteRenderer:
+      Color: [0.109803922, 0.109803922, 0.109803922, 1]
+      TileScale: 2.5
+      TextureHandle: 3035025617591708350
+    Component::Family:
+      Parent: 3844067379213621830

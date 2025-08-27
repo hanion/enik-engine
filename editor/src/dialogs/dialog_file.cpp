@@ -36,9 +36,10 @@ DialogFileResult DialogFile::Show() {
 
 	if (s_Data.type == DialogType::OPEN_FILE) {
 		widnow_name = ("Open File (" + s_Data.ext + ")");
-	}
-	else if (s_Data.type == DialogType::SAVE_FILE) {
+	} else if (s_Data.type == DialogType::SAVE_FILE) {
 		widnow_name = ("Save File (" + s_Data.ext + ")");
+	} else if (s_Data.type == DialogType::SELECT_DIR) {
+		widnow_name = "Select An Empty Directory";
 	}
 
 	ImGui::OpenPopup(widnow_name.c_str());
@@ -56,6 +57,15 @@ DialogFileResult DialogFile::Show() {
 	return DialogFileResult::NONE;
 }
 
+const char* DialogTypeToString(DialogType t) {
+	switch (t) {
+		case OPEN_FILE:  return "Open";
+		case SAVE_FILE:  return "Save";
+		case SELECT_DIR: return "Select";
+	}
+	return NULL;
+}
+
 DialogFileResult DialogFile::ShowPopup() {
 	if (ImGui::Button(" ^ ")) {
 		if (!s_Data.current_directory.empty()) {
@@ -66,6 +76,35 @@ DialogFileResult DialogFile::ShowPopup() {
 
 	ImGui::SameLine();
 	ImGui::TextColored(ImVec4(0.8f, 0.8f, 0.8f, 1.0f), "%s", s_Data.current_directory.string().c_str());
+
+	ImGui::SameLine();
+
+	static bool create_dir_open = true;
+	if (ImGui::Button(" + ")) {
+		ImGui::OpenPopup("Create Directory");
+		create_dir_open = true;
+	}
+	ImGui::SetNextWindowSize(ImVec2(150, 100), ImGuiCond_Appearing);
+	if (ImGui::BeginPopupModal("Create Directory", &create_dir_open)) {
+		static char dirname[128] = "";
+		ImGui::InputText("##cdname", dirname, IM_ARRAYSIZE(dirname));
+
+		if (ImGui::Button("Cancel")) {
+			dirname[0] = '\0';
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Create")) {
+			std::filesystem::path new_dir = s_Data.current_directory / dirname;
+			if (!std::filesystem::exists(new_dir)) {
+				std::filesystem::create_directory(new_dir);
+			}
+			s_Data.has_searched = false;
+			dirname[0] = '\0'; // reset input
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
 
 	ImGui::Spacing();
 	ImGui::Separator();
@@ -113,7 +152,7 @@ DialogFileResult DialogFile::ShowPopup() {
 		ImGui::PopItemWidth();
 	}
 
-	if (s_Data.type == DialogType::SAVE_FILE) {
+	if (s_Data.type == DialogType::SAVE_FILE || s_Data.type == DialogType::SELECT_DIR) {
 		s_Data.selected_path = file_path_buffer;
 	}
 
@@ -135,10 +174,10 @@ DialogFileResult DialogFile::ShowPopup() {
 	ImGui::BeginDisabled(s_Data.selected_path.empty() || (not is_valid));
 
 	ImGui::SameLine();
-	if (ImGui::Button((s_Data.type == DialogType::OPEN_FILE) ? "Open" : "Save")) {
+	if (ImGui::Button(DialogTypeToString(s_Data.type))) {
 		s_Data.has_searched = false;
 
-		if (s_Data.type == DialogType::SAVE_FILE) {
+		if (s_Data.type == DialogType::SAVE_FILE || s_Data.type == DialogType::SELECT_DIR) {
 			s_Data.selected_path = file_path_buffer;
 		}
 
@@ -150,8 +189,7 @@ DialogFileResult DialogFile::ShowPopup() {
 			if (s_Data.selected_path.extension() != s_Data.ext and not s_Data.ext.empty()) {
 				s_Data.selected_path = (s_Data.selected_path.parent_path() / s_Data.selected_path.stem()).string() + s_Data.ext;
 			}
-		}
-		else {
+		} else {
 			s_Data.selected_path += s_Data.ext;
 		}
 
@@ -162,8 +200,10 @@ DialogFileResult DialogFile::ShowPopup() {
 		if (s_Data.type == DialogType::SAVE_FILE) {
 			s_Data.call_function();
 			return DialogFileResult::ACCEPT_SAVE;
-		}
-		else {
+		} else if (s_Data.type == DialogType::SELECT_DIR) {
+			s_Data.call_function();
+			return DialogFileResult::SELECTED_DIR;
+		} else {
 			s_Data.call_function();
 			return DialogFileResult::ACCEPT_OPEN;
 		}
@@ -215,8 +255,10 @@ void DialogFile::ShowDirectoriesTable(char* file_path_buffer) {
 bool DialogFile::IsValidSelection() {
 	fs::path path = s_Data.selected_path;
 	if (fs::exists(path.parent_path()) && fs::is_directory(path.parent_path())) {
-		// selection can not be a directory, it needs to be a file path
 		if (fs::is_directory(path)) {
+			if (s_Data.type == DialogType::SELECT_DIR && fs::is_empty(path)) {
+				return true;
+			}
 			return false;
 		}
 

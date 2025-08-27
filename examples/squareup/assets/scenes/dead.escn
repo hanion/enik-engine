@@ -1,0 +1,194 @@
+Scene: dead
+Entities:
+  - Entity: 9575311262030743141
+    Component::Tag:
+      Text: haniondev
+    Component::Transform:
+      Position: [-1.22000003, -5.11100006, 0.560000002]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Family:
+      Parent: 10444289693844952533
+    Component::Text:
+      Font: 5970876485832236626
+      Color: [0.807843149, 0.772549033, 0.717647076, 1]
+      Scale: 3
+      Visible: 1
+      Data: hanion.dev
+  - Entity: 4507464980179032246
+    Component::Tag:
+      Text: label
+    Component::Transform:
+      Position: [-4.5, 1, 0.159999996]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Family:
+      Parent: 12333073136306905189
+    Component::Text:
+      Font: 5970876485832236626
+      Color: [0.270588249, 0.152941182, 0.223529413, 1]
+      Scale: 6.69999981
+      Visible: 1
+      Data: "   return to menu  "
+  - Entity: 12311809330895987261
+    Component::Tag:
+      Text: return_to_menu
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [9, 1.5, 1]
+    Component::SpriteRenderer:
+      Color: [0.807843149, 0.772549033, 0.717647076, 1]
+      TileScale: 1
+      TextureHandle: 9317313015698012859
+    Component::Family:
+      Parent: 12333073136306905189
+  - Entity: 12333073136306905189
+    Component::Tag:
+      Text: return_to_menu
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Family:
+      Parent: 5022869455924019209
+      Children:
+        - 12311809330895987261
+        - 4507464980179032246
+  - Entity: 5022869455924019209
+    Component::Tag:
+      Text: button_container
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::NativeScript:
+      ScriptName: MainMenu
+      ScriptFields:
+        Camera:
+          Type: entity
+          Value: 10444289693844952533
+    Component::Family:
+      Parent: 10444289693844952533
+      Children:
+        - 12333073136306905189
+    Component::AudioSources:
+      Sounds:
+        hover: 16875132979633895541
+        select: 3900830093375380881
+  - Entity: 16525624083776750720
+    Component::Tag:
+      Text: score
+    Component::Transform:
+      Position: [-1, 5, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::NativeScript:
+      ScriptName: DeadScore
+    Component::Family:
+      Parent: 10444289693844952533
+    Component::Text:
+      Font: 5970876485832236626
+      Color: [0.807843149, 0.772549033, 0.717647076, 1]
+      Scale: 10
+      Visible: 1
+      Data: " 0"
+  - Entity: 10444289693844952533
+    Component::Tag:
+      Text: camera
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Camera:
+      Camera:
+        Size: 15
+        Near: -1
+        Far: 1
+      Primary: true
+      FixedAspectRatio: false
+    Component::Family:
+      Children:
+        - 16525624083776750720
+        - 5022869455924019209
+    Component::AnimationPlayer:
+      CurrentAnimation: 0
+      Animations:
+        zoomin: 8129844809725507229
+        zoomout: 3400070101377709649
+  - Entity: 1669999241765744588
+    Component::Tag:
+      Text: GLOBALS
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::NativeScript:
+      ScriptName: Globals
+      ScriptFields:
+        Arena:
+          Type: string
+          Value: assets/scenes/0.escn
+        Player:
+          Type: entity
+          Value: 10213507240174849386
+        WaitingAnim:
+          Type: bool
+          Value: false
+    Component::AudioSources:
+      Sounds:
+        {}
+    Component::SceneControl:
+      Persistent: true
+  - Entity: 12573648059008269493
+    Component::Tag:
+      Text: bg
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [100, 100, 1]
+    Component::SpriteRenderer:
+      Color: [0.270588249, 0.156862751, 0.223529413, 1]
+      TileScale: 1
+      TextureHandle: 9317313015698012859
+    Component::Family:
+      Parent: 8550274570958277380
+  - Entity: 8550274570958277380
+    Component::Tag:
+      Text: level
+    Component::Transform:
+      Position: [0, -3, -0.109999999]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Family:
+      Children:
+        - 6720829707820074904
+        - 12573648059008269493
+  - Entity: 6720829707820074904
+    Component::Tag:
+      Text: ground
+    Component::Transform:
+      Position: [0, -1.5, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Family:
+      Parent: 8550274570958277380
+      Children:
+        - 7530343286690881833
+  - Entity: 7530343286690881833
+    Component::Tag:
+      Text: platform
+    Component::Transform:
+      Position: [0, 0, 0.0700000003]
+      Rotation: [0, 0, 0, 1]
+      Scale: [20, 1, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 1]
+      TileScale: 1
+      TextureHandle: 4896288288452018437
+      SubTexture:
+        TileSize: [320, 16]
+        TileIndex: [0, 31]
+        TileSeparation: [0, 0]
+    Component::Family:
+      Parent: 6720829707820074904

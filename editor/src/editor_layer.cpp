@@ -280,6 +280,7 @@ void EditorLayer::LoadProject(const std::filesystem::path& path) {
 		ScriptSystem::LoadScriptModuleFirstTime();
 		ScriptSystem::ClearOnScriptModuleReloadEvents();
 
+		RequestOpenAsset(path);
 		auto start_scene_path = Project::GetActive()->GetConfig().start_scene;
 		RequestOpenAsset(start_scene_path);
 

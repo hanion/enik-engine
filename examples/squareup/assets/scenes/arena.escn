@@ -1,0 +1,647 @@
+Scene: arena
+Entities:
+  - Entity: 2178263393782029332
+    Component::Tag:
+      Text: ENTITIES
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+  - Entity: 3268421140447938633
+    Component::Tag:
+      Text: area
+    Component::Transform:
+      Position: [-0.0126051456, 2.57885766, -0.109999999]
+      Rotation: [0, 0, -2.82016117e-06, 1.00000024]
+      Scale: [19.7537308, 0.58104378, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 0]
+      TileScale: 1
+      TextureHandle: 9317313015698012859
+    Component::Family:
+      Parent: 1334779709841160900
+  - Entity: 1334779709841160900
+    Component::Tag:
+      Text: EnemySpawner
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::NativeScript:
+      ScriptName: EnemySpawner
+      ScriptFields:
+        Enabled:
+          Type: bool
+          Value: true
+        Prefab:
+          Type: prefab
+          Value: assets/prefabs/enemy.prefab
+        Spawn Area:
+          Type: entity
+          Value: 3268421140447938633
+        Spawn Interval:
+          Type: float
+          Value: 5
+    Component::Family:
+      Children:
+        - 3268421140447938633
+  - Entity: 16806826765939053433
+    Component::Tag:
+      Text: weapon
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::NativeScript:
+      ScriptName: Weapon
+      ScriptFields:
+        Bullet Prefab:
+          Type: prefab
+          Value: assets/prefabs/bullet.prefab
+        Hit Damage:
+          Type: float
+          Value: 10
+        owner:
+          Type: entity
+          Value: 0
+    Component::Family:
+      Parent: 10213507240174849386
+      Children:
+        - 488188412394349631
+    Component::Prefab:
+      RootPrefab: true
+      PrefabPath: assets/prefabs/weapon/weapon_base.prefab
+    Component::AudioSources:
+      Sounds:
+        shoot: 630364574745815495
+  - Entity: 2840898633382274056
+    Component::Tag:
+      Text: sprite
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [0.75, 0.75, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 1]
+      TileScale: 1
+      TextureHandle: 9692094284884949353
+      SubTexture:
+        TileSize: [16, 16]
+        TileIndex: [48, 13]
+        TileSeparation: [1, 1]
+    Component::Family:
+      Parent: 10213507240174849386
+  - Entity: 10213507240174849386
+    Component::Tag:
+      Text: player
+    Component::Transform:
+      Position: [0, 6, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::NativeScript:
+      ScriptName: Player
+      ScriptFields:
+        Accel Air:
+          Type: float
+          Value: 0.100000001
+        Accel Ground:
+          Type: float
+          Value: 0.300000012
+        Camera:
+          Type: entity
+          Value: 1651797778113030364
+        Health:
+          Type: float
+          Value: 30
+        Jump Force:
+          Type: float
+          Value: 20
+        Jump In Air:
+          Type: int
+          Value: 1
+        MaxVelocity:
+          Type: float
+          Value: 16
+        Move Speed:
+          Type: float
+          Value: 10
+        Sprite:
+          Type: entity
+          Value: 2840898633382274056
+        Weapon:
+          Type: entity
+          Value: 16806826765939053433
+        is_grounded:
+          Type: bool
+          Value: false
+    Component::RigidBody:
+      Layer: 1
+      GravityFactor: 2.5
+      Mass: 2
+    Component::CollisionShape:
+      Shape: Box
+      Float: 0.5
+      Vector: [0.379999995, 0.379999995, 0.5]
+    Component::Family:
+      Children:
+        - 2840898633382274056
+        - 16806826765939053433
+    Component::AudioSources:
+      Sounds:
+        hit: 6933991905519114827
+  - Entity: 17543364322045024726
+    Component::Tag:
+      Text: h2s
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 1]
+      TileScale: 1
+      TextureHandle: 9692094284884949353
+      SubTexture:
+        TileSize: [16, 16]
+        TileIndex: [39, 11]
+        TileSeparation: [1, 1]
+    Component::Family:
+      Parent: 4735453041448841984
+  - Entity: 11666495166114160243
+    Component::Tag:
+      Text: h1s
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 1]
+      TileScale: 1
+      TextureHandle: 9692094284884949353
+      SubTexture:
+        TileSize: [16, 16]
+        TileIndex: [39, 11]
+        TileSeparation: [1, 1]
+    Component::Family:
+      Parent: 11741021871812860324
+  - Entity: 10281675956667386873
+    Component::Tag:
+      Text: h0s
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 1]
+      TileScale: 1
+      TextureHandle: 9692094284884949353
+      SubTexture:
+        TileSize: [16, 16]
+        TileIndex: [39, 11]
+        TileSeparation: [1, 1]
+    Component::Family:
+      Parent: 2023536711404543196
+  - Entity: 4735453041448841984
+    Component::Tag:
+      Text: h2
+    Component::Transform:
+      Position: [-7, 5, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Family:
+      Parent: 16952517863466424513
+      Children:
+        - 17543364322045024726
+  - Entity: 9128497036434066724
+    Component::Tag:
+      Text: score
+    Component::Transform:
+      Position: [-0.75, 5.75, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Family:
+      Parent: 16952517863466424513
+    Component::Text:
+      Font: 5970876485832236626
+      Color: [0.807843149, 0.772549033, 0.717647076, 1]
+      Scale: 5
+      Visible: 1
+  - Entity: 3464584539721837893
+    Component::Tag:
+      Text: secondary
+    Component::Transform:
+      Position: [-9, 3, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 0]
+      TileScale: 1
+      TextureHandle: 9692094284884949353
+      SubTexture:
+        TileSize: [16, 16]
+        TileIndex: [45, 12]
+        TileSeparation: [1, 1]
+    Component::Family:
+      Parent: 16952517863466424513
+  - Entity: 13368479125155620384
+    Component::Tag:
+      Text: primary
+    Component::Transform:
+      Position: [-9, 4, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 1]
+      TileScale: 1
+      TextureHandle: 9692094284884949353
+      SubTexture:
+        TileSize: [16, 16]
+        TileIndex: [37, 12]
+        TileSeparation: [1, 1]
+    Component::Family:
+      Parent: 16952517863466424513
+  - Entity: 11741021871812860324
+    Component::Tag:
+      Text: h1
+    Component::Transform:
+      Position: [-8, 5, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Family:
+      Parent: 16952517863466424513
+      Children:
+        - 11666495166114160243
+  - Entity: 2023536711404543196
+    Component::Tag:
+      Text: h0
+    Component::Transform:
+      Position: [-9, 5, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Family:
+      Parent: 16952517863466424513
+      Children:
+        - 10281675956667386873
+  - Entity: 16952517863466424513
+    Component::Tag:
+      Text: GUI
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::NativeScript:
+      ScriptName: GUI
+      ScriptFields:
+        Heart 0:
+          Type: entity
+          Value: 10281675956667386873
+        Heart 1:
+          Type: entity
+          Value: 11666495166114160243
+        Heart 2:
+          Type: entity
+          Value: 17543364322045024726
+        Primary:
+          Type: entity
+          Value: 13368479125155620384
+        Score:
+          Type: entity
+          Value: 9128497036434066724
+        Secondary:
+          Type: entity
+          Value: 3464584539721837893
+    Component::Family:
+      Parent: 1651797778113030364
+      Children:
+        - 2023536711404543196
+        - 13368479125155620384
+        - 3464584539721837893
+        - 9128497036434066724
+        - 11741021871812860324
+        - 4735453041448841984
+  - Entity: 13067451611777679438
+    Component::Tag:
+      Text: deadzone
+    Component::Transform:
+      Position: [0, 0, -0.479999989]
+      Rotation: [0, 0, 0, 1]
+      Scale: [16, 9, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 0]
+      TileScale: 1
+      TextureHandle: 9317313015698012859
+    Component::Family:
+      Parent: 1651797778113030364
+  - Entity: 1651797778113030364
+    Component::Tag:
+      Text: camera
+    Component::Transform:
+      Position: [0, 6, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::NativeScript:
+      ScriptName: Follow
+      ScriptFields:
+        Rect:
+          Type: entity
+          Value: 13067451611777679438
+        Speed:
+          Type: float
+          Value: 1.20000005
+        Target:
+          Type: entity
+          Value: 10213507240174849386
+    Component::Camera:
+      Camera:
+        Size: 15
+        Near: -1
+        Far: 1
+      Primary: true
+      FixedAspectRatio: false
+    Component::Family:
+      Children:
+        - 13067451611777679438
+        - 16952517863466424513
+    Component::AnimationPlayer:
+      CurrentAnimation: 0
+      Animations:
+        zoomin: 8129844809725507229
+        zoomout: 3400070101377709649
+  - Entity: 7309496524582902269
+    Component::Tag:
+      Text: platform_small
+    Component::Transform:
+      Position: [0, 0, 0.0700000003]
+      Rotation: [0, 0, 0, 1]
+      Scale: [4, 1, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 1]
+      TileScale: 1
+      TextureHandle: 4896288288452018437
+      SubTexture:
+        TileSize: [64, 16]
+        TileIndex: [4, 15]
+        TileSeparation: [0, 0]
+    Component::Family:
+      Parent: 10480398332475802348
+  - Entity: 17155297782239128490
+    Component::Tag:
+      Text: ground
+    Component::Transform:
+      Position: [0, 0.25, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::CollisionBody:
+      Layer: 0
+      IsStatic: true
+      IsSensor: false
+    Component::CollisionShape:
+      Shape: Box
+      Float: 0.5
+      Vector: [2, 0.25, 0.5]
+    Component::Family:
+      Parent: 10480398332475802348
+  - Entity: 4125079561219671748
+    Component::Tag:
+      Text: ground
+    Component::Transform:
+      Position: [0, 0.25, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::CollisionBody:
+      Layer: 0
+      IsStatic: true
+      IsSensor: false
+    Component::CollisionShape:
+      Shape: Box
+      Float: 0.5
+      Vector: [2, 0.25, 0.5]
+    Component::Family:
+      Parent: 5752136552644915037
+  - Entity: 17902832776056362671
+    Component::Tag:
+      Text: platform_small
+    Component::Transform:
+      Position: [0, 0, 0.0700000003]
+      Rotation: [0, 0, 0, 1]
+      Scale: [4, 1, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 1]
+      TileScale: 1
+      TextureHandle: 4896288288452018437
+      SubTexture:
+        TileSize: [64, 16]
+        TileIndex: [4, 15]
+        TileSeparation: [0, 0]
+    Component::Family:
+      Parent: 5752136552644915037
+  - Entity: 11407457450517622636
+    Component::Tag:
+      Text: platform_small
+    Component::Transform:
+      Position: [0, 0, 0.0700000003]
+      Rotation: [0, 0, 0, 1]
+      Scale: [4, 1, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 1]
+      TileScale: 1
+      TextureHandle: 4896288288452018437
+      SubTexture:
+        TileSize: [64, 16]
+        TileIndex: [4, 15]
+        TileSeparation: [0, 0]
+    Component::Family:
+      Parent: 11370227095475663117
+  - Entity: 12227366261710632174
+    Component::Tag:
+      Text: ground
+    Component::Transform:
+      Position: [0, 0.25, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::CollisionBody:
+      Layer: 0
+      IsStatic: true
+      IsSensor: false
+    Component::CollisionShape:
+      Shape: Box
+      Float: 0.5
+      Vector: [2, 0.25, 0.5]
+    Component::Family:
+      Parent: 11370227095475663117
+  - Entity: 9757825082894294297
+    Component::Tag:
+      Text: cb_full
+    Component::Transform:
+      Position: [0, 0.25, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::CollisionBody:
+      Layer: 0
+      IsStatic: true
+      IsSensor: false
+    Component::CollisionShape:
+      Shape: Box
+      Float: 0.5
+      Vector: [10, 0.25, 0.5]
+    Component::Family:
+      Parent: 6720829707820074904
+  - Entity: 3155705879516188950
+    Component::Tag:
+      Text: cb
+    Component::Transform:
+      Position: [6, 0.25, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::CollisionBody:
+      Layer: 0
+      IsStatic: true
+      IsSensor: true
+    Component::CollisionShape:
+      Shape: Box
+      Float: 0.5
+      Vector: [4, 0.25, 0.5]
+    Component::Family:
+      Parent: 6720829707820074904
+  - Entity: 3238424816954194894
+    Component::Tag:
+      Text: cb
+    Component::Transform:
+      Position: [-6, 0.25, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::CollisionBody:
+      Layer: 0
+      IsStatic: true
+      IsSensor: true
+    Component::CollisionShape:
+      Shape: Box
+      Float: 0.5
+      Vector: [4, 0.25, 0.5]
+    Component::Family:
+      Parent: 6720829707820074904
+  - Entity: 7530343286690881833
+    Component::Tag:
+      Text: platform
+    Component::Transform:
+      Position: [0, 0, 0.0700000003]
+      Rotation: [0, 0, 0, 1]
+      Scale: [20, 1, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 1]
+      TileScale: 1
+      TextureHandle: 4896288288452018437
+      SubTexture:
+        TileSize: [320, 16]
+        TileIndex: [0, 31]
+        TileSeparation: [0, 0]
+    Component::Family:
+      Parent: 6720829707820074904
+  - Entity: 10480398332475802348
+    Component::Tag:
+      Text: p3
+    Component::Transform:
+      Position: [-7, 5, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Family:
+      Parent: 8550274570958277380
+      Children:
+        - 7309496524582902269
+        - 17155297782239128490
+  - Entity: 5752136552644915037
+    Component::Tag:
+      Text: p2
+    Component::Transform:
+      Position: [7, 5, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Family:
+      Parent: 8550274570958277380
+      Children:
+        - 4125079561219671748
+        - 17902832776056362671
+  - Entity: 7629428320988905682
+    Component::Tag:
+      Text: WORLD_GROUND
+    Component::Transform:
+      Position: [0, -10, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::CollisionBody:
+      Layer: 0
+      IsStatic: true
+      IsSensor: true
+    Component::CollisionShape:
+      Shape: Box
+      Float: 0.5
+      Vector: [100, 0.5, 0.5]
+    Component::Family:
+      Parent: 8550274570958277380
+  - Entity: 11370227095475663117
+    Component::Tag:
+      Text: p1
+    Component::Transform:
+      Position: [-0.0500010662, 1.5, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Family:
+      Parent: 8550274570958277380
+      Children:
+        - 11407457450517622636
+        - 12227366261710632174
+  - Entity: 6720829707820074904
+    Component::Tag:
+      Text: ground
+    Component::Transform:
+      Position: [0, -1.5, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Family:
+      Parent: 8550274570958277380
+      Children:
+        - 7530343286690881833
+        - 3238424816954194894
+        - 3155705879516188950
+        - 9757825082894294297
+  - Entity: 13792610279570944315
+    Component::Tag:
+      Text: InstBugPatch
+    Component::Transform:
+      Position: [0, -3, 0.579999983]
+      Rotation: [0, 0, 0, 1]
+      Scale: [2, 2, 1]
+    Component::SpriteRenderer:
+      Color: [0.270588249, 0.156862751, 0.223529413, 1]
+      TileScale: 1
+      TextureHandle: 9317313015698012859
+    Component::Family:
+      Parent: 8550274570958277380
+  - Entity: 8550274570958277380
+    Component::Tag:
+      Text: level
+    Component::Transform:
+      Position: [0, 3, -0.109999999]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::Family:
+      Children:
+        - 12573648059008269493
+        - 6720829707820074904
+        - 13792610279570944315
+        - 11370227095475663117
+        - 7629428320988905682
+        - 5752136552644915037
+        - 10480398332475802348
+  - Entity: 12573648059008269493
+    Component::Tag:
+      Text: bg
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [100, 100, 1]
+    Component::SpriteRenderer:
+      Color: [0.270588249, 0.156862751, 0.223529413, 1]
+      TileScale: 1
+      TextureHandle: 9317313015698012859
+    Component::Family:
+      Parent: 8550274570958277380

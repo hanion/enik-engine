@@ -1,0 +1,188 @@
+Prefab: digit
+Root: 14012147222040179201
+Entities:
+  - Entity: 14012147222040179201
+    Component::Tag:
+      Text: digit
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1, 1]
+    Component::NativeScript:
+      ScriptName: Digit
+      ScriptFields:
+        0:
+          Type: entity
+          Value: 13800875091269365755
+        1:
+          Type: entity
+          Value: 9630924327541431704
+        2:
+          Type: entity
+          Value: 4534156226070402353
+        3:
+          Type: entity
+          Value: 6047963632061223562
+        4:
+          Type: entity
+          Value: 4944917317566501349
+        5:
+          Type: entity
+          Value: 10256908249977537291
+        6:
+          Type: entity
+          Value: 13417294837176638021
+        7:
+          Type: entity
+          Value: 6712006471803363357
+        8:
+          Type: entity
+          Value: 14170487690446603763
+        9:
+          Type: entity
+          Value: 4912184904597129944
+        value:
+          Type: int
+          Value: 0
+    Component::Family:
+      Children:
+        - 13800875091269365755
+        - 9630924327541431704
+        - 4534156226070402353
+        - 6047963632061223562
+        - 4944917317566501349
+        - 10256908249977537291
+        - 13417294837176638021
+        - 6712006471803363357
+        - 14170487690446603763
+        - 4912184904597129944
+  - Entity: 4912184904597129944
+    Component::Tag:
+      Text: 9
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [0.959999979, 1.35000002, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 0]
+      TileScale: 1
+      TextureHandle: 14659631107489633829
+    Component::Family:
+      Parent: 14012147222040179201
+  - Entity: 14170487690446603763
+    Component::Tag:
+      Text: 8
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1.35000002, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 0]
+      TileScale: 1
+      TextureHandle: 9800773651181323282
+    Component::Family:
+      Parent: 14012147222040179201
+  - Entity: 6712006471803363357
+    Component::Tag:
+      Text: 7
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1.35000002, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 0]
+      TileScale: 1
+      TextureHandle: 11687298063920830361
+    Component::Family:
+      Parent: 14012147222040179201
+  - Entity: 13417294837176638021
+    Component::Tag:
+      Text: 6
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1.35000002, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 0]
+      TileScale: 1
+      TextureHandle: 957712296370726917
+    Component::Family:
+      Parent: 14012147222040179201
+  - Entity: 10256908249977537291
+    Component::Tag:
+      Text: 5
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1.01999998, 1.35000002, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 0]
+      TileScale: 1
+      TextureHandle: 1079879674470029773
+    Component::Family:
+      Parent: 14012147222040179201
+  - Entity: 4944917317566501349
+    Component::Tag:
+      Text: 4
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1.12, 1.35000002, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 0]
+      TileScale: 1
+      TextureHandle: 8415148821519796466
+    Component::Family:
+      Parent: 14012147222040179201
+  - Entity: 6047963632061223562
+    Component::Tag:
+      Text: 3
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1.35000002, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 0]
+      TileScale: 1
+      TextureHandle: 11529389359977004650
+    Component::Family:
+      Parent: 14012147222040179201
+  - Entity: 4534156226070402353
+    Component::Tag:
+      Text: 2
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [1, 1.35000002, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 0]
+      TileScale: 1
+      TextureHandle: 3229405147037378834
+    Component::Family:
+      Parent: 14012147222040179201
+  - Entity: 9630924327541431704
+    Component::Tag:
+      Text: 1
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [0.699999988, 1.35000002, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 0]
+      TileScale: 1
+      TextureHandle: 12991609291906324354
+    Component::Family:
+      Parent: 14012147222040179201
+  - Entity: 13800875091269365755
+    Component::Tag:
+      Text: 0
+    Component::Transform:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0, 1]
+      Scale: [0.970000029, 1.35000002, 1]
+    Component::SpriteRenderer:
+      Color: [1, 1, 1, 1]
+      TileScale: 1
+      TextureHandle: 373619893689149175
+    Component::Family:
+      Parent: 14012147222040179201
