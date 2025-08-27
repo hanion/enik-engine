@@ -37,9 +37,9 @@ public:
 
 	RaycastResult CastRay(const Raycast& ray);
 
-private:
 	template<typename T>
 	void SyncTransforms();
+private:
 	void CreatePhysicsBody(Entity entity, const Component::Transform& tr, Component::RigidBody& body);
 	void CreatePhysicsBody(Entity entity, const Component::Transform& tr, Component::CollisionBody& body);
 	JPH::Ref<JPH::Shape> CreateShapeForBody(Entity entity);

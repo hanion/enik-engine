@@ -80,6 +80,7 @@ struct SpriteRenderer {
 	float TileScale = 1.0f;
 
 	Ref<SubTexture2D> SubTexture = nullptr;
+	void UpdateSubTexture();
 
 	SpriteRenderer() = default;
 	SpriteRenderer(const SpriteRenderer&) = default;

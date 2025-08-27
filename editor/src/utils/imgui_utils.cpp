@@ -1,4 +1,5 @@
 #include "imgui_utils.h"
+#include "imgui.h"
 #include "utils/file_metadata.h"
 
 namespace Enik {
@@ -12,7 +13,8 @@ void ImGuiUtils::PrefixLabel(std::string_view title) {
 	ImRect text_rect;
 	text_rect.Min = ImGui::GetCursorScreenPos();
 	text_rect.Max = text_rect.Min;
-	text_rect.Max.x += full_width - item_width;
+ 	text_rect.Max.x += full_width*0.4f - item_width*0;
+// 	text_rect.Max.x += full_width - item_width;
 	text_rect.Max.y += text_size.y;
 
 	ImGui::SetCursorScreenPos(text_rect.Min);
@@ -34,6 +36,7 @@ void ImGuiUtils::PrefixLabel(std::string_view title) {
 
 	ImGui::SetCursorScreenPos(ImVec2(text_rect.Max.x, text_rect.Max.y - (text_size.y + window->DC.CurrLineTextBaseOffset)));
 	ImGui::SameLine();
+	ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
 }
 
 void ImGuiUtils::ColorFile(const std::filesystem::path& path, int& pushed_color_count) {

@@ -37,6 +37,9 @@ struct Keyframe {
 };
 
 struct Track {
+	// TODO: each property could be attached to any entity in the scene
+	// NOTE: think about this. should we use relative identification? like this/weapon/sprite, yes
+// 	UUID EntityID;
 	TrackProperty Property;
 	std::vector<Keyframe> Keyframes;
 

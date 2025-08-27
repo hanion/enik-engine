@@ -51,6 +51,11 @@ void HomeTab::RenderContent() {
 		m_EditorLayer->ExitEditor();
 	}
 
+// 	float footer_height = ImGui::GetFontSize() * 1.5f;
+// 	ImGui::SetCursorPos(ImVec2(ImGui::GetCursorPosX(), window_size.y - footer_height));
+// 	ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::dim);
+// 	ImGui::Text("enik-engine v0.1.9");
+// 	ImGui::PopStyleColor();
 
 	if(ImGui::BeginPopup("OpenAsset")) {
 		if (Project::GetActive()) {

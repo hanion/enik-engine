@@ -74,15 +74,16 @@ void Application::Run() {
 				EN_PROFILE_SECTION("layers OnUpdate");
 				layer->OnUpdate(timestep);
 			}
+
+			m_ImGuiLayer->Begin();
+			for (Layer* layer : m_LayerStack) {
+				EN_PROFILE_SECTION("OnImGuiRender");
+				layer->OnImGuiRender();
+			}
+
+			m_ImGuiLayer->End();
 		}
 
-		m_ImGuiLayer->Begin();
-		for (Layer* layer : m_LayerStack) {
-			EN_PROFILE_SECTION("imgui layers OnUpdate");
-			layer->OnImGuiRender();
-		}
-
-		m_ImGuiLayer->End();
 
 		m_Window->OnUpdate();
 		EN_PROFILE_FRAME("Application::Run");

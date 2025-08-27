@@ -22,7 +22,7 @@ void EditorTab::OnImGuiRender() {
 
 void EditorTab::DockTo(ImGuiID dockspace_id) {
 	ImGui::DockBuilderDockWindow(m_WindowName.c_str(), dockspace_id);
-	EN_CORE_TRACE("Docked Tab {}", m_WindowName);
+	//EN_CORE_TRACE("Docked Tab {}", m_WindowName);
 }
 
 bool EditorTab::BeginDockspace() {

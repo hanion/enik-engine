@@ -156,6 +156,7 @@ void Window::Shutdown() {
 	EN_PROFILE_SCOPE;
 
 	glfwDestroyWindow(m_Window);
+//  	glfwTerminate();
 }
 
 void Window::OnUpdate() {

@@ -262,6 +262,13 @@ void Physics::Initialize(entt::registry& Registry, class Scene* scene) {
 
 	m_job_system = new JobSystemThreadPool(cMaxPhysicsJobs, cMaxPhysicsBarriers, std::max(1u,thread::hardware_concurrency()-4));
 
+// 	// TODO: set global settings here?
+// 	m_PhysicsSystem->SetGravity(m_PhysicsSystem->GetGravity());
+// 
+// 	JPH::PhysicsSettings settings = m_PhysicsSystem->GetPhysicsSettings();
+// 	settings.mNumVelocitySteps = 6; // Reduced from default 10
+// 	settings.mNumPositionSteps = 2; // Default is 2 (keep as-is)
+// 	m_PhysicsSystem->SetPhysicsSettings(settings);
 
 	m_is_initialized = true;
 }
@@ -401,7 +408,11 @@ void Physics::CreatePhysicsBody(Entity entity, const Component::Transform& tr, C
 		static_cast<ObjectLayer>(body.Layer)
 	};
 	bcs.mAllowedDOFs = EAllowedDOFs::Plane2D;
+	// TODO: lock rotation for some objects
+	//bcs.mAllowedDOFs = JPH::EAllowedDOFs::TranslationX | JPH::EAllowedDOFs::TranslationY;
 	bcs.mGravityFactor = body.GetGravityFactor();
+	bcs.mRestitution = 0.0f;
+	bcs.mFriction = 0.05f;
 
 	Body* new_body = m_PhysicsSystem->GetBodyInterface().CreateBody(bcs);
 	new_body->GetMotionProperties()->ScaleToMass(body.GetMass());
@@ -425,6 +436,8 @@ void Physics::CreatePhysicsBody(Entity entity, const Component::Transform& tr, C
 	};
 	bcs.mAllowedDOFs = EAllowedDOFs::Plane2D;
 	bcs.mIsSensor = body.IsSensor;
+	bcs.mRestitution = 0.0f;
+	bcs.mFriction = 0.05f;
 
 	Body* new_body = m_PhysicsSystem->GetBodyInterface().CreateBody(bcs);
 	new_body->SetUserData(entity.GetID());
@@ -485,6 +498,13 @@ RaycastResult Physics::CastRay(const Raycast& ray) {
 	JPH::Vec3 jolt_to(ray.to.x, ray.to.y, ray.to.z);
 	JPH::RRayCast jolt_ray(jolt_from, jolt_to);
 
+// 	AllHitCollisionCollector<RayCastBodyCollector> collector;
+// 	m_PhysicsSystem->GetBroadPhaseQuery().CastRay(jolt_ray, collector, BroadPhaseLayerFilter(), ObjectLayerFilter());
+// 	if (collector.mHits.size() > 0) {
+// 		collector.Sort();
+// 		Entity e = FindEntityByUUID(m_PhysicsSystem->GetBodyInterface().GetUserData(collector.mHits.at(0).mBodyID));
+// 		return RaycastResult{e, {}};
+// 	}
 
 	JPH::RayCastResult result;
 	auto& npq = m_PhysicsSystem->GetNarrowPhaseQuery();

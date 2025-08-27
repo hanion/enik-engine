@@ -12,6 +12,7 @@
 #include "scene/scriptable_entity.h"
 #include "scene/scene.h"
 #include "script_system/script_system.h"
+#include "script_system/extern_functions.h"
 
 #include "project/project.h"
 

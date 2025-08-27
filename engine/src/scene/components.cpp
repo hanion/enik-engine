@@ -147,12 +147,13 @@ void Component::NativeScript::Bind(const std::string& script_name, const std::fu
 		// delete fields
 		for (auto& val : ns->NativeScriptFields) {
 			auto& field = val.second;
-			if (field.Value == nullptr) {
+			if (field.Value != nullptr) {
 				delete_field_value(field.Type, field.Value);
+				field.Value = nullptr;
 			}
 		}
 
-		delete ns->Instance;
+		if (ns->Instance) delete ns->Instance;
 		ns->Instance = nullptr;
 	};
 
@@ -565,6 +566,11 @@ float Text::GetWidth() {
 
 float Text::GetHeight() {
 	return GetBoundingBox().y;
+}
+
+void SpriteRenderer::UpdateSubTexture() {
+	Ref<Texture2D> texture = AssetManager::GetAsset<Texture2D>(Handle);
+	SubTexture->UpdateSubTexture2D(texture);
 }
 
 

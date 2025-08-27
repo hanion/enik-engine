@@ -1,5 +1,6 @@
 #include <pch.h>
 #include "scene_editor_tab.h"
+#include "asset/asset_manager.h"
 #include "asset/importer/texture_importer.h"
 #include "events/event.h"
 #include "events/mouse_event.h"
@@ -480,7 +481,10 @@ void SceneEditorTab::ShowToolbarPlayPause() {
 
 void SceneEditorTab::OnScenePlay() {
 	OnScenePause(false);
-	// SaveScene();
+	// FIX: i do not want to save everytime
+	// maybe save to a tmp file, read from that to create the tmp playing scene
+	// we also can use this as autosave
+	SaveScene();
 
 	if (m_ActiveScenePath.empty()) {
 		return;
@@ -571,8 +575,8 @@ void SceneEditorTab::OnOverlayRender() {
 				case Component::CollisionShape::Type::CIRCLE: {
 					Renderer2D::DrawCircle(
 						glm::vec3(
-							transform.GlobalPosition.x + collider.CircleCenter.x,
-							transform.GlobalPosition.y + collider.CircleCenter.y,
+							transform.GlobalPosition.x,// + collider.CircleCenter.x,
+							transform.GlobalPosition.y,// + collider.CircleCenter.y,
 							0.998f
 						),
 						transform.LocalScale.x * collider.CircleRadius,

@@ -562,6 +562,12 @@ Entity SceneSerializer::InstantiatePrefab(const std::string& filepath, UUID inst
 		}
 	});
 
+	if (root_entity.HasFamily()) {
+		Component::Transform& transform = root_entity.Get<Component::Transform>();
+		Component::Family&    family    = root_entity.Get<Component::Family>   ();
+		family.SetChildrenGlobalTransformRecursive(transform);
+	}
+
 	return root_entity;
 }
 

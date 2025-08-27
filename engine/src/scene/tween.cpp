@@ -1,6 +1,11 @@
 #include "tween.h"
 
 
+// TODO: Tween::Stack(<same as Create>);
+// but it hold them at a different location, s_Data.Stack
+// it finishes them one by one
+// just like godot await, or yield
+// this could be very useful
 
 namespace Enik {
 

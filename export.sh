@@ -92,8 +92,8 @@ export_project() {
 	print_job "Copying project assets for $platform"
 	cp -rf "$PROJECT_PATH/assets" "$export_dir/"
 	cp "$PROJECT_PATH/project.enik" "$export_dir/"
-	cp -rf ./editor/assets/icons/ "$export_dir/assets/icons/"
-	cp -rf ./editor/assets/shaders/ "$export_dir/assets/shaders/"
+	cp -rf ./editor/assets/icons/. "$export_dir/assets/icons/"
+	cp -rf ./editor/assets/shaders/. "$export_dir/assets/shaders/"
 
 	if [ "$platform" == "linux" ]; then
 		print_job "Copying binaries for $platform"

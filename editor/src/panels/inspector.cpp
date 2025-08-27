@@ -679,7 +679,9 @@ void InspectorPanel::DisplayNativeScript(Component::NativeScript& script) {
 					file = "[Prefab]";
 				}
 				ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::blue);
-				ImGui::Button(file.filename().string().c_str());
+				if (ImGui::Button(file.filename().string().c_str())) {
+					m_EditorLayer->RequestOpenAsset(file);
+				}
 				if (ImGui::IsItemHovered()){
 					ImGui::SetTooltip("%s", file.string().c_str());
 				}

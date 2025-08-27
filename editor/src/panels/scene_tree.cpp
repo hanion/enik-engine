@@ -258,6 +258,20 @@ void SceneTreePanel::DrawEntityInSceneTree(Entity entity) {
 		ImGui::EndPopup();
 	}
 
+
+
+	// TODO: enabled/visible button ? 
+	// look at CollapsibleHeader CloseButton
+	/*
+	ImGui::SameLine(ImGui::GetContentRegionMax().x - 25);
+	bool radio = entity.Has<Component::Prefab>();
+	if (ImGui::RadioButton("##but", radio)) {
+	}
+	*/
+	// 	ImGui::TableNextColumn();
+	// 	if (ImGui::RadioButton("##entity_visible", true)) {
+	// 	}
+
 	if (node_open) {
 		if (entity.HasFamily()) {
 			for (auto& child : entity.GetChildren()) {

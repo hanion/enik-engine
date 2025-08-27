@@ -1,6 +1,12 @@
 #pragma once
 #include <filesystem>
 
+// TODO: make dialogs one singleton, and dialog::create creates one new dialog, adds to a vector, and renders them all every frame
+// thus making it possible to have more than one dialog
+// like:
+// Dialog::Confirm("Overwrite?"[](){});
+// Dialog::SaveFile(".prefab", [](){});
+
 namespace fs = std::filesystem;
 
 namespace Enik {

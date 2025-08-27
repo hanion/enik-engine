@@ -84,7 +84,8 @@ Entity Scene::InstantiatePrefab(const std::filesystem::path& path, UUID instance
 		return {};
 	}
 	SceneSerializer serializer = SceneSerializer(this);
-	return serializer.InstantiatePrefab(canonical_path.string(), instance_uuid);
+	Entity e = serializer.InstantiatePrefab(canonical_path.string(), instance_uuid);
+	return e;
 }
 
 void Scene::OnUpdateEditor(Timestep ts, OrthographicCameraController& camera) {
@@ -126,9 +127,6 @@ void Scene::OnUpdateEditor(Timestep ts, OrthographicCameraController& camera) {
 
 void Scene::OnUpdateRuntime(Timestep ts) {
 	EN_PROFILE_SECTION("Scene::OnUpdateRuntime");
-
-
-	SetGlobalTransforms();
 
 	/* Update Scripts */
 	if (not m_IsPaused or m_StepFrames-- > 0) {
@@ -210,9 +208,9 @@ void Scene::OnUpdateRuntime(Timestep ts) {
 }
 
 void Scene::OnFixedUpdate() {
+	SetGlobalTransforms();
 	if (not m_IsPaused or m_StepFrames > 0) {
-		SetGlobalTransforms();
-
+		{ EN_PROFILE_SECTION("Scene::OnFixedUpdate NativeScript calls");
 		m_Registry.view<Component::NativeScript>().each([=](auto entity, auto& ns) {
 			if (not ns.Instance or ns.Instance == nullptr) {
 				if (ns.InstantiateScript and ns.InstantiateScript != nullptr) {
@@ -230,6 +228,7 @@ void Scene::OnFixedUpdate() {
 				ns.Instance->OnFixedUpdate();
 			}
 		});
+		}
 
 		if (!m_Physics.m_is_initialized) {
 			m_Physics.Initialize(m_Registry, this);
@@ -317,9 +316,11 @@ void Scene::OnViewportResize(glm::vec2 position, uint32_t width, uint32_t height
 }
 
 void Scene::DestroyScriptableEntities() {
+	// FIX: seg fault on ->OnDestroy(), hapens when closing the editor while scene is playing
+	// somehow fixed by including tracy ???
+	return;
 	m_Registry.view<Component::NativeScript>().each([=](entt::entity entity, Component::NativeScript& ns) {
 		if (ns.Instance && m_Registry.valid(entity)) {
-			// NOTE: is this needed ?
 			ns.Instance->OnDestroy();
 			ns.DestroyScript(&ns);
 		}
@@ -450,7 +451,8 @@ void Scene::ChangeToDeferredScene() {
 	if (serializer.Deserialize(m_deferred_scene_path)) {
 		ScriptSystem::SetSceneContext(this);
 		NeedViewportResize = true;
-		EN_CORE_INFO("Changed Scene to '{}'", m_deferred_scene_path.c_str());
+		//EN_CORE_INFO("Changed Scene to '{}'", m_deferred_scene_path.c_str());
+		// TODO: send on scene changed to scriptable entities if they are persistent
 	}
 
 	m_deferred_scene_path.clear();

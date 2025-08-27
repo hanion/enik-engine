@@ -18,7 +18,7 @@ bool EditorPanel::BeginPanel() {
 	ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_FirstUseEver);
 
 	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, EditorVars::PanelTabPadding);
-	bool is_open = ImGui::Begin(m_WindowName.c_str(), nullptr, ImGuiWindowFlags_None);
+	bool is_open = ImGui::Begin(m_WindowName.c_str(), nullptr, ImGuiWindowFlags_NoScrollbar);
 	ImGui::PopStyleVar();
 
 	if (not is_open) {
