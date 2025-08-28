@@ -6,6 +6,7 @@
 #include "renderer/texture.h"
 
 #include "tabs/editor_tab.h"
+#include "utils/editor_assets.h"
 
 
 namespace Enik {
@@ -26,7 +27,7 @@ public:
 	void RequestOpenAsset(const std::filesystem::path& path);
 
 	void CreateNewScene();
-	void CreateNewProject();
+	void CreateNewProject(const std::filesystem::path &path, NewProjectType type);
 	void LoadProject(const std::filesystem::path &path);
 	void ExitEditor();
 
@@ -58,7 +59,6 @@ private:
 	bool             m_MainDockspaceInitialized = false;
 
 	std::vector<std::filesystem::path> m_OpenAssetRequests;
-
 };
 
 }

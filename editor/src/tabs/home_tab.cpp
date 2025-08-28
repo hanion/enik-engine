@@ -156,28 +156,13 @@ void HomeTab::ShowNewProject() {
 
 	static const auto create_project = [this](){
 		std::filesystem::path new_path = DialogFile::GetSelectedPath();
-
-		if (!std::filesystem::exists(new_path)) {
-			std::filesystem::create_directories(new_path);
-		}
-
-		std::filesystem::path proj = s_TemplatePath;
-		switch (m_NewProjType) {
-			case NewProjType::EMPTY:            proj = s_TemplatePath;     break;
-			case NewProjType::EXAMPLE_SNAKE:    proj = s_ExampleSnakeGame; break;
-			case NewProjType::EXAMPLE_SQUAREUP: proj = s_ExampleSquareUp;  break;
-		}
-
-		std::filesystem::copy(proj, new_path,
-			std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing);
-
-		m_EditorLayer->LoadProject(new_path / "project.enik");
+		m_EditorLayer->CreateNewProject(new_path, m_NewProjType);
 		m_IsOpen = false;
 	};
 
 	if (ImGui::BeginPopupModal("Create New Project", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		if (ImGui::Button("Empty Project", ImVec2(200, 0))) {
-			m_NewProjType = NewProjType::EMPTY;
+			m_NewProjType = NewProjectType::EMPTY;
 			DialogFile::OpenDialog(DialogType::SELECT_DIR, create_project);
 			ImGui::CloseCurrentPopup();
 		}
@@ -190,13 +175,13 @@ void HomeTab::ShowNewProject() {
 		ImGui::Spacing();
 
 		if (ImGui::Button("Square Up", ImVec2(200, 0))) {
-			m_NewProjType = NewProjType::EXAMPLE_SQUAREUP;
+			m_NewProjType = NewProjectType::EXAMPLE_SQUAREUP;
 			DialogFile::OpenDialog(DialogType::SELECT_DIR, create_project);
 			ImGui::CloseCurrentPopup();
 		}
 
 		if (ImGui::Button("Snake", ImVec2(200, 0))) {
-			m_NewProjType = NewProjType::EXAMPLE_SNAKE;
+			m_NewProjType = NewProjectType::EXAMPLE_SNAKE;
 			DialogFile::OpenDialog(DialogType::SELECT_DIR, create_project);
 			ImGui::CloseCurrentPopup();
 		}

@@ -20,7 +20,7 @@ enum DialogType {
 struct DialogFileData {
 	bool has_searched = false;
 
-	fs::path current_directory = fs::canonical("../../");
+	fs::path current_directory;
 	fs::path selected_path;
 
 	std::vector<fs::directory_entry> entries;

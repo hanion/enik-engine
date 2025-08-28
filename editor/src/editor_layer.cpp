@@ -34,7 +34,9 @@ EditorLayer::EditorLayer()
 void EditorLayer::OnAttach() {
 	EN_PROFILE_SCOPE;
 
-	EditorAssets::LoadEditorAssets();
+	Project::FindEngineSourcePath();
+	EditorAssets::LoadEditorAssets(Project::GetEngineDirectory());
+	DialogFile::SetCurrentDir(fs::canonical("./"));
 
 	const std::filesystem::path project = "./project.enik";
 	if (std::filesystem::exists(project)) {
@@ -265,13 +267,22 @@ void EditorLayer::CreateNewScene() {
 }
 
 
-void EditorLayer::CreateNewProject() {
-	Project::New();
-	DialogFile::OpenDialog(DialogType::SAVE_FILE,
-		[&](){
-			// TODO this
-			EN_CORE_WARN("TODO Create a new project here. (EditorLayer::CreateNewProject)");
-		}, ".enik");
+void EditorLayer::CreateNewProject(const std::filesystem::path &path, NewProjectType type) {
+	if (!std::filesystem::exists(path)) {
+		std::filesystem::create_directories(path);
+	}
+
+	std::filesystem::path templat = EditorAssets::ProjectTemplate;
+	switch (type) {
+		case NewProjectType::EMPTY:            templat = EditorAssets::ProjectTemplate;  break;
+		case NewProjectType::EXAMPLE_SNAKE:    templat = EditorAssets::ExampleSnakeGame; break;
+		case NewProjectType::EXAMPLE_SQUAREUP: templat = EditorAssets::ExampleSquareUp;  break;
+	}
+
+	std::filesystem::copy(templat, path,
+		std::filesystem::copy_options::recursive | std::filesystem::copy_options::overwrite_existing);
+
+	LoadProject(path / "project.enik");
 }
 
 void EditorLayer::LoadProject(const std::filesystem::path& path) {
@@ -383,6 +394,9 @@ void EditorLayer::UpdateWindowTitle() {
 }
 
 void EditorLayer::ExitEditor() {
+	Application::Get().Close();
+	return;
+	
 	DialogConfirm::OpenDialog(
 		"Exit Editor ?",
 		"Everything not saved will be lost.",

@@ -27,6 +27,11 @@ public:
 		return s_ActiveProject->m_ProjectDirectory;
 	}
 
+	static const std::filesystem::path GetEngineDirectory() {
+		if (s_EngineSourcePath.empty()) FindEngineSourcePath();
+		return s_EngineSourcePath;
+	}
+
 	static const std::filesystem::path GetAssetRegistryPath() {
 		EN_CORE_ASSERT(s_ActiveProject);
 		return GetProjectDirectory() / GetActive()->m_Config.asset_registry_path;
@@ -70,22 +75,11 @@ public:
 	static void         Save(const std::filesystem::path& path);
 
 
+	static std::filesystem::path FindAssetPath(const std::filesystem::path& path);
 
-	static std::string FindAssetPath(std::string str)  {
-		str = "./assets/" + str;
-		if (std::filesystem::exists(str)) {
-			return str;
-		}
-
-		str = "../../editor/" + str;
-		if (std::filesystem::exists(str)) {
-			return str;
-		}
-
-		return "";
-	}
-
+	static void FindEngineSourcePath();
 private:
+
 	ProjectConfig m_Config;
 
 	std::filesystem::path m_ProjectDirectory;
@@ -94,6 +88,8 @@ private:
 
 	inline static Ref<Project> s_ActiveProject;
 
+	static std::filesystem::path s_EngineSourcePath;
+	static std::filesystem::path s_AssetsPath;
 };
 
 }
