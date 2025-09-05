@@ -31,12 +31,12 @@ void ImGuiLayer::OnAttach() {
 	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
-	std::string font_0 = Project::FindAssetPath("fonts/Noto_Sans/NotoSans-Regular.ttf");
+	std::string font_0 = Project::FindAssetPath("fonts/Noto_Sans/NotoSans-Regular.ttf").string();
 	if (!font_0.empty()) {
 		io.FontDefault = io.Fonts->AddFontFromFileTTF(font_0.c_str(), 18.0f);
 	}
 
-	std::string font_1 = Project::FindAssetPath("fonts/Noto_Sans_Mono/NotoSansMono-VariableFont_wdth,wght.ttf");
+	std::string font_1 = Project::FindAssetPath("fonts/Noto_Sans_Mono/NotoSansMono-VariableFont_wdth,wght.ttf").string();
 	if (!font_1.empty()) {
 		io.Fonts->AddFontFromFileTTF(font_1.c_str(), 24.0f);
 	}

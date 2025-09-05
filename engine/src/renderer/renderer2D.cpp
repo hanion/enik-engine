@@ -125,11 +125,11 @@ void Renderer2D::Init() {
 	s_Data.LineVertexBuffer->SetLayout(line_layout);
 	s_Data.LineVertexArray->AddVertexBuffer(s_Data.LineVertexBuffer);
 
-	s_Data.LineShader = Shader::Create(Project::FindAssetPath("shaders/line_shader.glsl"));
+	s_Data.LineShader = Shader::Create(Project::FindAssetPath("shaders/line_shader.glsl").string());
 	s_Data.LineShader->Bind();
 
 
-	s_Data.TextureColorShader = Shader::Create(Project::FindAssetPath("shaders/texture_color.glsl"));
+	s_Data.TextureColorShader = Shader::Create(Project::FindAssetPath("shaders/texture_color.glsl").string());
 
 	TextureSpecification spec {1,1,ImageFormat::RGBA8,false};
 	uint32_t white_texture_data = (uint32_t)0xffffffff;
