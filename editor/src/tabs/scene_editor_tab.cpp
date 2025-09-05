@@ -621,6 +621,10 @@ void SceneEditorTab::OnOverlayRender() {
 
 				transform.GlobalScale.x = -bb.x;
 				transform.GlobalPosition.x += bb.x * 0.5f;
+			} else if (selected.Has<Component::Camera>()) {
+				auto& cam = selected.Get<Component::Camera>().Cam;
+				transform.GlobalScale.y = cam.GetSize();
+				transform.GlobalScale.x = cam.GetSize()*cam.GetAspectRatio();
 			}
 
 			Renderer2D::DrawRect(transform, m_SelectionOutlineColor, m_EditorCameraController.GetZoomLevel()*0.018f);

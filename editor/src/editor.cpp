@@ -7,7 +7,7 @@ namespace Enik {
 
 class Editor : public Application {
 public:
-	Editor() : Application("eeditor") {
+	Editor() : Application("enik-engine") {
 		EN_TRACE("Editor Created");
 		PushLayer(new EditorLayer());
 	}
