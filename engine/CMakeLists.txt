@@ -83,9 +83,9 @@ if(EN_STATIC_SCRIPT_MODULE)
 			"Please provide it using -DPROJECT_ROOT=/path/to/project")
 	endif()
 
-	file(GLOB_RECURSE project_source_files "${PROJECT_ROOT}/src/*.cpp")
+	file(GLOB_RECURSE project_source_files "${PROJECT_ROOT}/module/*.cpp" "${PROJECT_ROOT}/module/src/*.cpp")
 	list(APPEND source_files ${project_source_files})
-	file(GLOB_RECURSE project_include_files "${PROJECT_ROOT}/src/*.h")
+	file(GLOB_RECURSE project_include_files "${PROJECT_ROOT}/module/*.h" "${PROJECT_ROOT}/module/src/*.h")
 	list(APPEND include_files ${project_include_files})
 
 	add_library(${PROJECT_NAME} STATIC ${source_files} ${include_files})

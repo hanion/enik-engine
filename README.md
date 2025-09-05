@@ -94,19 +94,20 @@ cmake --build .
 The `export.sh` script bundles a project and its assets for distribution.
 
 ```bash
-./export.sh <project_title> <path_to_project>
+./export.sh <platform> <project_title> <path_to_project>
 ```
 
 Arguments:
 
+* `<platform>`: linux | mingw | all
 * `<project_title>`: name of the exported folder
 * `<path_to_project>`: root path to your enik-engine project
 
 #### Example
 
 ```bash
-./export.sh snake-game /home/user/projects/snake-game
+./export.sh linux snake-game /home/user/projects/snake-game
 ```
 
-This will create an export at: `enik-engine/export/platform/snake-game`
+This will create an export at: `enik-engine/export/linux/snake-game`
 
