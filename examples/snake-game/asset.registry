@@ -13,7 +13,7 @@ AssetRegistry:
     FilePath: assets/audio/select.wav
   - Handle: 1820559933353187749
     Type: Texture2D
-    FilePath: assets/textures/snakes/snake.png
+    FilePath: assets/textures/snake.png
   - Handle: 2377302553305039392
     Type: Texture2D
     FilePath: assets/textures/ui/play.png
@@ -29,9 +29,6 @@ AssetRegistry:
   - Handle: 4212970473599504579
     Type: Sound
     FilePath: assets/audio/positive_1.wav
-  - Handle: 7833139338962673215
-    Type: Texture2D
-    FilePath: assets/textures/box.png
   - Handle: 8415148821519796466
     Type: Texture2D
     FilePath: assets/textures/ui/numbers/4.png
@@ -74,6 +71,3 @@ AssetRegistry:
   - Handle: 16859251825127710893
     Type: Texture2D
     FilePath: assets/textures/ui/back.png
-  - Handle: 17100312566818709663
-    Type: Texture2D
-    FilePath: assets/textures/snakes/snake2.png
