@@ -77,9 +77,8 @@ build_project() {
 
 run_executable() {
 	print_job "Running:"
-	print_job "    ./"$target""
-	cd "$build_dir"
-	./"$target"
+	print_job "    "$build_dir/$target""
+	"$build_dir/$target"
 }
 
 elapsed_time_ms() {
