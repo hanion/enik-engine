@@ -6,8 +6,8 @@
 namespace Enik {
 
 struct Raycast {
-	glm::vec3 from;
-	glm::vec3 to;
+	glm::vec3 origin;
+	glm::vec3 dir;
 	uint16_t layer;
 };
 struct RaycastResult {

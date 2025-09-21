@@ -397,6 +397,7 @@ void Physics::CreatePhysicsWorld() {
 void Physics::CreatePhysicsBody(Entity entity, const Component::Transform& tr, Component::RigidBody& body) {
 	Shape* shape = CreateShapeForBody(entity);
 	if (shape == nullptr) {
+		EN_CORE_ERROR("invalid shape for body");
 		return;
 	}
 
@@ -424,6 +425,7 @@ void Physics::CreatePhysicsBody(Entity entity, const Component::Transform& tr, C
 void Physics::CreatePhysicsBody(Entity entity, const Component::Transform& tr, Component::CollisionBody& body) {
 	Shape* shape = CreateShapeForBody(entity);
 	if (shape == nullptr) {
+		EN_CORE_ERROR("invalid shape for body");
 		return;
 	}
 
@@ -494,9 +496,9 @@ JPH::Ref<JPH::Shape> Physics::CreateShapeForBody(Entity entity) {
 RaycastResult Physics::CastRay(const Raycast& ray) {
 	assert(ray.layer < Layers::NUM_LAYERS);
 
-	JPH::Vec3 jolt_from(ray.from.x, ray.from.y, ray.from.z);
-	JPH::Vec3 jolt_to(ray.to.x, ray.to.y, ray.to.z);
-	JPH::RRayCast jolt_ray(jolt_from, jolt_to);
+	JPH::Vec3 jolt_origin(ray.origin.x, ray.origin.y, ray.origin.z);
+	JPH::Vec3 jolt_dir(ray.dir.x, ray.dir.y, ray.dir.z);
+	JPH::RRayCast jolt_ray(jolt_origin, jolt_dir);
 
 // 	AllHitCollisionCollector<RayCastBodyCollector> collector;
 // 	m_PhysicsSystem->GetBroadPhaseQuery().CastRay(jolt_ray, collector, BroadPhaseLayerFilter(), ObjectLayerFilter());
