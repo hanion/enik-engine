@@ -141,14 +141,14 @@ void SceneTreePanel::OnMouseButtonReleased(MouseButtonReleasedEvent& event) {
 }
 
 int color_entity(Entity entity) {
-	if (entity.Has<Component::Prefab>()) {
+	if (entity.Has<Component::SceneControl>()) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::persistent);
+	} else if (entity.Has<Component::Prefab>()) {
 		if (entity.Get<Component::Prefab>().RootPrefab) {
 			ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::prefab);
 		} else {
 			ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::prefab_child);
 		}
-	} else if (entity.Has<Component::SceneControl>()) {
-		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::persistent);
 	} else if (entity.Has<Component::NativeScript>()) {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::script);
 	} else if (entity.Has<Component::RigidBody>()) {

@@ -13,7 +13,7 @@ class EditorLayer;
 class EditorTab {
 public:
 	explicit EditorTab(const std::filesystem::path& name) :
-		m_TabID(++s_TabIDCounter), m_Name(name.string()), m_WindowName(m_Name + "##tab" + std::to_string(m_TabID)) {}
+		m_TabID(++s_TabIDCounter), m_Name(name.string()), m_WindowName(m_Name + "##tab" + std::to_string(m_TabID) + "   ") {}
 	virtual ~EditorTab() = default;
 
 	void OnImGuiRender();
@@ -25,7 +25,7 @@ public:
 
 	const std::string& GetName() const { return m_Name; }
 	const std::string& GetWindowName() const { return m_WindowName; }
-	inline void SetWindowName(const std::string& name) { m_WindowName = name + "##tab" + std::to_string(m_TabID); }
+	inline void SetWindowName(const std::string& name) { m_WindowName = name + "##tab" + std::to_string(m_TabID) + "   "; }
 
 	bool ShouldClose() const { return not m_IsOpen and not m_IsDirty; }
 	bool IsFocused() const { return m_IsOpen and m_IsFocused; }

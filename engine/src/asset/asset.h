@@ -2,7 +2,6 @@
 
 #include "base.h"
 #include "core/uuid.h"
-#include <string_view>
 
 namespace Enik {
 

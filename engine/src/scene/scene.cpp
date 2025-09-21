@@ -16,6 +16,25 @@ Scene::Scene() {
 	ScriptSystem::SetSceneContext(this);
 }
 
+// only called from SceneSerializer::Deserialize
+void Scene::InstantiateAutoLoads() {
+	auto& al = Project::GetActive()->GetConfig().autoloads;
+	for (size_t i = 0; i < al.size(); ++i) {
+		bool already_autoloaded = false;
+		for (size_t j = 0; j < m_autoloaded.size(); ++j) {
+			if (al[i] == m_autoloaded[j]) {
+				already_autoloaded = true;
+				break;
+			}
+		}
+		if (!already_autoloaded) {
+			Entity e = InstantiatePrefab(al[i]);
+			e.GetOrAdd<Component::SceneControl>().AutoLoaded = true;
+			m_autoloaded.push_back(al[i]);
+		}
+	}
+}
+
 Scene::~Scene() {
 	m_Physics.Uninitialize();
 	DestroyScriptableEntities();
@@ -408,6 +427,7 @@ void Scene::ChangeScene(const std::string& path) {
 
 	const std::filesystem::path absolute = Project::GetAbsolutePath(path);
 	if (!std::filesystem::exists(absolute)) {
+		EN_CORE_ERROR("ChangeScene: scene not found {}", path.c_str());
 		return;
 	}
 	m_deferred_scene_path = absolute.string();
@@ -452,7 +472,16 @@ void Scene::ChangeToDeferredScene() {
 		ScriptSystem::SetSceneContext(this);
 		NeedViewportResize = true;
 		//EN_CORE_INFO("Changed Scene to '{}'", m_deferred_scene_path.c_str());
-		// TODO: send on scene changed to scriptable entities if they are persistent
+
+		for (auto entity : entities_to_keep) {
+			Component::NativeScript* ns = m_Registry.try_get<Component::NativeScript>(entity);
+			Component::SceneControl* sc = m_Registry.try_get<Component::SceneControl>(entity);
+			if (sc && ns) {
+				if (sc->Persistent) {
+					ns->Instance->OnSceneChanged(m_deferred_scene_path);
+				}
+			}
+		}
 	}
 
 	m_deferred_scene_path.clear();

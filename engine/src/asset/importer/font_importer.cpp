@@ -12,7 +12,7 @@ const uint32_t atlas_width = 1000;
 const uint32_t atlas_height = 1000;
 const float font_atlas_width = atlas_width;
 const float font_atlas_height = atlas_height;
-const float font_size = 200.0f;
+const float font_size = 180.0f;
 
 Ref<Texture2D> CreateTexture2D(int width, int height, uint8_t* data) {
 	uint8_t* rgba_data = new uint8_t[width * height * 4];

@@ -20,6 +20,9 @@ AssetRegistry:
   - Handle: 9692094284884949353
     Type: Texture2D
     FilePath: assets/textures/1bit.png
+  - Handle: 12569388558807911932
+    Type: Animation
+    FilePath: ../ayazjam/assets/animations/zoomin.anim
   - Handle: 16875132979633895541
     Type: Sound
     FilePath: assets/audio/hover.wav

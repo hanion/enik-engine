@@ -101,10 +101,7 @@ void EditorLayer::OnImGuiRender() {
 	m_EditorTabs.erase(
 		std::remove_if(m_EditorTabs.begin(), m_EditorTabs.end(),
 			[](const Ref<EditorTab>& tab) {
-				if (tab->ShouldClose()) {
-					return true;
-				}
-				return false;
+				return tab->ShouldClose();
 			}
 		),
 		m_EditorTabs.end()
@@ -291,9 +288,14 @@ void EditorLayer::LoadProject(const std::filesystem::path& path) {
 		ScriptSystem::LoadScriptModuleFirstTime();
 		ScriptSystem::ClearOnScriptModuleReloadEvents();
 
+		auto& cfg = Project::GetActive()->GetConfig();
 		RequestOpenAsset(path);
-		auto start_scene_path = Project::GetActive()->GetConfig().start_scene;
+		auto start_scene_path = cfg.start_scene;
 		RequestOpenAsset(start_scene_path);
+
+		for (size_t i = 0; i < cfg.open_assets.size(); ++i) {
+			RequestOpenAsset(cfg.open_assets[i]);
+		}
 
 		DialogFile::SetCurrentDir(Project::GetProjectDirectory());
 		UpdateWindowTitle();

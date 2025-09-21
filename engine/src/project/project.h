@@ -15,6 +15,8 @@ struct ProjectConfig {
 	std::filesystem::path start_scene;
 	std::filesystem::path asset_registry_path;
 	std::filesystem::path script_module_path;
+	std::vector<std::filesystem::path> autoloads;
+	std::vector<std::filesystem::path> open_assets;
 };
 
 class Project {

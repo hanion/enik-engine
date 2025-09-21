@@ -53,12 +53,12 @@ int color_component() {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::teal);
 	} else if constexpr (std::is_same<T, Component::Text>::value) {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::pale_pink);
-	} else if constexpr (std::is_same<T, Component::SceneControl>::value) {
-		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::persistent);
 	} else if constexpr (std::is_same<T, Component::RigidBody>::value) {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::rigidbody);
 	} else if constexpr (std::is_same<T, Component::CollisionBody>::value) {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::rigidbody);
+	} else if constexpr (std::is_same<T, Component::SceneControl>::value) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::persistent);
 	} else {
 		return 0;
 	}
@@ -75,6 +75,11 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 	int pushed_style_color = 0;
 	if (entity.Has<Component::Prefab>() and not entity.Get<Component::Prefab>().RootPrefab) {
 		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::blue_a);
+		pushed_style_color++;
+	}
+
+	if (entity.Has<Component::SceneControl>() && entity.Get<Component::SceneControl>().AutoLoaded) {
+		ImGui::PushStyleColor(ImGuiCol_Text, EditorColors::alpha);
 		pushed_style_color++;
 	}
 
@@ -136,6 +141,7 @@ void InspectorPanel::DrawEntityInInspector(Entity entity) {
 
 	DisplayComponentInInspector<Component::SceneControl>("Scene Control", entity, true, [&]() {
 		auto& sc = entity.Get<Component::SceneControl>();
+		if (sc.AutoLoaded) ImGui::Text("AutoLoaded");
 		ImGuiUtils::PrefixLabel("Persistent");
 		ImGui::Checkbox("##Persistent", &sc.Persistent);
 	});

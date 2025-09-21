@@ -70,6 +70,8 @@ public:
 	virtual void OnMouseButtonReleased(const MouseButtonReleasedEvent& event) { }
 	virtual void OnMouseScrolled(const MouseScrolledEvent& event) { }
 
+	virtual void OnSceneChanged(const std::filesystem::path& to) {}
+
 	RaycastResult CastRay(Raycast ray);
 
 private:

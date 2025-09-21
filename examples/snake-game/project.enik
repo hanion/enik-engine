@@ -1,6 +1,6 @@
 Project: snake-game
 StartScene: assets/scenes/main.escn
-AssetRegistry: asset.registry
+AssetRegistry: assets/asset.registry
 ScriptModule: module/libmodule.so
 
 # this was the first ever project built with enik-engine

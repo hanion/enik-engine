@@ -118,6 +118,7 @@ void* create_new_value_for_field(FieldType field_type, void* field_default) {
 	return nullptr;
 }
 void delete_field_value(FieldType field_type, void* field_value) {
+	if (!field_value) return;
 	switch (field_type) {
 		case FieldType::NONE: {
 			EN_CORE_ERROR("delete_field_value field_type is NONE !");
@@ -435,6 +436,12 @@ glm::vec3 PhysicsBodyBase::GetAngularVelocity() const {
 void PhysicsBodyBase::SetPosition(const glm::vec3& position) {
 	if (body) {
 		GetBodyInterface().SetPosition(body->GetID(), {position.x, position.y, position.z}, JPH::EActivation::Activate);
+	}
+}
+
+void PhysicsBodyBase::SetRotation(const glm::quat& rotation) {
+	if (body) {
+		GetBodyInterface().SetRotation(body->GetID(), {rotation.x, rotation.y, rotation.z, rotation.w}, JPH::EActivation::Activate);
 	}
 }
 

@@ -28,7 +28,7 @@ SceneEditorTab::SceneEditorTab(const std::filesystem::path& name)
 	m_FileSystemPanel.SetCurrentDir(Project::GetProjectDirectory());
 
 	std::filesystem::path path(name);
-	SetWindowName(path.filename().string());
+	SetWindowName(path.filename().string() + "    ");
 
 	LoadScene(Project::GetAbsolutePath(name));
 

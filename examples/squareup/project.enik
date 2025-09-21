@@ -1,5 +1,5 @@
 Project: squareup
 StartScene: assets/scenes/menu.escn
-AssetRegistry: asset.registry
+AssetRegistry: assets/asset.registry
 ScriptModule: module/libmodule.so
 

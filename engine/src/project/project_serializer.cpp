@@ -28,6 +28,21 @@ void ProjectSerializer::Serialize(std::filesystem::path path) {
 	out << YAML::Key << "AssetRegistry" << YAML::Value << config.asset_registry_path.string();
 
 
+	out << YAML::Key << "AutoLoads";
+	out << YAML::Value << YAML::BeginSeq;
+	for (size_t i = 0; i < config.autoloads.size(); ++i) {
+		out << config.autoloads[i].string();
+	}
+	out << YAML::EndSeq;
+
+	out << YAML::Key << "EditorOpenAssets";
+	out << YAML::Value << YAML::BeginSeq;
+	for (size_t i = 0; i < config.open_assets.size(); ++i) {
+		out << config.open_assets[i].string();
+	}
+	out << YAML::EndSeq;
+
+
 	out << YAML::EndMap;
 
 	std::ofstream fout(path);
@@ -69,6 +84,21 @@ bool ProjectSerializer::Deserialize(std::filesystem::path path) {
 	if (data["AssetRegistry"]) {
 		config.asset_registry_path  = data["AssetRegistry"].as<std::string>();
 	}
+
+	if (auto al = data["AutoLoads"]) {
+		for (size_t i = 0; i < al.size(); ++i) {
+			auto prefab = al[i];
+			config.autoloads.push_back(prefab.as<std::string>());
+		}
+	}
+
+	if (auto eoa = data["EditorOpenAssets"]) {
+		for (size_t i = 0; i < eoa.size(); ++i) {
+			auto oa = eoa[i];
+			config.open_assets.push_back(oa.as<std::string>());
+		}
+	}
+
 
 	EN_CORE_INFO("Deserialized project '{}', in {}", config.project_name, path);
 

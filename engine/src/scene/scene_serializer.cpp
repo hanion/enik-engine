@@ -202,6 +202,7 @@ bool SceneSerializer::Deserialize(const std::string& filepath) {
 
 	std::string scene_name = data["Scene"].as<std::string>();
 	m_Scene->SetName(scene_name);
+	m_Scene->InstantiateAutoLoads();
 	// EN_CORE_INFO("Deserializing scene '{0}', in '{1}'", scene_name, filepath);
 
 
@@ -572,6 +573,12 @@ Entity SceneSerializer::InstantiatePrefab(const std::string& filepath, UUID inst
 }
 
 void SceneSerializer::SerializeEntity(YAML::Emitter& out, Entity& entity) {
+	if (entity.Has<Component::SceneControl>()) {
+		if(entity.Get<Component::SceneControl>().AutoLoaded) {
+			return;
+		}
+	}
+
 	out << YAML::BeginMap; // Entity
 
 	out << YAML::Key << "Entity" << YAML::Value << (uint64_t)entity.Get<Component::ID>();
@@ -792,9 +799,8 @@ void SceneSerializer::DeserializeEntity(YAML::Node& entity, uint64_t uuid, std::
 
 	// do not deserialize persistent entity twice
 	if (deserialized_entity.Has<Component::SceneControl>()) {
-		if (deserialized_entity.Get<Component::SceneControl>().Persistent) {
-			return;
-		}
+		auto& sc = deserialized_entity.Get<Component::SceneControl>();
+		if (sc.Persistent) return;
 	}
 
 

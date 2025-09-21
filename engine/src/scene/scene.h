@@ -23,6 +23,7 @@ public:
 	void DestroyEntity(Entity entity);
 
 	Entity InstantiatePrefab(const std::filesystem::path& path, UUID instance_uuid = UUID());
+	void InstantiateAutoLoads();
 
 	entt::registry& Reg() { return m_Registry; }
 
@@ -85,6 +86,8 @@ private:
 	std::string m_deferred_scene_path = "";
 
 	std::vector<class Entity> m_deferred_destroy;
+
+	std::vector<std::filesystem::path> m_autoloaded;
 
 	friend class Entity;
 	friend class SceneTreePanel;

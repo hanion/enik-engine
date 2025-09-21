@@ -35,7 +35,7 @@ private:
 
 private:
 	float m_AspectRatio = 1.6f/0.9f;
-	float m_ZoomLevel = 10.0f;
+	float m_ZoomLevel = 8.0f;
 
 	OrthographicCamera m_Camera;
 

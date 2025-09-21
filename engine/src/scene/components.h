@@ -138,6 +138,7 @@ struct PhysicsBodyBase {
 	void      SetAngularVelocity(const glm::vec3& angular_velocity);
 
 	void SetPosition(const glm::vec3& position);
+	void SetRotation(const glm::quat& rotation);
 
 	void  SetFriction(float friction);
 	float GetFriction();
@@ -306,6 +307,7 @@ struct Text {
 
 struct SceneControl {
 	bool Persistent = true;
+	bool AutoLoaded = false;
 };
 
 }

@@ -31,7 +31,8 @@ void RuntimeLayer::OnAttach() {
 void RuntimeLayer::OnDetach() {
 	EN_PROFILE_SCOPE;
 
-	m_ActiveScene->ClearNativeScripts();
+	// FIX: invalid free
+	//m_ActiveScene->ClearNativeScripts();
 	ScriptSystem::UnloadScriptModule();
 }
 
